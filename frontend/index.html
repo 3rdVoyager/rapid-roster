@@ -1,13 +1,101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="dashboard.css">
-    <script src="dashboard.js" defer></script>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RapidRoster</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
 
-</body>
+    <main>
+      <section class="hero">
+        <h1>RapidRoster</h1>
+        <p>
+          Grouping and scheduling made easy.
+        </p>
+        <p>
+          <a href="#wizard">Get started</a>
+        </p>
+      </section>
+
+      <section id="how-it-works">
+        <h2>How it works</h2>
+        <ol>
+          <li>
+            <strong>Configure data</strong> — Import participants from a CSV.
+            Map columns to types (text, numeric, dates, times, ranges, IDs).
+            Cells can hold multiple values separated by semicolons. Set how many
+            groups you need.
+          </li>
+          <li>
+            <strong>Configure goals</strong> — Build rules with Cluster,
+            Separate, or Limit. Set priority and mark critical rules as hard
+            constraints.
+          </li>
+          <li>
+            <strong>Generate groups</strong> — A primary run seeds groups, then
+            improves them with the best relocate or swap each step. Secondary
+            runs start from random layouts to offer alternatives.
+          </li>
+          <li>
+            <strong>Review and export</strong> — Inspect the result, compare
+            alternatives, and download groupings as a perfectly formatted CSV.
+          </li>
+        </ol>
+      </section>
+
+      <section id="why-i-built-this">
+        <h2>Why I built this</h2>
+        <p>
+          Manually building rosters is slow and easy to get wrong: teammate
+          requests, availability overlap, role caps, and “keep these people
+          apart” all fight each other in a spreadsheet. RapidRoster is built so
+          organizers can state those tradeoffs as goals and let the generator
+          work through them. Then export and tweak the results in a spreadsheet 
+          until you're happy with the results.
+        </p>
+      </section>
+
+      <section id="goals">
+        <h2>Three goals, not dozens of rules</h2>
+        <p>
+          You can compose groupings from setting a few fundamental goals:
+        </p>
+        <ul>
+          <li>
+            <strong>Cluster</strong> — Keep similar participants together
+            (siblings, departments, overlapping availability, teammate
+            requests).
+          </li>
+          <li>
+            <strong>Separate</strong> — Spread similar participants apart
+            (schools, experienced players, genders across teams).
+          </li>
+          <li>
+            <strong>Limit</strong> — Cap or require counts per group (maximum 2
+            goalkeepers, minimum 1 coach).
+          </li>
+        </ul>
+        <p>
+          Each goal targets columns you choose, can filter who it applies to,
+          and uses exact or partial matching where needed. Soft goals guide the
+          search by score. Hard constraints never allow illegal placements — if
+          they cannot be satisfied, you get a clear error.
+        </p>
+      </section>
+
+      <section id="wizard">
+        <h2>Start</h2>
+        <p>
+          Coming soon.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <p>RapidRoster — open source under the MIT License.</p>
+    </footer>
+  </body>
 </html>
