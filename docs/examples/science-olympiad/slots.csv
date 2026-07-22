@@ -1,0 +1,8 @@
+slot_id,name,min_size,max_size,conflict_group,time_block
+e1,Astronomy,2,2,block_am,Sat 9:00-10:00
+e2,Optics,2,2,block_am,Sat 9:00-10:00
+e3,Forensics,2,2,block_mid,Sat 10:30-11:30
+e4,Robotics,2,2,block_mid,Sat 10:30-11:30
+e5,Chemistry Lab,2,2,block_pm,Sat 13:00-14:00
+e6,Codebusters,2,2,block_pm,Sat 13:00-14:00
+e7,Experimental Design,2,2,block_late,Sat 14:30-15:30

@@ -1,0 +1,241 @@
+/* —— Hero —— */
+.hero {
+  display: grid;
+  gap: 1.35rem;
+  padding: 0 0 2.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 0 0 0.5rem;
+  color: var(--text);
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  max-width: none;
+}
+
+.brand img {
+  width: clamp(2.5rem, 5vw, 3.5rem);
+  height: clamp(2.5rem, 5vw, 3.5rem);
+  border-radius: 12px;
+}
+
+.brand-accent {
+  color: var(--yellow);
+}
+
+.hero > p:first-of-type {
+  font-size: 1.1rem;
+  line-height: 1.65;
+  max-width: 42rem;
+}
+
+.hero > p:last-child {
+  margin: 0.75rem 0 0;
+}
+
+.hero a {
+  display: inline-block;
+  padding: 0.7rem 1.15rem;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--blue);
+  border-radius: 8px;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.hero a:hover {
+  color: var(--text);
+  background: var(--blue-bright);
+  transform: translateY(-1px);
+}
+
+.hero a:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 3px;
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  -webkit-font-smoothing: antialiased;
+  color: var(--blue-bright);
+  user-select: none;
+}
+
+/* —— Sections —— */
+main > section:not(.hero) {
+  padding: 2.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+main > section:not(.hero):last-of-type {
+  border-bottom: none;
+}
+
+/* How it works → steps across the full width */
+#how-it-works ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: none;
+  counter-reset: how-step;
+}
+
+#how-it-works li {
+  position: relative;
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+  margin: 0;
+  padding: 1.35rem 1.35rem 1.5rem;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  counter-increment: how-step;
+}
+
+#how-it-works .step-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+#how-it-works .step-heading .material-symbols-outlined {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  font-size: 1.3rem;
+  color: var(--text);
+  background: var(--blue);
+  border-radius: 8px;
+}
+
+#how-it-works .step-heading strong {
+  display: inline;
+  margin: 0;
+  color: var(--text);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+#how-it-works .step-heading strong::before {
+  content: "Step " counter(how-step) " — ";
+  color: var(--blue-bright);
+}
+
+#how-it-works li > p {
+  margin: 0;
+  line-height: 1.55;
+  max-width: none;
+}
+
+#how-it-works li > p strong {
+  display: inline;
+  font-size: inherit;
+}
+
+/* Why */
+#why-i-built-this {
+  display: grid;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+#why-i-built-this h2 {
+  margin: 0;
+}
+
+#why-i-built-this .prose {
+  display: grid;
+  gap: 0.85rem;
+}
+
+#why-i-built-this .prose p {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 48rem;
+}
+
+/* Goals → three feature cards */
+#goals > p {
+  max-width: 40rem;
+  line-height: 1.65;
+}
+
+#goals ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 0;
+  list-style: none;
+  max-width: none;
+}
+
+#goals li {
+  margin: 0;
+  padding: 1.35rem 1.35rem 1.5rem;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+#goals li > .material-symbols-outlined {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-bottom: 0.85rem;
+  font-size: 1.25rem;
+  color: var(--text);
+  background: var(--blue);
+  border-radius: 6px;
+}
+
+#goals li strong {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+#goals li p {
+  margin: 0 0 0.55rem;
+  line-height: 1.65;
+}
+
+#goals li p:last-child {
+  margin-bottom: 0;
+}
+
+#goals .goals-note {
+  max-width: 48rem;
+  margin-top: 0.25rem;
+  line-height: 1.7;
+}
