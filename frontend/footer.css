@@ -1,0 +1,13 @@
+/* Site footer — reusable on public pages */
+
+.site-footer {
+  margin-top: 2rem;
+  padding: 2.25rem 0 0;
+  border-top: 1px solid var(--line-color);
+}
+
+.site-footer p {
+  margin: 0;
+  color: var(--text-color-muted);
+  font-size: 0.9rem;
+}
