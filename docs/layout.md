@@ -26,7 +26,7 @@ Links in the UI should use the folder paths (`/sign-in/`, `/app/`), not filename
 
 ## Shared look
 
-- **Background:** dark (`--bg` / elevated panels).
+- **Background:** dark (`--bg-color` / elevated panels).
 - **Primary button:** solid blue (`--blue`).
 - **Danger button:** text or outline red — only for delete.
 - **Secondary button:** quiet border / muted fill.
@@ -43,17 +43,20 @@ Public marketing page. Update copy later so it matches MVP (four rule types incl
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  (optional thin top: Sign in link, right-aligned)            │
+│  [logo] RapidRoster     The problem · Why · Rules   [Sign in]│
+│  (nav can grow later: /about/, /docs/, …)                    │
 │                                                              │
-│  [logo] RapidRoster                                          │
-│  Short pitch (1–2 sentences)                                 │
-│  [ Get started ]  → goes to sign-in (or app if already in)   │
+│  Hero: brand + short pitch + [Get started] / [See problem]   │
+│        + large screenshot placeholder                        │
 │                                                              │
-│  ── How it works (4 steps) ──                                │
-│  ── Why it exists ──                                         │
+│  ── The problem (spreadsheet pain) ──                        │
+│  ── Why RapidRoster + screenshot slot ──                     │
+│  ── Product screenshots (Setup / Generate / Results) ──      │
 │  ── Four rules: Cluster / Separate / Limit / Balance ──      │
+│  ── How it works (4 steps) ──                                │
+│  ── Closing CTA ──                                           │
 │                                                              │
-│  Footer: MIT / open source                                   │
+│  Footer: logo + blurb · Product / Resources / Project links · MIT │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -61,11 +64,11 @@ Public marketing page. Update copy later so it matches MVP (four rule types incl
 
 | Control | Action |
 | --- | --- |
-| Get started | `/sign-in/` (or `/app/` if session exists) |
-| Sign in (header) | Same as above |
-| In-page anchors | Scroll to sections only |
+| Get started / Sign in | `/sign-in/` (or `/app/` if session exists) |
+| Nav anchors | Scroll to `#problem`, `#why`, `#rules` |
+| See the problem | Scroll to `#problem` |
 
-No CSV wizard on the landing page anymore — real work happens in the app.
+No CSV wizard on the landing page — real work happens in `/app/`. Screenshot frames are placeholders until real images are added.
 
 ---
 

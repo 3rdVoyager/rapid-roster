@@ -1,0 +1,53 @@
+/* Shared button styles for site and app */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1.15rem;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.2;
+  text-decoration: none;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition:
+    all 0.15s ease;
+}
+
+.button:hover {
+  transform: scale(1.02) rotate(-2deg);
+}
+
+.button-primary {
+  color: var(--text-color);
+  background: var(--primary-button-color);
+}
+
+.button-primary:hover {
+  color: var(--text-color);
+  background: var(--primary-button-color-hover);
+}
+
+.button-secondary {
+  color: var(--text-color);
+  background: transparent;
+  border-color: var(--secondary-button-color);
+}
+
+.button-secondary:hover {
+  color: var(--text-color);
+  border-color: var(--secondary-button-color-hover);
+}
+
+.button-tertiary {
+  color: var(--text-color);
+  background: var(--tertiary-button-color);
+}
+
+.button-tertiary:hover {
+  color: var(--text-color);
+  background: var(--tertiary-button-color-hover);
+  transform: none;
+}

@@ -14,16 +14,16 @@ body {
     margin: 0;
     padding: 3.5rem;
     min-height: 100vh;
-    color: var(--text);
+    color: var(--text-color);
     font-family: var(--font);
     font-size: 1rem;
     line-height: 1.6;
-    background-color: var(--bg);
+    background-color: var(--bg-color);
     background-image:
-        radial-gradient(ellipse 70% 50% at 15% 0%, rgb(47 107 255 / 0.28), transparent 55%),
-        radial-gradient(ellipse 55% 45% at 90% 8%, rgb(245 197 24 / 0.12), transparent 50%),
-        radial-gradient(ellipse 60% 40% at 70% 55%, rgb(47 107 255 / 0.14), transparent 55%),
-        radial-gradient(ellipse 50% 35% at 10% 85%, rgb(245 197 24 / 0.08), transparent 50%);
+        radial-gradient(ellipse 70% 50% at 15% 0%, color-mix(in srgb, var(--color-blue) 40%, transparent), transparent 55%),
+        radial-gradient(ellipse 55% 45% at 90% 8%, color-mix(in srgb, var(--color-yellow) 22%, transparent), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 70% 55%, color-mix(in srgb, var(--color-blue) 20%, transparent), transparent 55%),
+        radial-gradient(ellipse 50% 35% at 10% 85%, color-mix(in srgb, var(--color-yellow) 12%, transparent), transparent 50%);
     background-attachment: fixed;
 }
 
@@ -40,7 +40,7 @@ h4 {
     margin: 0 0 0.75rem;
     font-weight: 700;
     line-height: 1.2;
-    color: var(--text);
+    color: var(--text-color);
 }
 
 h1 {
@@ -61,25 +61,25 @@ h4 {
 
 p {
     margin: 0 0 1rem;
-    color: var(--text-muted);
+    color: var(--text-color-muted);
     max-width: none;
 }
 
 a {
-    color: var(--blue-bright);
+    color: var(--color-blue-bright);
     text-underline-offset: 0.15em;
 }
 
 a:hover {
-    color: var(--yellow);
+    color: var(--color-yellow);
 }
 
 strong {
-    color: var(--text);
+    color: var(--text-color);
     font-weight: 600;
 }
 
 em {
-    color: var(--text-muted);
+    color: var(--text-color-muted);
     font-style: italic;
 }
