@@ -1,0 +1,51 @@
+/* Sign-in page only */
+
+.sign-in {
+  max-width: 24rem;
+  margin: 12rem auto 12rem;
+}
+
+.sign-in h1 {
+  margin: 0 0 0.75rem;
+}
+
+.sign-in-lead {
+  margin: 0 0 2rem;
+  color: var(--text-color-muted);
+}
+
+.sign-in-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.sign-in-form label {
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.sign-in-form input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  color: var(--text-color);
+  font: inherit;
+  background: var(--header-bg-color);
+  border: 1px solid var(--line-color);
+  border-radius: 8px;
+}
+
+.sign-in-form input:focus {
+  outline: 2px solid var(--color-yellow);
+  outline-offset: 2px;
+}
+
+.sign-in-form .button {
+  margin-top: 0.5rem;
+  justify-self: start;
+}
+
+.sign-in-status {
+  margin: 1.5rem 0 0;
+  color: var(--text-color-muted);
+}

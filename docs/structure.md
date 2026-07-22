@@ -74,12 +74,15 @@ rapid-roster/
 │   ├── app/
 │   │   └── index.html        ← `/app/` signed-in workspace
 │   ├── assets/               ← logo, favicons
-│   ├── css/                  ← shared styles (linked with paths like ../css/...)
+│   ├── css/                  ← styles (link as /css/...)
 │   │   ├── variables.css     ← colors, spacing, fonts
 │   │   ├── global.css        ← base styles shared everywhere
+│   │   ├── buttons.css       ← primary / secondary / tertiary
+│   │   ├── header.css        ← site header
+│   │   ├── footer.css        ← site footer
 │   │   ├── home.css          ← landing page
 │   │   ├── sign-in.css       ← sign-in page
-│   │   └── app.css           ← workspace layout
+│   │   └── app.css           ← workspace layout (later)
 │   └── js/                   ← shared scripts (linked with paths like ../js/...)
 │       ├── api.js            ← talk to /api (fetch wrappers, clear names)
 │       ├── app.js            ← wire buttons ↔ state ↔ screens

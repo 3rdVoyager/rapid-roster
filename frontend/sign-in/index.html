@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Sign in to RapidRoster with an email link. No password."
+    />
+    <title>Sign in — RapidRoster</title>
+    <link rel="icon" href="/assets/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/css/variables.css" />
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/buttons.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <link rel="stylesheet" href="/css/sign-in.css" />
+  </head>
+  <body class="page-sign-in">
+    <header class="site-header">
+      <a class="site-brand" href="/">
+        <img
+          src="/assets/rapid-roster-logo.png"
+          alt=""
+          width="36"
+          height="36"
+        />
+        <span>Rapid<span class="brand-accent">Roster</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="button button-tertiary" href="/">Back to home</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="sign-in" aria-labelledby="sign-in-heading">
+        <h1 id="sign-in-heading">Sign in</h1>
+        <p class="sign-in-lead">
+          We'll email you a private sign-in link. No password.
+        </p>
+
+        <form
+          class="sign-in-form"
+          action="/api/auth/request-link"
+          method="post"
+        >
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+            placeholder="you@example.com"
+          />
+          <button class="button button-primary" type="submit">
+            Email me a link
+          </button>
+        </form>
+
+        <!-- Shown after a successful request (wire up with JS later) -->
+        <p class="sign-in-status" hidden>
+          Check your email for a sign-in link. It may take a minute to arrive.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer-main">
+        <div class="site-footer-brand">
+          <a class="site-brand" href="/">
+            <img
+              src="/assets/rapid-roster-logo.png"
+              alt=""
+              width="36"
+              height="36"
+            />
+            <span>Rapid<span class="brand-accent">Roster</span></span>
+          </a>
+          <p>
+            Place people into teams, events, shifts, and classrooms with clear
+            rules — instead of fighting a spreadsheet.
+          </p>
+        </div>
+
+        <nav class="site-footer-nav" aria-label="Footer">
+          <div class="site-footer-col">
+            <h2>Product</h2>
+            <ul>
+              <li><a href="/sign-in/">Sign in</a></li>
+              <li><a href="/#how-it-works">How it works</a></li>
+              <li><a href="/#rules">Rules</a></li>
+            </ul>
+          </div>
+          <div class="site-footer-col">
+            <h2>Resources</h2>
+            <ul>
+              <li><a href="/docs/">Docs</a></li>
+              <li><a href="/examples/">Examples</a></li>
+              <li><a href="/presets/">Presets</a></li>
+            </ul>
+          </div>
+          <div class="site-footer-col">
+            <h2>Project</h2>
+            <ul>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/changelog/">Changelog</a></li>
+              <li><a href="/license/">License</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="site-footer-bottom">
+        <p>RapidRoster — open source under the MIT License.</p>
+      </div>
+    </footer>
+  </body>
+</html>
