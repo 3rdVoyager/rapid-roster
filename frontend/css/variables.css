@@ -1,6 +1,7 @@
 :root {
     --font: "Inter", system-ui, sans-serif;
-
+    --header-brand-font-size: 1.75rem;
+    --header-brand-logo-size: 2.25rem;
     /* Brand colors */
     /* DO NOT USE THESE DIRECTLY. USE THE COLOR-RELATED VARIABLES INSTEAD. */
     --brand-white: #ffffff;

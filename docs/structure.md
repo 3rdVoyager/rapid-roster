@@ -72,17 +72,23 @@ rapid-roster/
 │   ├── sign-in/
 │   │   └── index.html        ← `/sign-in/` email sign-in
 │   ├── app/
-│   │   └── index.html        ← `/app/` signed-in workspace
+│   │   ├── index.html        ← `/app/` project dashboard
+│   │   └── project/
+│   │       └── index.html    ← `/app/project/` workspace
 │   ├── assets/               ← logo, favicons
-│   ├── css/                  ← styles (link as /css/...)
-│   │   ├── variables.css     ← colors, spacing, fonts
-│   │   ├── global.css        ← base styles shared everywhere
-│   │   ├── buttons.css       ← primary / secondary / tertiary
-│   │   ├── header.css        ← site header
-│   │   ├── footer.css        ← site footer
-│   │   ├── home.css          ← landing page
-│   │   ├── sign-in.css       ← sign-in page
-│   │   └── app.css           ← workspace layout (later)
+│   ├── css/
+│   │   ├── variables.css     ← shared tokens
+│   │   ├── global.css        ← shared base styles
+│   │   ├── buttons.css       ← shared buttons
+│   │   ├── site/             ← public pages
+│   │   │   ├── header.css
+│   │   │   ├── footer.css
+│   │   │   ├── home.css
+│   │   │   └── sign-in.css
+│   │   └── app/              ← signed-in product
+│   │       ├── app.css       ← shared app chrome
+│   │       ├── dashboard.css
+│   │       └── project.css
 │   └── js/                   ← shared scripts (linked with paths like ../js/...)
 │       ├── api.js            ← talk to /api (fetch wrappers, clear names)
 │       ├── app.js            ← wire buttons ↔ state ↔ screens
@@ -231,7 +237,7 @@ app.js  →  asks worker to run
 
 | Piece | Role |
 | --- | --- |
-| **Pages** | Hosts `frontend/` (HTML/CSS/JS/assets). Folder `index.html` files give clean URLs: `/`, `/sign-in/`, `/app/`. |
+| **Pages** | Hosts `frontend/` (HTML/CSS/JS/assets). Folder `index.html` files give clean URLs: `/`, `/sign-in/`, `/app/`, `/app/project/`. |
 | **Pages Functions** | `functions/api/...` — auth + project CRUD |
 | **D1** | Users, sessions, projects |
 | **Wrangler** | Local dev + deploy + migrations |

@@ -16,11 +16,12 @@ Each screen is a **folder with its own `index.html`**. Cloudflare Pages serves t
 | --- | --- | --- |
 | `/` | `frontend/index.html` | Marketing / landing — everyone |
 | `/sign-in/` | `frontend/sign-in/index.html` | Email sign-in — guests |
-| `/app/` | `frontend/app/index.html` | Project workspace — signed-in users |
+| `/app/` | `frontend/app/index.html` | Project dashboard — signed-in users |
+| `/app/project/` | `frontend/app/project/index.html` | One project workspace — signed-in users |
 
 If someone opens `/app/` while logged out → redirect to `/sign-in/`, then return to `/app/` after login.
 
-Links in the UI should use the folder paths (`/sign-in/`, `/app/`), not filenames.
+Links in the UI should use the folder paths (`/sign-in/`, `/app/`, `/app/project/`), not filenames.
 
 ---
 
@@ -31,7 +32,7 @@ Links in the UI should use the folder paths (`/sign-in/`, `/app/`), not filename
 - **Danger button:** text or outline red — only for delete.
 - **Secondary button:** quiet border / muted fill.
 - **Brand:** logo + Rapid**Roster** (yellow on “Roster”), same as landing.
-- **Desktop first**, stack cleanly on mobile (header wraps; tabs become a horizontal scroll or select).
+- **Desktop first**, stack cleanly on mobile (header wraps; app sidebar becomes a horizontal row).
 
 Do **not** pack the first screen of the app with stats, tips, and cards. The workspace is a tool, not a dashboard collage.
 
@@ -68,7 +69,7 @@ Public marketing page. Update copy later so it matches MVP (four rule types incl
 | Nav anchors | Scroll to `#problem`, `#why`, `#rules` |
 | See the problem | Scroll to `#problem` |
 
-No CSV wizard on the landing page — real work happens in `/app/`. Screenshot frames are placeholders until real images are added.
+No CSV wizard on the landing page — real work happens in `/app/` (dashboard) and `/app/project/` (workspace). Screenshot frames are placeholders until real images are added.
 
 ---
 
@@ -101,52 +102,84 @@ One job: get an email magic link.
 
 ---
 
-## 3. App shell (`/app/` → `frontend/app/index.html`)
+## 3. App dashboard (`/app/` → `frontend/app/index.html`)
 
-Always the same chrome. The middle area swaps by **tab**.
+Signed-in home. No sidebar — pick or create a project.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ HEADER (sticky)                                              │
-│ [logo] RapidRoster   Project ▾ [Name]   [Save]    Account ▾  │
+│ HEADER                                                       │
+│ [logo] RapidRoster                              Account ▾    │
 ├──────────────────────────────────────────────────────────────┤
-│ TABS                                                         │
-│  [ Setup ]   [ Rules ]   [ Generate ]   [ Results ]          │
-├──────────────────────────────────────────────────────────────┤
+│ Projects                                    [ New project ]  │
 │                                                              │
-│                    (active tab content)                      │
-│                                                              │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │ Spring SciOly                         updated ·  ›    │  │
+│  ├────────────────────────────────────────────────────────┤  │
+│  │ Volunteer weekend                     updated ·  ›    │  │
+│  └────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────┘
+```
+
+### Dashboard controls
+
+| Control | Action |
+| --- | --- |
+| New project | Create project → open `/app/project/` |
+| Project row | Open that project workspace |
+| Account | Email + Sign out (later) |
+
+Later: rename / delete from the row menu or after open. Placeholder rows are for layout only.
+
+---
+
+## 4. Project workspace (`/app/project/` → `frontend/app/project/index.html`)
+
+One open project. Sidebar switches panels (Setup / Rules / Generate / Results).
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ HEADER                                                       │
+│ [logo] → /app/   [All projects]  Name  Unsaved  [Save]  Acc  │
+├────────────┬─────────────────────────────────────────────────┤
+│ SIDEBAR    │                                                 │
+│  Setup     │              (active panel content)             │
+│  Rules     │                                                 │
+│  Generate  │                                                 │
+│  Results   │                                                 │
+└────────────┴─────────────────────────────────────────────────┘
 ```
 
 ### Header controls
 
 | Control | Where | Action |
 | --- | --- | --- |
-| Brand / logo | Left | Go to landing `/` |
-| Project menu | Center-left | Dropdown: list projects, **New project**, **Rename**, **Delete** |
-| Project name | Next to menu | Shows current name; rename via menu or inline later |
-| Save | Right of project | Explicit save to cloud (also autosave later if we want) |
-| Account menu | Far right | Email shown; **Sign out** |
+| Brand / logo | Left | Back to dashboard `/app/` |
+| All projects | Near brand | Back to dashboard |
+| Project name | Center | Current project title |
+| Save | Right of name | Save to cloud (later) |
+| Account | Far right | Email + Sign out (later) |
 
-Unsaved changes: subtle “Unsaved” text near Save, or dim Save until dirty. Keep it obvious, not clever.
+Unsaved changes: subtle “Unsaved” text near Save.
 
-### Tabs
+### Sidebar
 
-Four equal tabs. Active tab: underlined or stronger text color (yellow or blue — pick one and stick to it).
+Four panels in workflow order. Active item: left accent bar + stronger text (blue).
 
-| Tab | Job |
+| Panel | Job |
 | --- | --- |
 | Setup | People, slots, sizes, slots-per-person, conflict groups |
 | Rules | List + add/edit Cluster / Separate / Limit / Balance |
 | Generate | Run search, progress, start alternatives |
 | Results | View assignments, scores, light tweaks, export |
 
-Switching tabs does **not** discard data; it only changes what is on screen.
+Switching panels does **not** discard data; it only changes what is on screen.
+
+**Mobile:** collapse sidebar to a horizontal row so tables keep width.
 
 ---
 
-## 4. Setup tab
+## 5. Setup panel
 
 Two tables side by side on wide screens; stacked on narrow screens. Global setup sits above or between them.
 
@@ -188,7 +221,7 @@ Two tables side by side on wide screens; stacked on narrow screens. Global setup
 
 ---
 
-## 5. Rules tab
+## 6. Rules panel
 
 Left: list of rules. Right: editor for the selected rule (or empty state).
 
@@ -238,7 +271,7 @@ Empty state (no rules): short sentence + **+ Add rule**.
 
 ---
 
-## 6. Generate tab
+## 7. Generate panel
 
 Quiet screen: explain what will run, then go.
 
@@ -258,7 +291,7 @@ Quiet screen: explain what will run, then go.
 │  │ Errors listed in plain language if hard rules fail     │  │
 │  └────────────────────────────────────────────────────────┘  │
 │                                                              │
-│  When done: link/button → “View results” (switches tab)      │
+│  When done: link/button → “View results” (switches panel)    │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -269,13 +302,13 @@ Quiet screen: explain what will run, then go.
 | Generate primary | Start Web Worker main run |
 | Generate alternatives | Extra runs from different legal starts (enabled after or with primary — either is fine; prefer after primary exists) |
 | Cancel (optional) | Stop worker if still running |
-| View results | Jump to Results tab |
+| View results | Jump to Results panel |
 
 While working: disable Generate buttons or show spinner on them so double-clicks do not stack jobs.
 
 ---
 
-## 7. Results tab
+## 8. Results panel
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -308,11 +341,11 @@ While working: disable Generate buttons or show spinner on them so double-clicks
 | By slot / By person / Satisfaction | Toggle main panel only |
 | Move (optional MVP) | Manual reassignment; reject with message if hard rules break |
 
-Empty state (no generation yet): “Run Generate first” + button that switches to Generate tab.
+Empty state (no generation yet): “Run Generate first” + button that switches to Generate panel.
 
 ---
 
-## 8. Small overlays (modals)
+## 9. Small overlays (modals)
 
 Use sparingly. Same dark elevated panel, centered, with backdrop.
 
@@ -332,7 +365,7 @@ Escape or Cancel closes without saving.
 ## Mobile notes
 
 - Header: brand left; project + account menus iconify or stack under brand.
-- Tabs: full-width row, scroll sideways if needed.
+- App sidebar: horizontal row under the header on small screens.
 - Setup: People table full width, then Slots below.
 - Rules: List on top, editor below (not side-by-side).
 - Keep tap targets large; avoid hover-only actions.

@@ -34,7 +34,7 @@ html {
   align-items: center;
   gap: 0.65rem;
   color: var(--text-color);
-  font-size: 1.15rem;
+  font-size: var(--header-brand-font-size);
   font-weight: 700;
   letter-spacing: -0.02em;
   text-decoration: none;
@@ -45,8 +45,8 @@ html {
 }
 
 .site-brand img {
-  width: 2rem;
-  height: 2rem;
+  width: var(--header-brand-logo-size);
+  height: var(--header-brand-logo-size);
   border-radius: 8px;
 }
 
