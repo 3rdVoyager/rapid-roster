@@ -1,0 +1,15 @@
+:root {
+    --bg: #050a12;
+    --bg-elevated: #0c1220;
+    --bg-card: #101827;
+    --text: #ffffff;
+    --text-muted: #9aa6b2;
+    --line: rgb(255 255 255 / 0.08);
+    --blue: #2f6bff;
+    --blue-bright: #4d8bff;
+    --yellow: #f5c518;
+    --radius: 12px;
+    --gutter: 3.5rem;
+    --page: 100%;
+    --font: "Inter", system-ui, sans-serif;
+}

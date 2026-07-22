@@ -1,0 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: var(--gutter);
+    min-height: 100vh;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 1rem;
+    line-height: 1.6;
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse 70% 50% at 15% 0%, rgb(47 107 255 / 0.28), transparent 55%),
+        radial-gradient(ellipse 55% 45% at 90% 8%, rgb(245 197 24 / 0.12), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 70% 55%, rgb(47 107 255 / 0.14), transparent 55%),
+        radial-gradient(ellipse 50% 35% at 10% 85%, rgb(245 197 24 / 0.08), transparent 50%);
+    background-attachment: fixed;
+}
+
+main {
+    width: var(--page);
+    margin-inline: auto;
+    padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text);
+}
+
+h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+}
+
+h2 {
+    font-size: clamp(1.5rem, 2.5vw, 1.85rem);
+}
+
+h3 {
+    font-size: 1.2rem;
+}
+
+h4 {
+    font-size: 1.05rem;
+}
+
+p {
+    margin: 0 0 1rem;
+    color: var(--text-muted);
+    max-width: none;
+}
+
+a {
+    color: var(--blue-bright);
+    text-underline-offset: 0.15em;
+}
+
+a:hover {
+    color: var(--yellow);
+}
+
+strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+em {
+    color: var(--text-muted);
+    font-style: italic;
+}

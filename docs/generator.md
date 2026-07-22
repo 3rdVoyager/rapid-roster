@@ -1,241 +1,174 @@
 # Generator
 
-The generator is the core of the application. It is responsible for generating the groupings based on the rules and the participants.
+The generator places **participants into slots** (teams, events, roles, shifts, etc.) using the rules you set.
 
-## How it works
+It does not have special modes for different events. A **preset** only fills in starter people/slot settings and rules.
 
-The generator works by following these steps:
+You customize three things:
 
-    Primary Generation Process:
-    1. Create initial groupings based on the highest priority goal or hard constraint
-    2. For each participant, evaluate candidate moves (relocate or swap) against every other group
-    3. Apply the candidate with the best positive score delta
-    4. Repeat steps 2 and 3 until no more meaningful moves can be found for 20+ iterations
-    5. Output the groupings
+1. **Setup** — participant data, slot data, sizes, slots-per-person, conflict groups  
+2. **Rules** — Cluster, Separate, Limit, Balance (what “good” means)  
+3. **Generate** — find a placement that respects hard rules and scores best on soft ones  
 
-    Secondary Generation Process:
-    1. Create random initial groupings
-    2. For each participant, evaluate candidate moves (relocate or swap) against every other group
-    3. Apply the candidate with the best positive score delta
-    4. Repeat steps 2 and 3 until no more meaningful moves can be found for 20+ iterations
-    5. Output the groupings
-    6. Repeat this process a few times to get outlier groupings
+---
 
-The primary generation process is the main process that is used to generate the groupings. The secondary generation process is used to get other options.
+## The Idea
 
-### Moves: relocate and swap
+- Each **person** can be placed in one or more **slots**.
+- You set how many slots a person may hold (often exactly one for teams; several for event lists).
+- You set how many people each slot should hold (min and max).
+- **Hard rules** must never be broken. If they cannot all be met, generation fails with a clear error.
+- **Soft rules** have a priority from 1–100. The generator tries to satisfy higher-priority soft rules more, but can trade them off.
+- Soft rules are scored by how well they are met (not just yes/no). Partial success still counts.
 
-Groups are limited by count and/or size, so a one-way move is often illegal when the target group is full. The generator therefore considers two move types and always picks the **best improving** candidate (not a random swap partner).
+When everyone is limited to one slot, you get normal “split into teams.” When people can hold several slots, you get things like “each person on a few events.” Same engine either way.
 
-For each participant `P` currently in group `A`:
+**Spreadsheets hold facts. Rules hold policies.** Slot min/max size and conflict groups live in Setup. “Max 2 keepers” and “balance skill” live in Rules.
 
-```text
-candidates = []
+---
 
-for each group B ≠ A:
-  if B has capacity:
-    candidates += relocate(P → B)
-  else:
-    for each participant Q in B:
-      candidates += swap(P ↔ Q)
+## Setup
 
-apply the candidate with the best positive score delta
-if several candidates tie for best delta, pick one at random
-```
+**Participants** — a table with columns (name, skill, availability, preference ranks, and so on). A cell may list several values separated by semicolons. Assign a column type to each column (see below).
 
-- **Relocate** — move `P` into `B` when `B` still has room. Changes group sizes.
-- **Swap** — exchange `P` with a specific `Q` in `B` when `B` is full. Keeps both group sizes the same.
+**Slots** — named places to assign participants (Team A, Optics, Friday shift, …), each with min/max size. Slots can also have their own info (needed strengths, time, tags). Assign a column type to each column.
 
-Only moves that pass the hard-constraint legal-move filter are candidates. Soft goals decide which legal candidate has the best delta.
+**Global setup (not Cluster/Separate/Limit/Balance):**
 
-## Data types
+- Number of slots each participant can be assigned to (single, multiple, or different per participant).
+- Groups of slots that the same person cannot hold at once (for example, two events in the same time block).
 
-Data types are the different types of data that can be used in the rules.
+Importers and presets read common spreadsheet shapes and turn them into this setup. The generator only sees cleaned-up people, slots, and rules.
 
-| Data Type     | Examples                                  | Description |
-| ------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| ID            | #532; #533; #534                          | A unique identifier for the participant                                                              |
-| Numeric       | 8; 25; 136                                | A numeric value (e.g. skill level, age, height, experience level, etc.)                              |
-| Date          | 2026-01-01; 2026-01-02                    | A date value (e.g. birth date, event date, etc.)                                                     |
-| Time          | 12:00:00; 13:00:00                        | A time value (e.g. availability time, event time, etc.)                                              |
-| DateTime      | 2026-01-01 13:00:00                       | A date and time value (e.g. availability date and time, event date and time, etc.)                   |
-| TimeRange     | 12:00:00 - 13:00:00                       | A time range value (e.g. availability time range, event time range, etc.)                            |
-| DateTimeRange | 2026-01-01 12:00:00 - 2026-01-01 13:00:00 | A date and time range value (e.g. availability date and time range, event date and time range, etc.) |
-| Text          | "John Smith"; "Emily Chen"                | A text value (e.g. name, email, phone number, etc.)                                                  |
+Examples: [docs/examples/](./examples/).
 
-### Multiple Values
+---
 
-Cells may contain multiple values by separating them with semicolons.
+## Participant Attributes (Columns)
 
-Examples:
+- ID - A unique identifier used to identify a participant. Either configured by the user or generated automatically.
+- Number - A number.
+- Time - A single date or time, or a range of dates and times.
+- Text - A text value. Can be a category, attribute, preference, etc.
+- Ignore - A value that is ignored by the generator.
 
-```text
-Monday;Wednesday;Friday
+## Slot Attributes (Columns)
 
-English;Spanish
+- ID - A unique identifier used to identify a slot. Either configured by the user or generated automatically.
+- MinSize - The minimum number of participants that should be assigned to the slot. Default is none.
+- MaxSize - The maximum number of participants that should be assigned to the slot. Default is number of participants divided by the number of slots.
+- Text - A text value. Can be a category, attribute, preference, etc.
+- Ignore - A value that is ignored by the generator.
 
-Room 101;Room 203
+## Rules
 
-John Smith;Emily Chen
-```
+Every rule uses the same short flow:
 
-The generator interprets these as lists of values rather than a single string.
+1. **Choose rule type**
+   - Cluster - Prefer that matched participants or slots remain together.
+   - Separate - Prefer that matched participants or slots remain apart.
+   - Limit - Cap or require how many of a chosen set of participants appear in each slot.
+   - Balance - Keep a number (skill, age, …) roughly even across slots.
+2. **Choose data** 
+   - *Cluster or Separate* - Give multiple columns, ranges, or cells to compare different attributes between participants and slots. Give a single column, range, or cell to compare the same attribute among participants. Show a preview list of participant and slot matches.
+   - *Limit or Balance* - Give a single column, range, or cell. Give a single column, range, or cell that contains numeric values.
+3. **Apply Filter** - Apply an optional filter (role=coach, skill=advanced, preference=1 etc.) to the data. Just specify a single value (like "1" if searching through a preference grid) to filter through the entire selected range without caring about column or row.
+3. **Adjust options**
+   - *Cluster or Separate* - exact vs partial match
+   - *Limit* - min/max counts
+   - *Balance* - None
+4. **Set priority (1–100) and hard vs soft**
 
-## Goals
+---
 
-Goals are a list of constraints that the generator will follow when generating the groupings.
+## What each rule type means
 
-Goals can be marked as a "Hard Constraint", which prompts the generator to prioritize that goal at all costs. For example, if separating boys and girls into different groups is a hard constraint, the generator will make sure that no future goals will be able to override this.
+| Type | What it does | Example |
+| --- | --- | --- |
+| **Cluster** | Keep matched things together: people who share a value in the same slot, **or** a person in a slot whose name/ID matches a preference cell | Same school together; teammate requests; pref column `1` ↔ slot name |
+| **Separate** | Keep matched things apart | Spread schools; keep two people apart |
+| **Limit** | Min/max how many of a filtered set appear in each slot | Max 2 keepers; min 1 coach |
+| **Balance** | Keep a number roughly even across slots | Balance skill or age |
 
-**Every rule should follow this workflow**
+### Cluster: two common data shapes
 
-#### Step 1: Select columns
+1. **One participant column** — people with the same value prefer the same slot (school, tags with partial overlap, etc.).
+2. **Participant column(s) ↔ slot column** — when values match, prefer that **person in that slot** (preference rank columns full of slot names; strengths ↔ needed strengths; availability ↔ practice night).
 
-Choose the columns that will be processed in the goal.
+Ranked slot picks (Science Olympiad / Google Form style) use shape 2: columns named `1`…`6` contain slot names; one soft Cluster rule per column with descending priority. See [examples/science-olympiad/](./examples/science-olympiad/).
 
-- All
-- Skill
-- Gender
-- Availability
-- Department
-- Languages
-- Experience
-- Age
-- School
+### How similarity works (simple version)
 
-Multiple columns can be selected.
+When a rule compares values:
 
-#### Step 2: Filter the participants
+- **Exact** — same value counts as a match; different does not.
+- **Partial** — closer values score better (shared tags, closer numbers, overlapping time ranges).
 
-This determines the target participants.
+---
 
-Everyone
+## How scoring works
 
-Only participants matching a condition
+- Only **soft** rules add to the score.
+- Each soft rule contributes roughly: **priority × how well it is met** (from not at all to fully).
+- The generator looks for a placement that is fully legal (setup limits + hard rules) and has the best total soft score it can find.
+- After a run, you see how well each soft rule did, so you can tell what was traded off.
 
-- Gender = Male
-- Skill >= 8
-- Availability contains Tuesday
-- Languages contains Spanish
-- Age between 12 and 14
+---
 
-#### Step 3: Choose a goal
+## How generation works
 
-Instead of dozens of hardcoded rules, users choose one goal. There are currently 4 fundamental goals.
+The generator tries small changes and keeps ones that improve the score without breaking hard rules:
 
-1. Cluster: Group similar participants together.
+- Put someone into a slot  
+- Remove someone from a slot  
+- Move someone from one slot to another  
+- Swap people (or swap which slots two people hold)  
 
-- Keep siblings together
-- Keep departments together
-- Keep language speakers together
-- Keep similar availability together
+**Main run:** start from a legal placement → keep improving → if stuck, shake things up a bit and improve again → stop when nothing useful improves for a while.
 
-2. Separate: Group similar participants apart.
+**Extra runs:** start from different legal beginnings to offer alternative layouts.
 
-- Spread boys across groups
-- Spread schools
-- Spread experienced players
+Same steps for every project. Different results come from different setup and rules, not from a different algorithm.
 
-3. Limit: Limit occurrences.
+---
 
-- Minimum 1 Coach
-- Maximum 2 Goalkeepers
-- Exactly 3 Volunteers
+## Presets
 
-4. (Future) Balance: Balance the values across groups. Works only with numeric values.
+A preset is a saved starter pack:
 
-- Balance skill levels
-- Balance ages
-- Balance experience levels
+- Participants template CSV  
+- Slots template CSV  
+- Starter rules (and global setup defaults)  
 
-#### Step 4: Configure the goal
+Applying a preset just writes those into the project. You can change or delete anything afterward. Domain packs (sports, Science Olympiad, volunteers) are presets only — not separate engines.
 
-Each goal has slightly different options.
+---
 
-Limit
+## Errors and feedback
 
-- Minimum
-- Maximum
+**Before generating**
 
-Cluster
+- Bad or unreadable values in columns a rule needs  
+- Preferences or requests that point at unknown people or slots  
+- Empty rules or impossible min/max sizes  
+- Totals that cannot work (not enough seats for everyone, etc.)
 
-- Partial match
-- Exact match
+**If hard rules cannot all be met**
 
-Separate
+- Fail clearly and explain what is fighting what, when that can be detected  
 
-- Partial match
-- Exact match
+**After a successful run**
 
-#### Step 5: Priority
+- Score / satisfaction per soft rule  
+- Simple breakdowns where helpful (e.g. who got weak preference matches)  
 
-The priority is the importance of the goal. It is a value between 1 and 100. 1 is the lowest priority and 100 is the highest priority.
+---
 
-Also determine whether the goal is a hard constraint.
+## Principles
 
-- Hard constraint: Yes
-  - The generator will prioritize this goal at all costs by activating a legal move filter: illegal placements are never considered. If it is not possible to fulfill the goal, the generator will return an error message detailing exactly what occurred.
-
-#### Scenario Examples
-
-Scenario 1: Value teammate requests
-
-- Step 1: Choose attributes (columns): Teammate Requests; Player Name
-- Step 2: Filter the participants: Everyone
-- Step 3: Choose a goal: Cluster
-- Step 4: Configure the goal: Exact match
-- Step 5: Priority: 75
-
-Scenario 2: Prioritize availability
-
-- Step 1: Choose attributes (columns): Availability
-- Step 2: Filter the participants: Everyone
-- Step 3: Choose a goal: Cluster
-- Step 4: Configure the goal: Partial match
-- Step 5: Priority: 100
-
-For this one specifically, the generator will know how to process dates and times. An exact match would be if the availability is exactly the same as the other participants in the group. A partial match would be if the availability is partially overlapping with the other participants in the group.
-
-Scenario 3: Separate Siblings
-
-- Step 1: Choose attributes (columns): Sibling
-- Step 2: Filter the participants: Everyone
-- Step 3: Choose a goal: Separate
-- Step 4: Configure the goal: Exact match
-- Step 5: Priority: 50
-
-Scenario 4: Limit the number of coaches
-
-- Step 1: Choose attributes (columns): Coach
-- Step 2: Filter the participants: Coach = "Yes"
-- Step 3: Choose a goal: Limit
-- Step 4: Configure the goal: Maximum 2
-- Step 5: Priority: 90
-
-Scenario 5: Balance skill levels across groups
-
-- Step 1: Choose attributes (columns): Skill
-- Step 2: Filter the participants: Everyone
-- Step 3: Choose a goal: Balance
-- Step 4: Configure the goal: N/A
-- Step 5: Priority: 85
-
-OR:
-
-- Step 1: Choose attributes (columns): Skill
-- Step 2: Filter the participants: Everyone
-- Step 3: Choose a goal: Separate
-- Step 4: Configure the goal: Partial match
-- Step 5: Priority: 85
-
-## Prioritization
-
-After the initial matching stage, the generator improves groupings by scoring **candidate moves** (relocate or swap), not just “which group looks best for this player in isolation.”
-
-For each candidate, compute the **score delta**: total assignment score after the move minus total score before the move. Apply the candidate with the highest positive delta. If none improve the score, skip that participant for this pass.
-
-When scoring a placement against a goal: if the goal is fulfilled, add that goal’s priority to the score; if not, add nothing. Hard constraints do not contribute soft points — they only filter illegal candidates out.
-
-For example, if a Cluster goal on School has priority 100, a relocate or swap that puts a participant into a group that already has a matching school earns +100 toward that goal’s contribution. A swap is scored for **both** participants’ new placements (and any Limit / size effects), since exchanging `P` and `Q` changes two memberships at once.
-
-If two or more candidates tie for the best delta, the generator picks one at random.
+1. One engine for every project.  
+2. Customize with setup + rules, not special modes.  
+3. Presets only fill in settings.  
+4. Hard = must never break; soft = try hard, allow tradeoffs.  
+5. Soft success can be partial, not only pass/fail.  
+6. UI shortcuts only help you fill in a rule; they do not change the engine.

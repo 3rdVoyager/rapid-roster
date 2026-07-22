@@ -1,0 +1,7 @@
+rule,type,data,filter,options,priority,hard
+R1,Cluster,preferences.1 ↔ slots.name,,exact,100,no
+R2,Cluster,preferences.2 ↔ slots.name,,exact,80,no
+R3,Cluster,preferences.3 ↔ slots.name,,exact,60,no
+R4,Cluster,preferences.4 ↔ slots.name,,exact,40,no
+R5,Cluster,preferences.5 ↔ slots.name,,exact,25,no
+R6,Cluster,preferences.6 ↔ slots.name,,exact,10,no
