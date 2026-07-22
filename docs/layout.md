@@ -27,20 +27,22 @@ Links in the UI should use the folder paths (`/sign-in/`, `/app/`, `/app/project
 
 ## Shared look
 
-- **Background:** dark (`--bg-color` / elevated panels).
-- **Primary button:** solid blue (`--blue`).
-- **Danger button:** text or outline red — only for delete.
-- **Secondary button:** quiet border / muted fill.
-- **Brand:** logo + Rapid**Roster** (yellow on “Roster”), same as landing.
+- **Background:** dark (`--bg-color` / `--header-bg-color` / `--card-bg-color`).
+- **Primary button:** `--primary-button-color` (maps to `--color-blue`).
+- **Secondary button:** bordered / yellow accent (`--secondary-button-color`).
+- **Tertiary button:** quiet fill (`--tertiary-button-color`) — nav and chrome.
+- **Danger button:** text or outline red — only for delete (add when needed).
+- **Brand:** logo + Rapid**Roster** (yellow on “Roster” via `--color-yellow`).
 - **Desktop first**, stack cleanly on mobile (header wraps; app sidebar becomes a horizontal row).
+- **CSS layout:** shared tokens in `css/variables.css`, `global.css`, `buttons.css`; site pages use `css/site/`; app pages use `css/app/`.
 
-Do **not** pack the first screen of the app with stats, tips, and cards. The workspace is a tool, not a dashboard collage.
+Do **not** pack the project workspace with stats, tips, and cards. The workspace is a tool, not a dashboard collage. The `/app/` dashboard is only a project list — keep it simple too.
 
 ---
 
 ## 1. Landing (`/` → `frontend/index.html`)
 
-Public marketing page. Update copy later so it matches MVP (four rule types including **Balance**, accounts, projects). Structure stays simple.
+Public marketing page. Copy covers the problem, why RapidRoster, four rules (including **Balance**), and how it works.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -376,11 +378,12 @@ Escape or Cancel closes without saving.
 
 An organizer can:
 
-1. Land → Sign in → land in app with a project.
-2. Setup: import two CSVs, set types and sizes.
-3. Rules: add a few rules with priorities and one hard rule.
-4. Generate: watch status → open Results.
-5. Results: scan by slot, check satisfaction, export CSV.
-6. Close the laptop, sign in tomorrow, open the same project.
+1. Land → Sign in → land on the **project dashboard**.
+2. Create or open a project → **workspace** with sidebar.
+3. Setup: import two CSVs, set types and sizes.
+4. Rules: add a few rules with priorities and one hard rule.
+5. Generate: watch status → open Results.
+6. Results: scan by slot, check satisfaction, export CSV.
+7. Close the laptop, sign in tomorrow, open the same project from the dashboard.
 
 If a control is not in this doc, it is not MVP UI — add it here before building it.

@@ -22,9 +22,11 @@ This doc is the grounding for implementation. Product rules live in [generator.m
 ┌─────────────────────────────────────────────────────────┐
 │  Browser (Cloudflare Pages — static HTML/CSS/JS)        │
 │                                                         │
-│  Landing page  →  Sign in  →  App workspace             │
+│  Landing → Sign in → Dashboard (/app/)                  │
+│                         ↓                               │
+│              Project workspace (/app/project/)          │
 │                                                         │
-│  App workspace talks to:                                │
+│  Workspace talks to:                                    │
 │    • /api/...          save/load projects, auth         │
 │    • generator worker  run the search off the main UI   │
 └───────────────────────────┬─────────────────────────────┘
@@ -89,9 +91,10 @@ rapid-roster/
 │   │       ├── app.css       ← shared app chrome
 │   │       ├── dashboard.css
 │   │       └── project.css
-│   └── js/                   ← shared scripts (linked with paths like ../js/...)
+│   └── js/                   ← shared scripts (link as /js/...)
 │       ├── api.js            ← talk to /api (fetch wrappers, clear names)
-│       ├── app.js            ← wire buttons ↔ state ↔ screens
+│       ├── dashboard.js      ← project list / create / open
+│       ├── project.js        ← wire workspace panels ↔ state
 │       ├── state.js          ← current project in memory (plain object)
 │       ├── csv.js            ← parse / export CSV (simple string splitting + helpers)
 │       ├── tables.js         ← render editable people/slots tables
@@ -207,7 +210,7 @@ No passwords for MVP. No Google/GitHub unless we add them later.
 Follow [generator.md](./generator.md). One engine for every project.
 
 ```
-app.js  →  asks worker to run
+project.js  →  asks worker to run
               │
               ▼
          worker.js
@@ -249,14 +252,19 @@ Deploy target stays the same site family as today: [rapidroster.pages.dev](https
 
 ## Build order
 
+**Done (HTML/CSS shells):** landing, sign-in, `/app/` dashboard, `/app/project/` workspace with sidebar panels.
+
+**Next:**
+
 1. **Generator core** (`legal` → `score` → `search`) + tests against `docs/examples/`.
-2. **App UI shell** (header + four panels) with `localStorage` save — dogfood without auth.
+2. **Wire project workspace** with `localStorage` save — dogfood without auth.
 3. **CSV import/export** and typed columns.
 4. **Rules UI** (add / edit / priority / hard).
 5. **Wire generator worker** + results + satisfaction report.
-6. **D1 + auth + project API** — replace `localStorage` with cloud save.
-7. **Presets** (load example packs into a new/blank project).
-8. **Polish** landing copy to match Balance + accounts; error messages from generator.md.
+6. **Dashboard logic** — real project list, create / rename / delete (still local or then cloud).
+7. **D1 + auth + project API** — replace `localStorage` with cloud save.
+8. **Presets** (load example packs into a new/blank project).
+9. **Polish** — error messages from generator.md; any remaining landing copy.
 
 Do not start with auth. The engine and workspace are the product; login is the locker.
 

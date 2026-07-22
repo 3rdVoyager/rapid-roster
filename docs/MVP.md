@@ -12,19 +12,26 @@ Focus for this MVP: **accounts → projects → configure → generate → revie
 
 ## Product shape
 
-A **project workspace** with a top header (brand, project switcher, account).
+Signed-in flow: **dashboard** (list/create projects) → **project workspace** (sidebar panels).
 
 ```
 RapidRoster
   Account
-    - Sign up / sign in
+    - Sign up / sign in (email magic link)
     - Own projects (create, rename, open, delete)
 
-  Project workspace
-    - People & slots   import/edit tables; column types; sizes; slots-per-person; conflicts
-    - Rules            Cluster, Separate, Limit, Balance
-    - Generate         main run + alternatives
-    - Results          view by slot and by person, satisfaction report, tweaks, export
+  /app/ — Project dashboard
+    - List projects
+    - New project
+    - Open a project
+
+  /app/project/ — Project workspace
+    - Header: back to dashboard, name, save, account
+    - Sidebar: Setup | Rules | Generate | Results
+    - Setup     people & slots; column types; sizes; slots-per-person; conflicts
+    - Rules     Cluster, Separate, Limit, Balance
+    - Generate  main run + alternatives
+    - Results   by slot / by person, satisfaction, tweaks, export
 ```
 
 Projects save in the cloud so organizers can leave and come back.

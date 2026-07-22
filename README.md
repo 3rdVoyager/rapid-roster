@@ -10,7 +10,7 @@ Organizing people is hard: preferences, requests, balance, availability, role ca
 
 ## How it works
 
-1. **Projects** — Sign in, create a project, come back later. People, slots, rules, and results are saved.
+1. **Projects** — Sign in, open the dashboard, create a project, come back later. People, slots, rules, and results are saved.
 2. **People & slots** — Import CSVs. Set slot min/max size, how many slots each person may hold, and optional conflict groups.
 3. **Rules** — Same four types for every project (presets only pre-fill them):
    - **Cluster** — keep matched people together, or put a person in a matching slot (e.g. preference columns filled with slot names)
@@ -23,22 +23,30 @@ Organizing people is hard: preferences, requests, balance, availability, role ca
 
 Building a rule: pick the type → choose data → optional filter → options → priority and hard/soft.
 
-Sample CSVs: [docs/examples/](./docs/examples/). Full design: [docs/generator.md](./docs/generator.md).
+## Docs
+
+| Doc | What it covers |
+| --- | --- |
+| [docs/MVP.md](./docs/MVP.md) | Scope and success criteria |
+| [docs/generator.md](./docs/generator.md) | Rules, scoring, search behavior |
+| [docs/structure.md](./docs/structure.md) | Architecture, folders, build order |
+| [docs/layout.md](./docs/layout.md) | Screens and controls |
+| [docs/examples/](./docs/examples/) | Sample CSVs / presets data |
 
 ## MVP scope
 
 Accounts and saved projects; people into slots; Cluster / Separate / Limit / Balance; generation with a satisfaction report; presets as starter settings; Cloudflare hosting.
 
-See [docs/MVP.md](./docs/MVP.md) for details and success criteria.
-
 ## Project layout
 
 ```
 rapid-roster/
-├── docs/           # Product specs + example CSVs (docs/examples/)
-├── frontend/       # Web UI
+├── docs/           # Specs + example CSVs
+├── frontend/       # Pages site: landing, sign-in, /app/, /app/project/
 └── README.md
 ```
+
+Live site: [rapidroster.pages.dev](https://rapidroster.pages.dev/).
 
 ## License
 
