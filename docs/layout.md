@@ -56,7 +56,7 @@ Public marketing page. Update copy later so it matches MVP (four rule types incl
 │  ── How it works (4 steps) ──                                │
 │  ── Closing CTA ──                                           │
 │                                                              │
-│  Footer: MIT / open source                                   │
+│  Footer: logo + blurb · Product / Resources / Project links · MIT │
 └──────────────────────────────────────────────────────────────┘
 ```
 

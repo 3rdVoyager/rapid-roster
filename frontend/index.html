@@ -8,10 +8,10 @@
       content="RapidRoster helps organizers place people into teams, events, shifts, and classrooms using clear rules instead of fighting a spreadsheet."
     />
     <title>RapidRoster — fair, rule-aware groupings</title>
-    <link rel="icon" href="assets/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png" />
-    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+    <link rel="icon" href="/assets/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
@@ -27,7 +27,7 @@
     <header class="site-header">
       <a class="site-brand" href="/">
         <img
-          src="assets/rapid-roster-logo.png"
+          src="/assets/rapid-roster-logo.png"
           alt=""
           width="36"
           height="36"
@@ -35,9 +35,9 @@
         <span>Rapid<span class="brand-accent">Roster</span></span>
       </a>
       <nav class="site-nav" aria-label="Primary">
-        <a class="button button-tertiary" href="#problem">The problem</a>
-        <a class="button button-tertiary" href="#why">Why RapidRoster</a>
-        <a class="button button-tertiary" href="#rules">Rules</a>
+        <a class="button button-tertiary" href="/#problem">The problem</a>
+        <a class="button button-tertiary" href="/#why">Why RapidRoster</a>
+        <a class="button button-tertiary" href="/#rules">Rules</a>
         <!-- Room for more public pages later, e.g. /about/, /docs/ -->
         <a class="button button-primary" href="/sign-in/">Sign in</a>
       </nav>
@@ -48,7 +48,7 @@
         <div class="hero-copy">
           <h1 class="hero-brand">
             <img
-              src="assets/rapid-roster-logo.png"
+              src="/assets/rapid-roster-logo.png"
               alt=""
               width="64"
               height="64"
@@ -61,7 +61,7 @@
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="/sign-in/">Get started</a>
-            <a class="button button-secondary" href="#problem">See the problem</a>
+            <a class="button button-secondary" href="/#problem">See the problem</a>
           </div>
         </div>
         <figure class="screenshot-frame hero-shot" aria-label="Product preview placeholder">
@@ -246,14 +246,61 @@
       <section class="section section-cta">
         <h2>Ready to stop wrestling the spreadsheet?</h2>
         <p class="section-lead">
-          Create an account, open a project, and turn your policies into placements.
+          Create an account, open a project, and turn your lists into placements.
         </p>
         <a class="button button-primary" href="/sign-in/">Get started</a>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p>RapidRoster — open source under the MIT License.</p>
+      <div class="site-footer-main">
+        <div class="site-footer-brand">
+          <a class="site-brand" href="/">
+            <img
+              src="/assets/rapid-roster-logo.png"
+              alt=""
+              width="36"
+              height="36"
+            />
+            <span>Rapid<span class="brand-accent">Roster</span></span>
+          </a>
+          <p>
+            Place people into teams, events, shifts, and classrooms with clear
+            rules — instead of fighting a spreadsheet.
+          </p>
+        </div>
+
+        <nav class="site-footer-nav" aria-label="Footer">
+          <div class="site-footer-col">
+            <h2>Product</h2>
+            <ul>
+              <li><a href="/sign-in/">Sign in</a></li>
+              <li><a href="/#how-it-works">How it works</a></li>
+              <li><a href="/#rules">Rules</a></li>
+            </ul>
+          </div>
+          <div class="site-footer-col">
+            <h2>Resources</h2>
+            <ul>
+              <li><a href="/docs/">Docs</a></li>
+              <li><a href="/examples/">Examples</a></li>
+              <li><a href="/presets/">Presets</a></li>
+            </ul>
+          </div>
+          <div class="site-footer-col">
+            <h2>Project</h2>
+            <ul>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/changelog/">Changelog</a></li>
+              <li><a href="/license/">License</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="site-footer-bottom">
+        <p>RapidRoster — open source under the MIT License.</p>
+      </div>
     </footer>
   </body>
 </html>
