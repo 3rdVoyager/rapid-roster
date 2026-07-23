@@ -1,0 +1,88 @@
+<script type="module">
+  import { createEmptyAssignments, addPersonToSlot } from "/js/generator/placement.js";
+  import { checkLegal } from "/js/generator/legal.js";
+  import { scorePlacement } from "/js/generator/score.js";
+
+  let a = createEmptyAssignments(["ava", "bob", "charlie", "dave", "eve", "frank", "grace", "hannah", "ivy", "jack", "kate", "lily", "maddy", "nate", "olive", "paul", "quinn", "rachel", "sara", "taylor", "uva", "vince", "wendy", "xavier", "yara", "zane"]);
+
+  a = addPersonToSlot(a, "ava", "s1");
+  a = addPersonToSlot(a, "bob", "s2");
+  a = addPersonToSlot(a, "charlie", "s3");
+  a = addPersonToSlot(a, "dave", "s1");
+  a = addPersonToSlot(a, "eve", "s2");
+  a = addPersonToSlot(a, "frank", "s3");
+  a = addPersonToSlot(a, "grace", "s1");
+  a = addPersonToSlot(a, "hannah", "s2");
+  a = addPersonToSlot(a, "ivy", "s3");
+  a = addPersonToSlot(a, "jack", "s1");
+  a = addPersonToSlot(a, "kate", "s2");
+  a = addPersonToSlot(a, "lily", "s3");
+  a = addPersonToSlot(a, "maddy", "s1");
+  a = addPersonToSlot(a, "nate", "s2");
+  a = addPersonToSlot(a, "olive", "s3");
+  a = addPersonToSlot(a, "paul", "s1");
+  a = addPersonToSlot(a, "quinn", "s2");
+  a = addPersonToSlot(a, "rachel", "s3");
+  a = addPersonToSlot(a, "sara", "s1");
+  a = addPersonToSlot(a, "taylor", "s2");
+  a = addPersonToSlot(a, "uva", "s3");
+  a = addPersonToSlot(a, "vince", "s1");
+  a = addPersonToSlot(a, "wendy", "s2");
+  a = addPersonToSlot(a, "xavier", "s3");
+  a = addPersonToSlot(a, "yara", "s1");
+  a = addPersonToSlot(a, "zane", "s2");
+
+  const result = checkLegal(a, {
+    slotIds: ["s1", "s2", "s3"],
+    slotMinSizes: 2,
+    slotMaxSizes: 5,
+    defaultSlotsPerPerson: 1,
+    conflictGroups: []
+  });
+
+  console.log(a);
+  console.log(result);
+
+  const scored = scorePlacement(a, {
+    peopleAttrs: {
+      ava: { skill: 8, school: "Northwest" },
+      bob: { skill: 5, school: "Northeast" },
+      charlie: { skill: 3, school: "Southwest" },
+      dave: { skill: 2, school: "Northwest" },
+      eve: { skill: 1, school: "Northeast" },
+      frank: { skill: 4, school: "Southwest" },
+      grace: { skill: 6, school: "Northwest" },
+      hannah: { skill: 7, school: "Northeast" },
+      ivy: { skill: 9, school: "Southwest" },
+      jack: { skill: 10, school: "Northwest" },
+      kate: { skill: 6, school: "Northeast" },
+      lily: { skill: 7, school: "Southwest" },
+      maddy: { skill: 8, school: "Northwest" },
+      nate: { skill: 9, school: "Northeast" },
+      olive: { skill: 10, school: "Southwest" },
+      paul: { skill: 10, school: "Northwest" },
+      quinn: { skill: 10, school: "Northeast" },
+      rachel: { skill: 9, school: "Southwest" },
+      sara: { skill: 8, school: "Northwest" },
+      taylor: { skill: 7, school: "Northeast" },
+      uva: { skill: 6, school: "Southwest" },
+      vincent: { skill: 5, school: "Northwest" },
+      wendy: { skill: 4, school: "Northeast" },
+      xavier: { skill: 3, school: "Southwest" },
+      yara: { skill: 2, school: "Northwest" },
+      zane: { skill: 1, school: "Northeast" }
+    },
+    slotAttrs: {
+      s1: { name: "Northwest" },
+      s2: { name: "Northeast" },
+      s3: { name: "Southwest" },
+    },
+    rules: [
+      { id: "R1", type: "balance", hard: false, priority: 85, personAttribute: "skill" },
+      { id: "R2", type: "cluster", hard: false, priority: 75,
+        shape: "peopleTogether", personAttribute: "school", match: "exact" }
+    ]
+  });
+
+console.log(scored);
+</script>

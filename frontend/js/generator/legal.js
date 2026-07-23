@@ -39,18 +39,19 @@
  *     slotIds: ["t1", "t2"],
  *
  *     // Optional: minimum people required in each slot
- *     // Missing slot id → no minimum (treated as 0)
- *     slotMinSizes: {
- *       "t1": 5,
- *       "t2": 5
- *     },
+ *     // - a number  → same minimum for EVERY slot (example: 5)
+ *     // - an object → per-slot minimums (missing slot id → 0)
+ *     slotMinSizes: 5,
+ *     // or: slotMinSizes: { "t1": 5, "t2": 4 },
  *
  *     // Optional: maximum people allowed in each slot
- *     // Missing slot id → no maximum
- *     slotMaxSizes: {
- *       "t1": 5,
- *       "t2": 5
- *     },
+ *     // - a number  → same maximum for EVERY slot
+ *     // - an object → per-slot maximums
+ *     // - missing / missing slot id → default:
+ *     //     ceil(number of people / number of slots)
+ *     //   (so total seats can still fit everyone)
+ *     slotMaxSizes: 5,
+ *     // or: slotMaxSizes: { "t1": 5, "t2": 6 },
  *
  *     // How many slots one person may hold (project default)
  *     defaultSlotsPerPerson: 1,
@@ -148,16 +149,18 @@ function checkSlotSizes(assignments, config, reasons) {
     return;
   }
 
-  // If these maps are missing, treat them as empty objects.
-  let minSizes = config.slotMinSizes;
-  let maxSizes = config.slotMaxSizes;
+  const minSizes = config.slotMinSizes;
+  const maxSizes = config.slotMaxSizes;
 
-  if (minSizes === undefined) {
-    minSizes = {};
-  }
+  // Default max when the user did not set one:
+  //   people ÷ slots, rounded UP so there are enough seats in total.
+  // Example: 10 people, 3 slots → default max 4 per slot.
+  const personCount = Object.keys(assignments).length;
+  const slotCount = slotIds.length;
+  let defaultMaxSize = undefined;
 
-  if (maxSizes === undefined) {
-    maxSizes = {};
+  if (slotCount > 0) {
+    defaultMaxSize = Math.ceil(personCount / slotCount);
   }
 
   for (let i = 0; i < slotIds.length; i = i + 1) {
@@ -165,8 +168,8 @@ function checkSlotSizes(assignments, config, reasons) {
     const count = getPeopleInSlot(assignments, slotId).length;
 
     // ----- minimum -----
-    // If there is no min listed for this slot, we require nothing (min = 0).
-    let minSize = minSizes[slotId];
+    // If there is no min for this slot, we require nothing (min = 0).
+    let minSize = sizeForSlot(minSizes, slotId);
 
     if (minSize === undefined) {
       minSize = 0;
@@ -180,8 +183,12 @@ function checkSlotSizes(assignments, config, reasons) {
     }
 
     // ----- maximum -----
-    // If there is no max listed, there is no upper limit for this check.
-    const maxSize = maxSizes[slotId];
+    // Use the configured max when present; otherwise the people/slots default.
+    let maxSize = sizeForSlot(maxSizes, slotId);
+
+    if (maxSize === undefined) {
+      maxSize = defaultMaxSize;
+    }
 
     if (maxSize !== undefined) {
       if (count > maxSize) {
@@ -192,6 +199,32 @@ function checkSlotSizes(assignments, config, reasons) {
       }
     }
   }
+}
+
+/**
+ * Read a size for one slot from config.
+ *
+ * sizes can be:
+ *   - a number  → use that same value for every slot
+ *   - an object → use sizes[slotId] (may be undefined)
+ *   - undefined → no size configured
+ *
+ * @param {number|Object|undefined} sizes
+ * @param {string} slotId
+ * @returns {number|undefined}
+ */
+function sizeForSlot(sizes, slotId) {
+  if (sizes === undefined) {
+    return undefined;
+  }
+
+  // Same size for every slot: slotMinSizes: 5
+  if (typeof sizes === "number") {
+    return sizes;
+  }
+
+  // Per-slot map: slotMinSizes: { "t1": 5, "t2": 4 }
+  return sizes[slotId];
 }
 
 /**
