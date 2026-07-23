@@ -17,7 +17,7 @@ Organizing people is hard: preferences, requests, balance, availability, role ca
    - **Separate** — keep matched people apart / spread a value
    - **Limit** — min/max counts per slot for a filtered group (e.g. max 2 keepers)
    - **Balance** — even out a number across slots (e.g. skill)
-4. **Prioritize** — Priority 1–100; mark rules **hard** (never break) or soft (best effort, partial credit OK).
+4. **Prioritize** — Priority 1–10; mark rules **hard** (never break) or soft (best effort, partial credit OK).
 5. **Generate** — Same search every time: legal start, improve with small moves, offer alternatives.
 6. **Review & export** — See results by slot and by person, check how each rule scored, tweak, download CSV.
 

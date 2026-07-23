@@ -18,7 +18,7 @@ You customize three things:
 - You set how many slots a person may hold (often exactly one for teams; several for event lists).
 - You set how many people each slot should hold (min and max).
 - **Hard rules** must never be broken. If they cannot all be met, generation fails with a clear error.
-- **Soft rules** have a priority from 1–100. The generator tries to satisfy higher-priority soft rules more, but can trade them off.
+- **Soft rules** have a priority from 1–10. The generator tries to satisfy higher-priority soft rules more, but can trade them off.
 - Soft rules are scored by how well they are met (not just yes/no). Partial success still counts.
 
 When everyone is limited to one slot, you get normal “split into teams.” When people can hold several slots, you get things like “each person on a few events.” Same engine either way.
@@ -77,7 +77,7 @@ Every rule uses the same short flow:
    - *Cluster or Separate* - exact vs partial match
    - *Limit* - min/max counts
    - *Balance* - None
-4. **Set priority (1–100) and hard vs soft**
+4. **Set priority (1–10) and hard vs soft**
 
 ---
 

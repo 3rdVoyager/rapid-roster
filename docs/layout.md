@@ -253,7 +253,7 @@ Left: list of rules. Right: editor for the selected rule (or empty state).
 2. Choose **data** (columns / ranges; preview matches when useful)
 3. Optional **filter**
 4. **Options** (exact vs partial; limit min/max; balance none)
-5. **Priority** (1–100) and **hard / soft**
+5. **Priority** (1–10) and **hard / soft**
 
 ### Rules controls
 
@@ -264,7 +264,7 @@ Left: list of rules. Right: editor for the selected rule (or empty state).
 | Type radios | Switch type (may reset options that no longer apply) |
 | Data picker | Simple: multi-select of column names; advanced cell ranges can wait if needed |
 | Filter | Single text value applied to selected data |
-| Priority | Number input 1–100 |
+| Priority | Number input 1–10 |
 | Hard checkbox | Hard = must never break |
 | Save rule | Write into project.rules |
 | Delete rule | Confirm, remove from list |

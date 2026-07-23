@@ -162,7 +162,7 @@ project = {
       id, type,           // cluster | separate | limit | balance
       data, filter,       // which columns / cells
       options,            // exact/partial, min/max, ...
-      priority,           // 1–100
+      priority,           // 1–10
       hard: true/false
     }
   ],

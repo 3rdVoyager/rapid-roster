@@ -35,7 +35,7 @@
   const result = checkLegal(a, {
     slotIds: ["s1", "s2", "s3"],
     slotMinSizes: 2,
-    slotMaxSizes: 5,
+    slotMaxSizes: 10,
     defaultSlotsPerPerson: 1,
     conflictGroups: []
   });
@@ -78,8 +78,8 @@
       s3: { name: "Southwest" },
     },
     rules: [
-      { id: "R1", type: "balance", hard: false, priority: 85, personAttribute: "skill" },
-      { id: "R2", type: "cluster", hard: false, priority: 75,
+      { id: "R1", type: "balance", hard: false, priority: 9, personAttribute: "skill" },
+      { id: "R2", type: "cluster", hard: false, priority: 8,
         shape: "peopleTogether", personAttribute: "school", match: "exact" }
     ]
   });

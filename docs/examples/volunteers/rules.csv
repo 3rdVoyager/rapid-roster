@@ -1,3 +1,3 @@
 rule,type,data,filter,options,priority,hard
-R1,Cluster,people.strengths ↔ slots.needed_strengths,,partial,80,no
-R2,Cluster,people.availability ↔ slots.time_block,,exact,60,no
+R1,Cluster,people.strengths ↔ slots.needed_strengths,,partial,8,no
+R2,Cluster,people.availability ↔ slots.time_block,,exact,6,no

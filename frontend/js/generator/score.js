@@ -15,7 +15,7 @@
  *
  *   ruleScore = priority × howWellMet
  *
- * - priority is 1–100 (higher = more important)
+ * - priority is 1–10 (higher = more important)
  * - howWellMet is a number from 0 (not met) to 1 (fully met)
  * - Partial success still counts (for example 0.6)
  *
@@ -57,14 +57,14 @@
  *         id: "R1",
  *         type: "balance",
  *         hard: false,
- *         priority: 85,
+ *         priority: 9,
  *         personAttribute: "skill"
  *       },
  *       {
  *         id: "R2",
  *         type: "cluster",
  *         hard: false,
- *         priority: 75,
+ *         priority: 8,
  *         shape: "peopleTogether",   // same attribute → prefer same slot
  *         personAttribute: "school",
  *         match: "exact"             // or "partial" for ; -separated tags
@@ -73,7 +73,7 @@
  *         id: "R3",
  *         type: "cluster",
  *         hard: false,
- *         priority: 70,
+ *         priority: 7,
  *         shape: "personMatchesSlot", // person value ↔ slot value
  *         personAttribute: "availability",
  *         slotAttribute: "practice_night",
@@ -83,7 +83,7 @@
  *         id: "R4",
  *         type: "limit",
  *         hard: false,
- *         priority: 50,
+ *         priority: 5,
  *         personAttribute: "role",
  *         filterValue: "keeper",
  *         maxCount: 2
@@ -93,7 +93,7 @@
  *         id: "R5",
  *         type: "separate",
  *         hard: false,
- *         priority: 40,
+ *         priority: 4,
  *         personAttribute: "school",
  *         match: "exact"
  *       }
@@ -186,14 +186,14 @@ function scoreOneRule(assignments, scoreConfig, rule) {
 }
 
 /**
- * Read priority safely. Default to 50 if missing.
+ * Read priority safely. Default to 5 (middle of 1–10) if missing.
  *
  * @param {Object} rule
  * @returns {number}
  */
 function getPriority(rule) {
   if (rule.priority === undefined) {
-    return 50;
+    return 5;
   }
 
   return rule.priority;
