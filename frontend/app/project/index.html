@@ -286,114 +286,169 @@
             </div>
           </div>
 
-          <div class="rules-layout">
-            <div class="app-section" id="rule-list-panel">
-              <h2 class="app-section-title">Rule list</h2>
-              <ul class="rule-list" id="rule-list">
-                <li>
-                  <button class="rule-list-item is-selected" type="button" data-rule-id="R1">
-                    <strong>Balance skill</strong>
-                    <span class="rule-list-meta">Priority 9 · Soft</span>
-                  </button>
-                </li>
-                <li>
-                  <button class="rule-list-item" type="button" data-rule-id="R2">
-                    <strong>Cluster by school</strong>
-                    <span class="rule-list-meta">Priority 8 · Soft</span>
-                  </button>
-                </li>
-                <li>
-                  <button class="rule-list-item" type="button" data-rule-id="R4">
-                    <strong>Limit keepers</strong>
-                    <span class="rule-list-meta">
-                      Priority 9 · <span class="rule-hard-badge">Hard</span>
-                    </span>
-                  </button>
-                </li>
-              </ul>
-            </div>
+          <input
+            class="setup-tab-controls"
+            type="radio"
+            name="rules-tab"
+            id="rules-tab-editor"
+            checked
+          />
+          <input
+            class="setup-tab-controls"
+            type="radio"
+            name="rules-tab"
+            id="rules-tab-csv"
+          />
 
-            <div class="app-section" id="rule-editor">
-              <h2 class="app-section-title">Editor</h2>
-              <div class="rule-editor">
-                <div class="rule-editor-row">
-                  <span>Name</span>
-                  <input
-                    class="app-input"
-                    id="rule-name"
-                    type="text"
-                    value="Balance skill"
-                    placeholder="e.g. Balance skill"
-                    style="max-width: none"
-                  />
-                </div>
-                <div class="rule-editor-row">
-                  <span>Type</span>
-                  <div class="rule-type-grid" id="rule-type">
-                    <label><input type="radio" name="rule-type" value="cluster" /> Cluster</label>
-                    <label><input type="radio" name="rule-type" value="separate" /> Separate</label>
-                    <label><input type="radio" name="rule-type" value="limit" /> Limit</label>
-                    <label>
-                      <input type="radio" name="rule-type" value="balance" checked /> Balance
-                    </label>
-                  </div>
-                </div>
-                <div class="rule-editor-row">
-                  <span>Data</span>
-                  <select class="app-select" id="rule-data" style="max-width: none">
-                    <option>entries.skill</option>
-                    <option>entries.school</option>
-                    <option>entries.role</option>
-                  </select>
-                </div>
-                <div class="rule-editor-row">
-                  <span>Filter</span>
-                  <input class="app-input" id="rule-filter" type="text" placeholder="optional" />
-                </div>
-                <div class="rule-editor-row">
-                  <span>Priority</span>
-                  <input
-                    class="app-input"
-                    id="rule-priority"
-                    type="number"
-                    min="1"
-                    max="10"
-                    value="9"
-                  />
-                </div>
-                <div class="rule-editor-row">
-                  <span>Hard</span>
-                  <label>
-                    <input type="checkbox" id="rule-hard" />
-                    Must never break
-                  </label>
-                </div>
-                <div class="rule-editor-actions">
-                  <button class="button button-primary button-small" type="button" id="save-rule-btn">
-                    Save rule
-                  </button>
-                  <button class="button button-ghost button-small" type="button" id="delete-rule-btn">
-                    Delete rule
-                  </button>
-                </div>
-              </div>
-            </div>
+          <div class="app-subtabs" role="tablist" aria-label="Rules views">
+            <label class="app-subtab" for="rules-tab-editor">Editor</label>
+            <label class="app-subtab" for="rules-tab-csv">CSV table</label>
           </div>
 
-          <div class="app-section" id="conflict-groups-panel">
-            <div class="review-card-head">
-              <div>
-                <h2 class="app-section-title">Conflict groups</h2>
-                <p class="app-empty-hint" style="margin: 0.35rem 0 0">
-                  Slots in the same group cannot be held by the same entry at once
-                  (for example two overlapping events).
-                </p>
+          <div class="setup-panes">
+            <div class="setup-pane" id="rules-editor-pane">
+              <div class="rules-layout">
+                <div class="app-section" id="rule-list-panel">
+                  <h2 class="app-section-title">Rule list</h2>
+                  <ul class="rule-list" id="rule-list">
+                    <li>
+                      <p class="app-empty-hint">No rules yet. Click + Add rule or import a CSV.</p>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="app-section" id="rule-editor">
+                  <h2 class="app-section-title">Editor</h2>
+                  <div class="rule-editor">
+                    <div class="rule-editor-row">
+                      <span>Name</span>
+                      <input
+                        class="app-input"
+                        id="rule-name"
+                        type="text"
+                        value=""
+                        placeholder="e.g. Balance skill"
+                        style="max-width: none"
+                      />
+                    </div>
+                    <div class="rule-editor-row">
+                      <span>Type</span>
+                      <div class="rule-type-grid" id="rule-type">
+                        <label><input type="radio" name="rule-type" value="cluster" /> Cluster</label>
+                        <label><input type="radio" name="rule-type" value="separate" /> Separate</label>
+                        <label><input type="radio" name="rule-type" value="limit" /> Limit</label>
+                        <label>
+                          <input type="radio" name="rule-type" value="balance" checked /> Balance
+                        </label>
+                      </div>
+                    </div>
+                    <div class="rule-editor-row">
+                      <span>Data</span>
+                      <select class="app-select" id="rule-data" style="max-width: none">
+                        <option>entries.skill</option>
+                        <option>entries.school</option>
+                        <option>entries.role</option>
+                      </select>
+                    </div>
+                    <div class="rule-editor-row">
+                      <span>Filter</span>
+                      <input class="app-input" id="rule-filter" type="text" placeholder="optional" />
+                    </div>
+                    <div class="rule-editor-row">
+                      <span>Priority</span>
+                      <input
+                        class="app-input"
+                        id="rule-priority"
+                        type="number"
+                        min="1"
+                        max="10"
+                        value="5"
+                      />
+                    </div>
+                    <div class="rule-editor-row">
+                      <span>Hard</span>
+                      <label>
+                        <input type="checkbox" id="rule-hard" />
+                        Must never break
+                      </label>
+                    </div>
+                    <div class="rule-editor-actions">
+                      <button class="button button-primary button-small" type="button" id="save-rule-btn">
+                        Save rule
+                      </button>
+                      <button class="button button-ghost button-small" type="button" id="delete-rule-btn">
+                        Delete rule
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <button class="button button-ghost button-small" type="button" id="manage-conflicts-btn">
-                Manage…
-              </button>
+
+              <div class="app-section" id="conflict-groups-panel">
+                <div class="review-card-head">
+                  <div>
+                    <h2 class="app-section-title">Conflict groups</h2>
+                    <p class="app-empty-hint" style="margin: 0.35rem 0 0">
+                      Slots in the same group cannot be held by the same entry at once
+                      (for example two overlapping events).
+                    </p>
+                  </div>
+                  <button class="button button-ghost button-small" type="button" id="manage-conflicts-btn">
+                    Manage…
+                  </button>
+                </div>
+                <p class="app-empty-hint" id="conflict-groups-summary">No conflict groups yet.</p>
+              </div>
             </div>
-            <p class="app-empty-hint" id="conflict-groups-summary">No conflict groups yet.</p>
+
+            <div class="setup-pane" id="rules-csv-pane">
+              <div class="app-toolbar">
+                <button class="button button-primary button-small" type="button" id="import-rules-btn">
+                  <input type="file" id="import-rules-file" accept=".csv,text/csv" />
+                  <label for="import-rules-file">Import CSV</label>
+                </button>
+                <button class="button button-ghost button-small" type="button" id="clear-rules-btn">
+                  Clear
+                </button>
+                <span class="app-toolbar-spacer"></span>
+                <button class="button button-secondary button-small" type="button" id="add-rule-row-btn">
+                  + Add row
+                </button>
+                <button class="button button-ghost button-small" type="button" id="export-rules-csv-btn">
+                  Export CSV
+                </button>
+              </div>
+              <div class="app-table-wrap">
+                <table class="app-table" id="rules-table">
+                  <thead>
+                    <tr>
+                      <th>id</th>
+                      <th>name</th>
+                      <th>type</th>
+                      <th>data</th>
+                      <th>filter</th>
+                      <th>options</th>
+                      <th>priority</th>
+                      <th>hard</th>
+                      <th class="table-actions-col"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="rules-table-body">
+                    <tr>
+                      <td colspan="9">No rules yet. Import a CSV or add a row.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="app-empty-hint">
+                Same format as preset <code>rules.csv</code>:
+                <code>entries.skill</code>,
+                <code>entries.availability ↔ slots.practice_night</code>,
+                limit options like <code>max=2</code> / <code>min=1</code>, hard
+                <code>yes</code>/<code>no</code>.
+                <a href="/presets/blank/rules.csv" download="rules-template.csv">Download blank template</a>.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -580,7 +635,7 @@
             <div>
               <h1>Results</h1>
               <p class="app-panel-lead">
-                Review by slot or entry, check satisfaction, then export.
+                Review who landed in each slot, or flip to each entry’s assignments — then export.
               </p>
             </div>
             <button class="button button-secondary button-small" type="button" id="export-csv-btn">
@@ -597,57 +652,11 @@
             <div class="app-pill-row" id="results-view-toggle" role="group" aria-label="View mode">
               <button class="app-pill is-active" type="button" data-view="by-slot">By slot</button>
               <button class="app-pill" type="button" data-view="by-entry">By entry</button>
-              <button class="app-pill" type="button" data-view="satisfaction">
-                Satisfaction
-              </button>
             </div>
           </div>
 
           <div class="app-section" id="results-main">
-            <div class="results-block" id="results-by-slot">
-              <div class="results-slot-group">
-                <h3>Team A <span class="app-pill">10 entries</span></h3>
-                <ul class="results-entries">
-                  <li>Ava Chen · skill 8</li>
-                  <li>Paul Ortiz · skill 10</li>
-                  <li>… sample list</li>
-                </ul>
-              </div>
-              <div class="results-slot-group">
-                <h3>Team B <span class="app-pill">8 entries</span></h3>
-                <ul class="results-entries">
-                  <li>Noah Patel · skill 5</li>
-                  <li>… sample list</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="app-section" id="results-tweak">
-            <h2 class="app-section-title">Light tweak</h2>
-            <div class="global-setup-grid">
-              <div class="app-field">
-                <label for="tweak-entry">Entry</label>
-                <select class="app-select" id="tweak-entry">
-                  <option>Ava Chen</option>
-                  <option>Noah Patel</option>
-                </select>
-              </div>
-              <div class="app-field">
-                <label for="tweak-slot">Move to slot</label>
-                <select class="app-select" id="tweak-slot">
-                  <option>Team A</option>
-                  <option>Team B</option>
-                  <option>Team C</option>
-                </select>
-              </div>
-              <div class="app-field">
-                <span class="app-label">&nbsp;</span>
-                <button class="button button-primary button-small" type="button" id="tweak-move-btn">
-                  Move
-                </button>
-              </div>
-            </div>
+            <p class="app-empty-hint">Run Generate first, then pick an option here.</p>
           </div>
         </section>
       </main>

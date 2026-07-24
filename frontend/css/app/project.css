@@ -290,14 +290,26 @@ html {
 }
 
 #setup-tab-entries:checked ~ .setup-panes #entries-pane,
-#setup-tab-slots:checked ~ .setup-panes #slots-pane {
+#setup-tab-slots:checked ~ .setup-panes #slots-pane,
+#rules-tab-editor:checked ~ .setup-panes #rules-editor-pane,
+#rules-tab-csv:checked ~ .setup-panes #rules-csv-pane {
   display: block;
 }
 
 #setup-tab-entries:checked ~ .app-subtabs label[for="setup-tab-entries"],
-#setup-tab-slots:checked ~ .app-subtabs label[for="setup-tab-slots"] {
+#setup-tab-slots:checked ~ .app-subtabs label[for="setup-tab-slots"],
+#rules-tab-editor:checked ~ .app-subtabs label[for="rules-tab-editor"],
+#rules-tab-csv:checked ~ .app-subtabs label[for="rules-tab-csv"] {
   color: var(--text-color);
   background: color-mix(in srgb, var(--color-blue) 28%, var(--color-navy));
+}
+
+#rules-editor-pane .app-section {
+  margin-top: 0;
+}
+
+#rules-editor-pane #conflict-groups-panel {
+  margin-top: 1rem;
 }
 
 .setup-tab-controls {
@@ -501,45 +513,82 @@ html {
   padding-bottom: 0;
 }
 
-.results-slot-group h3 {
-  margin: 0 0 0.4rem;
-  font-size: 1rem;
+.results-legend {
+  margin: 0 0 1rem;
+  color: var(--text-color-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
 }
 
-.results-slot-group h3 .app-pill {
-  margin-left: 0.35rem;
-  color: var(--color-blue-bright);
-  background: color-mix(in srgb, var(--color-blue) 16%, transparent);
-  border-color: color-mix(in srgb, var(--color-blue) 35%, transparent);
-}
-
-.results-entries {
-  display: grid;
-  /*
-    Columns: person name | flexible spacer | one column per attribute pill.
-    --attr-count is set inline from JS so the grid knows how many pill columns.
-    max-content = column as wide as its widest cell (keeps pills aligned).
-  */
-  grid-template-columns:
-    max-content
-    minmax(0.75rem, 1fr)
-    repeat(var(--attr-count, 0), max-content);
-  column-gap: 0.45rem;
-  row-gap: 0.45rem;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow-x: auto;
+.results-legend strong {
+  color: var(--text-color);
+  font-weight: 600;
 }
 
 /*
-  display: contents — the <li> itself does not draw a box.
-  Its children (name, spacer, pills) become direct grid items of .results-entries.
-  That lets every person's attributes line up in the same columns.
+  One grid for the whole By-slot view so attribute columns line up
+  across every slot group (not only within one group).
 */
-.results-entry {
-  display: contents;
+.results-unified {
+  display: grid;
+  grid-template-columns:
+    max-content
+    repeat(var(--attr-count, 0), max-content);
+  column-gap: 0.5rem;
+  row-gap: 0.4rem;
+  align-items: center;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.results-col-label {
+  color: var(--text-color-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.results-col-label-attrs {
+  color: color-mix(in srgb, var(--text-color-muted) 85%, var(--color-yellow));
+}
+
+.results-slot-banner {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.65rem;
+  margin-top: 0.85rem;
+  padding: 0.55rem 0.75rem;
+  background: color-mix(in srgb, var(--color-blue) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-blue) 35%, transparent);
+  border-radius: 10px;
+}
+
+.results-slot-banner:first-of-type {
+  margin-top: 0.35rem;
+}
+
+.results-slot-kicker {
+  color: var(--color-blue-bright);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.results-slot-banner strong {
+  color: var(--text-color);
+  font-size: 1.05rem;
+}
+
+.results-slot-banner .app-pill {
+  color: var(--color-blue-bright);
+  background: color-mix(in srgb, var(--color-blue) 16%, transparent);
+  border-color: color-mix(in srgb, var(--color-blue) 35%, transparent);
 }
 
 .results-entry-name {
@@ -550,10 +599,6 @@ html {
   white-space: nowrap;
 }
 
-.results-entry-spacer {
-  min-width: 0;
-}
-
 .results-attr-pill {
   display: inline-flex;
   align-items: baseline;
@@ -562,9 +607,9 @@ html {
   box-sizing: border-box;
   width: 100%;
   padding: 0.28rem 0.55rem;
-  background: rgb(255 255 255 / 0.04);
-  border: 1px solid rgb(255 255 255 / 0.1);
-  border-radius: 999px;
+  background: rgb(255 255 255 / 0.03);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 8px;
   font-size: 0.8rem;
   line-height: 1.3;
 }
@@ -578,7 +623,7 @@ html {
 }
 
 .results-attr-label {
-  color: color-mix(in srgb, var(--color-yellow) 35%, var(--text-color-muted));
+  color: var(--text-color-muted);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -586,14 +631,86 @@ html {
 }
 
 .results-attr-value {
-  color: color-mix(in srgb, var(--text-color) 82%, var(--text-color-muted));
+  color: color-mix(in srgb, var(--text-color) 75%, var(--text-color-muted));
   font-weight: 600;
 }
 
 .results-entry-empty {
   grid-column: 1 / -1;
   color: var(--text-color-muted);
-  padding: 0.35rem 0;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* By entry view */
+.results-by-entry-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.results-entry-card {
+  padding: 0.85rem 1rem;
+  background: color-mix(in srgb, var(--card-bg-color) 88%, black);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 12px;
+}
+
+.results-entry-card .results-entry-name {
+  margin-bottom: 0.55rem;
+  font-size: 1.05rem;
+}
+
+.results-assign-row,
+.results-attrs-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.45rem 0.75rem;
+  margin-top: 0.45rem;
+}
+
+.results-field-label {
+  flex: 0 0 5.5rem;
+  color: var(--text-color-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding-top: 0.35rem;
+}
+
+.results-assign-pills,
+.results-attr-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex: 1 1 12rem;
+}
+
+.results-assign-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  color: var(--text-color);
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--color-blue) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-blue) 45%, transparent);
+  border-radius: 999px;
+}
+
+.results-assign-empty {
+  color: var(--text-color-muted);
+  font-size: 0.9rem;
+  padding-top: 0.25rem;
+}
+
+.results-attr-pills .results-attr-pill {
+  width: auto;
+}
+
+.results-attr-pills .results-attr-pill.is-empty {
+  display: none;
 }
 
 @media (max-width: 900px) {

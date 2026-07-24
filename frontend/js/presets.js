@@ -194,6 +194,18 @@ function buildConflictGroupsFromSlots(slotsTable) {
   return groups;
 }
 
+/** Column order for rules.csv import / export / table view. */
+export const RULES_CSV_HEADERS = [
+  "id",
+  "name",
+  "type",
+  "data",
+  "filter",
+  "options",
+  "priority",
+  "hard"
+];
+
 /**
  * Turn rules.csv text into project.rules objects the generator understands.
  *
@@ -227,6 +239,57 @@ export function parseRulesCsv(text) {
 }
 
 /**
+ * Turn rule objects back into CSV text (same columns as parseRulesCsv).
+ *
+ * @param {Object[]} rules
+ * @returns {string}
+ */
+export function serializeRulesCsv(rules) {
+  let text = RULES_CSV_HEADERS.join(",");
+
+  if (rules === undefined || rules === null) {
+    return text + "\n";
+  }
+
+  for (let i = 0; i < rules.length; i = i + 1) {
+    const cells = ruleToCsvCells(rules[i]);
+    const values = [];
+
+    for (let h = 0; h < RULES_CSV_HEADERS.length; h = h + 1) {
+      values.push(cells[RULES_CSV_HEADERS[h]]);
+    }
+
+    text = text + "\n" + values.join(",");
+  }
+
+  return text + "\n";
+}
+
+/**
+ * Flat CSV cells for one rule (keys match RULES_CSV_HEADERS).
+ *
+ * @param {Object} rule
+ * @returns {Object}
+ */
+export function ruleToCsvCells(rule) {
+  let hard = "no";
+  if (rule.hard === true) {
+    hard = "yes";
+  }
+
+  return {
+    id: rule.id !== undefined ? String(rule.id) : "",
+    name: rule.name !== undefined ? String(rule.name) : "",
+    type: formatRuleTypeLabel(rule.type),
+    data: ruleDataToCsv(rule),
+    filter: ruleFilterToCsv(rule),
+    options: ruleOptionsToCsv(rule),
+    priority: rule.priority !== undefined ? String(rule.priority) : "5",
+    hard: hard
+  };
+}
+
+/**
  * @param {string[]} headers
  * @param {string[]} values
  * @returns {Object}
@@ -249,7 +312,7 @@ function rowToObject(headers, values) {
  * @param {Object} cells - lowercased header keys
  * @returns {Object|null}
  */
-function ruleFromCsvCells(cells) {
+export function ruleFromCsvCells(cells) {
   const typeRaw = String(cells.type || "").trim().toLowerCase();
   let type = typeRaw;
 
@@ -291,6 +354,86 @@ function ruleFromCsvCells(cells) {
   applyLimitOptions(rule, filter, options);
 
   return rule;
+}
+
+/**
+ * Capitalize type for CSV display (Balance, Cluster, …).
+ *
+ * @param {string} type
+ * @returns {string}
+ */
+function formatRuleTypeLabel(type) {
+  if (type === "cluster") {
+    return "Cluster";
+  }
+  if (type === "separate") {
+    return "Separate";
+  }
+  if (type === "limit") {
+    return "Limit";
+  }
+  if (type === "balance") {
+    return "Balance";
+  }
+  if (type === undefined || type === null) {
+    return "";
+  }
+  return String(type);
+}
+
+/**
+ * @param {Object} rule
+ * @returns {string}
+ */
+function ruleDataToCsv(rule) {
+  if (rule.shape === "entryMatchesSlot") {
+    const left = rule.entryAttribute || "";
+    const right = rule.slotAttribute || "";
+    return "entries." + left + " ↔ slots." + right;
+  }
+
+  if (rule.entryAttribute !== undefined && rule.entryAttribute !== "") {
+    return "entries." + rule.entryAttribute;
+  }
+
+  return "";
+}
+
+/**
+ * @param {Object} rule
+ * @returns {string}
+ */
+function ruleFilterToCsv(rule) {
+  if (rule.type === "limit" && rule.filterValue !== undefined) {
+    return String(rule.filterValue);
+  }
+  return "";
+}
+
+/**
+ * @param {Object} rule
+ * @returns {string}
+ */
+function ruleOptionsToCsv(rule) {
+  if (rule.type === "limit") {
+    const bits = [];
+
+    if (rule.maxCount !== undefined && Number.isNaN(rule.maxCount) === false) {
+      bits.push("max=" + rule.maxCount);
+    }
+
+    if (rule.minCount !== undefined && Number.isNaN(rule.minCount) === false) {
+      bits.push("min=" + rule.minCount);
+    }
+
+    return bits.join(";");
+  }
+
+  if (rule.match === "partial" || rule.match === "exact") {
+    return rule.match;
+  }
+
+  return "";
 }
 
 /**
@@ -417,4 +560,4 @@ export function downloadTemplateFile(url, filename) {
   link.click();
   document.body.removeChild(link);
 }
-
+

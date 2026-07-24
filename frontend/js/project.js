@@ -68,17 +68,25 @@ import {
 
 import { buildLegalConfig, buildScoreConfig } from "/js/project-config.js";
 import { runSearch, mergeOptions } from "/js/generator/search.js";
-import { getEntriesInSlot } from "/js/generator/placement.js";
+import { getEntriesInSlot, getSlotsForEntry } from "/js/generator/placement.js";
 import { parseCsvText, csvToTable } from "/js/csv.js";
 import {
   PRESET_CATALOG,
   getPresetInfo,
   getPresetTemplateUrls,
-  buildProjectFromPreset
+  buildProjectFromPreset,
+  parseRulesCsv,
+  serializeRulesCsv,
+  ruleToCsvCells,
+  ruleFromCsvCells,
+  RULES_CSV_HEADERS
 } from "/js/presets.js";
 
 /** Valid workflow panel ids (must match section id= and nav href="#..."). */
 const PANEL_IDS = ["setup", "rules", "review", "generate", "results"];
+
+/** Results panel: "by-slot" or "by-entry". */
+let resultsViewMode = "by-slot";
 
 /** Column types the user can pick in Setup headers. */
 const ENTRIES_COLUMN_TYPES = ["id", "number", "time", "text", "ignore"];
@@ -127,6 +135,7 @@ function renderAll() {
   renderSlotsTable(project);
   renderGlobalSetup(project);
   renderRuleList(project);
+  renderRulesTable(project);
   renderReview(project);
   renderGenerateOptions(project);
   renderResults(project);
@@ -374,6 +383,66 @@ function renderRuleList(project) {
   }
 }
 
+/**
+ * CSV projection of project.rules (bulk view).
+ *
+ * @param {Object} project
+ */
+function renderRulesTable(project) {
+  const body = document.getElementById("rules-table-body");
+
+  if (body === null) {
+    return;
+  }
+
+  let html = "";
+
+  for (let r = 0; r < project.rules.length; r = r + 1) {
+    const cells = ruleToCsvCells(project.rules[r]);
+    html = html + '<tr data-row-index="' + r + '">';
+
+    for (let h = 0; h < RULES_CSV_HEADERS.length; h = h + 1) {
+      const key = RULES_CSV_HEADERS[h];
+      let value = cells[key];
+
+      if (value === undefined || value === null) {
+        value = "";
+      }
+
+      html =
+        html +
+        "<td>" +
+        '<input class="table-cell-input" type="text" data-table="rules" data-row-index="' +
+        r +
+        '" data-col-key="' +
+        escapeHtml(key) +
+        '" value="' +
+        escapeHtml(String(value)) +
+        '" />' +
+        "</td>";
+    }
+
+    html =
+      html +
+      '<td class="table-actions-col">' +
+      '<button class="button button-ghost button-small table-row-delete" type="button" data-table="rules" data-row-index="' +
+      r +
+      '" aria-label="Delete row">×</button>' +
+      "</td>";
+
+    html = html + "</tr>";
+  }
+
+  if (project.rules.length === 0) {
+    html =
+      '<tr><td colspan="' +
+      (RULES_CSV_HEADERS.length + 1) +
+      '">No rules yet. Import a CSV or add a row.</td></tr>';
+  }
+
+  body.innerHTML = html;
+}
+
 function fillRuleEditor(rule) {
   const nameInput = document.getElementById("rule-name");
   const priorityInput = document.getElementById("rule-priority");
@@ -609,6 +678,8 @@ function renderResults(project) {
     return;
   }
 
+  syncResultsViewToggle();
+
   if (project.results === null || project.results.options === undefined) {
     main.innerHTML =
       '<p class="app-empty-hint">Run Generate first, then pick an option here.</p>';
@@ -660,55 +731,18 @@ function renderResults(project) {
     }
   }
 
-  const slotIds = [];
-  for (let i = 0; i < project.slots.rows.length; i = i + 1) {
-    slotIds.push(project.slots.rows[i].id);
-  }
-
-  let html = '<div class="results-block" id="results-by-slot">';
   const attrColumns = getResultAttrColumns(project);
+  let html = "";
 
-  for (let s = 0; s < slotIds.length; s = s + 1) {
-    const slotId = slotIds[s];
-    const slotRow = findSlotRow(project, slotId);
-    let slotName = slotId;
-
-    if (slotRow !== null && slotRow.cells.name !== undefined) {
-      slotName = slotRow.cells.name;
-    }
-
-    const entryIds = getEntriesInSlot(selected.assignments, slotId);
-
-    html =
-      html +
-      '<div class="results-slot-group">' +
-      "<h3>" +
-      escapeHtml(String(slotName)) +
-      ' <span class="app-pill">' +
-      entryIds.length +
-      " entries</span></h3>" +
-      '<ul class="results-entries" style="--attr-count: ' +
-      attrColumns.length +
-      '">';
-
-    for (let p = 0; p < entryIds.length; p = p + 1) {
-      const entryId = entryIds[p];
-      const entryRow = findEntryRow(project, entryId);
-      html =
-        html +
-        renderEntryResultItem(project, entryId, entryRow, attrColumns);
-    }
-
-    if (entryIds.length === 0) {
-      html = html + '<li class="results-entry-empty">(empty)</li>';
-    }
-
-    html = html + "</ul></div>";
+  if (resultsViewMode === "by-entry") {
+    html = renderResultsByEntry(project, selected, attrColumns);
+  } else {
+    html = renderResultsBySlot(project, selected, attrColumns);
   }
 
   html =
     html +
-    '</div><p class="app-empty-hint">Total score: ' +
+    '<p class="app-empty-hint">Total score: ' +
     formatScore(selected.totalScore) +
     "</p>";
 
@@ -716,22 +750,217 @@ function renderResults(project) {
 }
 
 /**
- * One person row in Results: name on the left, attribute bubbles
- * on the right (same column order for every person so widths line up).
+ * Highlight the active By slot / By entry pill.
+ */
+function syncResultsViewToggle() {
+  const toggle = document.getElementById("results-view-toggle");
+
+  if (toggle === null) {
+    return;
+  }
+
+  const buttons = toggle.querySelectorAll("[data-view]");
+
+  for (let i = 0; i < buttons.length; i = i + 1) {
+    const button = buttons[i];
+    const view = button.getAttribute("data-view");
+
+    if (view === resultsViewMode) {
+      button.classList.add("is-active");
+    } else {
+      button.classList.remove("is-active");
+    }
+  }
+}
+
+/**
+ * By slot: one shared grid so attribute columns line up across every slot.
+ * Slot banners are the assignment; pills are other spreadsheet fields.
  *
  * @param {Object} project
+ * @param {Object} selected - one result option
+ * @param {Object[]} attrColumns
+ * @returns {string}
+ */
+function renderResultsBySlot(project, selected, attrColumns) {
+  let html =
+    '<p class="results-legend">' +
+    "<strong>Assignment</strong> = the slot heading. " +
+    "<strong>Attributes</strong> = other fields from your entries sheet (preferences, ids, …)." +
+    "</p>";
+
+  html =
+    html +
+    '<div class="results-unified" style="--attr-count: ' +
+    attrColumns.length +
+    '">';
+
+  // Column labels (one shared header for the whole view).
+  html = html + '<div class="results-col-label">Entry</div>';
+
+  if (attrColumns.length > 0) {
+    html =
+      html +
+      '<div class="results-col-label results-col-label-attrs" style="grid-column: 2 / -1">' +
+      "Attributes" +
+      "</div>";
+  }
+
+  for (let s = 0; s < project.slots.rows.length; s = s + 1) {
+    const slotRow = project.slots.rows[s];
+    const slotId = slotRow.id;
+    let slotName = slotId;
+
+    if (slotRow.cells.name !== undefined) {
+      slotName = slotRow.cells.name;
+    }
+
+    const entryIds = getEntriesInSlot(selected.assignments, slotId);
+
+    html =
+      html +
+      '<div class="results-slot-banner">' +
+      '<span class="results-slot-kicker">Assigned slot</span>' +
+      "<strong>" +
+      escapeHtml(String(slotName)) +
+      "</strong>" +
+      '<span class="app-pill">' +
+      entryIds.length +
+      " entries</span>" +
+      "</div>";
+
+    for (let p = 0; p < entryIds.length; p = p + 1) {
+      const entryId = entryIds[p];
+      const entryRow = findEntryRow(project, entryId);
+      html = html + renderResultsEntryRow(entryId, entryRow, attrColumns);
+    }
+
+    if (entryIds.length === 0) {
+      html =
+        html +
+        '<div class="results-entry-empty">No entries assigned here.</div>';
+    }
+  }
+
+  html = html + "</div>";
+  return html;
+}
+
+/**
+ * By entry: each person/item with their assigned slot(s), then attributes.
+ *
+ * @param {Object} project
+ * @param {Object} selected
+ * @param {Object[]} attrColumns
+ * @returns {string}
+ */
+function renderResultsByEntry(project, selected, attrColumns) {
+  let html =
+    '<p class="results-legend">' +
+    "<strong>Assigned slots</strong> are highlighted. Attributes are other sheet fields." +
+    "</p>";
+
+  html = html + '<div class="results-by-entry-list">';
+
+  for (let i = 0; i < project.entries.rows.length; i = i + 1) {
+    const entryRow = project.entries.rows[i];
+    const entryId = entryRow.id;
+    let displayName = entryId;
+
+    if (entryRow.cells.name !== undefined && entryRow.cells.name !== "") {
+      displayName = entryRow.cells.name;
+    }
+
+    const slotIds = getSlotsForEntry(selected.assignments, entryId);
+
+    let slotPills = "";
+
+    for (let s = 0; s < slotIds.length; s = s + 1) {
+      const slotId = slotIds[s];
+      const slotRow = findSlotRow(project, slotId);
+      let slotName = slotId;
+
+      if (slotRow !== null && slotRow.cells.name !== undefined) {
+        slotName = slotRow.cells.name;
+      }
+
+      slotPills =
+        slotPills +
+        '<span class="results-assign-pill">' +
+        escapeHtml(String(slotName)) +
+        "</span>";
+    }
+
+    if (slotIds.length === 0) {
+      slotPills = '<span class="results-assign-empty">Unassigned</span>';
+    }
+
+    html =
+      html +
+      '<div class="results-entry-card">' +
+      '<div class="results-entry-name">' +
+      escapeHtml(String(displayName)) +
+      "</div>" +
+      '<div class="results-assign-row">' +
+      '<span class="results-field-label">Assigned</span>' +
+      '<div class="results-assign-pills">' +
+      slotPills +
+      "</div>" +
+      "</div>";
+
+    if (attrColumns.length > 0) {
+      html =
+        html +
+        '<div class="results-attrs-row">' +
+        '<span class="results-field-label">Attributes</span>' +
+        '<div class="results-attr-pills">' +
+        renderAttrPillsHtml(entryRow, attrColumns) +
+        "</div>" +
+        "</div>";
+    }
+
+    html = html + "</div>";
+  }
+
+  if (project.entries.rows.length === 0) {
+    html = html + '<p class="app-empty-hint">No entries in this project.</p>';
+  }
+
+  html = html + "</div>";
+  return html;
+}
+
+/**
+ * One entry row inside the unified by-slot grid (display:contents).
+ *
  * @param {string} entryId
  * @param {Object|null} entryRow
- * @param {Object[]} attrColumns - people columns to show as bubbles
- * @returns {string} HTML
+ * @param {Object[]} attrColumns
+ * @returns {string}
  */
-function renderEntryResultItem(project, entryId, entryRow, attrColumns) {
+function renderResultsEntryRow(entryId, entryRow, attrColumns) {
   let displayName = entryId;
 
   if (entryRow !== null && entryRow.cells.name !== undefined) {
     displayName = entryRow.cells.name;
   }
 
+  return (
+    '<div class="results-entry-name">' +
+    escapeHtml(String(displayName)) +
+    "</div>" +
+    renderAttrPillsHtml(entryRow, attrColumns)
+  );
+}
+
+/**
+ * Attribute pills (and empty placeholders for grid alignment).
+ *
+ * @param {Object|null} entryRow
+ * @param {Object[]} attrColumns
+ * @returns {string}
+ */
+function renderAttrPillsHtml(entryRow, attrColumns) {
   let bubbles = "";
 
   for (let c = 0; c < attrColumns.length; c = c + 1) {
@@ -757,20 +986,11 @@ function renderEntryResultItem(project, entryId, entryRow, attrColumns) {
         "</span>" +
         "</span>";
     } else {
-      // Empty cell keeps the grid column so neighbors stay aligned.
       bubbles = bubbles + '<span class="results-attr-pill is-empty"></span>';
     }
   }
 
-  return (
-    '<li class="results-entry">' +
-    '<div class="results-entry-name">' +
-    escapeHtml(String(displayName)) +
-    "</div>" +
-    '<div class="results-entry-spacer" aria-hidden="true"></div>' +
-    bubbles +
-    "</li>"
-  );
+  return bubbles;
 }
 
 /**
@@ -876,6 +1096,38 @@ function wireControls() {
     slotsTable.addEventListener("click", onSetupTableClick);
   }
 
+  const importRulesFile = document.getElementById("import-rules-file");
+  if (importRulesFile !== null) {
+    importRulesFile.addEventListener("change", onImportRulesFileChange);
+  }
+
+  const clearRulesBtn = document.getElementById("clear-rules-btn");
+  if (clearRulesBtn !== null) {
+    clearRulesBtn.addEventListener("click", onClearRulesClick);
+  }
+
+  const addRuleRowBtn = document.getElementById("add-rule-row-btn");
+  if (addRuleRowBtn !== null) {
+    addRuleRowBtn.addEventListener("click", onAddRuleRowClick);
+  }
+
+  const exportRulesCsvBtn = document.getElementById("export-rules-csv-btn");
+  if (exportRulesCsvBtn !== null) {
+    exportRulesCsvBtn.addEventListener("click", onExportRulesCsvClick);
+  }
+
+  const addRuleBtn = document.getElementById("add-rule-btn");
+  if (addRuleBtn !== null) {
+    addRuleBtn.addEventListener("click", onAddRuleClick);
+  }
+
+  const rulesTable = document.getElementById("rules-table");
+  if (rulesTable !== null) {
+    rulesTable.addEventListener("input", onRulesTableInput);
+    rulesTable.addEventListener("change", onRulesTableBlurSync);
+    rulesTable.addEventListener("click", onRulesTableClick);
+  }
+
   const slotsPerEntry = document.getElementById("slots-per-entry");
   if (slotsPerEntry !== null) {
     slotsPerEntry.addEventListener("change", onSlotsPerEntryChange);
@@ -901,6 +1153,11 @@ function wireControls() {
   const resultPicker = document.getElementById("result-set-picker");
   if (resultPicker !== null) {
     resultPicker.addEventListener("click", onResultPickerClick);
+  }
+
+  const resultsViewToggle = document.getElementById("results-view-toggle");
+  if (resultsViewToggle !== null) {
+    resultsViewToggle.addEventListener("click", onResultsViewClick);
   }
 }
 
@@ -1029,6 +1286,266 @@ async function onImportEntriesFileChange(event) {
 
 async function onImportSlotsFileChange(event) {
   await importCsvIntoTable(event, "slots");
+}
+
+/**
+ * Import a rules.csv into project.rules (replaces all rules).
+ *
+ * @param {Event} event
+ */
+async function onImportRulesFileChange(event) {
+  const file = event.target.files[0];
+
+  if (file === undefined || file === null) {
+    return;
+  }
+
+  try {
+    const text = await file.text();
+    const rules = parseRulesCsv(text);
+    const project = getProject();
+
+    project.rules = rules;
+    project.results = null;
+    markProjectChanged();
+    renderRuleList(project);
+    renderRulesTable(project);
+    renderReview(project);
+    renderGenerateOptions(project);
+    renderResults(project);
+  } catch (error) {
+    console.error("Could not read rules CSV:", error);
+    window.alert("Could not read that CSV file.");
+  } finally {
+    event.target.value = "";
+  }
+}
+
+function onClearRulesClick() {
+  const project = getProject();
+
+  if (project.rules.length === 0) {
+    return;
+  }
+
+  const ok = window.confirm("Clear all rules?");
+  if (ok === false) {
+    return;
+  }
+
+  project.rules = [];
+  project.results = null;
+  markProjectChanged();
+  renderRuleList(project);
+  renderRulesTable(project);
+  renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
+}
+
+/**
+ * Blank rule row for the CSV table (and editor list).
+ *
+ * @returns {Object}
+ */
+function makeBlankRule() {
+  return {
+    id: "R-" + Date.now().toString(36),
+    name: "Untitled rule",
+    type: "balance",
+    hard: false,
+    priority: 5,
+    entryAttribute: ""
+  };
+}
+
+function onAddRuleRowClick() {
+  const project = getProject();
+  project.rules.push(makeBlankRule());
+  project.results = null;
+  markProjectChanged();
+  renderRuleList(project);
+  renderRulesTable(project);
+  renderReview(project);
+}
+
+/**
+ * Header "+ Add rule" — create a rule and show the Editor tab.
+ */
+function onAddRuleClick() {
+  const project = getProject();
+  const rule = makeBlankRule();
+  project.rules.push(rule);
+  project.results = null;
+  markProjectChanged();
+
+  const editorTab = document.getElementById("rules-tab-editor");
+  if (editorTab !== null) {
+    editorTab.checked = true;
+  }
+
+  renderRuleList(project);
+  renderRulesTable(project);
+  selectRuleInList(rule.id);
+  fillRuleEditor(rule);
+  renderReview(project);
+}
+
+function onExportRulesCsvClick() {
+  const project = getProject();
+  const text = serializeRulesCsv(project.rules);
+  downloadTextFile("rules.csv", text);
+}
+
+/**
+ * @param {string} filename
+ * @param {string} text
+ */
+function downloadTextFile(filename, text) {
+  const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.rel = "noopener";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Highlight a rule in the list (after Add rule, etc.).
+ *
+ * @param {string} ruleId
+ */
+function selectRuleInList(ruleId) {
+  const list = document.getElementById("rule-list");
+
+  if (list === null) {
+    return;
+  }
+
+  const buttons = list.querySelectorAll(".rule-list-item");
+
+  for (let i = 0; i < buttons.length; i = i + 1) {
+    const button = buttons[i];
+
+    if (button.getAttribute("data-rule-id") === ruleId) {
+      button.classList.add("is-selected");
+    } else {
+      button.classList.remove("is-selected");
+    }
+  }
+}
+
+/**
+ * Typing in the rules CSV table — update project.rules without re-render.
+ *
+ * @param {Event} event
+ */
+function onRulesTableInput(event) {
+  const input = event.target;
+
+  if (input.classList.contains("table-cell-input") === false) {
+    return;
+  }
+
+  if (input.getAttribute("data-table") !== "rules") {
+    return;
+  }
+
+  const rowIndex = Number(input.getAttribute("data-row-index"));
+  const colKey = input.getAttribute("data-col-key");
+  const project = getProject();
+
+  if (rowIndex < 0 || rowIndex >= project.rules.length) {
+    return;
+  }
+
+  const cells = ruleToCsvCells(project.rules[rowIndex]);
+  cells[colKey] = input.value;
+
+  const parsed = ruleFromCsvCells(cells);
+
+  if (parsed !== null) {
+    project.rules[rowIndex] = parsed;
+  } else {
+    // Type not recognized yet (mid-edit) — keep structure, update scalars.
+    const rule = project.rules[rowIndex];
+
+    if (colKey === "id") {
+      rule.id = input.value;
+    } else if (colKey === "name") {
+      rule.name = input.value;
+    } else if (colKey === "priority") {
+      const priority = Number(input.value);
+      if (Number.isNaN(priority) === false) {
+        rule.priority = priority;
+      }
+    } else if (colKey === "hard") {
+      const hardRaw = String(input.value).trim().toLowerCase();
+      rule.hard =
+        hardRaw === "yes" || hardRaw === "true" || hardRaw === "1";
+    }
+  }
+
+  project.results = null;
+  markProjectChanged();
+}
+
+/**
+ * After a cell blurs, refresh the form list / review from memory.
+ */
+function onRulesTableBlurSync(event) {
+  const input = event.target;
+
+  if (input.classList.contains("table-cell-input") === false) {
+    return;
+  }
+
+  if (input.getAttribute("data-table") !== "rules") {
+    return;
+  }
+
+  const project = getProject();
+  renderRuleList(project);
+  renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
+}
+
+/**
+ * Delete a rules CSV row.
+ *
+ * @param {MouseEvent} event
+ */
+function onRulesTableClick(event) {
+  const button = findAncestor(event.target, ".table-row-delete");
+
+  if (button === null) {
+    return;
+  }
+
+  if (button.getAttribute("data-table") !== "rules") {
+    return;
+  }
+
+  const rowIndex = Number(button.getAttribute("data-row-index"));
+  const project = getProject();
+
+  if (rowIndex < 0 || rowIndex >= project.rules.length) {
+    return;
+  }
+
+  project.rules.splice(rowIndex, 1);
+  project.results = null;
+  markProjectChanged();
+  renderRuleList(project);
+  renderRulesTable(project);
+  renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
 }
 
 /**
@@ -1448,6 +1965,23 @@ function onResultPickerClick(event) {
   project.results.selectedRank = Number(button.getAttribute("data-option"));
   markProjectChanged();
   renderResults(project);
+}
+
+function onResultsViewClick(event) {
+  const button = findAncestor(event.target, "[data-view]");
+
+  if (button === null) {
+    return;
+  }
+
+  const view = button.getAttribute("data-view");
+
+  if (view !== "by-slot" && view !== "by-entry") {
+    return;
+  }
+
+  resultsViewMode = view;
+  renderResults(getProject());
 }
 
 function onGenerateClick() {
