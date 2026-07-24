@@ -171,8 +171,13 @@
 
 .button-ghost:hover {
   color: var(--text-color);
-  background: rgb(255 255 255 / 0.04);
-  border-color: rgb(255 255 255 / 0.2);
+  background: rgb(255 255 255 / 0.1);
+  border-color: rgb(255 255 255 / 0.28);
+}
+
+.button-ghost:active {
+  background: rgb(255 255 255 / 0.16);
+  transform: scale(0.96);
 }
 
 /* Shared form bits used across app panels */
@@ -222,7 +227,8 @@
 }
 
 #import-entries-file,
-#import-slots-file {
+#import-slots-file,
+#import-rules-file {
   display: none;
 }
 

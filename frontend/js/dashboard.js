@@ -1,13 +1,12 @@
 /**
  * dashboard.js
  *
- * Project list page (/app/): New project modal with blank vs preset + templates.
+ * Project list page (/app/): New project modal with blank vs preset.
  */
 
 import {
   PRESET_CATALOG,
   getPresetInfo,
-  getPresetTemplateUrls,
   buildProjectFromPreset
 } from "/js/presets.js";
 
@@ -65,11 +64,6 @@ function wireNewProjectModal() {
       highlightSelectedPreset(presetList);
       updatePresetDetails(input.value);
     });
-  }
-
-  const templateLinks = document.getElementById("new-project-templates");
-  if (templateLinks !== null) {
-    templateLinks.addEventListener("click", onTemplateLinkClick);
   }
 
   if (createBtn !== null) {
@@ -153,46 +147,12 @@ function updatePresetDetails(presetId) {
 
   if (warnEl !== null) {
     if (presetId === "blank") {
-      warnEl.textContent =
-        "Starts empty. Use the template downloads if you want the expected CSV headers.";
+      warnEl.textContent = "Starts empty. Import CSVs or add rows in the project workspace.";
     } else {
       warnEl.textContent =
         "Loads sample entries, slots, and rules for this pack. You can edit or re-import afterward.";
     }
   }
-
-  // Point template links at this preset’s files.
-  const urls = getPresetTemplateUrls(presetId);
-  setTemplateHref("template-entries", urls.entries, presetId + "-entries.csv");
-  setTemplateHref("template-slots", urls.slots, presetId + "-slots.csv");
-  setTemplateHref("template-rules", urls.rules, presetId + "-rules.csv");
-}
-
-/**
- * @param {string} linkId
- * @param {string} url
- * @param {string} filename
- */
-function setTemplateHref(linkId, url, filename) {
-  const link = document.getElementById(linkId);
-  if (link === null) {
-    return;
-  }
-  link.setAttribute("href", url);
-  link.setAttribute("download", filename);
-  link.setAttribute("data-download-name", filename);
-}
-
-/**
- * Prefer the download attribute; fall back to JS click helper if needed.
- * @param {MouseEvent} event
- */
-function onTemplateLinkClick(event) {
-  const link = event.target.closest("a[download]");
-  if (link === null) {
-    return;
-  }
-  // Let the browser handle normal download links.
 }
 
 async function onCreateProjectClick() {
@@ -268,4 +228,3 @@ function escapeHtml(text) {
 }
 
 main();
-

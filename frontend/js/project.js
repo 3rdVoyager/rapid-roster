@@ -50,7 +50,7 @@
  *   We walk up parents with findAncestor(...) to find the button we care about.
  *
  * window.location.hash
- *   The "#setup" part of the URL. We use it to remember which panel is open.
+ *   The "#entries" part of the URL. We use it to remember which panel is open.
  *
  * window.setTimeout(fn, 20)
  *   Run fn after a short delay so the browser can paint "Working…" first.
@@ -69,11 +69,10 @@ import {
 import { buildLegalConfig, buildScoreConfig } from "/js/project-config.js";
 import { runSearch, mergeOptions } from "/js/generator/search.js";
 import { getEntriesInSlot, getSlotsForEntry } from "/js/generator/placement.js";
-import { parseCsvText, csvToTable } from "/js/csv.js";
+import { parseCsvText, csvToTable, tableToCsv } from "/js/csv.js";
 import {
   PRESET_CATALOG,
   getPresetInfo,
-  getPresetTemplateUrls,
   buildProjectFromPreset,
   parseRulesCsv,
   serializeRulesCsv,
@@ -83,10 +82,17 @@ import {
 } from "/js/presets.js";
 
 /** Valid workflow panel ids (must match section id= and nav href="#..."). */
-const PANEL_IDS = ["setup", "rules", "review", "generate", "results"];
+const PANEL_IDS = ["entries", "slots", "rules", "review", "generate", "results"];
 
 /** Results panel: "by-slot" or "by-entry". */
 let resultsViewMode = "by-slot";
+
+/** Results layout: "list" or "grid". */
+let resultsLayoutMode = "list";
+
+/** Selected row ids for Entries / Slots form editors (null = none). */
+let selectedEntryId = null;
+let selectedSlotId = null;
 
 /** Column types the user can pick in Setup headers. */
 const ENTRIES_COLUMN_TYPES = ["id", "number", "time", "text", "ignore"];
@@ -133,6 +139,8 @@ function renderAll() {
   renderHeader(project);
   renderEntriesTable(project);
   renderSlotsTable(project);
+  renderEntriesList(project);
+  renderSlotsList(project);
   renderGlobalSetup(project);
   renderRuleList(project);
   renderRulesTable(project);
@@ -326,6 +334,275 @@ function renderTableBody(tbody, columns, rows, tableKind) {
   }
 
   tbody.innerHTML = html;
+}
+
+/**
+ * Left-hand list for the Entries form editor.
+ *
+ * @param {Object} project
+ */
+function renderEntriesList(project) {
+  const list = document.getElementById("entry-list");
+
+  if (list === null) {
+    return;
+  }
+
+  if (
+    selectedEntryId !== null &&
+    findTableRowById(project.entries.rows, selectedEntryId) === null
+  ) {
+    selectedEntryId = null;
+  }
+
+  if (selectedEntryId === null && project.entries.rows.length > 0) {
+    selectedEntryId = project.entries.rows[0].id;
+  }
+
+  let html = "";
+
+  for (let i = 0; i < project.entries.rows.length; i = i + 1) {
+    const row = project.entries.rows[i];
+    const label = rowDisplayName(row);
+    let selectedClass = "";
+
+    if (row.id === selectedEntryId) {
+      selectedClass = " is-selected";
+    }
+
+    html =
+      html +
+      "<li>" +
+      '<button class="rule-list-item' +
+      selectedClass +
+      '" type="button" data-entry-id="' +
+      escapeHtml(row.id) +
+      '">' +
+      "<strong>" +
+      escapeHtml(label) +
+      "</strong>" +
+      '<span class="rule-list-meta">' +
+      escapeHtml(row.id) +
+      "</span>" +
+      "</button>" +
+      "</li>";
+  }
+
+  if (project.entries.rows.length === 0) {
+    html =
+      '<li><p class="app-empty-hint">No entries yet. Click + Add entry or import a CSV.</p></li>';
+  }
+
+  list.innerHTML = html;
+  fillEntryEditor(project);
+}
+
+/**
+ * Left-hand list for the Slots form editor.
+ *
+ * @param {Object} project
+ */
+function renderSlotsList(project) {
+  const list = document.getElementById("slot-list");
+
+  if (list === null) {
+    return;
+  }
+
+  if (
+    selectedSlotId !== null &&
+    findTableRowById(project.slots.rows, selectedSlotId) === null
+  ) {
+    selectedSlotId = null;
+  }
+
+  if (selectedSlotId === null && project.slots.rows.length > 0) {
+    selectedSlotId = project.slots.rows[0].id;
+  }
+
+  let html = "";
+
+  for (let i = 0; i < project.slots.rows.length; i = i + 1) {
+    const row = project.slots.rows[i];
+    const label = rowDisplayName(row);
+    let selectedClass = "";
+
+    if (row.id === selectedSlotId) {
+      selectedClass = " is-selected";
+    }
+
+    let meta = row.id;
+    if (row.cells.min_size !== undefined || row.cells.max_size !== undefined) {
+      meta =
+        "min " +
+        String(row.cells.min_size || "—") +
+        " · max " +
+        String(row.cells.max_size || "—");
+    }
+
+    html =
+      html +
+      "<li>" +
+      '<button class="rule-list-item' +
+      selectedClass +
+      '" type="button" data-slot-id="' +
+      escapeHtml(row.id) +
+      '">' +
+      "<strong>" +
+      escapeHtml(label) +
+      "</strong>" +
+      '<span class="rule-list-meta">' +
+      escapeHtml(meta) +
+      "</span>" +
+      "</button>" +
+      "</li>";
+  }
+
+  if (project.slots.rows.length === 0) {
+    html =
+      '<li><p class="app-empty-hint">No slots yet. Click + Add slot or import a CSV.</p></li>';
+  }
+
+  list.innerHTML = html;
+  fillSlotEditor(project);
+}
+
+/**
+ * @param {Object} row
+ * @returns {string}
+ */
+function rowDisplayName(row) {
+  if (row.cells.name !== undefined && String(row.cells.name) !== "") {
+    return String(row.cells.name);
+  }
+  return row.id;
+}
+
+/**
+ * @param {Object[]} rows
+ * @param {string} id
+ * @returns {Object|null}
+ */
+function findTableRowById(rows, id) {
+  for (let i = 0; i < rows.length; i = i + 1) {
+    if (rows[i].id === id) {
+      return rows[i];
+    }
+  }
+  return null;
+}
+
+/**
+ * Build dynamic form fields for the selected entry.
+ *
+ * @param {Object} project
+ */
+function fillEntryEditor(project) {
+  const fieldsEl = document.getElementById("entry-editor-fields");
+  const actionsEl = document.getElementById("entry-editor-actions");
+
+  if (fieldsEl === null) {
+    return;
+  }
+
+  const row = findTableRowById(project.entries.rows, selectedEntryId);
+
+  if (row === null) {
+    fieldsEl.innerHTML =
+      '<p class="app-empty-hint">Select an entry to edit its fields.</p>';
+    if (actionsEl !== null) {
+      actionsEl.hidden = true;
+    }
+    return;
+  }
+
+  fieldsEl.innerHTML = buildRowEditorFieldsHtml(
+    project.entries.columns,
+    row,
+    "entry"
+  );
+
+  if (actionsEl !== null) {
+    actionsEl.hidden = false;
+  }
+}
+
+/**
+ * @param {Object} project
+ */
+function fillSlotEditor(project) {
+  const fieldsEl = document.getElementById("slot-editor-fields");
+  const actionsEl = document.getElementById("slot-editor-actions");
+
+  if (fieldsEl === null) {
+    return;
+  }
+
+  const row = findTableRowById(project.slots.rows, selectedSlotId);
+
+  if (row === null) {
+    fieldsEl.innerHTML =
+      '<p class="app-empty-hint">Select a slot to edit its fields.</p>';
+    if (actionsEl !== null) {
+      actionsEl.hidden = true;
+    }
+    return;
+  }
+
+  fieldsEl.innerHTML = buildRowEditorFieldsHtml(
+    project.slots.columns,
+    row,
+    "slot"
+  );
+
+  if (actionsEl !== null) {
+    actionsEl.hidden = false;
+  }
+}
+
+/**
+ * One input per column for the Entries/Slots form editor.
+ *
+ * @param {Object[]} columns
+ * @param {Object} row
+ * @param {string} prefix - "entry" or "slot" (for input ids)
+ * @returns {string}
+ */
+function buildRowEditorFieldsHtml(columns, row, prefix) {
+  let html = "";
+
+  for (let i = 0; i < columns.length; i = i + 1) {
+    const col = columns[i];
+    let value = "";
+
+    if (row.cells[col.key] !== undefined && row.cells[col.key] !== null) {
+      value = String(row.cells[col.key]);
+    }
+
+    html =
+      html +
+      '<div class="rule-editor-row">' +
+      "<span>" +
+      escapeHtml(col.label) +
+      "</span>" +
+      '<input class="app-input" id="' +
+      escapeHtml(prefix) +
+      "-field-" +
+      escapeHtml(col.key) +
+      '" type="text" data-col-key="' +
+      escapeHtml(col.key) +
+      '" value="' +
+      escapeHtml(value) +
+      '" style="max-width: none" />' +
+      "</div>";
+  }
+
+  if (columns.length === 0) {
+    html =
+      '<p class="app-empty-hint">No columns yet. Import a CSV on the CSV table tab first.</p>';
+  }
+
+  return html;
 }
 
 function renderRuleList(project) {
@@ -678,7 +955,7 @@ function renderResults(project) {
     return;
   }
 
-  syncResultsViewToggle();
+  syncResultsToggles();
 
   if (project.results === null || project.results.options === undefined) {
     main.innerHTML =
@@ -711,12 +988,17 @@ function renderResults(project) {
 
       pickerHtml =
         pickerHtml +
-        '<button class="app-pill' +
+        '<button class="results-option-btn' +
         active +
         '" type="button" data-option="' +
         option.rank +
-        '">Option ' +
+        '">' +
+        '<span class="results-option-label">Option ' +
         option.rank +
+        "</span>" +
+        '<span class="results-option-score">' +
+        formatScore(option.totalScore) +
+        "</span>" +
         "</button>";
     }
 
@@ -731,13 +1013,12 @@ function renderResults(project) {
     }
   }
 
-  const attrColumns = getResultAttrColumns(project);
   let html = "";
 
   if (resultsViewMode === "by-entry") {
-    html = renderResultsByEntry(project, selected, attrColumns);
+    html = renderResultsByEntry(project, selected);
   } else {
-    html = renderResultsBySlot(project, selected, attrColumns);
+    html = renderResultsBySlot(project, selected);
   }
 
   html =
@@ -750,22 +1031,31 @@ function renderResults(project) {
 }
 
 /**
- * Highlight the active By slot / By entry pill.
+ * Sync List/Grid and By slot/By entry toggle active states.
  */
-function syncResultsViewToggle() {
-  const toggle = document.getElementById("results-view-toggle");
+function syncResultsToggles() {
+  syncToggleGroup("results-layout-toggle", "data-layout", resultsLayoutMode);
+  syncToggleGroup("results-group-toggle", "data-view", resultsViewMode);
+}
 
-  if (toggle === null) {
+/**
+ * @param {string} groupId
+ * @param {string} attrName
+ * @param {string} activeValue
+ */
+function syncToggleGroup(groupId, attrName, activeValue) {
+  const group = document.getElementById(groupId);
+
+  if (group === null) {
     return;
   }
 
-  const buttons = toggle.querySelectorAll("[data-view]");
+  const buttons = group.querySelectorAll("[" + attrName + "]");
 
   for (let i = 0; i < buttons.length; i = i + 1) {
     const button = buttons[i];
-    const view = button.getAttribute("data-view");
 
-    if (view === resultsViewMode) {
+    if (button.getAttribute(attrName) === activeValue) {
       button.classList.add("is-active");
     } else {
       button.classList.remove("is-active");
@@ -774,37 +1064,17 @@ function syncResultsViewToggle() {
 }
 
 /**
- * By slot: one shared grid so attribute columns line up across every slot.
- * Slot banners are the assignment; pills are other spreadsheet fields.
+ * By slot: names only, grouped under each slot.
  *
  * @param {Object} project
- * @param {Object} selected - one result option
- * @param {Object[]} attrColumns
+ * @param {Object} selected
  * @returns {string}
  */
-function renderResultsBySlot(project, selected, attrColumns) {
-  let html =
-    '<p class="results-legend">' +
-    "<strong>Assignment</strong> = the slot heading. " +
-    "<strong>Attributes</strong> = other fields from your entries sheet (preferences, ids, …)." +
-    "</p>";
+function renderResultsBySlot(project, selected) {
+  const layoutClass =
+    resultsLayoutMode === "grid" ? " results-layout-grid" : " results-layout-list";
 
-  html =
-    html +
-    '<div class="results-unified" style="--attr-count: ' +
-    attrColumns.length +
-    '">';
-
-  // Column labels (one shared header for the whole view).
-  html = html + '<div class="results-col-label">Entry</div>';
-
-  if (attrColumns.length > 0) {
-    html =
-      html +
-      '<div class="results-col-label results-col-label-attrs" style="grid-column: 2 / -1">' +
-      "Attributes" +
-      "</div>";
-  }
+  let html = '<div class="results-board' + layoutClass + '">';
 
   for (let s = 0; s < project.slots.rows.length; s = s + 1) {
     const slotRow = project.slots.rows[s];
@@ -819,27 +1089,31 @@ function renderResultsBySlot(project, selected, attrColumns) {
 
     html =
       html +
-      '<div class="results-slot-banner">' +
-      '<span class="results-slot-kicker">Assigned slot</span>' +
+      '<section class="results-group">' +
+      '<header class="results-group-head">' +
       "<strong>" +
       escapeHtml(String(slotName)) +
       "</strong>" +
-      '<span class="app-pill">' +
+      '<span class="results-slot-count">' +
       entryIds.length +
-      " entries</span>" +
-      "</div>";
+      "</span>" +
+      "</header>" +
+      '<ul class="results-name-list">';
 
     for (let p = 0; p < entryIds.length; p = p + 1) {
-      const entryId = entryIds[p];
-      const entryRow = findEntryRow(project, entryId);
-      html = html + renderResultsEntryRow(entryId, entryRow, attrColumns);
+      const entryRow = findEntryRow(project, entryIds[p]);
+      html =
+        html +
+        "<li>" +
+        escapeHtml(entryDisplayName(entryIds[p], entryRow)) +
+        "</li>";
     }
 
     if (entryIds.length === 0) {
-      html =
-        html +
-        '<div class="results-entry-empty">No entries assigned here.</div>';
+      html = html + '<li class="results-name-empty">No entries</li>';
     }
+
+    html = html + "</ul></section>";
   }
 
   html = html + "</div>";
@@ -847,79 +1121,55 @@ function renderResultsBySlot(project, selected, attrColumns) {
 }
 
 /**
- * By entry: each person/item with their assigned slot(s), then attributes.
+ * By entry: each name with assigned slot(s).
  *
  * @param {Object} project
  * @param {Object} selected
- * @param {Object[]} attrColumns
  * @returns {string}
  */
-function renderResultsByEntry(project, selected, attrColumns) {
-  let html =
-    '<p class="results-legend">' +
-    "<strong>Assigned slots</strong> are highlighted. Attributes are other sheet fields." +
-    "</p>";
+function renderResultsByEntry(project, selected) {
+  const layoutClass =
+    resultsLayoutMode === "grid" ? " results-layout-grid" : " results-layout-list";
 
-  html = html + '<div class="results-by-entry-list">';
+  let html = '<div class="results-board' + layoutClass + '">';
 
   for (let i = 0; i < project.entries.rows.length; i = i + 1) {
     const entryRow = project.entries.rows[i];
     const entryId = entryRow.id;
-    let displayName = entryId;
-
-    if (entryRow.cells.name !== undefined && entryRow.cells.name !== "") {
-      displayName = entryRow.cells.name;
-    }
-
+    const displayName = entryDisplayName(entryId, entryRow);
     const slotIds = getSlotsForEntry(selected.assignments, entryId);
 
-    let slotPills = "";
+    let slotHtml = "";
 
     for (let s = 0; s < slotIds.length; s = s + 1) {
-      const slotId = slotIds[s];
-      const slotRow = findSlotRow(project, slotId);
-      let slotName = slotId;
+      const slotRow = findSlotRow(project, slotIds[s]);
+      let slotName = slotIds[s];
 
       if (slotRow !== null && slotRow.cells.name !== undefined) {
         slotName = slotRow.cells.name;
       }
 
-      slotPills =
-        slotPills +
+      slotHtml =
+        slotHtml +
         '<span class="results-assign-pill">' +
         escapeHtml(String(slotName)) +
         "</span>";
     }
 
     if (slotIds.length === 0) {
-      slotPills = '<span class="results-assign-empty">Unassigned</span>';
+      slotHtml = '<span class="results-assign-empty">Unassigned</span>';
     }
 
     html =
       html +
       '<div class="results-entry-card">' +
-      '<div class="results-entry-name">' +
-      escapeHtml(String(displayName)) +
-      "</div>" +
-      '<div class="results-assign-row">' +
-      '<span class="results-field-label">Assigned</span>' +
+      '<span class="results-entry-name">' +
+      escapeHtml(displayName) +
+      "</span>" +
       '<div class="results-assign-pills">' +
-      slotPills +
+      slotHtml +
       "</div>" +
       "</div>";
-
-    if (attrColumns.length > 0) {
-      html =
-        html +
-        '<div class="results-attrs-row">' +
-        '<span class="results-field-label">Attributes</span>' +
-        '<div class="results-attr-pills">' +
-        renderAttrPillsHtml(entryRow, attrColumns) +
-        "</div>" +
-        "</div>";
-    }
-
-    html = html + "</div>";
   }
 
   if (project.entries.rows.length === 0) {
@@ -931,92 +1181,20 @@ function renderResultsByEntry(project, selected, attrColumns) {
 }
 
 /**
- * One entry row inside the unified by-slot grid (display:contents).
- *
  * @param {string} entryId
  * @param {Object|null} entryRow
- * @param {Object[]} attrColumns
  * @returns {string}
  */
-function renderResultsEntryRow(entryId, entryRow, attrColumns) {
-  let displayName = entryId;
-
-  if (entryRow !== null && entryRow.cells.name !== undefined) {
-    displayName = entryRow.cells.name;
+function entryDisplayName(entryId, entryRow) {
+  if (
+    entryRow !== null &&
+    entryRow.cells.name !== undefined &&
+    String(entryRow.cells.name) !== ""
+  ) {
+    return String(entryRow.cells.name);
   }
 
-  return (
-    '<div class="results-entry-name">' +
-    escapeHtml(String(displayName)) +
-    "</div>" +
-    renderAttrPillsHtml(entryRow, attrColumns)
-  );
-}
-
-/**
- * Attribute pills (and empty placeholders for grid alignment).
- *
- * @param {Object|null} entryRow
- * @param {Object[]} attrColumns
- * @returns {string}
- */
-function renderAttrPillsHtml(entryRow, attrColumns) {
-  let bubbles = "";
-
-  for (let c = 0; c < attrColumns.length; c = c + 1) {
-    const col = attrColumns[c];
-    let value = "";
-
-    if (entryRow !== null && entryRow.cells[col.key] !== undefined) {
-      value = entryRow.cells[col.key];
-    }
-
-    const hasValue =
-      value !== null && value !== undefined && String(value) !== "";
-
-    if (hasValue === true) {
-      bubbles =
-        bubbles +
-        '<span class="results-attr-pill">' +
-        '<span class="results-attr-label">' +
-        escapeHtml(col.label) +
-        "</span>" +
-        '<span class="results-attr-value">' +
-        escapeHtml(String(value)) +
-        "</span>" +
-        "</span>";
-    } else {
-      bubbles = bubbles + '<span class="results-attr-pill is-empty"></span>';
-    }
-  }
-
-  return bubbles;
-}
-
-/**
- * Columns that appear as attribute bubbles (skip name heading + ignore).
- *
- * @param {Object} project
- * @returns {Object[]}
- */
-function getResultAttrColumns(project) {
-  const columns = [];
-
-  for (let i = 0; i < project.entries.columns.length; i = i + 1) {
-    const col = project.entries.columns[i];
-
-    if (col.key === "name") {
-      continue;
-    }
-
-    if (col.type === "ignore") {
-      continue;
-    }
-
-    columns.push(col);
-  }
-
-  return columns;
+  return entryId;
 }
 
 function findEntryRow(project, entryId) {
@@ -1071,14 +1249,64 @@ function wireControls() {
     clearSlotsBtn.addEventListener("click", onClearSlotsClick);
   }
 
-  const addEntryBtn = document.getElementById("add-entry-row-btn");
-  if (addEntryBtn !== null) {
-    addEntryBtn.addEventListener("click", onAddEntryRowClick);
+  const addEntryRowBtn = document.getElementById("add-entry-row-btn");
+  if (addEntryRowBtn !== null) {
+    addEntryRowBtn.addEventListener("click", onAddEntryRowClick);
   }
 
-  const addSlotBtn = document.getElementById("add-slot-row-btn");
+  const addSlotRowBtn = document.getElementById("add-slot-row-btn");
+  if (addSlotRowBtn !== null) {
+    addSlotRowBtn.addEventListener("click", onAddSlotRowClick);
+  }
+
+  const addEntryBtn = document.getElementById("add-entry-btn");
+  if (addEntryBtn !== null) {
+    addEntryBtn.addEventListener("click", onAddEntryClick);
+  }
+
+  const addSlotBtn = document.getElementById("add-slot-btn");
   if (addSlotBtn !== null) {
-    addSlotBtn.addEventListener("click", onAddSlotRowClick);
+    addSlotBtn.addEventListener("click", onAddSlotClick);
+  }
+
+  const saveEntryBtn = document.getElementById("save-entry-btn");
+  if (saveEntryBtn !== null) {
+    saveEntryBtn.addEventListener("click", onSaveEntryClick);
+  }
+
+  const deleteEntryBtn = document.getElementById("delete-entry-btn");
+  if (deleteEntryBtn !== null) {
+    deleteEntryBtn.addEventListener("click", onDeleteEntryClick);
+  }
+
+  const saveSlotBtn = document.getElementById("save-slot-btn");
+  if (saveSlotBtn !== null) {
+    saveSlotBtn.addEventListener("click", onSaveSlotClick);
+  }
+
+  const deleteSlotBtn = document.getElementById("delete-slot-btn");
+  if (deleteSlotBtn !== null) {
+    deleteSlotBtn.addEventListener("click", onDeleteSlotClick);
+  }
+
+  const entryList = document.getElementById("entry-list");
+  if (entryList !== null) {
+    entryList.addEventListener("click", onEntryListClick);
+  }
+
+  const slotList = document.getElementById("slot-list");
+  if (slotList !== null) {
+    slotList.addEventListener("click", onSlotListClick);
+  }
+
+  const exportEntriesCsvBtn = document.getElementById("export-entries-csv-btn");
+  if (exportEntriesCsvBtn !== null) {
+    exportEntriesCsvBtn.addEventListener("click", onExportEntriesCsvClick);
+  }
+
+  const exportSlotsCsvBtn = document.getElementById("export-slots-csv-btn");
+  if (exportSlotsCsvBtn !== null) {
+    exportSlotsCsvBtn.addEventListener("click", onExportSlotsCsvClick);
   }
 
   // One listener for all editable cells / type dropdowns / row deletes.
@@ -1155,9 +1383,14 @@ function wireControls() {
     resultPicker.addEventListener("click", onResultPickerClick);
   }
 
-  const resultsViewToggle = document.getElementById("results-view-toggle");
-  if (resultsViewToggle !== null) {
-    resultsViewToggle.addEventListener("click", onResultsViewClick);
+  const resultsGroupToggle = document.getElementById("results-group-toggle");
+  if (resultsGroupToggle !== null) {
+    resultsGroupToggle.addEventListener("click", onResultsViewClick);
+  }
+
+  const resultsLayoutToggle = document.getElementById("results-layout-toggle");
+  if (resultsLayoutToggle !== null) {
+    resultsLayoutToggle.addEventListener("click", onResultsLayoutClick);
   }
 }
 
@@ -1167,7 +1400,7 @@ function wireControls() {
  * without letting the browser scroll to the section id.
  */
 function wirePanelNavigation() {
-  // Capture clicks on any link whose href is #setup, #rules, …
+  // Capture clicks on any link whose href is #entries, #rules, …
   document.addEventListener("click", onPanelLinkClick);
   window.addEventListener("hashchange", showPanelFromHash);
 }
@@ -1197,6 +1430,11 @@ function onPanelLinkClick(event) {
     }
   }
 
+  // Legacy Setup bookmark → Entries.
+  if (panelId === "setup") {
+    known = true;
+  }
+
   if (known === false) {
     return;
   }
@@ -1204,12 +1442,17 @@ function onPanelLinkClick(event) {
   // Stop the browser from scrolling to the element with that id.
   event.preventDefault();
 
-  if (window.location.hash === href) {
+  let targetId = panelId;
+  if (targetId === "setup") {
+    targetId = "entries";
+  }
+
+  if (window.location.hash === "#" + targetId) {
     // Clicking the already-active tab: still refresh the active classes.
-    showPanel(panelId);
+    showPanel(targetId);
   } else {
     // Changing the hash fires "hashchange", which calls showPanelFromHash.
-    window.location.hash = href;
+    window.location.hash = "#" + targetId;
   }
 }
 
@@ -1217,12 +1460,17 @@ function onPanelLinkClick(event) {
  * Read window.location.hash (example: "#rules") and show that panel.
  */
 function showPanelFromHash() {
-  let panelId = "setup";
+  let panelId = "entries";
   const hash = window.location.hash;
 
   // hash looks like "#rules". slice(1) drops the leading "#".
   if (hash !== "" && hash !== "#") {
     panelId = hash.slice(1);
+  }
+
+  // Old bookmark: Setup was split into Entries + Slots.
+  if (panelId === "setup") {
+    panelId = "entries";
   }
 
   showPanel(panelId);
@@ -1231,10 +1479,15 @@ function showPanelFromHash() {
 /**
  * Show one workflow panel and highlight its sidebar link.
  *
- * @param {string} panelId - "setup" | "rules" | "review" | "generate" | "results"
+ * @param {string} panelId - "entries" | "slots" | "rules" | …
  */
 function showPanel(panelId) {
   let safeId = panelId;
+
+  if (safeId === "setup") {
+    safeId = "entries";
+  }
+
   let known = false;
 
   for (let i = 0; i < PANEL_IDS.length; i = i + 1) {
@@ -1244,7 +1497,7 @@ function showPanel(panelId) {
   }
 
   if (known === false) {
-    safeId = "setup";
+    safeId = "entries";
   }
 
   const panels = document.querySelectorAll(".app-panel");
@@ -1586,9 +1839,13 @@ async function importCsvIntoTable(event, tableKind) {
     markProjectChanged();
 
     if (tableKind === "entries") {
+      selectedEntryId = null;
       renderEntriesTable(project);
+      renderEntriesList(project);
     } else {
+      selectedSlotId = null;
       renderSlotsTable(project);
+      renderSlotsList(project);
     }
 
     renderReview(project);
@@ -1616,9 +1873,11 @@ function onClearEntriesClick() {
   }
 
   project.entries.rows = [];
+  selectedEntryId = null;
   project.results = null;
   markProjectChanged();
   renderEntriesTable(project);
+  renderEntriesList(project);
   renderReview(project);
   renderGenerateOptions(project);
   renderResults(project);
@@ -1637,9 +1896,11 @@ function onClearSlotsClick() {
   }
 
   project.slots.rows = [];
+  selectedSlotId = null;
   project.results = null;
   markProjectChanged();
   renderSlotsTable(project);
+  renderSlotsList(project);
   renderReview(project);
   renderGenerateOptions(project);
   renderResults(project);
@@ -1648,21 +1909,252 @@ function onClearSlotsClick() {
 function onAddEntryRowClick() {
   const project = getProject();
   ensureDefaultEntriesColumns(project);
-  project.entries.rows.push(makeEmptyRow(project.entries.columns, "entry"));
+  const row = makeEmptyRow(project.entries.columns, "entry");
+  project.entries.rows.push(row);
+  selectedEntryId = row.id;
   project.results = null;
   markProjectChanged();
   renderEntriesTable(project);
+  renderEntriesList(project);
   renderReview(project);
 }
 
 function onAddSlotRowClick() {
   const project = getProject();
   ensureDefaultSlotsColumns(project);
-  project.slots.rows.push(makeEmptyRow(project.slots.columns, "slot"));
+  const row = makeEmptyRow(project.slots.columns, "slot");
+  project.slots.rows.push(row);
+  selectedSlotId = row.id;
   project.results = null;
   markProjectChanged();
   renderSlotsTable(project);
+  renderSlotsList(project);
   renderReview(project);
+}
+
+/**
+ * Header "+ Add entry" — create a row and show the Editor tab.
+ */
+function onAddEntryClick() {
+  const project = getProject();
+  ensureDefaultEntriesColumns(project);
+  const row = makeEmptyRow(project.entries.columns, "entry");
+  project.entries.rows.push(row);
+  selectedEntryId = row.id;
+  project.results = null;
+  markProjectChanged();
+
+  const editorTab = document.getElementById("entries-tab-editor");
+  if (editorTab !== null) {
+    editorTab.checked = true;
+  }
+
+  renderEntriesTable(project);
+  renderEntriesList(project);
+  renderReview(project);
+}
+
+function onAddSlotClick() {
+  const project = getProject();
+  ensureDefaultSlotsColumns(project);
+  const row = makeEmptyRow(project.slots.columns, "slot");
+  project.slots.rows.push(row);
+  selectedSlotId = row.id;
+  project.results = null;
+  markProjectChanged();
+
+  const editorTab = document.getElementById("slots-tab-editor");
+  if (editorTab !== null) {
+    editorTab.checked = true;
+  }
+
+  renderSlotsTable(project);
+  renderSlotsList(project);
+  renderReview(project);
+}
+
+function onExportEntriesCsvClick() {
+  const project = getProject();
+  downloadTextFile("entries.csv", tableToCsv(project.entries));
+}
+
+function onExportSlotsCsvClick() {
+  const project = getProject();
+  downloadTextFile("slots.csv", tableToCsv(project.slots));
+}
+
+/**
+ * @param {MouseEvent} event
+ */
+function onEntryListClick(event) {
+  const button = findAncestor(event.target, "[data-entry-id]");
+
+  if (button === null) {
+    return;
+  }
+
+  selectedEntryId = button.getAttribute("data-entry-id");
+  renderEntriesList(getProject());
+}
+
+/**
+ * @param {MouseEvent} event
+ */
+function onSlotListClick(event) {
+  const button = findAncestor(event.target, "[data-slot-id]");
+
+  if (button === null) {
+    return;
+  }
+
+  selectedSlotId = button.getAttribute("data-slot-id");
+  renderSlotsList(getProject());
+}
+
+function onSaveEntryClick() {
+  const project = getProject();
+  const row = findTableRowById(project.entries.rows, selectedEntryId);
+
+  if (row === null) {
+    return;
+  }
+
+  applyEditorFieldsToRow(project.entries.columns, row, "entry");
+  project.results = null;
+  markProjectChanged();
+  renderEntriesTable(project);
+  renderEntriesList(project);
+  renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
+}
+
+function onSaveSlotClick() {
+  const project = getProject();
+  const row = findTableRowById(project.slots.rows, selectedSlotId);
+
+  if (row === null) {
+    return;
+  }
+
+  applyEditorFieldsToRow(project.slots.columns, row, "slot");
+  project.results = null;
+  markProjectChanged();
+  renderSlotsTable(project);
+  renderSlotsList(project);
+  renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
+}
+
+/**
+ * Read form inputs into a table row (and sync row.id from the id column).
+ *
+ * @param {Object[]} columns
+ * @param {Object} row
+ * @param {string} prefix - "entry" or "slot"
+ */
+function applyEditorFieldsToRow(columns, row, prefix) {
+  for (let i = 0; i < columns.length; i = i + 1) {
+    const col = columns[i];
+    const input = document.getElementById(prefix + "-field-" + col.key);
+
+    if (input === null) {
+      continue;
+    }
+
+    let value = input.value;
+
+    if (
+      (col.type === "number" || col.type === "minSize" || col.type === "maxSize") &&
+      value !== "" &&
+      Number.isNaN(Number(value)) === false
+    ) {
+      value = Number(value);
+    }
+
+    row.cells[col.key] = value;
+
+    if (col.type === "id") {
+      const oldId = row.id;
+
+      if (String(value).trim() === "") {
+        row.id = prefix + "-row";
+      } else {
+        row.id = String(value);
+      }
+
+      if (prefix === "entry" && selectedEntryId === oldId) {
+        selectedEntryId = row.id;
+      }
+
+      if (prefix === "slot" && selectedSlotId === oldId) {
+        selectedSlotId = row.id;
+      }
+    }
+  }
+}
+
+function onDeleteEntryClick() {
+  const project = getProject();
+
+  if (selectedEntryId === null) {
+    return;
+  }
+
+  const ok = window.confirm("Delete this entry?");
+  if (ok === false) {
+    return;
+  }
+
+  const nextRows = [];
+
+  for (let i = 0; i < project.entries.rows.length; i = i + 1) {
+    if (project.entries.rows[i].id !== selectedEntryId) {
+      nextRows.push(project.entries.rows[i]);
+    }
+  }
+
+  project.entries.rows = nextRows;
+  selectedEntryId = null;
+  project.results = null;
+  markProjectChanged();
+  renderEntriesTable(project);
+  renderEntriesList(project);
+  renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
+}
+
+function onDeleteSlotClick() {
+  const project = getProject();
+
+  if (selectedSlotId === null) {
+    return;
+  }
+
+  const ok = window.confirm("Delete this slot?");
+  if (ok === false) {
+    return;
+  }
+
+  const nextRows = [];
+
+  for (let i = 0; i < project.slots.rows.length; i = i + 1) {
+    if (project.slots.rows[i].id !== selectedSlotId) {
+      nextRows.push(project.slots.rows[i]);
+    }
+  }
+
+  project.slots.rows = nextRows;
+  selectedSlotId = null;
+  project.results = null;
+  markProjectChanged();
+  renderSlotsTable(project);
+  renderSlotsList(project);
+  renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
 }
 
 /**
@@ -1760,10 +2252,20 @@ function onSetupTableInput(event) {
 
   // Keep row.id in sync with the id column cell.
   if (colType === "id") {
+    const oldId = row.id;
+
     if (String(value).trim() === "") {
       row.id = tableKind + "-row-" + rowIndex;
     } else {
       row.id = String(value);
+    }
+
+    if (tableKind === "entries" && selectedEntryId === oldId) {
+      selectedEntryId = row.id;
+    }
+
+    if (tableKind === "slots" && selectedSlotId === oldId) {
+      selectedSlotId = row.id;
     }
   }
 
@@ -1772,18 +2274,31 @@ function onSetupTableInput(event) {
 }
 
 /**
- * Change on a column-type <select>.
+ * Change on a column-type <select>, or blur sync after a cell edit.
  */
 function onSetupTableChange(event) {
-  const select = event.target;
+  const target = event.target;
+  const project = getProject();
 
-  if (select.classList.contains("col-type-select") === false) {
+  if (target.classList.contains("table-cell-input") === true) {
+    const tableKind = target.getAttribute("data-table");
+
+    if (tableKind === "entries") {
+      renderEntriesList(project);
+    } else if (tableKind === "slots") {
+      renderSlotsList(project);
+    }
+
+    renderReview(project);
     return;
   }
 
-  const tableKind = select.getAttribute("data-table");
-  const colIndex = Number(select.getAttribute("data-col-index"));
-  const project = getProject();
+  if (target.classList.contains("col-type-select") === false) {
+    return;
+  }
+
+  const tableKind = target.getAttribute("data-table");
+  const colIndex = Number(target.getAttribute("data-col-index"));
   const table = getSetupTable(project, tableKind);
 
   if (table === null) {
@@ -1794,7 +2309,7 @@ function onSetupTableChange(event) {
     return;
   }
 
-  table.columns[colIndex].type = select.value;
+  table.columns[colIndex].type = target.value;
   project.results = null;
   markProjectChanged();
 }
@@ -1829,8 +2344,10 @@ function onSetupTableClick(event) {
 
   if (tableKind === "entries") {
     renderEntriesTable(project);
+    renderEntriesList(project);
   } else {
     renderSlotsTable(project);
+    renderSlotsList(project);
   }
 
   renderReview(project);
@@ -1981,6 +2498,23 @@ function onResultsViewClick(event) {
   }
 
   resultsViewMode = view;
+  renderResults(getProject());
+}
+
+function onResultsLayoutClick(event) {
+  const button = findAncestor(event.target, "[data-layout]");
+
+  if (button === null) {
+    return;
+  }
+
+  const layout = button.getAttribute("data-layout");
+
+  if (layout !== "list" && layout !== "grid") {
+    return;
+  }
+
+  resultsLayoutMode = layout;
   renderResults(getProject());
 }
 
@@ -2270,25 +2804,6 @@ function updateLoadPresetDetails(presetId) {
   if (summaryEl !== null && info !== null) {
     summaryEl.textContent = info.summary;
   }
-
-  const urls = getPresetTemplateUrls(presetId);
-  setDownloadLink("load-template-entries", urls.entries, presetId + "-entries.csv");
-  setDownloadLink("load-template-slots", urls.slots, presetId + "-slots.csv");
-  setDownloadLink("load-template-rules", urls.rules, presetId + "-rules.csv");
-}
-
-/**
- * @param {string} id
- * @param {string} url
- * @param {string} filename
- */
-function setDownloadLink(id, url, filename) {
-  const link = document.getElementById(id);
-  if (link === null) {
-    return;
-  }
-  link.setAttribute("href", url);
-  link.setAttribute("download", filename);
 }
 
 async function onLoadPresetApply() {

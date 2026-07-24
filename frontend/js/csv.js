@@ -181,3 +181,39 @@ export function csvToTable(parsed, tableKind) {
   };
 }
 
+/**
+ * Turn a setup table ({ columns, rows }) back into CSV text.
+ *
+ * @param {{ columns: Object[], rows: Object[] }} table
+ * @returns {string}
+ */
+export function tableToCsv(table) {
+  const headers = [];
+
+  for (let i = 0; i < table.columns.length; i = i + 1) {
+    headers.push(table.columns[i].key);
+  }
+
+  let text = headers.join(",");
+
+  for (let r = 0; r < table.rows.length; r = r + 1) {
+    const row = table.rows[r];
+    const values = [];
+
+    for (let c = 0; c < headers.length; c = c + 1) {
+      const key = headers[c];
+      let value = "";
+
+      if (row.cells[key] !== undefined && row.cells[key] !== null) {
+        value = String(row.cells[key]);
+      }
+
+      values.push(value);
+    }
+
+    text = text + "\n" + values.join(",");
+  }
+
+  return text + "\n";
+}
+

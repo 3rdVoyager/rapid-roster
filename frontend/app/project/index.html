@@ -61,9 +61,13 @@
     <div class="app-shell">
       <nav class="app-sidebar" aria-label="Workspace">
         <p class="app-sidebar-label">Workflow</p>
-        <a class="app-nav-item is-active" href="#setup">
-          <span class="material-symbols-outlined" aria-hidden="true">table</span>
-          Setup
+        <a class="app-nav-item is-active" href="#entries">
+          <span class="material-symbols-outlined" aria-hidden="true">group</span>
+          Entries
+        </a>
+        <a class="app-nav-item" href="#slots">
+          <span class="material-symbols-outlined" aria-hidden="true">view_week</span>
+          Slots
         </a>
         <a class="app-nav-item" href="#rules">
           <span class="material-symbols-outlined" aria-hidden="true">tune</span>
@@ -84,83 +88,77 @@
       </nav>
 
       <main class="app-main">
-        <!-- ========== SETUP ========== -->
-        <section id="setup" class="app-panel is-active">
+        <!-- ========== ENTRIES ========== -->
+        <section id="entries" class="app-panel is-active">
           <div class="app-panel-header">
             <div>
-              <h1>Setup</h1>
+              <h1>Entries</h1>
               <p class="app-panel-lead">
-                Entries, slots, and sizes. Import CSVs or edit the tables directly.
-                structure is ready to wire.
+                Configure people or items to be placed into slots.
               </p>
             </div>
-            <a class="button button-primary button-small" href="#rules">Continue to Rules</a>
-          </div>
-
-          <div class="app-section" id="global-setup">
-            <h2 class="app-section-title">Global</h2>
-            <div class="global-setup-grid">
-              <div class="app-field">
-                <label for="slots-per-entry">Default slots per entry</label>
-                <select class="app-select" id="slots-per-entry">
-                  <option value="1" selected>1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                </select>
-              </div>
-              <div class="app-field">
-                <span class="app-label">CSV templates</span>
-                <div class="template-download-row" id="setup-template-downloads">
-                  <a
-                    class="button button-ghost button-small"
-                    href="/presets/blank/entries.csv"
-                    download="entries-template.csv"
-                  >Entries</a>
-                  <a
-                    class="button button-ghost button-small"
-                    href="/presets/blank/slots.csv"
-                    download="slots-template.csv"
-                  >Slots</a>
-                  <a
-                    class="button button-ghost button-small"
-                    href="/presets/blank/rules.csv"
-                    download="rules-template.csv"
-                  >Rules</a>
-                </div>
-              </div>
+            <div class="app-panel-header-actions">
+              <a class="button button-primary button-small" href="#slots">Continue to Slots</a>
             </div>
           </div>
 
-          <!-- Radios drive Entries / Slots panes without JS -->
           <input
             class="setup-tab-controls"
             type="radio"
-            name="setup-tab"
-            id="setup-tab-entries"
+            name="entries-tab"
+            id="entries-tab-editor"
             checked
           />
           <input
             class="setup-tab-controls"
             type="radio"
-            name="setup-tab"
-            id="setup-tab-slots"
+            name="entries-tab"
+            id="entries-tab-csv"
           />
 
-          <div class="app-subtabs" role="tablist" aria-label="Setup tables">
-            <label class="app-subtab" for="setup-tab-entries" id="setup-entries-tab-label">
-              Entries
-            </label>
-            <label class="app-subtab" for="setup-tab-slots" id="setup-slots-tab-label">
-              Slots
-            </label>
+          <div class="app-subtabs" role="tablist" aria-label="Entries views">
+            <label class="app-subtab" for="entries-tab-editor">Editor</label>
+            <label class="app-subtab" for="entries-tab-csv">CSV table</label>
           </div>
 
           <div class="setup-panes">
-            <div class="setup-pane" id="entries-pane">
+            <div class="setup-pane" id="entries-editor-pane">
+              <div class="rules-layout">
+                <div class="app-section" id="entry-list-panel">
+                  <div class="list-panel-head">
+                    <h2 class="app-section-title">Entry list</h2>
+                    <button class="button button-secondary button-small" type="button" id="add-entry-btn">
+                      + Add entry
+                    </button>
+                  </div>
+                  <ul class="rule-list" id="entry-list">
+                    <li>
+                      <p class="app-empty-hint">No entries yet. Click + Add entry or import a CSV.</p>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="app-section" id="entry-editor-panel">
+                  <h2 class="app-section-title">Editor</h2>
+                  <div class="rule-editor" id="entry-editor-fields">
+                    <p class="app-empty-hint">Select an entry to edit its fields.</p>
+                  </div>
+                  <div class="rule-editor-actions" id="entry-editor-actions" hidden>
+                    <button class="button button-primary button-small" type="button" id="save-entry-btn">
+                      Save entry
+                    </button>
+                    <button class="button button-ghost button-small" type="button" id="delete-entry-btn">
+                      Delete entry
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setup-pane" id="entries-csv-pane">
               <div class="app-toolbar">
                 <button class="button button-primary button-small" type="button" id="import-entries-btn">
-                  <input type="file" id="import-entries-file" accept=".csv,text/csv">
+                  <input type="file" id="import-entries-file" accept=".csv,text/csv" />
                   <label for="import-entries-file">Import CSV</label>
                 </button>
                 <button class="button button-ghost button-small" type="button" id="clear-entries-btn">
@@ -170,39 +168,21 @@
                 <button class="button button-secondary button-small" type="button" id="add-entry-row-btn">
                   + Add row
                 </button>
+                <button class="button button-ghost button-small" type="button" id="export-entries-csv-btn">
+                  Export CSV
+                </button>
               </div>
               <div class="app-table-wrap">
                 <table class="app-table" id="entries-table">
                   <thead>
                     <tr>
-                      <th>ID <span class="col-type">id</span></th>
-                      <th>Name <span class="col-type">text</span></th>
-                      <th>Skill <span class="col-type">number</span></th>
-                      <th>School <span class="col-type">text</span></th>
-                      <th>Availability <span class="col-type">text</span></th>
+                      <th>id</th>
+                      <th>name</th>
                     </tr>
                   </thead>
                   <tbody id="entries-table-body">
                     <tr>
-                      <td>ava</td>
-                      <td>Ava Chen</td>
-                      <td>8</td>
-                      <td>Northwest</td>
-                      <td>Mon;Wed</td>
-                    </tr>
-                    <tr>
-                      <td>bob</td>
-                      <td>Noah Patel</td>
-                      <td>5</td>
-                      <td>Northeast</td>
-                      <td>Wed</td>
-                    </tr>
-                    <tr>
-                      <td>charlie</td>
-                      <td>Mia Brooks</td>
-                      <td>3</td>
-                      <td>Southwest</td>
-                      <td>Tue;Thu</td>
+                      <td colspan="2">No rows yet. Import a CSV or add a row.</td>
                     </tr>
                   </tbody>
                 </table>
@@ -211,11 +191,80 @@
                 Edit cells directly. Use the type dropdown under each column header for the generator.
               </p>
             </div>
+          </div>
+        </section>
 
-            <div class="setup-pane" id="slots-pane">
+        <!-- ========== SLOTS ========== -->
+        <section id="slots" class="app-panel">
+          <div class="app-panel-header">
+            <div>
+              <h1>Slots</h1>
+              <p class="app-panel-lead">
+                Configure teams, events, or shifts entries can be assigned to.
+              </p>
+            </div>
+            <div class="app-panel-header-actions">
+              <a class="button button-primary button-small" href="#rules">Continue to Rules</a>
+            </div>
+          </div>
+
+          <input
+            class="setup-tab-controls"
+            type="radio"
+            name="slots-tab"
+            id="slots-tab-editor"
+            checked
+          />
+          <input
+            class="setup-tab-controls"
+            type="radio"
+            name="slots-tab"
+            id="slots-tab-csv"
+          />
+
+          <div class="app-subtabs" role="tablist" aria-label="Slots views">
+            <label class="app-subtab" for="slots-tab-editor">Editor</label>
+            <label class="app-subtab" for="slots-tab-csv">CSV table</label>
+          </div>
+
+          <div class="setup-panes">
+            <div class="setup-pane" id="slots-editor-pane">
+              <div class="rules-layout">
+                <div class="app-section" id="slot-list-panel">
+                  <div class="list-panel-head">
+                    <h2 class="app-section-title">Slot list</h2>
+                    <button class="button button-secondary button-small" type="button" id="add-slot-btn">
+                      + Add slot
+                    </button>
+                  </div>
+                  <ul class="rule-list" id="slot-list">
+                    <li>
+                      <p class="app-empty-hint">No slots yet. Click + Add slot or import a CSV.</p>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="app-section" id="slot-editor-panel">
+                  <h2 class="app-section-title">Editor</h2>
+                  <div class="rule-editor" id="slot-editor-fields">
+                    <p class="app-empty-hint">Select a slot to edit its fields.</p>
+                  </div>
+                  <div class="rule-editor-actions" id="slot-editor-actions" hidden>
+                    <button class="button button-primary button-small" type="button" id="save-slot-btn">
+                      Save slot
+                    </button>
+                    <button class="button button-ghost button-small" type="button" id="delete-slot-btn">
+                      Delete slot
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setup-pane" id="slots-csv-pane">
               <div class="app-toolbar">
                 <button class="button button-primary button-small" type="button" id="import-slots-btn">
-                  <input type="file" id="import-slots-file" accept=".csv,text/csv">
+                  <input type="file" id="import-slots-file" accept=".csv,text/csv" />
                   <label for="import-slots-file">Import CSV</label>
                 </button>
                 <button class="button button-ghost button-small" type="button" id="clear-slots-btn">
@@ -225,39 +274,23 @@
                 <button class="button button-secondary button-small" type="button" id="add-slot-row-btn">
                   + Add row
                 </button>
+                <button class="button button-ghost button-small" type="button" id="export-slots-csv-btn">
+                  Export CSV
+                </button>
               </div>
               <div class="app-table-wrap">
                 <table class="app-table" id="slots-table">
                   <thead>
                     <tr>
-                      <th>ID <span class="col-type">id</span></th>
-                      <th>Name <span class="col-type">text</span></th>
-                      <th>Min <span class="col-type">minSize</span></th>
-                      <th>Max <span class="col-type">maxSize</span></th>
-                      <th>Practice <span class="col-type">text</span></th>
+                      <th>id</th>
+                      <th>name</th>
+                      <th>min_size</th>
+                      <th>max_size</th>
                     </tr>
                   </thead>
                   <tbody id="slots-table-body">
                     <tr>
-                      <td>s1</td>
-                      <td>Team A</td>
-                      <td>2</td>
-                      <td>10</td>
-                      <td>Mon</td>
-                    </tr>
-                    <tr>
-                      <td>s2</td>
-                      <td>Team B</td>
-                      <td>2</td>
-                      <td>10</td>
-                      <td>Wed</td>
-                    </tr>
-                    <tr>
-                      <td>s3</td>
-                      <td>Team C</td>
-                      <td>2</td>
-                      <td>10</td>
-                      <td>Fri</td>
+                      <td colspan="4">No rows yet. Import a CSV or add a row.</td>
                     </tr>
                   </tbody>
                 </table>
@@ -275,13 +308,10 @@
             <div>
               <h1>Rules</h1>
               <p class="app-panel-lead">
-                Soft and hard rules for scoring, plus conflict groups (slots an entry cannot hold together).
+                Configure rules for scoring, global placement settings, and conflict groups.
               </p>
             </div>
             <div class="app-panel-header-actions">
-              <button class="button button-secondary button-small" type="button" id="add-rule-btn">
-                + Add rule
-              </button>
               <a class="button button-primary button-small" href="#review">Continue to Review</a>
             </div>
           </div>
@@ -309,7 +339,12 @@
             <div class="setup-pane" id="rules-editor-pane">
               <div class="rules-layout">
                 <div class="app-section" id="rule-list-panel">
-                  <h2 class="app-section-title">Rule list</h2>
+                  <div class="list-panel-head">
+                    <h2 class="app-section-title">Rule list</h2>
+                    <button class="button button-secondary button-small" type="button" id="add-rule-btn">
+                      + Add rule
+                    </button>
+                  </div>
                   <ul class="rule-list" id="rule-list">
                     <li>
                       <p class="app-empty-hint">No rules yet. Click + Add rule or import a CSV.</p>
@@ -383,22 +418,6 @@
                   </div>
                 </div>
               </div>
-
-              <div class="app-section" id="conflict-groups-panel">
-                <div class="review-card-head">
-                  <div>
-                    <h2 class="app-section-title">Conflict groups</h2>
-                    <p class="app-empty-hint" style="margin: 0.35rem 0 0">
-                      Slots in the same group cannot be held by the same entry at once
-                      (for example two overlapping events).
-                    </p>
-                  </div>
-                  <button class="button button-ghost button-small" type="button" id="manage-conflicts-btn">
-                    Manage…
-                  </button>
-                </div>
-                <p class="app-empty-hint" id="conflict-groups-summary">No conflict groups yet.</p>
-              </div>
             </div>
 
             <div class="setup-pane" id="rules-csv-pane">
@@ -446,8 +465,38 @@
                 <code>entries.availability ↔ slots.practice_night</code>,
                 limit options like <code>max=2</code> / <code>min=1</code>, hard
                 <code>yes</code>/<code>no</code>.
-                <a href="/presets/blank/rules.csv" download="rules-template.csv">Download blank template</a>.
               </p>
+            </div>
+          </div>
+
+          <div class="app-section" id="global-setup">
+            <h2 class="app-section-title">Global</h2>
+            <div class="global-setup-grid">
+              <div class="app-field">
+                <label for="slots-per-entry">Default slots per entry</label>
+                <select class="app-select" id="slots-per-entry">
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="global-conflicts" id="conflict-groups-panel">
+              <div class="review-card-head">
+                <div>
+                  <h3 class="app-section-title">Conflict groups</h3>
+                  <p class="app-empty-hint" style="margin: 0.35rem 0 0">
+                    Slots in the same group cannot be held by the same entry at once
+                    (for example two overlapping events).
+                  </p>
+                </div>
+                <button class="button button-ghost button-small" type="button" id="manage-conflicts-btn">
+                  Manage…
+                </button>
+              </div>
+              <p class="app-empty-hint" id="conflict-groups-summary">No conflict groups yet.</p>
             </div>
           </div>
         </section>
@@ -458,7 +507,7 @@
             <div>
               <h1>Review</h1>
               <p class="app-panel-lead">
-                Check Setup and Rules before you generate. Jump back to edit anything that looks off.
+                Review entries, slots, and rules before generating. Jump back to edit anything that looks off.
               </p>
             </div>
             <a class="button button-primary button-small" href="#generate">Continue to Generate</a>
@@ -468,7 +517,7 @@
             <div class="app-section review-card review-card-wide" id="review-global">
               <div class="review-card-head">
                 <h2 class="app-section-title">Global setup</h2>
-                <a class="button button-ghost button-small" href="#setup">Edit in Setup</a>
+                <a class="button button-ghost button-small" href="#rules">Edit in Rules</a>
               </div>
               <dl class="review-dl review-dl-inline">
                 <div>
@@ -485,41 +534,24 @@
             <div class="app-section review-card" id="review-slots">
               <div class="review-card-head">
                 <h2 class="app-section-title">Slots</h2>
-                <a class="button button-ghost button-small" href="#setup">Edit in Setup</a>
+                <a class="button button-ghost button-small" href="#slots">Edit in Slots</a>
               </div>
               <p class="review-stat" id="review-slots-count">
-                <strong>3</strong> slots
+                <strong>0</strong> slots
               </p>
-              <ul class="review-list" id="review-slots-preview">
-                <li>
-                  <strong>Team A</strong>
-                  <span>min 2 · max 10 · Mon</span>
-                </li>
-                <li>
-                  <strong>Team B</strong>
-                  <span>min 2 · max 10 · Wed</span>
-                </li>
-                <li>
-                  <strong>Team C</strong>
-                  <span>min 2 · max 10 · Fri</span>
-                </li>
-              </ul>
+              <ul class="review-list" id="review-slots-preview"></ul>
             </div>
 
             <div class="app-section review-card" id="review-entries">
               <div class="review-card-head">
                 <h2 class="app-section-title">Entries</h2>
-                <a class="button button-ghost button-small" href="#setup">Edit in Setup</a>
+                <a class="button button-ghost button-small" href="#entries">Edit in Entries</a>
               </div>
               <p class="review-stat" id="review-entries-count">
-                <strong>3</strong> entries loaded
+                <strong>0</strong> entries loaded
               </p>
-              <ul class="review-chip-list" id="review-entries-preview">
-                <li>Ava Chen</li>
-                <li>Noah Patel</li>
-                <li>Mia Brooks</li>
-              </ul>
-              <p class="app-empty-hint">Showing a short preview — full table is in Setup → Entries.</p>
+              <ul class="review-chip-list" id="review-entries-preview"></ul>
+              <p class="app-empty-hint">Showing a short preview — full table is under Entries → CSV table.</p>
             </div>
 
             <div class="app-section review-card review-card-wide" id="review-rules">
@@ -566,8 +598,7 @@
             <div>
               <h1>Generate</h1>
               <p class="app-panel-lead">
-                Uses current Setup + Rules. Hard limits must pass; soft rules guide the score.
-                Returns up to three ranked options.
+                Uses configured entries, slots, and rules, returning multiple ranked options for review.
               </p>
             </div>
             <a class="button button-primary button-small" href="#results">Continue to Results</a>
@@ -591,7 +622,7 @@
               <p class="app-status-label">State</p>
               <p class="app-status-title" id="generate-status-title">Idle</p>
               <p class="app-status-detail" id="generate-status-detail">
-                Ready when Setup and Rules look right.
+                Ready when entries, slots, and rules look right.
               </p>
             </div>
 
@@ -644,14 +675,46 @@
           </div>
 
           <div class="results-controls">
-            <div class="app-pill-row" id="result-set-picker" role="group" aria-label="Result set">
-              <button class="app-pill is-active" type="button" data-option="1">Option 1</button>
-              <button class="app-pill" type="button" data-option="2">Option 2</button>
-              <button class="app-pill" type="button" data-option="3">Option 3</button>
+            <div class="results-view-config" aria-label="View configuration">
+              <div
+                class="results-toggle-group"
+                id="results-layout-toggle"
+                role="group"
+                aria-label="Layout"
+              >
+                <button class="results-toggle-btn is-active" type="button" data-layout="list">
+                  List
+                </button>
+                <button class="results-toggle-btn" type="button" data-layout="grid">
+                  Grid
+                </button>
+              </div>
+              <div
+                class="results-toggle-group"
+                id="results-group-toggle"
+                role="group"
+                aria-label="Group by"
+              >
+                <button class="results-toggle-btn is-active" type="button" data-view="by-slot">
+                  By slot
+                </button>
+                <button class="results-toggle-btn" type="button" data-view="by-entry">
+                  By entry
+                </button>
+              </div>
             </div>
-            <div class="app-pill-row" id="results-view-toggle" role="group" aria-label="View mode">
-              <button class="app-pill is-active" type="button" data-view="by-slot">By slot</button>
-              <button class="app-pill" type="button" data-view="by-entry">By entry</button>
+
+            <div
+              class="results-option-picker"
+              id="result-set-picker"
+              role="group"
+              aria-label="Result set"
+            >
+              <button class="results-option-btn is-active" type="button" data-option="1">
+                Option 1
+              </button>
+              <button class="results-option-btn" type="button" data-option="2">Option 2</button>
+              <button class="results-option-btn" type="button" data-option="3">Option 3</button>
             </div>
           </div>
 
@@ -675,18 +738,11 @@
         <h2 id="load-preset-title">Load preset</h2>
         <p class="app-modal-lead">
           This <strong>replaces</strong> the current entries, slots, rules, and global setup
-          with the chosen pack. Download templates first if you need the expected CSV format.
+          with the chosen pack.
         </p>
 
         <div class="preset-choice-list" id="load-preset-list"></div>
         <p class="app-empty-hint" id="load-preset-summary"></p>
-
-        <div class="template-download-row" id="load-preset-templates">
-          <span class="app-label">CSV templates</span>
-          <a class="button button-ghost button-small" id="load-template-entries" href="#">Entries</a>
-          <a class="button button-ghost button-small" id="load-template-slots" href="#">Slots</a>
-          <a class="button button-ghost button-small" id="load-template-rules" href="#">Rules</a>
-        </div>
 
         <p class="app-empty-hint" id="load-preset-status" aria-live="polite"></p>
 

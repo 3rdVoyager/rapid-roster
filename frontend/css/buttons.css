@@ -13,11 +13,18 @@
   border-radius: 8px;
   border: 1px solid transparent;
   transition:
-    all 0.15s ease;
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s ease;
 }
 
 .button:hover {
   transform: scale(1.02) rotate(-2deg);
+}
+
+.button:active {
+  transform: scale(0.96);
 }
 
 .button-primary {
@@ -30,6 +37,10 @@
   background: var(--primary-button-color-hover);
 }
 
+.button-primary:active {
+  background: color-mix(in srgb, var(--primary-button-color) 75%, black);
+}
+
 .button-secondary {
   color: var(--text-color);
   background: transparent;
@@ -38,6 +49,12 @@
 
 .button-secondary:hover {
   color: var(--text-color);
+  border-color: var(--secondary-button-color-hover);
+  background: color-mix(in srgb, var(--secondary-button-color) 24%, transparent);
+}
+
+.button-secondary:active {
+  background: color-mix(in srgb, var(--secondary-button-color) 38%, transparent);
   border-color: var(--secondary-button-color-hover);
 }
 
@@ -48,6 +65,9 @@
 
 .button-tertiary:hover {
   color: var(--text-color);
-  background: var(--tertiary-button-color-hover);
-  transform: none;
+  background: color-mix(in srgb, var(--color-white) 14%, var(--tertiary-button-color));
+}
+
+.button-tertiary:active {
+  background: color-mix(in srgb, var(--color-white) 8%, var(--color-navy));
 }
