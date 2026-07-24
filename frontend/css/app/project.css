@@ -1,13 +1,18 @@
 /* /app/project/ — project workspace with sidebar */
 
-/* Hash panel switches (#setup, #review, …) should not animate-scroll the page */
-html:has(.page-project) {
+/*
+  Panel tabs (Setup, Rules, …) are shown/hidden with the class .is-active.
+  project.js adds/removes that class when the URL hash changes (#setup, …).
+  We avoid CSS :has() / :target here so the logic stays easy to follow in JS.
+*/
+html {
   scroll-behavior: auto;
 }
 
 .page-project {
   overflow: hidden;
   height: 100vh;
+  /* 100dvh = dynamic viewport height (mobile browser chrome-aware). Falls back to 100vh above. */
   height: 100dvh;
 }
 
@@ -72,6 +77,11 @@ html:has(.page-project) {
   animation: fade-in 0.3s ease both;
 }
 
+/* Only the active workflow step is visible (class set by project.js). */
+.app-panel.is-active {
+  display: block;
+}
+
 .app-panel-header {
   display: flex;
   flex-wrap: wrap;
@@ -99,17 +109,7 @@ html:has(.page-project) {
   color: var(--text-color-muted);
 }
 
-.app-main:not(:has(.app-panel:target)) #setup,
-.app-panel:target {
-  display: block;
-}
-
-body:not(:has(.app-panel:target)) .app-nav-item[href="#setup"],
-body:has(#setup:target) .app-nav-item[href="#setup"],
-body:has(#rules:target) .app-nav-item[href="#rules"],
-body:has(#review:target) .app-nav-item[href="#review"],
-body:has(#generate:target) .app-nav-item[href="#generate"],
-body:has(#results:target) .app-nav-item[href="#results"] {
+.app-nav-item.is-active {
   color: var(--text-color);
   background: color-mix(in srgb, var(--color-blue) 18%, var(--color-navy));
   border-left-color: var(--color-blue);
@@ -515,7 +515,11 @@ body:has(#results:target) .app-nav-item[href="#results"] {
 
 .results-people {
   display: grid;
-  /* name | flexible spacer | one column per attribute (max-content = widest pill) */
+  /*
+    Columns: person name | flexible spacer | one column per attribute pill.
+    --attr-count is set inline from JS so the grid knows how many pill columns.
+    max-content = column as wide as its widest cell (keeps pills aligned).
+  */
   grid-template-columns:
     max-content
     minmax(0.75rem, 1fr)
@@ -529,6 +533,11 @@ body:has(#results:target) .app-nav-item[href="#results"] {
   overflow-x: auto;
 }
 
+/*
+  display: contents — the <li> itself does not draw a box.
+  Its children (name, spacer, pills) become direct grid items of .results-people.
+  That lets every person's attributes line up in the same columns.
+*/
 .results-person {
   display: contents;
 }
@@ -626,12 +635,7 @@ body:has(#results:target) .app-nav-item[href="#results"] {
     border-bottom: 3px solid transparent;
   }
 
-  body:not(:has(.app-panel:target)) .app-nav-item[href="#setup"],
-  body:has(#setup:target) .app-nav-item[href="#setup"],
-  body:has(#rules:target) .app-nav-item[href="#rules"],
-  body:has(#review:target) .app-nav-item[href="#review"],
-  body:has(#generate:target) .app-nav-item[href="#generate"],
-  body:has(#results:target) .app-nav-item[href="#results"] {
+  .app-nav-item.is-active {
     border-left-color: transparent;
     border-bottom-color: var(--color-blue);
   }

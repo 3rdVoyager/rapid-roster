@@ -55,6 +55,7 @@
 
 import {
   createEmptyAssignments,
+  copyAssignments,
   addPersonToSlot,
   removePersonFromSlot,
   movePerson,
@@ -272,7 +273,7 @@ function runOneAttempt(legalConfig, scoreConfig, options) {
   let workingAssignments = assignments;
   let workingScore = scored.totalScore;
 
-  let bestAssignments = structuredClone(assignments);
+  let bestAssignments = copyAssignments(assignments);
   let bestScore = scored.totalScore;
   let bestBreakdown = scored.scoresByRule;
 
@@ -299,7 +300,7 @@ function runOneAttempt(legalConfig, scoreConfig, options) {
     workingScore = improved.bestScore;
 
     if (workingScore > bestScore) {
-      bestAssignments = structuredClone(workingAssignments);
+      bestAssignments = copyAssignments(workingAssignments);
       bestScore = workingScore;
       bestBreakdown = improved.scoresByRule;
     }
@@ -323,7 +324,7 @@ function runOneAttempt(legalConfig, scoreConfig, options) {
 
       // A lucky shake might already beat the best before we improve again.
       if (workingScore > bestScore) {
-        bestAssignments = structuredClone(workingAssignments);
+        bestAssignments = copyAssignments(workingAssignments);
         bestScore = workingScore;
         bestBreakdown = scored.scoresByRule;
       }

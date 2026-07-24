@@ -21,6 +21,9 @@
  *
  * totalScore = sum of every soft rule's ruleScore
  *
+ * Object.keys(...) appears in a few helpers — it returns an array of an
+ * object's property names (for example every person id in assignments).
+ *
  * ---------------------------------------------------------------------------
  * How to call this file
  * ---------------------------------------------------------------------------

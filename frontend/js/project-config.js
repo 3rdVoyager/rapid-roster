@@ -4,7 +4,8 @@
  * Turns a project object (tables + rules) into the flat configs that
  * legal.js and score.js understand.
  *
- * Keep translation here so the generator files stay simple.
+ * Keep translation here so the generator files stay simple — they never
+ * need to know about table columns or row.cells shapes.
  */
 
 /**
@@ -15,9 +16,11 @@
  */
 export function buildLegalConfig(project) {
   const slotIds = [];
+  // Plain objects used as "maps": key = slot id, value = a number.
   const slotMinSizes = {};
   const slotMaxSizes = {};
 
+  // Column "type" tells us which cell holds min/max (keys can be renamed).
   const minKey = findColumnKeyByType(project.slots.columns, "minSize");
   const maxKey = findColumnKeyByType(project.slots.columns, "maxSize");
 
@@ -26,6 +29,8 @@ export function buildLegalConfig(project) {
     slotIds.push(row.id);
 
     if (minKey !== null) {
+      // Number(...) turns cell text/numbers into a real number.
+      // Number.isNaN(x) is true when the value was not a valid number.
       const minValue = Number(row.cells[minKey]);
       if (Number.isNaN(minValue) === false) {
         slotMinSizes[row.id] = minValue;
@@ -63,6 +68,9 @@ export function buildLegalConfig(project) {
 
 /**
  * Build the config object for scorePlacement / runSearch.
+ *
+ * peopleAttrs / slotAttrs look like:
+ *   { "ava": { name: "Ava", skill: 8 }, "bob": { ... } }
  *
  * @param {Object} project
  * @returns {Object}
@@ -118,6 +126,13 @@ function findColumnKeyByType(columns, typeName) {
 /**
  * Shallow copy of a cells object.
  *
+ * Why copy?
+ *   So later edits to the score config cannot accidentally change
+ *   the project tables (they would share the same inner object).
+ *
+ * Object.keys(cells) returns an array of property names, e.g.
+ *   Object.keys({ skill: 8, school: "North" }) → ["skill", "school"]
+ *
  * @param {Object} cells
  * @returns {Object}
  */
@@ -137,3 +152,4 @@ function copyCells(cells) {
 
   return copy;
 }
+

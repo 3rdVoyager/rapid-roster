@@ -7,6 +7,22 @@
  *
  * Other files import helpers like getProject() and saveProject().
  * They should not reach into localStorage themselves.
+ *
+ * ---------------------------------------------------------------------------
+ * Browser storage tools used here
+ * ---------------------------------------------------------------------------
+ *
+ * localStorage.setItem(key, text)
+ *   Save a string under a key in this browser (survives refresh).
+ *
+ * localStorage.getItem(key)
+ *   Read that string back (or null if nothing saved).
+ *
+ * JSON.stringify(object)
+ *   Turn a plain object into a text string so it can be stored.
+ *
+ * JSON.parse(text)
+ *   Turn that text back into a plain object.
  */
 
 const STORAGE_KEY = "rapidroster.currentProject";
@@ -288,11 +304,19 @@ export function createDemoProject() {
 }
 
 /**
- * Simple unique-ish id for local use.
+ * Simple unique-ish id for local use (good enough before cloud ids exist).
+ *
+ * Example pieces:
+ *   Date.now()           → milliseconds since 1970 (always growing)
+ *   .toString(36)        → write that number with digits 0-9 and letters a-z
+ *                          (shorter than base 10)
+ *   Math.random() * 10000 → extra digits so two ids in the same ms differ
  *
  * @param {string} prefix
  * @returns {string}
  */
 function makeId(prefix) {
-  return prefix + "-" + Date.now().toString(36) + "-" + Math.floor(Math.random() * 10000);
+  const timePart = Date.now().toString(36);
+  const randomPart = Math.floor(Math.random() * 10000);
+  return prefix + "-" + timePart + "-" + randomPart;
 }

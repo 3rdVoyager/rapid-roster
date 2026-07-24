@@ -57,18 +57,43 @@ export function createEmptyAssignments(personIds) {
 /**
  * Make a full copy of an assignments object.
  *
- * Why not just write:  const copy = { ...assignments }  ?
- * That only copies the outer object. The arrays inside would still
- * be the SAME arrays. Changing copy["ava"] would also change the original.
+ * Why copy at all?
+ *   Helpers below return NEW maps instead of editing the one you pass in.
+ *   That way the search can try a move, and throw it away if it is illegal.
  *
- * structuredClone(...) is a built-in browser function that copies
- * the whole plain-data tree (object + nested arrays) in one step.
+ * Why not:  const copy = assignments  ?
+ *   That only copies the *reference*. Both names point at the same object.
+ *
+ * Why not:  const copy = { ...assignments }  (spread)?
+ *   That copies the outer object, but the arrays inside are still shared.
+ *   Changing copy["ava"] would also change the original.
+ *
+ * So we:
+ *   1. Create a new empty object
+ *   2. For each person id, copy their slot-id array with .slice()
+ *
+ * Object.keys(obj) → array of that object's own property names (the person ids).
  *
  * @param {Object} assignments
  * @returns {Object} a new assignments object with the same contents
  */
 export function copyAssignments(assignments) {
-  return structuredClone(assignments);
+  const copy = {};
+  const personIds = Object.keys(assignments);
+
+  for (let i = 0; i < personIds.length; i = i + 1) {
+    const personId = personIds[i];
+    const slots = assignments[personId];
+
+    // .slice() with no args copies every item into a new array.
+    if (slots === undefined) {
+      copy[personId] = [];
+    } else {
+      copy[personId] = slots.slice();
+    }
+  }
+
+  return copy;
 }
 
 /**
@@ -124,6 +149,7 @@ export function personIsInSlot(assignments, personId, slotId) {
  */
 export function getPeopleInSlot(assignments, slotId) {
   const peopleInSlot = [];
+  // Object.keys(obj) → array of property names (here: every person id).
   const personIds = Object.keys(assignments);
 
   for (let i = 0; i < personIds.length; i = i + 1) {

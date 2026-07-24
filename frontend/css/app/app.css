@@ -89,6 +89,10 @@
 }
 
 .app-project-name-label {
+  /*
+    Visually hidden but still read by screen readers.
+    (Keeps the form accessible without showing a second label on screen.)
+  */
   position: absolute;
   width: 1px;
   height: 1px;

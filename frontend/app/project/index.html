@@ -58,7 +58,7 @@
     <div class="app-shell">
       <nav class="app-sidebar" aria-label="Workspace">
         <p class="app-sidebar-label">Workflow</p>
-        <a class="app-nav-item" href="#setup">
+        <a class="app-nav-item is-active" href="#setup">
           <span class="material-symbols-outlined" aria-hidden="true">table</span>
           Setup
         </a>
@@ -82,7 +82,7 @@
 
       <main class="app-main">
         <!-- ========== SETUP ========== -->
-        <section id="setup" class="app-panel">
+        <section id="setup" class="app-panel is-active">
           <div class="app-panel-header">
             <div>
               <h1>Setup</h1>
@@ -625,26 +625,6 @@
       </main>
     </div>
 
-    <script type="module">
-      // Panel tabs use #hash for :target CSS. The browser scrolls to the
-      // target element — undo that so switching tabs stays put.
-      const main = document.querySelector(".app-main");
-
-      function resetPanelScroll() {
-        window.scrollTo(0, 0);
-        if (main !== null) {
-          main.scrollTop = 0;
-        }
-      }
-
-      window.addEventListener("hashchange", function () {
-        resetPanelScroll();
-        // Second frame: some browsers scroll after hashchange handlers.
-        requestAnimationFrame(resetPanelScroll);
-      });
-
-      resetPanelScroll();
-    </script>
     <script type="module" src="/js/project.js"></script>
   </body>
 </html>

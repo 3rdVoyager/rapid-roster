@@ -1,13 +1,59 @@
 /**
  * project.js
  *
- * Wires the project workspace page to state + the generator.
+ * Wires the project workspace page (/app/project/) to:
+ *   - state.js          (current project in memory + localStorage)
+ *   - project-config.js (tables → configs the generator understands)
+ *   - generator/*       (search for good legal placements)
  *
- * First slice:
- *   - load demo project (or saved localStorage project)
- *   - render Setup tables, Rules list, Review, Results
- *   - localStorage save helpers (wire autosave later)
- *   - Generate → runSearch → show ranked options
+ * What this file does on load:
+ *   1. Load a saved project, or create the demo project
+ *   2. Draw every panel from that project object
+ *   3. Attach click/change listeners to buttons and inputs
+ *
+ * ---------------------------------------------------------------------------
+ * DOM tools used here (quick glossary)
+ * ---------------------------------------------------------------------------
+ *
+ * import { name } from "/js/file.js"
+ *   ES module syntax: pull exported functions from another file.
+ *   The HTML script tag must say type="module" for this to work.
+ *
+ * document.getElementById("foo")
+ *   Find the one element whose id="foo". Returns null if missing.
+ *
+ * document.querySelector(".class") / querySelectorAll(...)
+ *   Find elements with a CSS selector. querySelector = first match;
+ *   querySelectorAll = a list you can loop with a normal for-loop.
+ *
+ * element.textContent = "hi"
+ *   Set the visible text (safe — does not run HTML tags).
+ *
+ * element.innerHTML = "<b>hi</b>"
+ *   Set the HTML inside an element. Only use with trusted markup,
+ *   or escape user data first (see escapeHtml below).
+ *
+ * element.value / element.checked
+ *   Read/write form controls (inputs, selects, checkboxes).
+ *
+ * element.classList.add("x") / .remove("x")
+ *   Add or remove a CSS class on an element.
+ *
+ * element.getAttribute("data-rule-id")
+ *   Read an HTML attribute. We store ids on buttons as data-rule-id="...".
+ *
+ * element.addEventListener("click", handler)
+ *   Run handler when that event happens on the element.
+ *
+ * event.target
+ *   The element that was actually clicked (might be a child inside a button).
+ *   We walk up parents with findAncestor(...) to find the button we care about.
+ *
+ * window.location.hash
+ *   The "#setup" part of the URL. We use it to remember which panel is open.
+ *
+ * window.setTimeout(fn, 20)
+ *   Run fn after a short delay so the browser can paint "Working…" first.
  */
 
 import {
@@ -23,6 +69,9 @@ import {
 import { buildLegalConfig, buildScoreConfig } from "/js/project-config.js";
 import { runSearch, mergeOptions } from "/js/generator/search.js";
 import { getPeopleInSlot } from "/js/generator/placement.js";
+
+/** Valid workflow panel ids (must match section id= and nav href="#..."). */
+const PANEL_IDS = ["setup", "rules", "review", "generate", "results"];
 
 /**
  * Page startup.
@@ -42,6 +91,8 @@ function main() {
 
   renderAll();
   wireControls();
+  wirePanelNavigation();
+  showPanelFromHash();
 }
 
 /**
@@ -68,6 +119,8 @@ function renderHeader(project) {
   const nameEl = document.getElementById("project-name");
   const saveStateEl = document.getElementById("save-state");
 
+  // Do not overwrite the input while the user is typing in it.
+  // document.activeElement = whatever currently has keyboard focus.
   if (nameEl !== null && document.activeElement !== nameEl) {
     nameEl.value = project.name;
   }
@@ -75,6 +128,7 @@ function renderHeader(project) {
   if (saveStateEl !== null) {
     if (getDirty() === true) {
       saveStateEl.textContent = "Unsaved";
+      // data-state is read by CSS ([data-state="unsaved"]) for colors.
       saveStateEl.setAttribute("data-state", "unsaved");
     } else {
       saveStateEl.textContent = "Saved";
@@ -118,12 +172,15 @@ function renderSlotsTable(project) {
 }
 
 function renderTableHeader(table, columns) {
+  // querySelector looks inside `table` for the first <thead>.
   const thead = table.querySelector("thead");
 
   if (thead === null) {
     return;
   }
 
+  // Build an HTML string, then put it into the page in one step.
+  // (Longer than createElement loops, but easy to read top-to-bottom.)
   let html = "<tr>";
 
   for (let i = 0; i < columns.length; i = i + 1) {
@@ -245,6 +302,7 @@ function fillRuleEditor(rule) {
 
   const typeRadios = document.querySelectorAll('input[name="rule-type"]');
 
+  // querySelectorAll returns a NodeList — loop it like an array.
   for (let i = 0; i < typeRadios.length; i = i + 1) {
     const radio = typeRadios[i];
     radio.checked = radio.value === rule.type;
@@ -660,13 +718,15 @@ function findSlotRow(project, slotId) {
 }
 
 /**
- * Attach click / change handlers once.
+ * Attach click / change handlers once (at page load).
  */
 function wireControls() {
   const nameInput = document.getElementById("project-name");
   if (nameInput !== null) {
+    // "input" fires on every keystroke; "change" fires when the field blurs
+    // after a change (or Enter in some browsers).
     nameInput.addEventListener("input", onProjectNameInput);
-    nameInput.addEventListener("change", onProjectNameInput);
+    nameInput.addEventListener("change", onProjectNameBlur);
   }
 
   const slotsPerPerson = document.getElementById("slots-per-person");
@@ -684,6 +744,8 @@ function wireControls() {
     retryBtn.addEventListener("click", onRetryClick);
   }
 
+  // One listener on the whole list (event delegation):
+  // clicks on child buttons bubble up to #rule-list.
   const ruleList = document.getElementById("rule-list");
   if (ruleList !== null) {
     ruleList.addEventListener("click", onRuleListClick);
@@ -695,7 +757,136 @@ function wireControls() {
   }
 }
 
+/**
+ * Sidebar tabs + in-page "Continue" links:
+ * keep the URL hash and the visible panel in sync,
+ * without letting the browser scroll to the section id.
+ */
+function wirePanelNavigation() {
+  // Capture clicks on any link whose href is #setup, #rules, …
+  document.addEventListener("click", onPanelLinkClick);
+  window.addEventListener("hashchange", showPanelFromHash);
+}
+
+/**
+ * @param {MouseEvent} event
+ */
+function onPanelLinkClick(event) {
+  const link = findAncestor(event.target, "a[href]");
+
+  if (link === null) {
+    return;
+  }
+
+  const href = link.getAttribute("href");
+
+  if (href === null || href.charAt(0) !== "#") {
+    return;
+  }
+
+  const panelId = href.slice(1);
+  let known = false;
+
+  for (let i = 0; i < PANEL_IDS.length; i = i + 1) {
+    if (PANEL_IDS[i] === panelId) {
+      known = true;
+    }
+  }
+
+  if (known === false) {
+    return;
+  }
+
+  // Stop the browser from scrolling to the element with that id.
+  event.preventDefault();
+
+  if (window.location.hash === href) {
+    // Clicking the already-active tab: still refresh the active classes.
+    showPanel(panelId);
+  } else {
+    // Changing the hash fires "hashchange", which calls showPanelFromHash.
+    window.location.hash = href;
+  }
+}
+
+/**
+ * Read window.location.hash (example: "#rules") and show that panel.
+ */
+function showPanelFromHash() {
+  let panelId = "setup";
+  const hash = window.location.hash;
+
+  // hash looks like "#rules". slice(1) drops the leading "#".
+  if (hash !== "" && hash !== "#") {
+    panelId = hash.slice(1);
+  }
+
+  showPanel(panelId);
+}
+
+/**
+ * Show one workflow panel and highlight its sidebar link.
+ *
+ * @param {string} panelId - "setup" | "rules" | "review" | "generate" | "results"
+ */
+function showPanel(panelId) {
+  let safeId = panelId;
+  let known = false;
+
+  for (let i = 0; i < PANEL_IDS.length; i = i + 1) {
+    if (PANEL_IDS[i] === safeId) {
+      known = true;
+    }
+  }
+
+  if (known === false) {
+    safeId = "setup";
+  }
+
+  const panels = document.querySelectorAll(".app-panel");
+
+  for (let i = 0; i < panels.length; i = i + 1) {
+    const panel = panels[i];
+
+    if (panel.id === safeId) {
+      panel.classList.add("is-active");
+    } else {
+      panel.classList.remove("is-active");
+    }
+  }
+
+  const navItems = document.querySelectorAll(".app-nav-item");
+
+  for (let i = 0; i < navItems.length; i = i + 1) {
+    const item = navItems[i];
+    const href = item.getAttribute("href");
+
+    if (href === "#" + safeId) {
+      item.classList.add("is-active");
+    } else {
+      item.classList.remove("is-active");
+    }
+  }
+
+  // Keep the main scroll area at the top when switching tabs.
+  const main = document.querySelector(".app-main");
+
+  if (main !== null) {
+    main.scrollTop = 0;
+  }
+}
+
 function onProjectNameInput(event) {
+  const project = getProject();
+
+  // While typing, keep the raw value (including spaces).
+  // Empty string is allowed temporarily; blur will fix it.
+  project.name = event.target.value;
+  setDirty(true);
+  renderHeader(project);
+}
+
+function onProjectNameBlur(event) {
   const project = getProject();
   let nextName = event.target.value.trim();
 
@@ -704,12 +895,14 @@ function onProjectNameInput(event) {
   }
 
   project.name = nextName;
+  event.target.value = nextName;
   setDirty(true);
   renderHeader(project);
 }
 
 function onSlotsPerPersonChange(event) {
   const project = getProject();
+  // Number(...) turns the select's string value into a real number.
   project.setup.defaultSlotsPerPerson = Number(event.target.value);
   setDirty(true);
   renderHeader(project);
@@ -717,7 +910,8 @@ function onSlotsPerPersonChange(event) {
 }
 
 function onRuleListClick(event) {
-  const button = event.target.closest(".rule-list-item");
+  // event.target might be the <strong> inside the button — walk up.
+  const button = findAncestor(event.target, ".rule-list-item");
 
   if (button === null) {
     return;
@@ -742,7 +936,7 @@ function onRuleListClick(event) {
 }
 
 function onResultPickerClick(event) {
-  const button = event.target.closest("[data-option]");
+  const button = findAncestor(event.target, "[data-option]");
 
   if (button === null) {
     return;
@@ -787,7 +981,8 @@ function runGeneration(mergeWithExisting) {
     statusDetail.textContent = "Searching for legal, high-scoring placements.";
   }
 
-  // Yield to the browser so the status text can paint before the heavy loop.
+  // Let the browser paint "Working…" before the heavy search loop runs.
+  // setTimeout(fn, 20) means: run fn about 20 milliseconds from now.
   window.setTimeout(function () {
     const result = runSearch(legalConfig, scoreConfig, {
       optionCount: 3,
@@ -870,15 +1065,56 @@ function setText(id, text) {
 }
 
 function formatScore(value) {
+  // Round to 2 decimal places: 12.3456 → 12.35
   return Math.round(value * 100) / 100;
 }
 
+/**
+ * Escape text before putting it into innerHTML.
+ *
+ * If a person is named `<script>...`, we must not inject real HTML.
+ * Replacing special characters with entities makes them display as text.
+ *
+ * The /g on each regex means "replace every match, not just the first".
+ */
 function escapeHtml(text) {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
+  let safe = String(text);
+  safe = safe.replace(/&/g, "&amp;");
+  safe = safe.replace(/</g, "&lt;");
+  safe = safe.replace(/>/g, "&gt;");
+  safe = safe.replace(/"/g, "&quot;");
+  return safe;
+}
+
+/**
+ * Walk up from startEl until we find an element that matches a CSS selector.
+ *
+ * Why: clicks bubble. Clicking the word inside a button still fires the
+ * list's click handler, but event.target may be the inner <strong>, not
+ * the <button>. This finds the button (or returns null).
+ *
+ * Same idea as the built-in element.closest(selector), written out.
+ *
+ * element.matches(selector) → true if THIS element would be found by
+ * that CSS selector (example: ".rule-list-item" or "[data-option]").
+ *
+ * @param {Element|null} startEl
+ * @param {string} selector
+ * @returns {Element|null}
+ */
+function findAncestor(startEl, selector) {
+  let el = startEl;
+
+  while (el !== null) {
+    if (typeof el.matches === "function" && el.matches(selector) === true) {
+      return el;
+    }
+
+    // parentElement = the element one level up (or null at the top).
+    el = el.parentElement;
+  }
+
+  return null;
 }
 
 main();

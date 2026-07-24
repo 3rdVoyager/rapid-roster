@@ -13,6 +13,14 @@
  * Soft rules do NOT belong here — those go in score.js.
  *
  * ---------------------------------------------------------------------------
+ * One JS habit used a lot in this file
+ * ---------------------------------------------------------------------------
+ *
+ * Object.keys(assignments)
+ *   Returns an array of the object's own property names.
+ *   For an assignments map, that list is every person id.
+ *
+ * ---------------------------------------------------------------------------
  * How to call this file
  * ---------------------------------------------------------------------------
  *
@@ -117,7 +125,7 @@ function checkUnknownSlots(assignments, config, reasons) {
     return;
   }
 
-  const personIds = Object.keys(assignments);
+  const personIds = Object.keys(assignments); // property names = person ids
 
   for (let i = 0; i < personIds.length; i = i + 1) {
     const personId = personIds[i];
@@ -245,7 +253,7 @@ function checkSlotsPerPerson(assignments, config, reasons) {
     maxSlots = 1;
   }
 
-  const personIds = Object.keys(assignments);
+  const personIds = Object.keys(assignments); // property names = person ids
 
   for (let i = 0; i < personIds.length; i = i + 1) {
     const personId = personIds[i];
@@ -282,7 +290,7 @@ function checkConflictGroups(assignments, config, reasons) {
     return;
   }
 
-  const personIds = Object.keys(assignments);
+  const personIds = Object.keys(assignments); // property names = person ids
 
   for (let i = 0; i < personIds.length; i = i + 1) {
     const personId = personIds[i];
