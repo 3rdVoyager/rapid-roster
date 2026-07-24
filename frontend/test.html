@@ -1,88 +1,225 @@
-<script type="module">
-  import { createEmptyAssignments, addPersonToSlot } from "/js/generator/placement.js";
-  import { checkLegal } from "/js/generator/legal.js";
-  import { scorePlacement } from "/js/generator/score.js";
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>RapidRoster — generator test</title>
+  </head>
+  <body>
+    <h1>Generator test</h1>
+    <p>
+      Open the browser console (F12) for detailed progress. Serve the
+      <code>frontend</code> folder over http, then open <code>/test.html</code>.
+    </p>
+    <pre id="out">Running…</pre>
 
-  let a = createEmptyAssignments(["ava", "bob", "charlie", "dave", "eve", "frank", "grace", "hannah", "ivy", "jack", "kate", "lily", "maddy", "nate", "olive", "paul", "quinn", "rachel", "sara", "taylor", "uva", "vince", "wendy", "xavier", "yara", "zane"]);
+    <script type="module">
+      import { runSearch, mergeOptions } from "/js/generator/search.js";
+      import { getPeopleInSlot } from "/js/generator/placement.js";
 
-  a = addPersonToSlot(a, "ava", "s1");
-  a = addPersonToSlot(a, "bob", "s2");
-  a = addPersonToSlot(a, "charlie", "s3");
-  a = addPersonToSlot(a, "dave", "s1");
-  a = addPersonToSlot(a, "eve", "s2");
-  a = addPersonToSlot(a, "frank", "s3");
-  a = addPersonToSlot(a, "grace", "s1");
-  a = addPersonToSlot(a, "hannah", "s2");
-  a = addPersonToSlot(a, "ivy", "s3");
-  a = addPersonToSlot(a, "jack", "s1");
-  a = addPersonToSlot(a, "kate", "s2");
-  a = addPersonToSlot(a, "lily", "s3");
-  a = addPersonToSlot(a, "maddy", "s1");
-  a = addPersonToSlot(a, "nate", "s2");
-  a = addPersonToSlot(a, "olive", "s3");
-  a = addPersonToSlot(a, "paul", "s1");
-  a = addPersonToSlot(a, "quinn", "s2");
-  a = addPersonToSlot(a, "rachel", "s3");
-  a = addPersonToSlot(a, "sara", "s1");
-  a = addPersonToSlot(a, "taylor", "s2");
-  a = addPersonToSlot(a, "uva", "s3");
-  a = addPersonToSlot(a, "vince", "s1");
-  a = addPersonToSlot(a, "wendy", "s2");
-  a = addPersonToSlot(a, "xavier", "s3");
-  a = addPersonToSlot(a, "yara", "s1");
-  a = addPersonToSlot(a, "zane", "s2");
+      // -------------------------------------------------------------------------
+      // Test data: 26 people, 3 slots
+      // Soft goals: keep schools together + balance skill
+      // -------------------------------------------------------------------------
 
-  const result = checkLegal(a, {
-    slotIds: ["s1", "s2", "s3"],
-    slotMinSizes: 2,
-    slotMaxSizes: 10,
-    defaultSlotsPerPerson: 1,
-    conflictGroups: []
-  });
+      const peopleAttrs = {
+        ava: { skill: 8, school: "Northwest" },
+        bob: { skill: 5, school: "Northeast" },
+        charlie: { skill: 3, school: "Southwest" },
+        dave: { skill: 2, school: "Northwest" },
+        eve: { skill: 1, school: "Northeast" },
+        frank: { skill: 4, school: "Southwest" },
+        grace: { skill: 6, school: "Northwest" },
+        hannah: { skill: 7, school: "Northeast" },
+        ivy: { skill: 9, school: "Southwest" },
+        jack: { skill: 10, school: "Northwest" },
+        kate: { skill: 6, school: "Northeast" },
+        lily: { skill: 7, school: "Southwest" },
+        maddy: { skill: 8, school: "Northwest" },
+        nate: { skill: 9, school: "Northeast" },
+        olive: { skill: 10, school: "Southwest" },
+        paul: { skill: 10, school: "Northwest" },
+        quinn: { skill: 10, school: "Northeast" },
+        rachel: { skill: 9, school: "Southwest" },
+        sara: { skill: 8, school: "Northwest" },
+        taylor: { skill: 7, school: "Northeast" },
+        uva: { skill: 6, school: "Southwest" },
+        vince: { skill: 5, school: "Northwest" },
+        wendy: { skill: 4, school: "Northeast" },
+        xavier: { skill: 3, school: "Southwest" },
+        yara: { skill: 2, school: "Northwest" },
+        zane: { skill: 1, school: "Northeast" }
+      };
 
-  console.log(a);
-  console.log(result);
+      const legalConfig = {
+        slotIds: ["s1", "s2", "s3"],
+        slotMinSizes: 2,
+        slotMaxSizes: 10,
+        defaultSlotsPerPerson: 1,
+        conflictGroups: []
+      };
 
-  const scored = scorePlacement(a, {
-    peopleAttrs: {
-      ava: { skill: 8, school: "Northwest" },
-      bob: { skill: 5, school: "Northeast" },
-      charlie: { skill: 3, school: "Southwest" },
-      dave: { skill: 2, school: "Northwest" },
-      eve: { skill: 1, school: "Northeast" },
-      frank: { skill: 4, school: "Southwest" },
-      grace: { skill: 6, school: "Northwest" },
-      hannah: { skill: 7, school: "Northeast" },
-      ivy: { skill: 9, school: "Southwest" },
-      jack: { skill: 10, school: "Northwest" },
-      kate: { skill: 6, school: "Northeast" },
-      lily: { skill: 7, school: "Southwest" },
-      maddy: { skill: 8, school: "Northwest" },
-      nate: { skill: 9, school: "Northeast" },
-      olive: { skill: 10, school: "Southwest" },
-      paul: { skill: 10, school: "Northwest" },
-      quinn: { skill: 10, school: "Northeast" },
-      rachel: { skill: 9, school: "Southwest" },
-      sara: { skill: 8, school: "Northwest" },
-      taylor: { skill: 7, school: "Northeast" },
-      uva: { skill: 6, school: "Southwest" },
-      vincent: { skill: 5, school: "Northwest" },
-      wendy: { skill: 4, school: "Northeast" },
-      xavier: { skill: 3, school: "Southwest" },
-      yara: { skill: 2, school: "Northwest" },
-      zane: { skill: 1, school: "Northeast" }
-    },
-    slotAttrs: {
-      s1: { name: "Northwest" },
-      s2: { name: "Northeast" },
-      s3: { name: "Southwest" },
-    },
-    rules: [
-      { id: "R1", type: "balance", hard: false, priority: 9, personAttribute: "skill" },
-      { id: "R2", type: "cluster", hard: false, priority: 8,
-        shape: "peopleTogether", personAttribute: "school", match: "exact" }
-    ]
-  });
+      const scoreConfig = {
+        peopleAttrs: peopleAttrs,
+        slotAttrs: {
+          s1: { name: "Team A" },
+          s2: { name: "Team B" },
+          s3: { name: "Team C" }
+        },
+        rules: [
+          {
+            id: "R1",
+            type: "balance",
+            hard: false,
+            priority: 9,
+            personAttribute: "skill"
+          },
+          {
+            id: "R2",
+            type: "cluster",
+            hard: false,
+            priority: 8,
+            shape: "peopleTogether",
+            personAttribute: "school",
+            match: "exact"
+          }
+        ]
+      };
 
-console.log(scored);
-</script>
+      const lines = [];
+
+      function log(message) {
+        console.log(message);
+        lines.push(message);
+        document.getElementById("out").textContent = lines.join("\n");
+      }
+
+      function logOption(option) {
+        log("");
+        log(
+          "=== Option #" +
+            option.rank +
+            "  score=" +
+            option.totalScore +
+            " ==="
+        );
+
+        for (let i = 0; i < option.scoresByRule.length; i = i + 1) {
+          const row = option.scoresByRule[i];
+          log(
+            "  " +
+              row.id +
+              " " +
+              row.type +
+              "  howWellMet=" +
+              row.howWellMet +
+              "  ruleScore=" +
+              row.ruleScore
+          );
+        }
+
+        const slotIds = legalConfig.slotIds;
+
+        for (let s = 0; s < slotIds.length; s = s + 1) {
+          const slotId = slotIds[s];
+          const people = getPeopleInSlot(option.assignments, slotId);
+          log("  " + slotId + " (" + people.length + "): " + people.join(", "));
+        }
+      }
+
+      // -------------------------------------------------------------------------
+      // Generate: 3 independent attempts → top 3 ranked options
+      // -------------------------------------------------------------------------
+
+      log("Generate: runSearch with optionCount=3 …");
+
+      const searchResult = runSearch(legalConfig, scoreConfig, {
+        optionCount: 3,
+        attempts: 3,
+        maxShakes: 3,
+        shakeSwaps: 12,
+        maxImprovePasses: 30,
+        onProgress: function (info) {
+          console.log(info);
+
+          if (info.phase === "attempt") {
+            log("Attempt " + info.attempt + " of " + info.attempts);
+          }
+
+          if (info.phase === "start") {
+            log(
+              "  start (" +
+                info.startSource +
+                ") score=" +
+                info.bestScore
+            );
+          }
+
+          if (info.phase === "shake") {
+            log(
+              "  shake #" +
+                info.shakeNumber +
+                " (working score may drop; best kept)"
+            );
+          }
+
+          if (info.phase === "done") {
+            log(
+              "Finished. Returning " +
+                info.optionCount +
+                " option(s); best=" +
+                info.bestScore
+            );
+          }
+        }
+      });
+
+      log("");
+      log("ok: " + searchResult.ok);
+
+      if (searchResult.ok === false) {
+        log("Failed:");
+        for (let i = 0; i < searchResult.reasons.length; i = i + 1) {
+          log("  - " + searchResult.reasons[i]);
+        }
+      } else {
+        for (let i = 0; i < searchResult.options.length; i = i + 1) {
+          logOption(searchResult.options[i]);
+        }
+
+        // -----------------------------------------------------------------
+        // Retry demo: run 3 more, merge into the list (UI will do this later)
+        // -----------------------------------------------------------------
+        log("");
+        log("Retry demo: 3 more attempts, merge (keep up to 6)…");
+
+        const retryResult = runSearch(legalConfig, scoreConfig, {
+          optionCount: 3,
+          attempts: 3,
+          maxShakes: 2,
+          maxImprovePasses: 20
+        });
+
+        if (retryResult.ok === true) {
+          const merged = mergeOptions(
+            searchResult.options,
+            retryResult.options,
+            6
+          );
+
+          log("After merge, " + merged.length + " option(s):");
+
+          for (let i = 0; i < merged.length; i = i + 1) {
+            log(
+              "  #" +
+                merged[i].rank +
+                " score=" +
+                merged[i].totalScore
+            );
+          }
+        }
+      }
+
+      console.log("Full searchResult:", searchResult);
+    </script>
+  </body>
+</html>
