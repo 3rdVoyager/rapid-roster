@@ -68,10 +68,21 @@ import {
 
 import { buildLegalConfig, buildScoreConfig } from "/js/project-config.js";
 import { runSearch, mergeOptions } from "/js/generator/search.js";
-import { getPeopleInSlot } from "/js/generator/placement.js";
+import { getEntriesInSlot } from "/js/generator/placement.js";
+import { parseCsvText, csvToTable } from "/js/csv.js";
 
 /** Valid workflow panel ids (must match section id= and nav href="#..."). */
 const PANEL_IDS = ["setup", "rules", "review", "generate", "results"];
+
+/** Column types the user can pick in Setup headers. */
+const ENTRIES_COLUMN_TYPES = ["id", "number", "time", "text", "ignore"];
+const SLOTS_COLUMN_TYPES = ["id", "minSize", "maxSize", "text", "ignore"];
+
+/**
+ * Id of a pending autosave timer from window.setTimeout.
+ * null means nothing is waiting to save.
+ */
+let saveTimerId = null;
 
 /**
  * Page startup.
@@ -106,7 +117,7 @@ function renderAll() {
   }
 
   renderHeader(project);
-  renderPeopleTable(project);
+  renderEntriesTable(project);
   renderSlotsTable(project);
   renderGlobalSetup(project);
   renderRuleList(project);
@@ -138,25 +149,25 @@ function renderHeader(project) {
 }
 
 function renderGlobalSetup(project) {
-  const select = document.getElementById("slots-per-person");
+  const select = document.getElementById("slots-per-entry");
 
   if (select === null) {
     return;
   }
 
-  select.value = String(project.setup.defaultSlotsPerPerson);
+  select.value = String(project.setup.defaultSlotsPerEntry);
 }
 
-function renderPeopleTable(project) {
-  const table = document.getElementById("people-table");
-  const body = document.getElementById("people-table-body");
+function renderEntriesTable(project) {
+  const table = document.getElementById("entries-table");
+  const body = document.getElementById("entries-table-body");
 
   if (table === null || body === null) {
     return;
   }
 
-  renderTableHeader(table, project.people.columns);
-  renderTableBody(body, project.people.columns, project.people.rows);
+  renderTableHeader(table, project.entries.columns, "entries");
+  renderTableBody(body, project.entries.columns, project.entries.rows, "entries");
 }
 
 function renderSlotsTable(project) {
@@ -167,16 +178,21 @@ function renderSlotsTable(project) {
     return;
   }
 
-  renderTableHeader(table, project.slots.columns);
-  renderTableBody(body, project.slots.columns, project.slots.rows);
+  renderTableHeader(table, project.slots.columns, "slots");
+  renderTableBody(body, project.slots.columns, project.slots.rows, "slots");
 }
 
-function renderTableHeader(table, columns) {
+function renderTableHeader(table, columns, tableKind) {
   // querySelector looks inside `table` for the first <thead>.
   const thead = table.querySelector("thead");
 
   if (thead === null) {
     return;
+  }
+
+  let typeOptions = ENTRIES_COLUMN_TYPES;
+  if (tableKind === "slots") {
+    typeOptions = SLOTS_COLUMN_TYPES;
   }
 
   // Build an HTML string, then put it into the page in one step.
@@ -188,22 +204,65 @@ function renderTableHeader(table, columns) {
     html =
       html +
       "<th>" +
+      '<div class="table-col-heading">' +
+      '<span class="table-col-title">' +
       escapeHtml(col.label) +
-      ' <span class="col-type">' +
-      escapeHtml(col.type) +
-      "</span></th>";
+      "</span>" +
+      '<select class="col-type-select" data-table="' +
+      escapeHtml(tableKind) +
+      '" data-col-index="' +
+      i +
+      '" aria-label="Type for ' +
+      escapeHtml(col.label) +
+      '">' +
+      buildTypeOptionsHtml(typeOptions, col.type) +
+      "</select>" +
+      "</div>" +
+      "</th>";
   }
 
+  // Extra header cell above the per-row delete buttons.
+  html = html + '<th class="table-actions-col"><span class="visually-hidden">Actions</span></th>';
   html = html + "</tr>";
   thead.innerHTML = html;
 }
 
-function renderTableBody(tbody, columns, rows) {
+/**
+ * Build <option> tags for a column-type dropdown.
+ *
+ * @param {string[]} typeOptions
+ * @param {string} selectedType
+ * @returns {string}
+ */
+function buildTypeOptionsHtml(typeOptions, selectedType) {
+  let html = "";
+
+  for (let i = 0; i < typeOptions.length; i = i + 1) {
+    const typeName = typeOptions[i];
+    let selected = "";
+    if (typeName === selectedType) {
+      selected = " selected";
+    }
+    html =
+      html +
+      '<option value="' +
+      escapeHtml(typeName) +
+      '"' +
+      selected +
+      ">" +
+      escapeHtml(typeName) +
+      "</option>";
+  }
+
+  return html;
+}
+
+function renderTableBody(tbody, columns, rows, tableKind) {
   let html = "";
 
   for (let r = 0; r < rows.length; r = r + 1) {
     const row = rows[r];
-    html = html + "<tr>";
+    html = html + '<tr data-row-index="' + r + '">';
 
     for (let c = 0; c < columns.length; c = c + 1) {
       const key = columns[c].key;
@@ -213,16 +272,41 @@ function renderTableBody(tbody, columns, rows) {
         value = "";
       }
 
-      html = html + "<td>" + escapeHtml(String(value)) + "</td>";
+      // Each cell is an <input> so the user can edit without a separate form.
+      // data-* attributes tell the change handler which cell this is.
+      html =
+        html +
+        "<td>" +
+        '<input class="table-cell-input" type="text" data-table="' +
+        escapeHtml(tableKind) +
+        '" data-row-index="' +
+        r +
+        '" data-col-key="' +
+        escapeHtml(key) +
+        '" value="' +
+        escapeHtml(String(value)) +
+        '" />' +
+        "</td>";
     }
+
+    html =
+      html +
+      '<td class="table-actions-col">' +
+      '<button class="button button-ghost button-small table-row-delete" type="button" data-table="' +
+      escapeHtml(tableKind) +
+      '" data-row-index="' +
+      r +
+      '" aria-label="Delete row">×</button>' +
+      "</td>";
 
     html = html + "</tr>";
   }
 
   if (rows.length === 0) {
+    const colCount = columns.length + 1;
     html =
       '<tr><td colspan="' +
-      columns.length +
+      colCount +
       '">No rows yet. Import a CSV or add a row.</td></tr>';
   }
 
@@ -312,39 +396,46 @@ function fillRuleEditor(rule) {
 
 function renderReview(project) {
   setText(
-    "review-slots-per-person",
-    String(project.setup.defaultSlotsPerPerson),
+    "review-slots-per-entry",
+    String(project.setup.defaultSlotsPerEntry),
   );
 
   let conflictText = "None";
+  let conflictSummary = "No conflict groups yet.";
+
   if (project.setup.conflictGroups.length > 0) {
     conflictText = project.setup.conflictGroups.length + " group(s)";
+    conflictSummary =
+      project.setup.conflictGroups.length +
+      " conflict group(s) configured.";
   }
+
   setText("review-conflicts", conflictText);
+  setText("conflict-groups-summary", conflictSummary);
   setText("review-preset", "—");
 
-  const peopleCount = document.getElementById("review-people-count");
-  if (peopleCount !== null) {
-    peopleCount.innerHTML =
-      "<strong>" + project.people.rows.length + "</strong> people loaded";
+  const entriesCount = document.getElementById("review-entries-count");
+  if (entriesCount !== null) {
+    entriesCount.innerHTML =
+      "<strong>" + project.entries.rows.length + "</strong> entries loaded";
   }
 
-  const peoplePreview = document.getElementById("review-people-preview");
-  if (peoplePreview !== null) {
+  const entriesPreview = document.getElementById("review-entries-preview");
+  if (entriesPreview !== null) {
     let html = "";
-    const limit = Math.min(8, project.people.rows.length);
+    const limit = Math.min(8, project.entries.rows.length);
 
     for (let i = 0; i < limit; i = i + 1) {
-      const name = project.people.rows[i].cells.name;
+      const name = project.entries.rows[i].cells.name;
       html = html + "<li>" + escapeHtml(String(name)) + "</li>";
     }
 
-    if (project.people.rows.length > limit) {
+    if (project.entries.rows.length > limit) {
       html =
-        html + "<li>+" + (project.people.rows.length - limit) + " more</li>";
+        html + "<li>+" + (project.entries.rows.length - limit) + " more</li>";
     }
 
-    peoplePreview.innerHTML = html;
+    entriesPreview.innerHTML = html;
   }
 
   const slotsCount = document.getElementById("review-slots-count");
@@ -426,19 +517,19 @@ function renderReview(project) {
 
 function describeRule(rule) {
   if (rule.type === "balance") {
-    return "Keep " + rule.personAttribute + " even across slots.";
+    return "Keep " + rule.entryAttribute + " even across slots.";
   }
 
-  if (rule.type === "cluster" && rule.shape === "peopleTogether") {
+  if (rule.type === "cluster" && rule.shape === "entriesTogether") {
     return (
-      "People with the same " + rule.personAttribute + " prefer the same slot."
+      "Entries with the same " + rule.entryAttribute + " prefer the same slot."
     );
   }
 
-  if (rule.type === "cluster" && rule.shape === "personMatchesSlot") {
+  if (rule.type === "cluster" && rule.shape === "entryMatchesSlot") {
     return (
-      "Match person " +
-      rule.personAttribute +
+      "Match entry " +
+      rule.entryAttribute +
       " to slot " +
       rule.slotAttribute +
       "."
@@ -446,11 +537,11 @@ function describeRule(rule) {
   }
 
   if (rule.type === "limit") {
-    return "Limit filtered people per slot.";
+    return "Limit filtered entries per slot.";
   }
 
   if (rule.type === "separate") {
-    return "Spread people who share " + rule.personAttribute + " across slots.";
+    return "Spread entries who share " + rule.entryAttribute + " across slots.";
   }
 
   return "Type: " + rule.type;
@@ -570,7 +661,7 @@ function renderResults(project) {
       slotName = slotRow.cells.name;
     }
 
-    const peopleIds = getPeopleInSlot(selected.assignments, slotId);
+    const entryIds = getEntriesInSlot(selected.assignments, slotId);
 
     html =
       html +
@@ -578,22 +669,22 @@ function renderResults(project) {
       "<h3>" +
       escapeHtml(String(slotName)) +
       ' <span class="app-pill">' +
-      peopleIds.length +
-      " people</span></h3>" +
-      '<ul class="results-people" style="--attr-count: ' +
+      entryIds.length +
+      " entries</span></h3>" +
+      '<ul class="results-entries" style="--attr-count: ' +
       attrColumns.length +
       '">';
 
-    for (let p = 0; p < peopleIds.length; p = p + 1) {
-      const personId = peopleIds[p];
-      const personRow = findPersonRow(project, personId);
+    for (let p = 0; p < entryIds.length; p = p + 1) {
+      const entryId = entryIds[p];
+      const entryRow = findEntryRow(project, entryId);
       html =
         html +
-        renderPersonResultItem(project, personId, personRow, attrColumns);
+        renderEntryResultItem(project, entryId, entryRow, attrColumns);
     }
 
-    if (peopleIds.length === 0) {
-      html = html + '<li class="results-person-empty">(empty)</li>';
+    if (entryIds.length === 0) {
+      html = html + '<li class="results-entry-empty">(empty)</li>';
     }
 
     html = html + "</ul></div>";
@@ -613,16 +704,16 @@ function renderResults(project) {
  * on the right (same column order for every person so widths line up).
  *
  * @param {Object} project
- * @param {string} personId
- * @param {Object|null} personRow
+ * @param {string} entryId
+ * @param {Object|null} entryRow
  * @param {Object[]} attrColumns - people columns to show as bubbles
  * @returns {string} HTML
  */
-function renderPersonResultItem(project, personId, personRow, attrColumns) {
-  let displayName = personId;
+function renderEntryResultItem(project, entryId, entryRow, attrColumns) {
+  let displayName = entryId;
 
-  if (personRow !== null && personRow.cells.name !== undefined) {
-    displayName = personRow.cells.name;
+  if (entryRow !== null && entryRow.cells.name !== undefined) {
+    displayName = entryRow.cells.name;
   }
 
   let bubbles = "";
@@ -631,8 +722,8 @@ function renderPersonResultItem(project, personId, personRow, attrColumns) {
     const col = attrColumns[c];
     let value = "";
 
-    if (personRow !== null && personRow.cells[col.key] !== undefined) {
-      value = personRow.cells[col.key];
+    if (entryRow !== null && entryRow.cells[col.key] !== undefined) {
+      value = entryRow.cells[col.key];
     }
 
     const hasValue =
@@ -656,11 +747,11 @@ function renderPersonResultItem(project, personId, personRow, attrColumns) {
   }
 
   return (
-    '<li class="results-person">' +
-    '<div class="results-person-name">' +
+    '<li class="results-entry">' +
+    '<div class="results-entry-name">' +
     escapeHtml(String(displayName)) +
     "</div>" +
-    '<div class="results-person-spacer" aria-hidden="true"></div>' +
+    '<div class="results-entry-spacer" aria-hidden="true"></div>' +
     bubbles +
     "</li>"
   );
@@ -675,8 +766,8 @@ function renderPersonResultItem(project, personId, personRow, attrColumns) {
 function getResultAttrColumns(project) {
   const columns = [];
 
-  for (let i = 0; i < project.people.columns.length; i = i + 1) {
-    const col = project.people.columns[i];
+  for (let i = 0; i < project.entries.columns.length; i = i + 1) {
+    const col = project.entries.columns[i];
 
     if (col.key === "name") {
       continue;
@@ -692,10 +783,10 @@ function getResultAttrColumns(project) {
   return columns;
 }
 
-function findPersonRow(project, personId) {
-  for (let i = 0; i < project.people.rows.length; i = i + 1) {
-    if (project.people.rows[i].id === personId) {
-      return project.people.rows[i];
+function findEntryRow(project, entryId) {
+  for (let i = 0; i < project.entries.rows.length; i = i + 1) {
+    if (project.entries.rows[i].id === entryId) {
+      return project.entries.rows[i];
     }
   }
 
@@ -724,19 +815,54 @@ function wireControls() {
     nameInput.addEventListener("change", onProjectNameBlur);
   }
 
-  const importPeopleFile = document.getElementById("import-people-file");
-  if (importPeopleFile !== null) {
-    importPeopleFile.addEventListener("change", onImportPeopleFileChange);
+  const importEntriesFile = document.getElementById("import-entries-file");
+  if (importEntriesFile !== null) {
+    importEntriesFile.addEventListener("change", onImportEntriesFileChange);
   }
 
-  const clearPeopleBtn = document.getElementById("clear-people-btn");
-  if (clearPeopleBtn !== null) {
-    clearPeopleBtn.addEventListener("click", onClearPeopleClick);
+  const importSlotsFile = document.getElementById("import-slots-file");
+  if (importSlotsFile !== null) {
+    importSlotsFile.addEventListener("change", onImportSlotsFileChange);
   }
 
-  const slotsPerPerson = document.getElementById("slots-per-person");
-  if (slotsPerPerson !== null) {
-    slotsPerPerson.addEventListener("change", onSlotsPerPersonChange);
+  const clearEntriesBtn = document.getElementById("clear-entries-btn");
+  if (clearEntriesBtn !== null) {
+    clearEntriesBtn.addEventListener("click", onClearEntriesClick);
+  }
+
+  const clearSlotsBtn = document.getElementById("clear-slots-btn");
+  if (clearSlotsBtn !== null) {
+    clearSlotsBtn.addEventListener("click", onClearSlotsClick);
+  }
+
+  const addEntryBtn = document.getElementById("add-entry-row-btn");
+  if (addEntryBtn !== null) {
+    addEntryBtn.addEventListener("click", onAddEntryRowClick);
+  }
+
+  const addSlotBtn = document.getElementById("add-slot-row-btn");
+  if (addSlotBtn !== null) {
+    addSlotBtn.addEventListener("click", onAddSlotRowClick);
+  }
+
+  // One listener for all editable cells / type dropdowns / row deletes.
+  const entriesTable = document.getElementById("entries-table");
+  if (entriesTable !== null) {
+    entriesTable.addEventListener("input", onSetupTableInput);
+    entriesTable.addEventListener("change", onSetupTableChange);
+    entriesTable.addEventListener("click", onSetupTableClick);
+  }
+
+  const slotsTable = document.getElementById("slots-table");
+  if (slotsTable !== null) {
+    slotsTable.addEventListener("input", onSetupTableInput);
+    slotsTable.addEventListener("change", onSetupTableChange);
+    slotsTable.addEventListener("click", onSetupTableClick);
+  }
+
+  const slotsPerEntry = document.getElementById("slots-per-entry");
+  if (slotsPerEntry !== null) {
+    slotsPerEntry.addEventListener("change", onSlotsPerEntryChange);
   }
 
   const generateBtn = document.getElementById("generate-btn");
@@ -881,103 +1007,357 @@ function showPanel(panelId) {
   }
 }
 
-async function onImportPeopleFileChange(event) {
+async function onImportEntriesFileChange(event) {
+  await importCsvIntoTable(event, "entries");
+}
+
+async function onImportSlotsFileChange(event) {
+  await importCsvIntoTable(event, "slots");
+}
+
+/**
+ * Shared CSV import for people or slots.
+ *
+ * @param {Event} event - change event from <input type="file">
+ * @param {string} tableKind - "entries" or "slots"
+ */
+async function importCsvIntoTable(event, tableKind) {
   const file = event.target.files[0];
-  if (file === null) {
+
+  if (file === undefined || file === null) {
     return;
   }
+
   try {
     const text = await file.text();
-    const data = text
-      .replace(/\r\n/g, "\n")
-      .replace(/\r/g, "\n")
-      .split("\n")
-      .map(function (line) {
-        return line.trim();
-      })
-      .filter(function (line) {
-        return line !== "";
-      });
-    const headers = data[0].split(",").map(function (header) {
-      return header.trim();
-    });
-    const dataLines = data.slice(1);
-    
-    const columns = [];
-    for (let i = 0; i < headers.length; i = i + 1) {
-      const key = headers[i];
-      let type = "text";
+    const parsed = parseCsvText(text);
 
-      if (key.toLowerCase() === "id") {
-        type = "id";
-      } else if (!isNaN(Number(key))) {
-        type = "number";
-      }
-
-      columns.push({
-        key: key,
-        label: key,
-        type: type,
-      });
+    if (parsed === null) {
+      window.alert("That CSV looks empty.");
+      return;
     }
 
-    const rows = [];
-
-    // Which header is the id column? (matches "id", "ID", "Id", …)
-    // We store the real header spelling so cells[idHeader] works.
-    let idHeader = null;
-    for (let i = 0; i < headers.length; i = i + 1) {
-      if (headers[i].toLowerCase() === "id") {
-        idHeader = headers[i];
-      }
-    }
-
-    // Convert each data line into a row object with cells.
-    for (let i = 0; i < dataLines.length; i = i + 1) {
-      const cellsArray = dataLines[i].split(",").map(function (cell) {
-        return cell.trim();
-      });
-      const cells = {};
-
-      for (let j = 0; j < headers.length; j = j + 1) {
-        cells[headers[j]] = cellsArray[j];
-      }
-
-      // Prefer the CSV id cell; otherwise invent row-0, row-1, …
-      let rowId = "row-" + i;
-      if (idHeader !== null && cells[idHeader] !== undefined && cells[idHeader] !== "") {
-        rowId = String(cells[idHeader]);
-      }
-
-      rows.push({ id: rowId, cells: cells });
-    }
-
+    const table = csvToTable(parsed, tableKind);
     const project = getProject();
-    project.people.columns = columns;
-    project.people.rows = rows;
-    // Old generation results used the previous people ids — drop them.
+
+    if (tableKind === "entries") {
+      project.entries.columns = table.columns;
+      project.entries.rows = table.rows;
+    } else {
+      project.slots.columns = table.columns;
+      project.slots.rows = table.rows;
+    }
+
+    // Old results used previous ids — they are no longer valid.
     project.results = null;
-    setDirty(true);
-    renderPeopleTable(project);
+    markProjectChanged();
+
+    if (tableKind === "entries") {
+      renderEntriesTable(project);
+    } else {
+      renderSlotsTable(project);
+    }
+
     renderReview(project);
     renderGenerateOptions(project);
     renderResults(project);
-    renderHeader(project);
   } catch (error) {
     console.error("Could not read CSV:", error);
+    window.alert("Could not read that CSV file.");
   } finally {
+    // Clear the input so choosing the same file again still fires "change".
     event.target.value = "";
   }
 }
 
-function onClearPeopleClick(event) {
+function onClearEntriesClick() {
   const project = getProject();
-  project.people.columns = [];
-  project.people.rows = [];
+
+  if (project.entries.rows.length === 0) {
+    return;
+  }
+
+  const ok = window.confirm("Clear all entry rows? Column headers stay.");
+  if (ok === false) {
+    return;
+  }
+
+  project.entries.rows = [];
   project.results = null;
-  setDirty(true);
-  renderPeopleTable(project);
+  markProjectChanged();
+  renderEntriesTable(project);
   renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
+}
+
+function onClearSlotsClick() {
+  const project = getProject();
+
+  if (project.slots.rows.length === 0) {
+    return;
+  }
+
+  const ok = window.confirm("Clear all slot rows? Column headers stay.");
+  if (ok === false) {
+    return;
+  }
+
+  project.slots.rows = [];
+  project.results = null;
+  markProjectChanged();
+  renderSlotsTable(project);
+  renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
+}
+
+function onAddEntryRowClick() {
+  const project = getProject();
+  ensureDefaultEntriesColumns(project);
+  project.entries.rows.push(makeEmptyRow(project.entries.columns, "entry"));
+  project.results = null;
+  markProjectChanged();
+  renderEntriesTable(project);
+  renderReview(project);
+}
+
+function onAddSlotRowClick() {
+  const project = getProject();
+  ensureDefaultSlotsColumns(project);
+  project.slots.rows.push(makeEmptyRow(project.slots.columns, "slot"));
+  project.results = null;
+  markProjectChanged();
+  renderSlotsTable(project);
+  renderReview(project);
+}
+
+/**
+ * If people columns were wiped, restore a minimal set so Add row works.
+ */
+function ensureDefaultEntriesColumns(project) {
+  if (project.entries.columns.length > 0) {
+    return;
+  }
+
+  project.entries.columns = [
+    { key: "id", label: "id", type: "id" },
+    { key: "name", label: "name", type: "text" }
+  ];
+}
+
+function ensureDefaultSlotsColumns(project) {
+  if (project.slots.columns.length > 0) {
+    return;
+  }
+
+  project.slots.columns = [
+    { key: "id", label: "id", type: "id" },
+    { key: "name", label: "name", type: "text" },
+    { key: "min_size", label: "min_size", type: "minSize" },
+    { key: "max_size", label: "max_size", type: "maxSize" }
+  ];
+}
+
+/**
+ * New blank row with empty cells for every column.
+ *
+ * @param {Object[]} columns
+ * @param {string} idPrefix
+ * @returns {Object}
+ */
+function makeEmptyRow(columns, idPrefix) {
+  const rowId = idPrefix + "-" + Date.now().toString(36);
+  const cells = {};
+
+  for (let i = 0; i < columns.length; i = i + 1) {
+    const key = columns[i].key;
+    cells[key] = "";
+
+    // Prefill the id cell so the row has a visible id immediately.
+    if (columns[i].type === "id") {
+      cells[key] = rowId;
+    }
+  }
+
+  return {
+    id: rowId,
+    cells: cells
+  };
+}
+
+/**
+ * Typing in a cell input — update memory, do NOT re-render (keeps focus).
+ */
+function onSetupTableInput(event) {
+  const input = event.target;
+
+  if (input.classList.contains("table-cell-input") === false) {
+    return;
+  }
+
+  const tableKind = input.getAttribute("data-table");
+  const rowIndex = Number(input.getAttribute("data-row-index"));
+  const colKey = input.getAttribute("data-col-key");
+  const project = getProject();
+  const table = getSetupTable(project, tableKind);
+
+  if (table === null) {
+    return;
+  }
+
+  if (rowIndex < 0 || rowIndex >= table.rows.length) {
+    return;
+  }
+
+  const row = table.rows[rowIndex];
+  let value = input.value;
+
+  // Store numbers as real numbers when the column type says so.
+  const colType = findColumnType(table.columns, colKey);
+  if (
+    (colType === "number" || colType === "minSize" || colType === "maxSize") &&
+    value !== "" &&
+    Number.isNaN(Number(value)) === false
+  ) {
+    value = Number(value);
+  }
+
+  row.cells[colKey] = value;
+
+  // Keep row.id in sync with the id column cell.
+  if (colType === "id") {
+    if (String(value).trim() === "") {
+      row.id = tableKind + "-row-" + rowIndex;
+    } else {
+      row.id = String(value);
+    }
+  }
+
+  project.results = null;
+  markProjectChanged();
+}
+
+/**
+ * Change on a column-type <select>.
+ */
+function onSetupTableChange(event) {
+  const select = event.target;
+
+  if (select.classList.contains("col-type-select") === false) {
+    return;
+  }
+
+  const tableKind = select.getAttribute("data-table");
+  const colIndex = Number(select.getAttribute("data-col-index"));
+  const project = getProject();
+  const table = getSetupTable(project, tableKind);
+
+  if (table === null) {
+    return;
+  }
+
+  if (colIndex < 0 || colIndex >= table.columns.length) {
+    return;
+  }
+
+  table.columns[colIndex].type = select.value;
+  project.results = null;
+  markProjectChanged();
+}
+
+/**
+ * Click on a row delete button.
+ */
+function onSetupTableClick(event) {
+  const button = findAncestor(event.target, ".table-row-delete");
+
+  if (button === null) {
+    return;
+  }
+
+  const tableKind = button.getAttribute("data-table");
+  const rowIndex = Number(button.getAttribute("data-row-index"));
+  const project = getProject();
+  const table = getSetupTable(project, tableKind);
+
+  if (table === null) {
+    return;
+  }
+
+  if (rowIndex < 0 || rowIndex >= table.rows.length) {
+    return;
+  }
+
+  // splice(index, 1) removes 1 item at that index.
+  table.rows.splice(rowIndex, 1);
+  project.results = null;
+  markProjectChanged();
+
+  if (tableKind === "entries") {
+    renderEntriesTable(project);
+  } else {
+    renderSlotsTable(project);
+  }
+
+  renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
+}
+
+/**
+ * @param {Object} project
+ * @param {string} tableKind
+ * @returns {Object|null}
+ */
+function getSetupTable(project, tableKind) {
+  if (tableKind === "entries") {
+    return project.entries;
+  }
+
+  if (tableKind === "slots") {
+    return project.slots;
+  }
+
+  return null;
+}
+
+/**
+ * @param {Object[]} columns
+ * @param {string} key
+ * @returns {string|null}
+ */
+function findColumnType(columns, key) {
+  for (let i = 0; i < columns.length; i = i + 1) {
+    if (columns[i].key === key) {
+      return columns[i].type;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Mark unsaved, update the header pill, and schedule a localStorage write.
+ *
+ * Debounce: if the user keeps typing, we reset the timer so we only save
+ * once they pause (~400ms). That avoids writing on every single keystroke.
+ */
+function markProjectChanged() {
+  setDirty(true);
+  renderHeader(getProject());
+
+  if (saveTimerId !== null) {
+    window.clearTimeout(saveTimerId);
+  }
+
+  saveTimerId = window.setTimeout(function () {
+    saveTimerId = null;
+    const ok = saveProject();
+    if (ok === true) {
+      renderHeader(getProject());
+    }
+  }, 400);
 }
 
 function onProjectNameInput(event) {
@@ -986,8 +1366,7 @@ function onProjectNameInput(event) {
   // While typing, keep the raw value (including spaces).
   // Empty string is allowed temporarily; blur will fix it.
   project.name = event.target.value;
-  setDirty(true);
-  renderHeader(project);
+  markProjectChanged();
 }
 
 function onProjectNameBlur(event) {
@@ -1000,16 +1379,14 @@ function onProjectNameBlur(event) {
 
   project.name = nextName;
   event.target.value = nextName;
-  setDirty(true);
-  renderHeader(project);
+  markProjectChanged();
 }
 
-function onSlotsPerPersonChange(event) {
+function onSlotsPerEntryChange(event) {
   const project = getProject();
   // Number(...) turns the select's string value into a real number.
-  project.setup.defaultSlotsPerPerson = Number(event.target.value);
-  setDirty(true);
-  renderHeader(project);
+  project.setup.defaultSlotsPerEntry = Number(event.target.value);
+  markProjectChanged();
   renderReview(project);
 }
 
@@ -1053,9 +1430,8 @@ function onResultPickerClick(event) {
   }
 
   project.results.selectedRank = Number(button.getAttribute("data-option"));
-  setDirty(true);
+  markProjectChanged();
   renderResults(project);
-  renderHeader(project);
 }
 
 function onGenerateClick() {
@@ -1103,7 +1479,7 @@ function runGeneration(mergeWithExisting) {
             "Attempt " + info.attempt + " of " + info.attempts;
         }
 
-        if (info.phase === "improving" && info.personIndex === 1) {
+        if (info.phase === "improving" && info.entryIndex === 1) {
           statusDetail.textContent =
             "Attempt improve pass " +
             info.pass +
@@ -1141,7 +1517,7 @@ function runGeneration(mergeWithExisting) {
       selectedRank: options[0].rank,
     };
 
-    setDirty(true);
+    markProjectChanged();
 
     if (statusTitle !== null) {
       statusTitle.textContent = "Done";
@@ -1156,7 +1532,6 @@ function runGeneration(mergeWithExisting) {
 
     renderGenerateOptions(project);
     renderResults(project);
-    renderHeader(project);
   }, 20);
 }
 

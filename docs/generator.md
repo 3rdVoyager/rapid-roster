@@ -6,7 +6,7 @@ It does not have special modes for different events. A **preset** only fills in 
 
 You customize three things:
 
-1. **Setup** — participant data, slot data, sizes, slots-per-person, conflict groups  
+1. **Setup** — participant data, slot data, sizes, slots-per-entry, conflict groups  
 2. **Rules** — Cluster, Separate, Limit, Balance (what “good” means)  
 3. **Generate** — find a placement that respects hard rules and scores best on soft ones  
 

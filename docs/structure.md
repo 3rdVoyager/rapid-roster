@@ -98,7 +98,7 @@ rapid-roster/
 │       ├── project-config.js ← project tables → legal/score configs
 │       ├── state.js          ← current project in memory + localStorage
 │       ├── csv.js            ← parse / export CSV (simple string splitting + helpers)
-│       ├── tables.js         ← render editable people/slots tables
+│       ├── tables.js         ← render editable entries/slots tables
 │       ├── rules-ui.js       ← rule list + add/edit form
 │       ├── results-ui.js     ← results views + satisfaction report
 │       └── generator/
@@ -131,7 +131,7 @@ rapid-roster/
 
 ## What a “project” is
 
-A project is one saved workspace: people, slots, setup knobs, rules, and (optional) last generation results.
+A project is one saved workspace: entries, slots, setup knobs, rules, and (optional) last generation results.
 
 Stored in D1 mostly as **JSON text** inside a row. That keeps the database schema small and the browser code simple (load JSON → work on a normal object → save JSON).
 
@@ -143,7 +143,7 @@ project = {
   name: "Spring SciOly",
   updatedAt: "...",
 
-  people: {
+  entries: {
     columns: [ { key, label, type } ],   // type: id | number | time | text | ignore
     rows: [ { id, cells: { ... } } ]
   },
@@ -154,8 +154,8 @@ project = {
   },
 
   setup: {
-    defaultSlotsPerPerson: 1,
-    // optional per-person overrides later
+    defaultSlotsPerEntry: 1,
+    // optional per-entry overrides later
     conflictGroups: [ ["Event A", "Event B"], ... ]
   },
 
@@ -189,7 +189,7 @@ Keep three tables for MVP:
 | `sessions` | `id`, `user_id`, `token_hash`, `expires_at` |
 | `projects` | `id`, `user_id`, `name`, `data_json`, `updated_at` |
 
-`data_json` holds people, slots, setup, rules, results. List screens only need `id`, `name`, `updated_at`.
+`data_json` holds entries, slots, setup, rules, results. List screens only need `id`, `name`, `updated_at`.
 
 ---
 
@@ -225,7 +225,7 @@ project.js  →  asks worker to run
 
 **Web Worker (plain explanation):** normal JS shares one “main thread” with the page. A long loop freezes clicks and scrolling. A **worker** is a separate JS file that runs in the background and sends messages (`postMessage`) when done. We put the search there so the Generate screen can show “Working…” without locking up.
 
-**Presets** are not a second engine. They only fill people/slots/rules/setup from files under `docs/examples/`.
+**Presets** are not a second engine. They only fill entries/slots/rules/setup from files under `docs/examples/`.
 
 ---
 
@@ -234,7 +234,7 @@ project.js  →  asks worker to run
 - **Vanilla JS only** — `document.querySelector`, `addEventListener`, `fetch`, plain objects/arrays.
 - **No build step required for MVP** if we can avoid it (plain `.js` modules via `<script type="module">`). If we later need a bundler for the worker, keep it minimal.
 - **Explain-friendly code:** early returns, named steps, comments for *why*, not for *what*.
-- **DOM habit:** prefer updating clear regions (`#people-table`, `#rule-list`) over rewriting the whole page.
+- **DOM habit:** prefer updating clear regions (`#entries-table`, `#rule-list`) over rewriting the whole page.
 - **State habit:** one `state` object in `state.js`; UI reads from it and writes through small functions like `setProjectName(name)`.
 
 ---

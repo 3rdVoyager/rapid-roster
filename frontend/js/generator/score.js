@@ -43,7 +43,7 @@
  *
  *   scoreConfig = {
  *     // Attributes for each person (whatever columns the rules need)
- *     peopleAttrs: {
+ *     entriesAttrs: {
  *       "ava": { skill: 8, role: "player", school: "North", availability: "Mon;Wed" },
  *       "bob": { skill: 5, role: "keeper", school: "North", availability: "Wed" }
  *     },
@@ -62,7 +62,7 @@
  *         type: "balance",
  *         hard: false,
  *         priority: 9,
- *         personAttribute: "skill"
+ *         entryAttribute: "skill"
  *       },
  *       {
  *         id: "R2",
@@ -70,8 +70,8 @@
  *         type: "cluster",
  *         hard: false,
  *         priority: 8,
- *         shape: "peopleTogether",   // same attribute → prefer same slot
- *         personAttribute: "school",
+ *         shape: "entriesTogether",   // same attribute → prefer same slot
+ *         entryAttribute: "school",
  *         match: "exact"             // or "partial" for ; -separated tags
  *       },
  *       {
@@ -79,8 +79,8 @@
  *         type: "cluster",
  *         hard: false,
  *         priority: 7,
- *         shape: "personMatchesSlot", // person value ↔ slot value
- *         personAttribute: "availability",
+ *         shape: "entryMatchesSlot", // person value ↔ slot value
+ *         entryAttribute: "availability",
  *         slotAttribute: "practice_night",
  *         match: "partial"
  *       },
@@ -89,7 +89,7 @@
  *         type: "limit",
  *         hard: false,
  *         priority: 5,
- *         personAttribute: "role",
+ *         entryAttribute: "role",
  *         filterValue: "keeper",
  *         maxCount: 2
  *         // optional: minCount: 1
@@ -99,7 +99,7 @@
  *         type: "separate",
  *         hard: false,
  *         priority: 4,
- *         personAttribute: "school",
+ *         entryAttribute: "school",
  *         match: "exact"
  *       }
  *     ]
@@ -107,8 +107,8 @@
  */
 
 import {
-  getSlotsForPerson,
-  getPeopleInSlot
+  getSlotsForEntry,
+  getEntriesInSlot
 } from "./placement.js";
 
 /**
@@ -116,7 +116,7 @@ import {
  *
  * Scores every soft rule and returns a total plus a per-rule list.
  *
- * @param {Object} assignments - personId → array of slotIds
+ * @param {Object} assignments - entryId → array of slotIds
  * @param {Object} scoreConfig - see file header
  * @returns {{ totalScore: number, scoresByRule: Object[] }}
  */
@@ -222,7 +222,7 @@ function getPriority(rule) {
  * @returns {number} 0–1
  */
 function scoreBalance(assignments, scoreConfig, rule) {
-  const attributeName = rule.personAttribute;
+  const attributeName = rule.entryAttribute;
   const slotIds = getSlotIdsFromConfig(scoreConfig);
   const slotAverages = [];
 
@@ -231,18 +231,18 @@ function scoreBalance(assignments, scoreConfig, rule) {
 
   for (let i = 0; i < slotIds.length; i = i + 1) {
     const slotId = slotIds[i];
-    const peopleInSlot = getPeopleInSlot(assignments, slotId);
+    const entriesInSlot = getEntriesInSlot(assignments, slotId);
 
-    if (peopleInSlot.length === 0) {
+    if (entriesInSlot.length === 0) {
       continue;
     }
 
     let sum = 0;
     let count = 0;
 
-    for (let p = 0; p < peopleInSlot.length; p = p + 1) {
-      const personId = peopleInSlot[p];
-      const value = getPersonNumber(scoreConfig, personId, attributeName);
+    for (let p = 0; p < entriesInSlot.length; p = p + 1) {
+      const entryId = entriesInSlot[p];
+      const value = getEntryNumber(scoreConfig, entryId, attributeName);
 
       if (value === null) {
         continue;
@@ -321,7 +321,7 @@ function scoreBalance(assignments, scoreConfig, rule) {
 
 /**
  * Limit: each slot should have between minCount and maxCount people
- * whose personAttribute equals filterValue.
+ * whose entryAttribute equals filterValue.
  *
  * Example: max 2 keepers per team; min 1 coach per team.
  *
@@ -330,7 +330,7 @@ function scoreBalance(assignments, scoreConfig, rule) {
  * @returns {number} 0–1
  */
 function scoreLimit(assignments, scoreConfig, rule) {
-  const attributeName = rule.personAttribute;
+  const attributeName = rule.entryAttribute;
   const filterValue = rule.filterValue;
   const slotIds = getSlotIdsFromConfig(scoreConfig);
 
@@ -342,12 +342,12 @@ function scoreLimit(assignments, scoreConfig, rule) {
 
   for (let i = 0; i < slotIds.length; i = i + 1) {
     const slotId = slotIds[i];
-    const peopleInSlot = getPeopleInSlot(assignments, slotId);
+    const entriesInSlot = getEntriesInSlot(assignments, slotId);
     let matchCount = 0;
 
-    for (let p = 0; p < peopleInSlot.length; p = p + 1) {
-      const personId = peopleInSlot[p];
-      const value = getPersonText(scoreConfig, personId, attributeName);
+    for (let p = 0; p < entriesInSlot.length; p = p + 1) {
+      const entryId = entriesInSlot[p];
+      const value = getEntryText(scoreConfig, entryId, attributeName);
 
       if (valuesMatch(value, filterValue, "exact") === true) {
         matchCount = matchCount + 1;
@@ -407,11 +407,11 @@ function limitSatisfactionForSlot(matchCount, rule) {
 /**
  * Cluster has two shapes (see generator.md):
  *
- * 1. peopleTogether
- *    People who share a personAttribute prefer the SAME slot.
+ * 1. entriesTogether
+ *    People who share a entryAttribute prefer the SAME slot.
  *    Example: same school together.
  *
- * 2. personMatchesSlot
+ * 2. entryMatchesSlot
  *    A person's attribute should match a slot attribute.
  *    Example: availability ↔ practice_night, or pref column ↔ slot name.
  *
@@ -420,12 +420,12 @@ function limitSatisfactionForSlot(matchCount, rule) {
 function scoreCluster(assignments, scoreConfig, rule) {
   const shape = rule.shape;
 
-  if (shape === "peopleTogether") {
-    return scorePeopleTogether(assignments, scoreConfig, rule, true);
+  if (shape === "entriesTogether") {
+    return scoreEntriesTogether(assignments, scoreConfig, rule, true);
   }
 
-  if (shape === "personMatchesSlot") {
-    return scorePersonMatchesSlot(assignments, scoreConfig, rule);
+  if (shape === "entryMatchesSlot") {
+    return scoreEntryMatchesSlot(assignments, scoreConfig, rule);
   }
 
   return 0;
@@ -438,7 +438,7 @@ function scoreCluster(assignments, scoreConfig, rule) {
  * @returns {number} 0–1
  */
 function scoreSeparate(assignments, scoreConfig, rule) {
-  return scorePeopleTogether(assignments, scoreConfig, rule, false);
+  return scoreEntriesTogether(assignments, scoreConfig, rule, false);
 }
 
 /**
@@ -450,10 +450,10 @@ function scoreSeparate(assignments, scoreConfig, rule) {
  * @param {boolean} wantTogether
  * @returns {number} 0–1
  */
-function scorePeopleTogether(assignments, scoreConfig, rule, wantTogether) {
-  const attributeName = rule.personAttribute;
+function scoreEntriesTogether(assignments, scoreConfig, rule, wantTogether) {
+  const attributeName = rule.entryAttribute;
   const matchMode = getMatchMode(rule);
-  const personIds = Object.keys(assignments);
+  const entryIds = Object.keys(assignments);
 
   // Build groups: key → list of person ids
   // For exact match, key is the value string.
@@ -461,16 +461,16 @@ function scorePeopleTogether(assignments, scoreConfig, rule, wantTogether) {
   // in this minimum version (simpler). True tag-overlap grouping can wait.
   const groups = {};
 
-  for (let i = 0; i < personIds.length; i = i + 1) {
-    const personId = personIds[i];
-    const slots = getSlotsForPerson(assignments, personId);
+  for (let i = 0; i < entryIds.length; i = i + 1) {
+    const entryId = entryIds[i];
+    const slots = getSlotsForEntry(assignments, entryId);
 
     // Unassigned people do not affect this score yet.
     if (slots.length === 0) {
       continue;
     }
 
-    const value = getPersonText(scoreConfig, personId, attributeName);
+    const value = getEntryText(scoreConfig, entryId, attributeName);
 
     if (value === null || value === "") {
       continue;
@@ -480,7 +480,7 @@ function scorePeopleTogether(assignments, scoreConfig, rule, wantTogether) {
       groups[value] = [];
     }
 
-    groups[value].push(personId);
+    groups[value].push(entryId);
   }
 
   const groupKeys = Object.keys(groups);
@@ -507,8 +507,8 @@ function scorePeopleTogether(assignments, scoreConfig, rule, wantTogether) {
     const countsBySlot = {};
 
     for (let m = 0; m < members.length; m = m + 1) {
-      const personId = members[m];
-      const slots = getSlotsForPerson(assignments, personId);
+      const entryId = members[m];
+      const slots = getSlotsForEntry(assignments, entryId);
 
       for (let s = 0; s < slots.length; s = s + 1) {
         const slotId = slots[s];
@@ -573,30 +573,30 @@ function scorePeopleTogether(assignments, scoreConfig, rule, wantTogether) {
  *
  * @returns {number} 0–1
  */
-function scorePersonMatchesSlot(assignments, scoreConfig, rule) {
-  const personAttribute = rule.personAttribute;
+function scoreEntryMatchesSlot(assignments, scoreConfig, rule) {
+  const entryAttribute = rule.entryAttribute;
   const slotAttribute = rule.slotAttribute;
   const matchMode = getMatchMode(rule);
-  const personIds = Object.keys(assignments);
+  const entryIds = Object.keys(assignments);
 
   let total = 0;
-  let countedPeople = 0;
+  let countedEntries = 0;
 
-  for (let i = 0; i < personIds.length; i = i + 1) {
-    const personId = personIds[i];
-    const slots = getSlotsForPerson(assignments, personId);
+  for (let i = 0; i < entryIds.length; i = i + 1) {
+    const entryId = entryIds[i];
+    const slots = getSlotsForEntry(assignments, entryId);
 
     if (slots.length === 0) {
       continue;
     }
 
-    const personValue = getPersonText(scoreConfig, personId, personAttribute);
+    const entryValue = getEntryText(scoreConfig, entryId, entryAttribute);
 
-    if (personValue === null || personValue === "") {
+    if (entryValue === null || entryValue === "") {
       continue;
     }
 
-    countedPeople = countedPeople + 1;
+    countedEntries = countedEntries + 1;
 
     let matchingSlots = 0;
 
@@ -608,20 +608,20 @@ function scorePersonMatchesSlot(assignments, scoreConfig, rule) {
         continue;
       }
 
-      if (valuesMatch(personValue, slotValue, matchMode) === true) {
+      if (valuesMatch(entryValue, slotValue, matchMode) === true) {
         matchingSlots = matchingSlots + 1;
       }
     }
 
-    const personScore = matchingSlots / slots.length;
-    total = total + personScore;
+    const entryScore = matchingSlots / slots.length;
+    total = total + entryScore;
   }
 
-  if (countedPeople === 0) {
+  if (countedEntries === 0) {
     return 1;
   }
 
-  return total / countedPeople;
+  return total / countedEntries;
 }
 
 // ---------------------------------------------------------------------------
@@ -714,12 +714,12 @@ function getSlotIdsFromConfig(scoreConfig) {
  * Read a numeric person attribute. Returns null if missing / not a number.
  *
  * @param {Object} scoreConfig
- * @param {string} personId
+ * @param {string} entryId
  * @param {string} attributeName
  * @returns {number|null}
  */
-function getPersonNumber(scoreConfig, personId, attributeName) {
-  const text = getPersonText(scoreConfig, personId, attributeName);
+function getEntryNumber(scoreConfig, entryId, attributeName) {
+  const text = getEntryText(scoreConfig, entryId, attributeName);
 
   if (text === null) {
     return null;
@@ -738,22 +738,22 @@ function getPersonNumber(scoreConfig, personId, attributeName) {
  * Read a person attribute as text. Returns null if missing.
  *
  * @param {Object} scoreConfig
- * @param {string} personId
+ * @param {string} entryId
  * @param {string} attributeName
  * @returns {string|null}
  */
-function getPersonText(scoreConfig, personId, attributeName) {
-  if (scoreConfig.peopleAttrs === undefined) {
+function getEntryText(scoreConfig, entryId, attributeName) {
+  if (scoreConfig.entriesAttrs === undefined) {
     return null;
   }
 
-  const person = scoreConfig.peopleAttrs[personId];
+  const entry = scoreConfig.entriesAttrs[entryId];
 
-  if (person === undefined) {
+  if (entry === undefined) {
     return null;
   }
 
-  const value = person[attributeName];
+  const value = entry[attributeName];
 
   if (value === undefined || value === null) {
     return null;

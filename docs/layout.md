@@ -170,7 +170,7 @@ Four panels in workflow order. Active item: left accent bar + stronger text (blu
 
 | Panel | Job |
 | --- | --- |
-| Setup | People, slots, sizes, slots-per-person, conflict groups |
+| Setup | Entries, slots, sizes, slots-per-entry, conflict groups |
 | Rules | List + add/edit Cluster / Separate / Limit / Balance |
 | Generate | Run search, progress, start alternatives |
 | Results | View assignments, scores, light tweaks, export |
@@ -190,11 +190,11 @@ Two tables side by side on wide screens; stacked on narrow screens. Global setup
 │ Setup                                                        │
 │                                                              │
 │ Global                                                       │
-│   Default slots per person  [ 1 ▼ ]                          │
+│   Default slots per entry   [ 1 ▼ ]                          │
 │   Conflict groups           [ Manage… ]                      │
 │   Preset                    [ Apply preset ▼ ]  (optional)   │
 │                                                              │
-│ ┌─ People ──────────────────┐  ┌─ Slots ───────────────────┐ │
+│ ┌─ Entries ─────────────────┐  ┌─ Slots ───────────────────┐ │
 │ │ [ Import CSV ] [ Clear ]  │  │ [ Import CSV ] [ Clear ]  │ │
 │ │ Column types: row of ▾    │  │ Column types: row of ▾    │ │
 │ │                           │  │                           │ │
@@ -210,14 +210,14 @@ Two tables side by side on wide screens; stacked on narrow screens. Global setup
 
 | Control | Action |
 | --- | --- |
-| Import CSV (people) | File picker → parse → fill people table; prompt to map column types if needed |
+| Import CSV (entries) | File picker → parse → fill entries table; prompt to map column types if needed |
 | Import CSV (slots) | Same for slots |
 | Clear | Confirm, then empty that table |
-| Column type dropdowns | Per column: ID / Number / Time / Text / Ignore (people); ID / MinSize / MaxSize / Text / Ignore (slots) |
+| Column type dropdowns | Per column: ID / Number / Time / Text / Ignore (entries); ID / MinSize / MaxSize / Text / Ignore (slots) |
 | + Add row | Append empty row |
-| Default slots per person | Number (often 1) |
+| Default slots per entry | Number (often 1) |
 | Manage conflict groups | Small modal or inline editor: groups of slot IDs/names that cannot be held together |
-| Apply preset | Confirm overwrite warning → load starter people/slots/rules/setup from a pack |
+| Apply preset | Confirm overwrite warning → load starter entries/slots/rules/setup from a pack |
 
 **Column mapping (after import):** if headers are messy, show a short step *above* the table: “Column X → type ▾”, then Continue. Not a separate page.
 

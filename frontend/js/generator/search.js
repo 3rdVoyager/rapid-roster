@@ -50,19 +50,19 @@
  *   const combined = mergeOptions(existingOptions, more.options, 6); // or whatever cap
  *
  * legalConfig and scoreConfig are the same shapes used by legal.js and score.js.
- * Person ids come from scoreConfig.peopleAttrs (every key is a person).
+ * Person ids come from scoreConfig.entriesAttrs (every key is a person).
  */
 
 import {
   createEmptyAssignments,
   copyAssignments,
-  addPersonToSlot,
-  removePersonFromSlot,
-  movePerson,
-  swapPeople,
-  getSlotsForPerson,
-  getPeopleInSlot,
-  personIsInSlot
+  addEntryToSlot,
+  removeEntryFromSlot,
+  moveEntry,
+  swapEntries,
+  getSlotsForEntry,
+  getEntriesInSlot,
+  entryIsInSlot
 } from "./placement.js";
 
 import { checkLegal } from "./legal.js";
@@ -415,13 +415,13 @@ function rankAndTrimOptions(optionsList, keepCount) {
  * @returns {string}
  */
 function assignmentFingerprint(assignments) {
-  const personIds = Object.keys(assignments).sort();
+  const entryIds = Object.keys(assignments).sort();
   const parts = [];
 
-  for (let i = 0; i < personIds.length; i = i + 1) {
-    const personId = personIds[i];
-    const slots = getSlotsForPerson(assignments, personId).sort();
-    parts.push(personId + ":" + slots.join("+"));
+  for (let i = 0; i < entryIds.length; i = i + 1) {
+    const entryId = entryIds[i];
+    const slots = getSlotsForEntry(assignments, entryId).sort();
+    parts.push(entryId + ":" + slots.join("+"));
   }
 
   return parts.join("|");
@@ -459,33 +459,33 @@ function improveAssignments(
       break;
     }
 
-    const personIds = Object.keys(current);
+    const entryIds = Object.keys(current);
     let improvedThisPass = false;
 
-    for (let p = 0; p < personIds.length; p = p + 1) {
-      const personId = personIds[p];
+    for (let p = 0; p < entryIds.length; p = p + 1) {
+      const entryId = entryIds[p];
 
       reportProgress(onProgress, {
         phase: "improving",
         pass: passNumber,
-        personIndex: p + 1,
-        personCount: personIds.length,
-        personId: personId,
+        entryIndex: p + 1,
+        entryCount: entryIds.length,
+        entryId: entryId,
         bestScore: bestScore
       });
 
-      const afterPerson = improveOnePerson(
+      const afterEntry = improveOneEntry(
         current,
-        personId,
+        entryId,
         bestScore,
         legalConfig,
         scoreConfig
       );
 
-      if (afterPerson.improved === true) {
-        current = afterPerson.assignments;
-        bestScore = afterPerson.bestScore;
-        bestBreakdown = afterPerson.scoresByRule;
+      if (afterEntry.improved === true) {
+        current = afterEntry.assignments;
+        bestScore = afterEntry.bestScore;
+        bestBreakdown = afterEntry.scoresByRule;
         improvedThisPass = true;
       }
     }
@@ -514,16 +514,16 @@ function improveAssignments(
  *
  * @returns {{ improved: boolean, assignments: Object, bestScore: number, scoresByRule: Object[] }}
  */
-function improveOnePerson(
+function improveOneEntry(
   assignments,
-  personId,
+  entryId,
   currentScore,
   legalConfig,
   scoreConfig
 ) {
   const slotIds = legalConfig.slotIds;
-  const otherPeople = Object.keys(assignments);
-  const theirSlots = getSlotsForPerson(assignments, personId);
+  const otherEntries = Object.keys(assignments);
+  const theirSlots = getSlotsForEntry(assignments, entryId);
 
   // ----- 1. Moves -----
   for (let s = 0; s < theirSlots.length; s = s + 1) {
@@ -536,7 +536,7 @@ function improveOnePerson(
         continue;
       }
 
-      const moved = movePerson(assignments, personId, fromSlotId, toSlotId);
+      const moved = moveEntry(assignments, entryId, fromSlotId, toSlotId);
       const accepted = acceptIfBetter(
         moved,
         currentScore,
@@ -551,14 +551,14 @@ function improveOnePerson(
   }
 
   // ----- 2. Swaps -----
-  for (let i = 0; i < otherPeople.length; i = i + 1) {
-    const otherId = otherPeople[i];
+  for (let i = 0; i < otherEntries.length; i = i + 1) {
+    const otherId = otherEntries[i];
 
-    if (otherId === personId) {
+    if (otherId === entryId) {
       continue;
     }
 
-    const swapped = swapPeople(assignments, personId, otherId);
+    const swapped = swapEntries(assignments, entryId, otherId);
     const accepted = acceptIfBetter(
       swapped,
       currentScore,
@@ -575,11 +575,11 @@ function improveOnePerson(
   for (let t = 0; t < slotIds.length; t = t + 1) {
     const slotId = slotIds[t];
 
-    if (personIsInSlot(assignments, personId, slotId) === true) {
+    if (entryIsInSlot(assignments, entryId, slotId) === true) {
       continue;
     }
 
-    const added = addPersonToSlot(assignments, personId, slotId);
+    const added = addEntryToSlot(assignments, entryId, slotId);
     const accepted = acceptIfBetter(
       added,
       currentScore,
@@ -595,7 +595,7 @@ function improveOnePerson(
   // ----- 4. Removes -----
   for (let s = 0; s < theirSlots.length; s = s + 1) {
     const slotId = theirSlots[s];
-    const removed = removePersonFromSlot(assignments, personId, slotId);
+    const removed = removeEntryFromSlot(assignments, entryId, slotId);
     const accepted = acceptIfBetter(
       removed,
       currentScore,
@@ -645,20 +645,20 @@ function acceptIfBetter(candidate, currentScore, legalConfig, scoreConfig) {
  * Swap the full slot lists of two different people (used by shake).
  */
 function tryRandomSwap(assignments, legalConfig) {
-  const personIds = Object.keys(assignments);
+  const entryIds = Object.keys(assignments);
 
-  if (personIds.length < 2) {
+  if (entryIds.length < 2) {
     return null;
   }
 
-  const personA = pickRandomFromList(personIds);
-  const personB = pickRandomFromList(personIds);
+  const entryA = pickRandomFromList(entryIds);
+  const entryB = pickRandomFromList(entryIds);
 
-  if (personA === personB) {
+  if (entryA === entryB) {
     return null;
   }
 
-  const next = swapPeople(assignments, personA, personB);
+  const next = swapEntries(assignments, entryA, entryB);
   return onlyIfLegal(next, legalConfig);
 }
 
@@ -699,7 +699,7 @@ function onlyIfLegal(nextAssignments, legalConfig) {
 
 /**
  * Greedy start:
- * 1. Create empty assignments for every person in scoreConfig.peopleAttrs
+ * 1. Create empty assignments for every person in scoreConfig.entriesAttrs
  * 2. Fill each slot up to its minimum size
  * 3. Give remaining people a slot when capacity allows
  * 4. If the result is not legal, fail with reasons
@@ -709,16 +709,16 @@ function onlyIfLegal(nextAssignments, legalConfig) {
  * @returns {{ ok: true, assignments: Object } | { ok: false, reasons: string[] }}
  */
 function buildInitialAssignments(legalConfig, scoreConfig) {
-  let personIds = [];
+  let entryIds = [];
 
-  if (scoreConfig.peopleAttrs !== undefined) {
-    personIds = Object.keys(scoreConfig.peopleAttrs);
+  if (scoreConfig.entriesAttrs !== undefined) {
+    entryIds = Object.keys(scoreConfig.entriesAttrs);
   }
 
-  if (personIds.length === 0) {
+  if (entryIds.length === 0) {
     return {
       ok: false,
-      reasons: ["No people found in scoreConfig.peopleAttrs."]
+      reasons: ["No entries found in scoreConfig.entriesAttrs."]
     };
   }
 
@@ -729,13 +729,13 @@ function buildInitialAssignments(legalConfig, scoreConfig) {
     };
   }
 
-  let assignments = createEmptyAssignments(personIds);
+  let assignments = createEmptyAssignments(entryIds);
   const slotIds = legalConfig.slotIds;
 
   // How many slots each person may hold (same default as legal.js).
-  let maxSlotsPerPerson = legalConfig.defaultSlotsPerPerson;
-  if (maxSlotsPerPerson === undefined) {
-    maxSlotsPerPerson = 1;
+  let maxSlotsPerEntry = legalConfig.defaultSlotsPerEntry;
+  if (maxSlotsPerEntry === undefined) {
+    maxSlotsPerEntry = 1;
   }
 
   // ----- Fill slot minimums first -----
@@ -743,30 +743,30 @@ function buildInitialAssignments(legalConfig, scoreConfig) {
     const slotId = slotIds[s];
     const minSize = readMinSize(legalConfig, slotId);
 
-    while (getPeopleInSlot(assignments, slotId).length < minSize) {
-      const personId = findPersonWhoCanTakeSlot(
+    while (getEntriesInSlot(assignments, slotId).length < minSize) {
+      const entryId = findEntryWhoCanTakeSlot(
         assignments,
         slotId,
         legalConfig,
-        maxSlotsPerPerson
+        maxSlotsPerEntry
       );
 
-      if (personId === null) {
+      if (entryId === null) {
         break;
       }
 
-      assignments = addPersonToSlot(assignments, personId, slotId);
+      assignments = addEntryToSlot(assignments, entryId, slotId);
     }
   }
 
   // ----- Place anyone still under their slot limit -----
-  for (let p = 0; p < personIds.length; p = p + 1) {
-    const personId = personIds[p];
+  for (let p = 0; p < entryIds.length; p = p + 1) {
+    const entryId = entryIds[p];
 
-    while (getSlotsForPerson(assignments, personId).length < maxSlotsPerPerson) {
-      const slotId = findSlotForPerson(
+    while (getSlotsForEntry(assignments, entryId).length < maxSlotsPerEntry) {
+      const slotId = findSlotForEntry(
         assignments,
-        personId,
+        entryId,
         legalConfig
       );
 
@@ -774,7 +774,7 @@ function buildInitialAssignments(legalConfig, scoreConfig) {
         break;
       }
 
-      assignments = addPersonToSlot(assignments, personId, slotId);
+      assignments = addEntryToSlot(assignments, entryId, slotId);
     }
   }
 
@@ -799,35 +799,35 @@ function buildInitialAssignments(legalConfig, scoreConfig) {
  * (We check full legality after the real add in the main loops;
  *  here we use a quick trial add.)
  */
-function findPersonWhoCanTakeSlot(
+function findEntryWhoCanTakeSlot(
   assignments,
   slotId,
   legalConfig,
-  maxSlotsPerPerson
+  maxSlotsPerEntry
 ) {
-  const personIds = Object.keys(assignments);
+  const entryIds = Object.keys(assignments);
 
   // Shuffle order a bit so starts are not always identical.
-  const order = shuffledCopy(personIds);
+  const order = shuffledCopy(entryIds);
 
   for (let i = 0; i < order.length; i = i + 1) {
-    const personId = order[i];
+    const entryId = order[i];
 
-    if (personIsInSlot(assignments, personId, slotId) === true) {
+    if (entryIsInSlot(assignments, entryId, slotId) === true) {
       continue;
     }
 
-    if (getSlotsForPerson(assignments, personId).length >= maxSlotsPerPerson) {
+    if (getSlotsForEntry(assignments, entryId).length >= maxSlotsPerEntry) {
       continue;
     }
 
-    const trial = addPersonToSlot(assignments, personId, slotId);
+    const trial = addEntryToSlot(assignments, entryId, slotId);
 
     // During construction, mins may still be unmet globally.
     // So we only reject if THIS add clearly breaks max / slots / conflicts.
     // Full checkLegal at the end still decides success.
     if (breaksHardCapacity(trial, legalConfig) === false) {
-      return personId;
+      return entryId;
     }
   }
 
@@ -837,17 +837,17 @@ function findPersonWhoCanTakeSlot(
 /**
  * Find a slot this person can join without breaking capacity checks.
  */
-function findSlotForPerson(assignments, personId, legalConfig) {
+function findSlotForEntry(assignments, entryId, legalConfig) {
   const slotIds = shuffledCopy(legalConfig.slotIds);
 
   for (let i = 0; i < slotIds.length; i = i + 1) {
     const slotId = slotIds[i];
 
-    if (personIsInSlot(assignments, personId, slotId) === true) {
+    if (entryIsInSlot(assignments, entryId, slotId) === true) {
       continue;
     }
 
-    const trial = addPersonToSlot(assignments, personId, slotId);
+    const trial = addEntryToSlot(assignments, entryId, slotId);
 
     if (breaksHardCapacity(trial, legalConfig) === false) {
       return slotId;
@@ -858,7 +858,7 @@ function findSlotForPerson(assignments, personId, legalConfig) {
 }
 
 /**
- * True if the layout breaks max size, slots-per-person, conflicts, or unknown slots.
+ * True if the layout breaks max size, slots-per-entry, conflicts, or unknown slots.
  * Ignores minimum sizes (used only while building a start).
  *
  * We do this by temporarily checking legal with mins forced to 0.
@@ -868,7 +868,7 @@ function breaksHardCapacity(assignments, legalConfig) {
     slotIds: legalConfig.slotIds,
     slotMinSizes: 0,
     slotMaxSizes: legalConfig.slotMaxSizes,
-    defaultSlotsPerPerson: legalConfig.defaultSlotsPerPerson,
+    defaultSlotsPerEntry: legalConfig.defaultSlotsPerEntry,
     conflictGroups: legalConfig.conflictGroups
   };
 

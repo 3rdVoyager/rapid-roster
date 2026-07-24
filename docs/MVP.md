@@ -2,9 +2,9 @@
 
 ## Goal
 
-Build a web app where organizers create **projects**, import people and slots, configure **Cluster / Separate / Limit / Balance** rules, and generate assignments they can review, tweak, and export.
+Build a web app where organizers create **projects**, import entries and slots, configure **Cluster / Separate / Limit / Balance** rules, and generate assignments they can review, tweak, and export.
 
-The same engine places people into slots for any use case. **Presets** only load starter CSVs and rules; they do not change how generation works.
+The same engine places entries into slots for any use case (people, resources, and more). **Presets** only load starter CSVs and rules; they do not change how generation works.
 
 Focus for this MVP: **accounts → projects → configure → generate → review → export**.
 
@@ -28,10 +28,10 @@ RapidRoster
   /app/project/ — Project workspace
     - Header: back to dashboard, name, save, account
     - Sidebar: Setup | Rules | Generate | Results
-    - Setup     people & slots; column types; sizes; slots-per-person; conflicts
+    - Setup     entries & slots; column types; sizes; slots-per-entry; conflicts
     - Rules     Cluster, Separate, Limit, Balance
     - Generate  main run + alternatives
-    - Results   by slot / by person, satisfaction, tweaks, export
+    - Results   by slot / by entry, satisfaction, tweaks, export
 ```
 
 Projects save in the cloud so organizers can leave and come back.
@@ -49,12 +49,12 @@ Optional **presets** fill starter settings (e.g. sports, Science Olympiad, volun
 - Save people, slots, rules, and last results.
 - Host on Cloudflare. Generation can run in the browser for typical sizes.
 
-### People and slots (Setup)
+### Entries and slots (Setup)
 
-- Import people from CSV with typed columns: ID, Number, Time, Text, Ignore.
+- Import entries from CSV with typed columns: ID, Number, Time, Text, Ignore.
 - Multiple values in a cell with semicolons.
 - Slots with ID, MinSize, MaxSize, Text, Ignore; optional conflict groups.
-- How many slots each person may hold (project default and/or per person).
+- How many slots each entry may hold (project default and/or per entry).
 - Common shapes such as ranked preference columns (slot names under headers `1`…`n`) — see [examples/](./examples/).
 - Re-import and light editing; help mapping messy column names.
 

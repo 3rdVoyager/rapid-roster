@@ -141,7 +141,7 @@ export function createEmptyProject(name) {
     id: makeId("proj"),
     name: projectName,
     updatedAt: new Date().toISOString(),
-    people: {
+    entries: {
       columns: [
         { key: "id", label: "ID", type: "id" },
         { key: "name", label: "Name", type: "text" }
@@ -158,7 +158,7 @@ export function createEmptyProject(name) {
       rows: []
     },
     setup: {
-      defaultSlotsPerPerson: 1,
+      defaultSlotsPerEntry: 1,
       conflictGroups: []
     },
     rules: [],
@@ -173,7 +173,7 @@ export function createEmptyProject(name) {
  * @returns {Object}
  */
 export function createDemoProject() {
-  const peopleColumns = [
+  const entriesColumns = [
     { key: "id", label: "ID", type: "id" },
     { key: "name", label: "Name", type: "text" },
     { key: "skill", label: "Skill", type: "number" },
@@ -181,7 +181,7 @@ export function createDemoProject() {
     { key: "availability", label: "Availability", type: "text" }
   ];
 
-  const personSeed = [
+  const entrySeed = [
     ["ava", "Ava Chen", 8, "Northwest", "Mon;Wed"],
     ["bob", "Noah Patel", 5, "Northeast", "Wed"],
     ["charlie", "Mia Brooks", 3, "Southwest", "Tue;Thu"],
@@ -210,11 +210,11 @@ export function createDemoProject() {
     ["zane", "Morgan Patel", 1, "Northeast", "Thu"]
   ];
 
-  const peopleRows = [];
+  const entriesRows = [];
 
-  for (let i = 0; i < personSeed.length; i = i + 1) {
-    const row = personSeed[i];
-    peopleRows.push({
+  for (let i = 0; i < entrySeed.length; i = i + 1) {
+    const row = entrySeed[i];
+    entriesRows.push({
       id: row[0],
       cells: {
         id: row[0],
@@ -230,9 +230,9 @@ export function createDemoProject() {
     id: makeId("proj"),
     name: "Rec league teams",
     updatedAt: new Date().toISOString(),
-    people: {
-      columns: peopleColumns,
-      rows: peopleRows
+    entries: {
+      columns: entriesColumns,
+      rows: entriesRows
     },
     slots: {
       columns: [
@@ -276,7 +276,7 @@ export function createDemoProject() {
       ]
     },
     setup: {
-      defaultSlotsPerPerson: 1,
+      defaultSlotsPerEntry: 1,
       conflictGroups: []
     },
     rules: [
@@ -286,7 +286,7 @@ export function createDemoProject() {
         type: "balance",
         hard: false,
         priority: 9,
-        personAttribute: "skill"
+        entryAttribute: "skill"
       },
       {
         id: "R2",
@@ -294,8 +294,8 @@ export function createDemoProject() {
         type: "cluster",
         hard: false,
         priority: 8,
-        shape: "peopleTogether",
-        personAttribute: "school",
+        shape: "entriesTogether",
+        entryAttribute: "school",
         match: "exact"
       }
     ],

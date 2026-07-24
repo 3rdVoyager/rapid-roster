@@ -289,12 +289,12 @@ html {
   display: none;
 }
 
-#setup-tab-people:checked ~ .setup-panes #people-pane,
+#setup-tab-entries:checked ~ .setup-panes #entries-pane,
 #setup-tab-slots:checked ~ .setup-panes #slots-pane {
   display: block;
 }
 
-#setup-tab-people:checked ~ .app-subtabs label[for="setup-tab-people"],
+#setup-tab-entries:checked ~ .app-subtabs label[for="setup-tab-entries"],
 #setup-tab-slots:checked ~ .app-subtabs label[for="setup-tab-slots"] {
   color: var(--text-color);
   background: color-mix(in srgb, var(--color-blue) 28%, var(--color-navy));
@@ -513,7 +513,7 @@ html {
   border-color: color-mix(in srgb, var(--color-blue) 35%, transparent);
 }
 
-.results-people {
+.results-entries {
   display: grid;
   /*
     Columns: person name | flexible spacer | one column per attribute pill.
@@ -535,14 +535,14 @@ html {
 
 /*
   display: contents — the <li> itself does not draw a box.
-  Its children (name, spacer, pills) become direct grid items of .results-people.
+  Its children (name, spacer, pills) become direct grid items of .results-entries.
   That lets every person's attributes line up in the same columns.
 */
-.results-person {
+.results-entry {
   display: contents;
 }
 
-.results-person-name {
+.results-entry-name {
   color: var(--text-color);
   font-weight: 700;
   font-size: 0.95rem;
@@ -550,7 +550,7 @@ html {
   white-space: nowrap;
 }
 
-.results-person-spacer {
+.results-entry-spacer {
   min-width: 0;
 }
 
@@ -590,7 +590,7 @@ html {
   font-weight: 600;
 }
 
-.results-person-empty {
+.results-entry-empty {
   grid-column: 1 / -1;
   color: var(--text-color-muted);
   padding: 0.35rem 0;

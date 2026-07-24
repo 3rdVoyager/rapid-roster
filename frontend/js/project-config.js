@@ -45,10 +45,10 @@ export function buildLegalConfig(project) {
     }
   }
 
-  let defaultSlotsPerPerson = 1;
+  let defaultSlotsPerEntry = 1;
 
-  if (project.setup !== undefined && project.setup.defaultSlotsPerPerson !== undefined) {
-    defaultSlotsPerPerson = project.setup.defaultSlotsPerPerson;
+  if (project.setup !== undefined && project.setup.defaultSlotsPerEntry !== undefined) {
+    defaultSlotsPerEntry = project.setup.defaultSlotsPerEntry;
   }
 
   let conflictGroups = [];
@@ -61,7 +61,7 @@ export function buildLegalConfig(project) {
     slotIds: slotIds,
     slotMinSizes: slotMinSizes,
     slotMaxSizes: slotMaxSizes,
-    defaultSlotsPerPerson: defaultSlotsPerPerson,
+    defaultSlotsPerEntry: defaultSlotsPerEntry,
     conflictGroups: conflictGroups
   };
 }
@@ -69,19 +69,19 @@ export function buildLegalConfig(project) {
 /**
  * Build the config object for scorePlacement / runSearch.
  *
- * peopleAttrs / slotAttrs look like:
+ * entriesAttrs / slotAttrs look like:
  *   { "ava": { name: "Ava", skill: 8 }, "bob": { ... } }
  *
  * @param {Object} project
  * @returns {Object}
  */
 export function buildScoreConfig(project) {
-  const peopleAttrs = {};
+  const entriesAttrs = {};
   const slotAttrs = {};
 
-  for (let i = 0; i < project.people.rows.length; i = i + 1) {
-    const row = project.people.rows[i];
-    peopleAttrs[row.id] = copyCells(row.cells);
+  for (let i = 0; i < project.entries.rows.length; i = i + 1) {
+    const row = project.entries.rows[i];
+    entriesAttrs[row.id] = copyCells(row.cells);
   }
 
   for (let i = 0; i < project.slots.rows.length; i = i + 1) {
@@ -96,7 +96,7 @@ export function buildScoreConfig(project) {
   }
 
   return {
-    peopleAttrs: peopleAttrs,
+    entriesAttrs: entriesAttrs,
     slotAttrs: slotAttrs,
     rules: rules
   };

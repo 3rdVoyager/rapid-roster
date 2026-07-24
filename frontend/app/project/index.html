@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="RapidRoster project workspace — set up people and slots, add rules, generate, and review results."
+      content="RapidRoster project workspace — set up entries and slots, add rules, generate, and review results."
     />
     <title>Project — RapidRoster</title>
     <link rel="icon" href="/assets/favicon.ico" sizes="any" />
@@ -87,7 +87,7 @@
             <div>
               <h1>Setup</h1>
               <p class="app-panel-lead">
-                People, slots, sizes, and conflicts. Tables fill from CSV later —
+                Entries, slots, and sizes. Import CSVs or edit the tables directly.
                 structure is ready to wire.
               </p>
             </div>
@@ -98,19 +98,13 @@
             <h2 class="app-section-title">Global</h2>
             <div class="global-setup-grid">
               <div class="app-field">
-                <label for="slots-per-person">Default slots per person</label>
-                <select class="app-select" id="slots-per-person">
+                <label for="slots-per-entry">Default slots per entry</label>
+                <select class="app-select" id="slots-per-entry">
                   <option value="1" selected>1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4">4</option>
                 </select>
-              </div>
-              <div class="app-field">
-                <span class="app-label">Conflict groups</span>
-                <button class="button button-ghost button-small" type="button" id="manage-conflicts-btn">
-                  Manage…
-                </button>
               </div>
               <div class="app-field">
                 <label for="apply-preset">Preset</label>
@@ -124,12 +118,12 @@
             </div>
           </div>
 
-          <!-- Radios drive People / Slots panes without JS -->
+          <!-- Radios drive Entries / Slots panes without JS -->
           <input
             class="setup-tab-controls"
             type="radio"
             name="setup-tab"
-            id="setup-tab-people"
+            id="setup-tab-entries"
             checked
           />
           <input
@@ -140,8 +134,8 @@
           />
 
           <div class="app-subtabs" role="tablist" aria-label="Setup tables">
-            <label class="app-subtab" for="setup-tab-people" id="setup-people-tab-label">
-              People
+            <label class="app-subtab" for="setup-tab-entries" id="setup-entries-tab-label">
+              Entries
             </label>
             <label class="app-subtab" for="setup-tab-slots" id="setup-slots-tab-label">
               Slots
@@ -149,22 +143,22 @@
           </div>
 
           <div class="setup-panes">
-            <div class="setup-pane" id="people-pane">
+            <div class="setup-pane" id="entries-pane">
               <div class="app-toolbar">
-                <button class="button button-primary button-small" type="button" id="import-people-btn">
-                  <input type="file" id="import-people-file" accept=".csv,text/csv">
-                  <label for="import-people-file">Import CSV</label>
+                <button class="button button-primary button-small" type="button" id="import-entries-btn">
+                  <input type="file" id="import-entries-file" accept=".csv,text/csv">
+                  <label for="import-entries-file">Import CSV</label>
                 </button>
-                <button class="button button-ghost button-small" type="button" id="clear-people-btn">
+                <button class="button button-ghost button-small" type="button" id="clear-entries-btn">
                   Clear
                 </button>
                 <span class="app-toolbar-spacer"></span>
-                <button class="button button-secondary button-small" type="button" id="add-person-row-btn">
+                <button class="button button-secondary button-small" type="button" id="add-entry-row-btn">
                   + Add row
                 </button>
               </div>
               <div class="app-table-wrap">
-                <table class="app-table" id="people-table">
+                <table class="app-table" id="entries-table">
                   <thead>
                     <tr>
                       <th>ID <span class="col-type">id</span></th>
@@ -174,7 +168,7 @@
                       <th>Availability <span class="col-type">text</span></th>
                     </tr>
                   </thead>
-                  <tbody id="people-table-body">
+                  <tbody id="entries-table-body">
                     <tr>
                       <td>ava</td>
                       <td>Ava Chen</td>
@@ -200,14 +194,15 @@
                 </table>
               </div>
               <p class="app-empty-hint">
-                Sample rows for layout. Column type dropdowns and editing come next.
+                Edit cells directly. Use the type dropdown under each column header for the generator.
               </p>
             </div>
 
             <div class="setup-pane" id="slots-pane">
               <div class="app-toolbar">
                 <button class="button button-primary button-small" type="button" id="import-slots-btn">
-                  Import CSV
+                  <input type="file" id="import-slots-file" accept=".csv,text/csv">
+                  <label for="import-slots-file">Import CSV</label>
                 </button>
                 <button class="button button-ghost button-small" type="button" id="clear-slots-btn">
                   Clear
@@ -254,7 +249,7 @@
                 </table>
               </div>
               <p class="app-empty-hint">
-                Sample slots for layout. Min/max feed the generator’s legal checks.
+                Min/max sizes feed the generator’s legal checks. Edit cells or import a CSV.
               </p>
             </div>
           </div>
@@ -266,7 +261,7 @@
             <div>
               <h1>Rules</h1>
               <p class="app-panel-lead">
-                Name each rule, then set type, data, priority (1–10), and hard vs soft.
+                Soft and hard rules for scoring, plus conflict groups (slots an entry cannot hold together).
               </p>
             </div>
             <div class="app-panel-header-actions">
@@ -332,9 +327,9 @@
                 <div class="rule-editor-row">
                   <span>Data</span>
                   <select class="app-select" id="rule-data" style="max-width: none">
-                    <option>people.skill</option>
-                    <option>people.school</option>
-                    <option>people.role</option>
+                    <option>entries.skill</option>
+                    <option>entries.school</option>
+                    <option>entries.role</option>
                   </select>
                 </div>
                 <div class="rule-editor-row">
@@ -370,6 +365,22 @@
               </div>
             </div>
           </div>
+
+          <div class="app-section" id="conflict-groups-panel">
+            <div class="review-card-head">
+              <div>
+                <h2 class="app-section-title">Conflict groups</h2>
+                <p class="app-empty-hint" style="margin: 0.35rem 0 0">
+                  Slots in the same group cannot be held by the same entry at once
+                  (for example two overlapping events).
+                </p>
+              </div>
+              <button class="button button-ghost button-small" type="button" id="manage-conflicts-btn">
+                Manage…
+              </button>
+            </div>
+            <p class="app-empty-hint" id="conflict-groups-summary">No conflict groups yet.</p>
+          </div>
         </section>
 
         <!-- ========== REVIEW ========== -->
@@ -392,12 +403,8 @@
               </div>
               <dl class="review-dl review-dl-inline">
                 <div>
-                  <dt>Slots per person</dt>
-                  <dd id="review-slots-per-person">1</dd>
-                </div>
-                <div>
-                  <dt>Conflict groups</dt>
-                  <dd id="review-conflicts">None</dd>
+                  <dt>Slots per entry</dt>
+                  <dd id="review-slots-per-entry">1</dd>
                 </div>
                 <div>
                   <dt>Preset</dt>
@@ -430,20 +437,20 @@
               </ul>
             </div>
 
-            <div class="app-section review-card" id="review-people">
+            <div class="app-section review-card" id="review-entries">
               <div class="review-card-head">
-                <h2 class="app-section-title">People</h2>
+                <h2 class="app-section-title">Entries</h2>
                 <a class="button button-ghost button-small" href="#setup">Edit in Setup</a>
               </div>
-              <p class="review-stat" id="review-people-count">
-                <strong>3</strong> people loaded
+              <p class="review-stat" id="review-entries-count">
+                <strong>3</strong> entries loaded
               </p>
-              <ul class="review-chip-list" id="review-people-preview">
+              <ul class="review-chip-list" id="review-entries-preview">
                 <li>Ava Chen</li>
                 <li>Noah Patel</li>
                 <li>Mia Brooks</li>
               </ul>
-              <p class="app-empty-hint">Showing a short preview — full table is in Setup → People.</p>
+              <p class="app-empty-hint">Showing a short preview — full table is in Setup → Entries.</p>
             </div>
 
             <div class="app-section review-card review-card-wide" id="review-rules">
@@ -451,27 +458,33 @@
                 <h2 class="app-section-title">Rules</h2>
                 <a class="button button-ghost button-small" href="#rules">Edit in Rules</a>
               </div>
+              <dl class="review-dl review-dl-inline" style="margin-bottom: 1rem">
+                <div>
+                  <dt>Conflict groups</dt>
+                  <dd id="review-conflicts">None</dd>
+                </div>
+              </dl>
               <ol class="review-rules" id="review-rules-list">
                 <li>
                   <div class="review-rule-top">
                     <strong>Balance skill</strong>
                     <span class="app-pill">Soft · P9</span>
                   </div>
-                  <p>Keep <code>people.skill</code> even across slots.</p>
+                  <p>Keep <code>entries.skill</code> even across slots.</p>
                 </li>
                 <li>
                   <div class="review-rule-top">
                     <strong>Cluster by school</strong>
                     <span class="app-pill">Soft · P8</span>
                   </div>
-                  <p>People with the same <code>school</code> prefer the same slot.</p>
+                  <p>Entries with the same <code>school</code> prefer the same slot.</p>
                 </li>
                 <li>
                   <div class="review-rule-top">
                     <strong>Limit keepers</strong>
                     <span class="app-pill is-active">Hard · P9</span>
                   </div>
-                  <p>At most 2 people with <code>role = keeper</code> per slot.</p>
+                  <p>At most 2 entries with <code>role = keeper</code> per slot.</p>
                 </li>
               </ol>
             </div>
@@ -553,7 +566,7 @@
             <div>
               <h1>Results</h1>
               <p class="app-panel-lead">
-                Review by slot or person, check satisfaction, then export.
+                Review by slot or entry, check satisfaction, then export.
               </p>
             </div>
             <button class="button button-secondary button-small" type="button" id="export-csv-btn">
@@ -569,7 +582,7 @@
             </div>
             <div class="app-pill-row" id="results-view-toggle" role="group" aria-label="View mode">
               <button class="app-pill is-active" type="button" data-view="by-slot">By slot</button>
-              <button class="app-pill" type="button" data-view="by-person">By person</button>
+              <button class="app-pill" type="button" data-view="by-entry">By entry</button>
               <button class="app-pill" type="button" data-view="satisfaction">
                 Satisfaction
               </button>
@@ -579,16 +592,16 @@
           <div class="app-section" id="results-main">
             <div class="results-block" id="results-by-slot">
               <div class="results-slot-group">
-                <h3>Team A <span class="app-pill">10 people</span></h3>
-                <ul class="results-people">
+                <h3>Team A <span class="app-pill">10 entries</span></h3>
+                <ul class="results-entries">
                   <li>Ava Chen · skill 8</li>
                   <li>Paul Ortiz · skill 10</li>
                   <li>… sample list</li>
                 </ul>
               </div>
               <div class="results-slot-group">
-                <h3>Team B <span class="app-pill">8 people</span></h3>
-                <ul class="results-people">
+                <h3>Team B <span class="app-pill">8 entries</span></h3>
+                <ul class="results-entries">
                   <li>Noah Patel · skill 5</li>
                   <li>… sample list</li>
                 </ul>
@@ -600,8 +613,8 @@
             <h2 class="app-section-title">Light tweak</h2>
             <div class="global-setup-grid">
               <div class="app-field">
-                <label for="tweak-person">Person</label>
-                <select class="app-select" id="tweak-person">
+                <label for="tweak-entry">Entry</label>
+                <select class="app-select" id="tweak-entry">
                   <option>Ava Chen</option>
                   <option>Noah Patel</option>
                 </select>
