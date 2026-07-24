@@ -63,13 +63,19 @@ import {
   setDirty,
   saveProject,
   loadProject,
-  createDemoProject,
+  createEmptyProject,
 } from "/js/state.js";
 
 import { buildLegalConfig, buildScoreConfig } from "/js/project-config.js";
 import { runSearch, mergeOptions } from "/js/generator/search.js";
 import { getEntriesInSlot } from "/js/generator/placement.js";
 import { parseCsvText, csvToTable } from "/js/csv.js";
+import {
+  PRESET_CATALOG,
+  getPresetInfo,
+  getPresetTemplateUrls,
+  buildProjectFromPreset
+} from "/js/presets.js";
 
 /** Valid workflow panel ids (must match section id= and nav href="#..."). */
 const PANEL_IDS = ["setup", "rules", "review", "generate", "results"];
@@ -91,10 +97,9 @@ function main() {
   let project = loadProject();
 
   if (project === null) {
-    project = createDemoProject();
+    project = createEmptyProject("Untitled project");
     setProject(project);
-    // First visit: persist the demo so refresh keeps it.
-    saveProject();
+    setDirty(false);
   } else {
     setProject(project);
     setDirty(false);
@@ -103,6 +108,7 @@ function main() {
   renderAll();
   wireControls();
   wirePanelNavigation();
+  wireLoadPresetModal();
   showPanelFromHash();
 }
 
@@ -412,7 +418,17 @@ function renderReview(project) {
 
   setText("review-conflicts", conflictText);
   setText("conflict-groups-summary", conflictSummary);
-  setText("review-preset", "—");
+
+  let presetLabel = "—";
+  if (project.presetId !== undefined && project.presetId !== null) {
+    const info = getPresetInfo(project.presetId);
+    if (info !== null) {
+      presetLabel = info.name;
+    } else {
+      presetLabel = String(project.presetId);
+    }
+  }
+  setText("review-preset", presetLabel);
 
   const entriesCount = document.getElementById("review-entries-count");
   if (entriesCount !== null) {
@@ -1594,6 +1610,211 @@ function findAncestor(startEl, selector) {
   }
 
   return null;
+}
+
+/**
+ * Load preset modal on the workspace (replaces current project data).
+ */
+function wireLoadPresetModal() {
+  const openBtn = document.getElementById("load-preset-btn");
+  const modal = document.getElementById("load-preset-modal");
+  const backdrop = document.getElementById("load-preset-backdrop");
+  const cancelBtn = document.getElementById("load-preset-cancel");
+  const applyBtn = document.getElementById("load-preset-apply");
+  const listEl = document.getElementById("load-preset-list");
+
+  if (openBtn === null || modal === null) {
+    return;
+  }
+
+  fillLoadPresetList(listEl, "sports");
+  updateLoadPresetDetails("sports");
+
+  openBtn.addEventListener("click", function () {
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+  });
+
+  if (cancelBtn !== null) {
+    cancelBtn.addEventListener("click", function () {
+      closeLoadPresetModal(modal);
+    });
+  }
+
+  if (backdrop !== null) {
+    backdrop.addEventListener("click", function () {
+      closeLoadPresetModal(modal);
+    });
+  }
+
+  if (listEl !== null) {
+    listEl.addEventListener("change", function (event) {
+      if (event.target.name !== "load-preset-choice") {
+        return;
+      }
+      highlightLoadPresetSelection(listEl);
+      updateLoadPresetDetails(event.target.value);
+    });
+  }
+
+  if (applyBtn !== null) {
+    applyBtn.addEventListener("click", onLoadPresetApply);
+  }
+}
+
+function closeLoadPresetModal(modal) {
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden", "true");
+}
+
+/**
+ * @param {HTMLElement|null} listEl
+ * @param {string} selectedId
+ */
+function fillLoadPresetList(listEl, selectedId) {
+  if (listEl === null) {
+    return;
+  }
+
+  let html = "";
+
+  for (let i = 0; i < PRESET_CATALOG.length; i = i + 1) {
+    const preset = PRESET_CATALOG[i];
+
+    // Blank is for New project; loading blank here would wipe to empty — still allow it.
+    let checked = "";
+    let selectedClass = "";
+    if (preset.id === selectedId) {
+      checked = " checked";
+      selectedClass = " is-selected";
+    }
+
+    html =
+      html +
+      '<label class="preset-choice' +
+      selectedClass +
+      '">' +
+      '<input type="radio" name="load-preset-choice" value="' +
+      escapeHtml(preset.id) +
+      '"' +
+      checked +
+      " />" +
+      '<span class="preset-choice-body">' +
+      "<strong>" +
+      escapeHtml(preset.name) +
+      "</strong>" +
+      "<span>" +
+      escapeHtml(preset.summary) +
+      "</span>" +
+      "</span>" +
+      "</label>";
+  }
+
+  listEl.innerHTML = html;
+}
+
+function highlightLoadPresetSelection(listEl) {
+  const labels = listEl.querySelectorAll(".preset-choice");
+
+  for (let i = 0; i < labels.length; i = i + 1) {
+    const input = labels[i].querySelector('input[type="radio"]');
+    if (input !== null && input.checked === true) {
+      labels[i].classList.add("is-selected");
+    } else {
+      labels[i].classList.remove("is-selected");
+    }
+  }
+}
+
+/**
+ * @param {string} presetId
+ */
+function updateLoadPresetDetails(presetId) {
+  const info = getPresetInfo(presetId);
+  const summaryEl = document.getElementById("load-preset-summary");
+
+  if (summaryEl !== null && info !== null) {
+    summaryEl.textContent = info.summary;
+  }
+
+  const urls = getPresetTemplateUrls(presetId);
+  setDownloadLink("load-template-entries", urls.entries, presetId + "-entries.csv");
+  setDownloadLink("load-template-slots", urls.slots, presetId + "-slots.csv");
+  setDownloadLink("load-template-rules", urls.rules, presetId + "-rules.csv");
+}
+
+/**
+ * @param {string} id
+ * @param {string} url
+ * @param {string} filename
+ */
+function setDownloadLink(id, url, filename) {
+  const link = document.getElementById(id);
+  if (link === null) {
+    return;
+  }
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+}
+
+async function onLoadPresetApply() {
+  const selected = document.querySelector(
+    'input[name="load-preset-choice"]:checked'
+  );
+  const statusEl = document.getElementById("load-preset-status");
+  const applyBtn = document.getElementById("load-preset-apply");
+  const modal = document.getElementById("load-preset-modal");
+
+  let presetId = "blank";
+  if (selected !== null) {
+    presetId = selected.value;
+  }
+
+  const current = getProject();
+  let keepName = "Untitled project";
+  if (current !== null && current.name !== undefined) {
+    keepName = current.name;
+  }
+
+  const confirmed = window.confirm(
+    "Replace entries, slots, rules, and setup with the \"" +
+      presetId +
+      "\" preset? This cannot be undone."
+  );
+
+  if (confirmed === false) {
+    return;
+  }
+
+  if (applyBtn !== null) {
+    applyBtn.disabled = true;
+  }
+
+  if (statusEl !== null) {
+    statusEl.textContent = "Loading preset…";
+  }
+
+  try {
+    const project = await buildProjectFromPreset(presetId, keepName);
+    setProject(project);
+    markProjectChanged();
+    renderAll();
+    if (statusEl !== null) {
+      statusEl.textContent = "Preset loaded.";
+    }
+    if (modal !== null) {
+      closeLoadPresetModal(modal);
+    }
+  } catch (error) {
+    console.error(error);
+    if (statusEl !== null) {
+      statusEl.textContent = "Could not load preset.";
+    }
+  }
+
+  if (applyBtn !== null) {
+    applyBtn.disabled = false;
+  }
 }
 
 main();

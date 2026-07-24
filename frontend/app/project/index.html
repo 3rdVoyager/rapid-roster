@@ -48,6 +48,9 @@
       </div>
 
       <div class="app-header-account">
+        <button class="button button-ghost button-small" type="button" id="load-preset-btn">
+          Load preset…
+        </button>
         <a class="button button-ghost button-small" href="/app/">All projects</a>
         <button class="button button-tertiary button-small" type="button" id="account-menu-btn">
           Account ▾
@@ -107,13 +110,24 @@
                 </select>
               </div>
               <div class="app-field">
-                <label for="apply-preset">Preset</label>
-                <select class="app-select" id="apply-preset">
-                  <option value="">Apply preset…</option>
-                  <option value="sports">Sports teams</option>
-                  <option value="scioly">Science Olympiad</option>
-                  <option value="volunteers">Volunteers</option>
-                </select>
+                <span class="app-label">CSV templates</span>
+                <div class="template-download-row" id="setup-template-downloads">
+                  <a
+                    class="button button-ghost button-small"
+                    href="/presets/blank/entries.csv"
+                    download="entries-template.csv"
+                  >Entries</a>
+                  <a
+                    class="button button-ghost button-small"
+                    href="/presets/blank/slots.csv"
+                    download="slots-template.csv"
+                  >Slots</a>
+                  <a
+                    class="button button-ghost button-small"
+                    href="/presets/blank/rules.csv"
+                    download="rules-template.csv"
+                  >Rules</a>
+                </div>
               </div>
             </div>
           </div>
@@ -637,6 +651,43 @@
           </div>
         </section>
       </main>
+    </div>
+
+    <div
+      class="app-modal"
+      id="load-preset-modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="load-preset-title"
+    >
+      <div class="app-modal-backdrop" id="load-preset-backdrop"></div>
+      <div class="app-modal-panel">
+        <h2 id="load-preset-title">Load preset</h2>
+        <p class="app-modal-lead">
+          This <strong>replaces</strong> the current entries, slots, rules, and global setup
+          with the chosen pack. Download templates first if you need the expected CSV format.
+        </p>
+
+        <div class="preset-choice-list" id="load-preset-list"></div>
+        <p class="app-empty-hint" id="load-preset-summary"></p>
+
+        <div class="template-download-row" id="load-preset-templates">
+          <span class="app-label">CSV templates</span>
+          <a class="button button-ghost button-small" id="load-template-entries" href="#">Entries</a>
+          <a class="button button-ghost button-small" id="load-template-slots" href="#">Slots</a>
+          <a class="button button-ghost button-small" id="load-template-rules" href="#">Rules</a>
+        </div>
+
+        <p class="app-empty-hint" id="load-preset-status" aria-live="polite"></p>
+
+        <div class="app-modal-actions">
+          <button class="button button-ghost" type="button" id="load-preset-cancel">Cancel</button>
+          <button class="button button-primary" type="button" id="load-preset-apply">
+            Replace project data
+          </button>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="/js/project.js"></script>
