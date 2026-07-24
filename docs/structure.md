@@ -95,12 +95,14 @@ rapid-roster/
 │       ├── api.js            ← talk to /api (fetch wrappers, clear names)
 │       ├── dashboard.js      ← project list / create / open
 │       ├── project.js        ← wire workspace panels ↔ state
-│       ├── state.js          ← current project in memory (plain object)
+│       ├── project-config.js ← project tables → legal/score configs
+│       ├── state.js          ← current project in memory + localStorage
 │       ├── csv.js            ← parse / export CSV (simple string splitting + helpers)
 │       ├── tables.js         ← render editable people/slots tables
 │       ├── rules-ui.js       ← rule list + add/edit form
 │       ├── results-ui.js     ← results views + satisfaction report
 │       └── generator/
+│           ├── placement.js  ← assignment map helpers
 │           ├── score.js      ← score a placement against soft rules
 │           ├── legal.js      ← hard rules + size / conflict checks
 │           ├── search.js     ← start legal → improve → shake → alternatives

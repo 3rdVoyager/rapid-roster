@@ -35,15 +35,20 @@
       </a>
 
       <div class="app-header-project">
-        <a class="button button-ghost button-small" href="/app/">All projects</a>
-        <span class="app-project-name" id="project-name">Spring SciOly</span>
+        <label class="app-project-name-label" for="project-name">Project name</label>
+        <input
+          class="app-project-name-input"
+          id="project-name"
+          type="text"
+          value="Spring SciOly"
+          autocomplete="off"
+          spellcheck="false"
+        />
         <span class="app-save-state" id="save-state" data-state="unsaved">Unsaved</span>
-        <button class="button button-secondary button-small" type="button" id="save-project-btn">
-          Save
-        </button>
       </div>
 
       <div class="app-header-account">
+        <a class="button button-ghost button-small" href="/app/">All projects</a>
         <button class="button button-tertiary button-small" type="button" id="account-menu-btn">
           Account ▾
         </button>
@@ -379,12 +384,12 @@
           </div>
 
           <div class="review-grid" id="review-summary">
-            <div class="app-section review-card" id="review-global">
+            <div class="app-section review-card review-card-wide" id="review-global">
               <div class="review-card-head">
                 <h2 class="app-section-title">Global setup</h2>
                 <a class="button button-ghost button-small" href="#setup">Edit in Setup</a>
               </div>
-              <dl class="review-dl">
+              <dl class="review-dl review-dl-inline">
                 <div>
                   <dt>Slots per person</dt>
                   <dd id="review-slots-per-person">1</dd>
@@ -398,22 +403,6 @@
                   <dd id="review-preset">—</dd>
                 </div>
               </dl>
-            </div>
-
-            <div class="app-section review-card" id="review-people">
-              <div class="review-card-head">
-                <h2 class="app-section-title">People</h2>
-                <a class="button button-ghost button-small" href="#setup">Edit in Setup</a>
-              </div>
-              <p class="review-stat" id="review-people-count">
-                <strong>3</strong> people loaded
-              </p>
-              <ul class="review-chip-list" id="review-people-preview">
-                <li>Ava Chen</li>
-                <li>Noah Patel</li>
-                <li>Mia Brooks</li>
-              </ul>
-              <p class="app-empty-hint">Showing a short preview — full table is in Setup → People.</p>
             </div>
 
             <div class="app-section review-card" id="review-slots">
@@ -438,6 +427,22 @@
                   <span>min 2 · max 10 · Fri</span>
                 </li>
               </ul>
+            </div>
+
+            <div class="app-section review-card" id="review-people">
+              <div class="review-card-head">
+                <h2 class="app-section-title">People</h2>
+                <a class="button button-ghost button-small" href="#setup">Edit in Setup</a>
+              </div>
+              <p class="review-stat" id="review-people-count">
+                <strong>3</strong> people loaded
+              </p>
+              <ul class="review-chip-list" id="review-people-preview">
+                <li>Ava Chen</li>
+                <li>Noah Patel</li>
+                <li>Mia Brooks</li>
+              </ul>
+              <p class="app-empty-hint">Showing a short preview — full table is in Setup → People.</p>
             </div>
 
             <div class="app-section review-card review-card-wide" id="review-rules">
@@ -509,27 +514,33 @@
 
             <div class="generate-options-preview" id="generate-options-list">
               <div class="option-card">
-                <div>
+                <div class="option-card-main">
                   <strong>Option #1</strong>
-                  <div class="option-card-meta">Score 16.9 · sample preview</div>
+                  <span class="option-score-pill">Score 16.9</span>
                 </div>
-                <a class="button button-ghost button-small" href="#results">View</a>
+                <div class="option-card-actions">
+                  <a class="button button-ghost button-small" href="#results">View</a>
+                </div>
               </div>
               <div class="option-card">
-                <div>
+                <div class="option-card-main">
                   <strong>Option #2</strong>
-                  <div class="option-card-meta">Score 16.2 · sample preview</div>
+                  <span class="option-score-pill">Score 16.2</span>
                 </div>
-                <a class="button button-ghost button-small" href="#results">View</a>
+                <div class="option-card-actions">
+                  <a class="button button-ghost button-small" href="#results">View</a>
+                </div>
               </div>
               <div class="option-card">
-                <div>
+                <div class="option-card-main">
                   <strong>Option #3</strong>
-                  <div class="option-card-meta">Score 15.8 · sample preview</div>
+                  <span class="option-score-pill">Score 15.8</span>
                 </div>
-                <button class="button button-ghost button-small" type="button">
-                  Remove
-                </button>
+                <div class="option-card-actions">
+                  <button class="button button-ghost button-small" type="button">
+                    Remove
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -634,5 +645,6 @@
 
       resetPanelScroll();
     </script>
+    <script type="module" src="/js/project.js"></script>
   </body>
 </html>
