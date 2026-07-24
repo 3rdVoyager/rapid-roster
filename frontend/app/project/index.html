@@ -35,14 +35,16 @@
       </a>
 
       <div class="app-header-project">
-        <a class="button button-tertiary" href="/app/">All projects</a>
-        <span class="app-project-name">Untitled project</span>
-        <span class="app-save-state">Unsaved</span>
-        <button class="button button-secondary" type="button" disabled>Save</button>
+        <a class="button button-ghost button-small" href="/app/">All projects</a>
+        <span class="app-project-name" id="project-name">Spring SciOly</span>
+        <span class="app-save-state" id="save-state" data-state="unsaved">Unsaved</span>
+        <button class="button button-secondary button-small" type="button" id="save-project-btn">
+          Save
+        </button>
       </div>
 
       <div class="app-header-account">
-        <button class="button button-tertiary" type="button" disabled>
+        <button class="button button-tertiary button-small" type="button" id="account-menu-btn">
           Account ▾
         </button>
       </div>
@@ -50,6 +52,7 @@
 
     <div class="app-shell">
       <nav class="app-sidebar" aria-label="Workspace">
+        <p class="app-sidebar-label">Workflow</p>
         <a class="app-nav-item" href="#setup">
           <span class="material-symbols-outlined" aria-hidden="true">table</span>
           Setup
@@ -57,6 +60,10 @@
         <a class="app-nav-item" href="#rules">
           <span class="material-symbols-outlined" aria-hidden="true">tune</span>
           Rules
+        </a>
+        <a class="app-nav-item" href="#review">
+          <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
+          Review
         </a>
         <a class="app-nav-item" href="#generate">
           <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
@@ -69,38 +76,558 @@
       </nav>
 
       <main class="app-main">
+        <!-- ========== SETUP ========== -->
         <section id="setup" class="app-panel">
-          <h1>Setup</h1>
-          <p class="app-panel-lead">
-            Import people and slots, set sizes, slots-per-person, and conflict groups.
-          </p>
-          <p class="app-placeholder">People &amp; slots tables will go here.</p>
+          <div class="app-panel-header">
+            <div>
+              <h1>Setup</h1>
+              <p class="app-panel-lead">
+                People, slots, sizes, and conflicts. Tables fill from CSV later —
+                structure is ready to wire.
+              </p>
+            </div>
+          </div>
+
+          <div class="app-section" id="global-setup">
+            <h2 class="app-section-title">Global</h2>
+            <div class="global-setup-grid">
+              <div class="app-field">
+                <label for="slots-per-person">Default slots per person</label>
+                <select class="app-select" id="slots-per-person">
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+              <div class="app-field">
+                <span class="app-label">Conflict groups</span>
+                <button class="button button-ghost button-small" type="button" id="manage-conflicts-btn">
+                  Manage…
+                </button>
+              </div>
+              <div class="app-field">
+                <label for="apply-preset">Preset</label>
+                <select class="app-select" id="apply-preset">
+                  <option value="">Apply preset…</option>
+                  <option value="sports">Sports teams</option>
+                  <option value="scioly">Science Olympiad</option>
+                  <option value="volunteers">Volunteers</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Radios drive People / Slots panes without JS -->
+          <input
+            class="setup-tab-controls"
+            type="radio"
+            name="setup-tab"
+            id="setup-tab-people"
+            checked
+          />
+          <input
+            class="setup-tab-controls"
+            type="radio"
+            name="setup-tab"
+            id="setup-tab-slots"
+          />
+
+          <div class="app-subtabs" role="tablist" aria-label="Setup tables">
+            <label class="app-subtab" for="setup-tab-people" id="setup-people-tab-label">
+              People
+            </label>
+            <label class="app-subtab" for="setup-tab-slots" id="setup-slots-tab-label">
+              Slots
+            </label>
+          </div>
+
+          <div class="setup-panes">
+            <div class="setup-pane" id="people-pane">
+              <div class="app-toolbar">
+                <button class="button button-primary button-small" type="button" id="import-people-btn">
+                  Import CSV
+                </button>
+                <button class="button button-ghost button-small" type="button" id="clear-people-btn">
+                  Clear
+                </button>
+                <span class="app-toolbar-spacer"></span>
+                <button class="button button-secondary button-small" type="button" id="add-person-row-btn">
+                  + Add row
+                </button>
+              </div>
+              <div class="app-table-wrap">
+                <table class="app-table" id="people-table">
+                  <thead>
+                    <tr>
+                      <th>ID <span class="col-type">id</span></th>
+                      <th>Name <span class="col-type">text</span></th>
+                      <th>Skill <span class="col-type">number</span></th>
+                      <th>School <span class="col-type">text</span></th>
+                      <th>Availability <span class="col-type">text</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="people-table-body">
+                    <tr>
+                      <td>ava</td>
+                      <td>Ava Chen</td>
+                      <td>8</td>
+                      <td>Northwest</td>
+                      <td>Mon;Wed</td>
+                    </tr>
+                    <tr>
+                      <td>bob</td>
+                      <td>Noah Patel</td>
+                      <td>5</td>
+                      <td>Northeast</td>
+                      <td>Wed</td>
+                    </tr>
+                    <tr>
+                      <td>charlie</td>
+                      <td>Mia Brooks</td>
+                      <td>3</td>
+                      <td>Southwest</td>
+                      <td>Tue;Thu</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="app-empty-hint">
+                Sample rows for layout. Column type dropdowns and editing come next.
+              </p>
+            </div>
+
+            <div class="setup-pane" id="slots-pane">
+              <div class="app-toolbar">
+                <button class="button button-primary button-small" type="button" id="import-slots-btn">
+                  Import CSV
+                </button>
+                <button class="button button-ghost button-small" type="button" id="clear-slots-btn">
+                  Clear
+                </button>
+                <span class="app-toolbar-spacer"></span>
+                <button class="button button-secondary button-small" type="button" id="add-slot-row-btn">
+                  + Add row
+                </button>
+              </div>
+              <div class="app-table-wrap">
+                <table class="app-table" id="slots-table">
+                  <thead>
+                    <tr>
+                      <th>ID <span class="col-type">id</span></th>
+                      <th>Name <span class="col-type">text</span></th>
+                      <th>Min <span class="col-type">minSize</span></th>
+                      <th>Max <span class="col-type">maxSize</span></th>
+                      <th>Practice <span class="col-type">text</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="slots-table-body">
+                    <tr>
+                      <td>s1</td>
+                      <td>Team A</td>
+                      <td>2</td>
+                      <td>10</td>
+                      <td>Mon</td>
+                    </tr>
+                    <tr>
+                      <td>s2</td>
+                      <td>Team B</td>
+                      <td>2</td>
+                      <td>10</td>
+                      <td>Wed</td>
+                    </tr>
+                    <tr>
+                      <td>s3</td>
+                      <td>Team C</td>
+                      <td>2</td>
+                      <td>10</td>
+                      <td>Fri</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="app-empty-hint">
+                Sample slots for layout. Min/max feed the generator’s legal checks.
+              </p>
+            </div>
+          </div>
         </section>
 
+        <!-- ========== RULES ========== -->
         <section id="rules" class="app-panel">
-          <h1>Rules</h1>
-          <p class="app-panel-lead">
-            Add Cluster, Separate, Limit, and Balance rules. Set priority and hard vs soft.
-          </p>
-          <p class="app-placeholder">Rule list and editor will go here.</p>
+          <div class="app-panel-header">
+            <div>
+              <h1>Rules</h1>
+              <p class="app-panel-lead">
+                Name each rule, then set type, data, priority (1–10), and hard vs soft.
+              </p>
+            </div>
+            <button class="button button-primary button-small" type="button" id="add-rule-btn">
+              + Add rule
+            </button>
+          </div>
+
+          <div class="rules-layout">
+            <div class="app-section" id="rule-list-panel">
+              <h2 class="app-section-title">Rule list</h2>
+              <ul class="rule-list" id="rule-list">
+                <li>
+                  <button class="rule-list-item is-selected" type="button" data-rule-id="R1">
+                    <strong>Balance skill</strong>
+                    <span class="rule-list-meta">Priority 9 · Soft</span>
+                  </button>
+                </li>
+                <li>
+                  <button class="rule-list-item" type="button" data-rule-id="R2">
+                    <strong>Cluster by school</strong>
+                    <span class="rule-list-meta">Priority 8 · Soft</span>
+                  </button>
+                </li>
+                <li>
+                  <button class="rule-list-item" type="button" data-rule-id="R4">
+                    <strong>Limit keepers</strong>
+                    <span class="rule-list-meta">
+                      Priority 9 · <span class="rule-hard-badge">Hard</span>
+                    </span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            <div class="app-section" id="rule-editor">
+              <h2 class="app-section-title">Editor</h2>
+              <div class="rule-editor">
+                <div class="rule-editor-row">
+                  <span>Name</span>
+                  <input
+                    class="app-input"
+                    id="rule-name"
+                    type="text"
+                    value="Balance skill"
+                    placeholder="e.g. Balance skill"
+                    style="max-width: none"
+                  />
+                </div>
+                <div class="rule-editor-row">
+                  <span>Type</span>
+                  <div class="rule-type-grid" id="rule-type">
+                    <label><input type="radio" name="rule-type" value="cluster" /> Cluster</label>
+                    <label><input type="radio" name="rule-type" value="separate" /> Separate</label>
+                    <label><input type="radio" name="rule-type" value="limit" /> Limit</label>
+                    <label>
+                      <input type="radio" name="rule-type" value="balance" checked /> Balance
+                    </label>
+                  </div>
+                </div>
+                <div class="rule-editor-row">
+                  <span>Data</span>
+                  <select class="app-select" id="rule-data" style="max-width: none">
+                    <option>people.skill</option>
+                    <option>people.school</option>
+                    <option>people.role</option>
+                  </select>
+                </div>
+                <div class="rule-editor-row">
+                  <span>Filter</span>
+                  <input class="app-input" id="rule-filter" type="text" placeholder="optional" />
+                </div>
+                <div class="rule-editor-row">
+                  <span>Priority</span>
+                  <input
+                    class="app-input"
+                    id="rule-priority"
+                    type="number"
+                    min="1"
+                    max="10"
+                    value="9"
+                  />
+                </div>
+                <div class="rule-editor-row">
+                  <span>Hard</span>
+                  <label>
+                    <input type="checkbox" id="rule-hard" />
+                    Must never break
+                  </label>
+                </div>
+                <div class="rule-editor-actions">
+                  <button class="button button-primary button-small" type="button" id="save-rule-btn">
+                    Save rule
+                  </button>
+                  <button class="button button-ghost button-small" type="button" id="delete-rule-btn">
+                    Delete rule
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
+        <!-- ========== REVIEW ========== -->
+        <section id="review" class="app-panel">
+          <div class="app-panel-header">
+            <div>
+              <h1>Review</h1>
+              <p class="app-panel-lead">
+                Check Setup and Rules before you generate. Jump back to edit anything that looks off.
+              </p>
+            </div>
+            <a class="button button-primary button-small" href="#generate">Continue to Generate</a>
+          </div>
+
+          <div class="review-grid" id="review-summary">
+            <div class="app-section review-card" id="review-global">
+              <div class="review-card-head">
+                <h2 class="app-section-title">Global setup</h2>
+                <a class="button button-ghost button-small" href="#setup">Edit in Setup</a>
+              </div>
+              <dl class="review-dl">
+                <div>
+                  <dt>Slots per person</dt>
+                  <dd id="review-slots-per-person">1</dd>
+                </div>
+                <div>
+                  <dt>Conflict groups</dt>
+                  <dd id="review-conflicts">None</dd>
+                </div>
+                <div>
+                  <dt>Preset</dt>
+                  <dd id="review-preset">—</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="app-section review-card" id="review-people">
+              <div class="review-card-head">
+                <h2 class="app-section-title">People</h2>
+                <a class="button button-ghost button-small" href="#setup">Edit in Setup</a>
+              </div>
+              <p class="review-stat" id="review-people-count">
+                <strong>3</strong> people loaded
+              </p>
+              <ul class="review-chip-list" id="review-people-preview">
+                <li>Ava Chen</li>
+                <li>Noah Patel</li>
+                <li>Mia Brooks</li>
+              </ul>
+              <p class="app-empty-hint">Showing a short preview — full table is in Setup → People.</p>
+            </div>
+
+            <div class="app-section review-card" id="review-slots">
+              <div class="review-card-head">
+                <h2 class="app-section-title">Slots</h2>
+                <a class="button button-ghost button-small" href="#setup">Edit in Setup</a>
+              </div>
+              <p class="review-stat" id="review-slots-count">
+                <strong>3</strong> slots
+              </p>
+              <ul class="review-list" id="review-slots-preview">
+                <li>
+                  <strong>Team A</strong>
+                  <span>min 2 · max 10 · Mon</span>
+                </li>
+                <li>
+                  <strong>Team B</strong>
+                  <span>min 2 · max 10 · Wed</span>
+                </li>
+                <li>
+                  <strong>Team C</strong>
+                  <span>min 2 · max 10 · Fri</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="app-section review-card review-card-wide" id="review-rules">
+              <div class="review-card-head">
+                <h2 class="app-section-title">Rules</h2>
+                <a class="button button-ghost button-small" href="#rules">Edit in Rules</a>
+              </div>
+              <ol class="review-rules" id="review-rules-list">
+                <li>
+                  <div class="review-rule-top">
+                    <strong>Balance skill</strong>
+                    <span class="app-pill">Soft · P9</span>
+                  </div>
+                  <p>Keep <code>people.skill</code> even across slots.</p>
+                </li>
+                <li>
+                  <div class="review-rule-top">
+                    <strong>Cluster by school</strong>
+                    <span class="app-pill">Soft · P8</span>
+                  </div>
+                  <p>People with the same <code>school</code> prefer the same slot.</p>
+                </li>
+                <li>
+                  <div class="review-rule-top">
+                    <strong>Limit keepers</strong>
+                    <span class="app-pill is-active">Hard · P9</span>
+                  </div>
+                  <p>At most 2 people with <code>role = keeper</code> per slot.</p>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== GENERATE ========== -->
         <section id="generate" class="app-panel">
-          <h1>Generate</h1>
-          <p class="app-panel-lead">
-            Run a primary search, then optional alternatives. Hard rules must all pass.
-          </p>
-          <p class="app-placeholder">Generate controls and status will go here.</p>
+          <div class="app-panel-header">
+            <div>
+              <h1>Generate</h1>
+              <p class="app-panel-lead">
+                Uses current Setup + Rules. Hard limits must pass; soft rules guide the score.
+                Returns up to three ranked options.
+              </p>
+            </div>
+          </div>
+
+          <div class="generate-actions">
+            <button class="button button-primary" type="button" id="generate-btn">
+              Generate options
+            </button>
+            <button class="button button-secondary" type="button" id="retry-generate-btn">
+              Retry (+3 more)
+            </button>
+            <button class="button button-ghost" type="button" id="cancel-generate-btn">
+              Cancel
+            </button>
+          </div>
+
+          <div class="app-section">
+            <h2 class="app-section-title">Status</h2>
+            <div class="app-status-box" id="generate-status">
+              <p class="app-status-label">State</p>
+              <p class="app-status-title" id="generate-status-title">Idle</p>
+              <p class="app-status-detail" id="generate-status-detail">
+                Ready when Setup and Rules look right.
+              </p>
+            </div>
+
+            <div class="generate-options-preview" id="generate-options-list">
+              <div class="option-card">
+                <div>
+                  <strong>Option #1</strong>
+                  <div class="option-card-meta">Score 16.9 · sample preview</div>
+                </div>
+                <a class="button button-ghost button-small" href="#results">View</a>
+              </div>
+              <div class="option-card">
+                <div>
+                  <strong>Option #2</strong>
+                  <div class="option-card-meta">Score 16.2 · sample preview</div>
+                </div>
+                <a class="button button-ghost button-small" href="#results">View</a>
+              </div>
+              <div class="option-card">
+                <div>
+                  <strong>Option #3</strong>
+                  <div class="option-card-meta">Score 15.8 · sample preview</div>
+                </div>
+                <button class="button button-ghost button-small" type="button">
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
 
+        <!-- ========== RESULTS ========== -->
         <section id="results" class="app-panel">
-          <h1>Results</h1>
-          <p class="app-panel-lead">
-            Review by slot or person, check satisfaction, tweak, and export CSV.
-          </p>
-          <p class="app-placeholder">Results views and export will go here.</p>
+          <div class="app-panel-header">
+            <div>
+              <h1>Results</h1>
+              <p class="app-panel-lead">
+                Review by slot or person, check satisfaction, then export.
+              </p>
+            </div>
+            <button class="button button-secondary button-small" type="button" id="export-csv-btn">
+              Export CSV
+            </button>
+          </div>
+
+          <div class="results-controls">
+            <div class="app-pill-row" id="result-set-picker" role="group" aria-label="Result set">
+              <button class="app-pill is-active" type="button" data-option="1">Option 1</button>
+              <button class="app-pill" type="button" data-option="2">Option 2</button>
+              <button class="app-pill" type="button" data-option="3">Option 3</button>
+            </div>
+            <div class="app-pill-row" id="results-view-toggle" role="group" aria-label="View mode">
+              <button class="app-pill is-active" type="button" data-view="by-slot">By slot</button>
+              <button class="app-pill" type="button" data-view="by-person">By person</button>
+              <button class="app-pill" type="button" data-view="satisfaction">
+                Satisfaction
+              </button>
+            </div>
+          </div>
+
+          <div class="app-section" id="results-main">
+            <div class="results-block" id="results-by-slot">
+              <div class="results-slot-group">
+                <h3>Team A <span class="app-pill">10 people</span></h3>
+                <ul class="results-people">
+                  <li>Ava Chen · skill 8</li>
+                  <li>Paul Ortiz · skill 10</li>
+                  <li>… sample list</li>
+                </ul>
+              </div>
+              <div class="results-slot-group">
+                <h3>Team B <span class="app-pill">8 people</span></h3>
+                <ul class="results-people">
+                  <li>Noah Patel · skill 5</li>
+                  <li>… sample list</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="app-section" id="results-tweak">
+            <h2 class="app-section-title">Light tweak</h2>
+            <div class="global-setup-grid">
+              <div class="app-field">
+                <label for="tweak-person">Person</label>
+                <select class="app-select" id="tweak-person">
+                  <option>Ava Chen</option>
+                  <option>Noah Patel</option>
+                </select>
+              </div>
+              <div class="app-field">
+                <label for="tweak-slot">Move to slot</label>
+                <select class="app-select" id="tweak-slot">
+                  <option>Team A</option>
+                  <option>Team B</option>
+                  <option>Team C</option>
+                </select>
+              </div>
+              <div class="app-field">
+                <span class="app-label">&nbsp;</span>
+                <button class="button button-primary button-small" type="button" id="tweak-move-btn">
+                  Move
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
     </div>
+
+    <script type="module">
+      // Panel tabs use #hash for :target CSS. The browser scrolls to the
+      // target element — undo that so switching tabs stays put.
+      const main = document.querySelector(".app-main");
+
+      function resetPanelScroll() {
+        window.scrollTo(0, 0);
+        if (main !== null) {
+          main.scrollTop = 0;
+        }
+      }
+
+      window.addEventListener("hashchange", function () {
+        resetPanelScroll();
+        // Second frame: some browsers scroll after hashchange handlers.
+        requestAnimationFrame(resetPanelScroll);
+      });
+
+      resetPanelScroll();
+    </script>
   </body>
 </html>

@@ -1,8 +1,19 @@
 /* /app/project/ — project workspace with sidebar */
 
+/* Hash panel switches (#setup, #review, …) should not animate-scroll the page */
+html:has(.page-project) {
+  scroll-behavior: auto;
+}
+
+.page-project {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+
 .app-shell {
   display: grid;
-  grid-template-columns: 12rem minmax(0, 1fr);
+  grid-template-columns: 13.5rem minmax(0, 1fr);
   flex: 1 1 auto;
   min-height: 0;
 }
@@ -10,10 +21,19 @@
 .app-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 1rem 0.75rem;
-  background: var(--header-bg-color);
-  border-right: 1px solid var(--line-color);
+  gap: 0.3rem;
+  padding: 1rem 0.7rem;
+  background: color-mix(in srgb, var(--header-bg-color) 94%, black);
+  border-right: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.app-sidebar-label {
+  margin: 0.35rem 0.85rem 0.55rem;
+  color: var(--text-color-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .app-nav-item {
@@ -31,7 +51,7 @@
 
 .app-nav-item:hover {
   color: var(--text-color);
-  background: var(--color-navy);
+  background: rgb(255 255 255 / 0.04);
 }
 
 .app-nav-item .material-symbols-outlined {
@@ -41,35 +61,35 @@
 
 .app-main {
   min-width: 0;
-  padding: 1.75rem 1.5rem 2.5rem;
+  padding: 1.5rem 1.5rem 2.75rem;
   overflow: auto;
 }
 
 .app-panel {
   display: none;
-  max-width: 72rem;
-  animation: fade-in 0.35s ease both;
+  width: 100%;
+  max-width: none;
+  animation: fade-in 0.3s ease both;
+}
+
+.app-panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem 1.25rem;
+  margin-bottom: 1.35rem;
 }
 
 .app-panel h1 {
-  margin: 0 0 0.5rem;
-  font-size: clamp(1.5rem, 2.5vw, 1.85rem);
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.45rem, 2.5vw, 1.85rem);
 }
 
 .app-panel-lead {
-  margin: 0 0 1.75rem;
-  max-width: 40rem;
-  color: var(--text-color-muted);
-}
-
-.app-placeholder {
   margin: 0;
-  padding: 2rem 1.25rem;
+  max-width: 38rem;
   color: var(--text-color-muted);
-  text-align: center;
-  background: var(--card-bg-color);
-  border: 1px dashed var(--line-color);
-  border-radius: 12px;
 }
 
 .app-main:not(:has(.app-panel:target)) #setup,
@@ -80,11 +100,390 @@
 body:not(:has(.app-panel:target)) .app-nav-item[href="#setup"],
 body:has(#setup:target) .app-nav-item[href="#setup"],
 body:has(#rules:target) .app-nav-item[href="#rules"],
+body:has(#review:target) .app-nav-item[href="#review"],
 body:has(#generate:target) .app-nav-item[href="#generate"],
 body:has(#results:target) .app-nav-item[href="#results"] {
   color: var(--text-color);
-  background: var(--color-navy);
+  background: color-mix(in srgb, var(--color-blue) 18%, var(--color-navy));
   border-left-color: var(--color-blue);
+}
+
+/* Review panel */
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.review-card-wide {
+  grid-column: 1 / -1;
+}
+
+.review-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.review-card-head .app-section-title {
+  margin: 0;
+}
+
+.review-dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.review-dl > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.review-dl dt {
+  color: var(--text-color-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.review-dl dd {
+  margin: 0;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.review-stat {
+  margin: 0 0 0.75rem;
+  color: var(--text-color-muted);
+}
+
+.review-stat strong {
+  color: var(--text-color);
+  font-size: 1.35rem;
+}
+
+.review-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-chip-list li {
+  padding: 0.35rem 0.7rem;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: rgb(255 255 255 / 0.04);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 999px;
+}
+
+.review-list {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);
+}
+
+.review-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.review-list span {
+  color: var(--text-color-muted);
+  font-size: 0.9rem;
+}
+
+.review-rules {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: review-rule;
+}
+
+.review-rules > li {
+  position: relative;
+  padding: 0.85rem 0.95rem 0.85rem 2.75rem;
+  background: rgb(0 0 0 / 0.22);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 10px;
+  counter-increment: review-rule;
+}
+
+.review-rules > li::before {
+  content: counter(review-rule);
+  position: absolute;
+  left: 0.85rem;
+  top: 0.95rem;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  color: var(--color-blue-bright);
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--color-blue) 18%, transparent);
+  border-radius: 6px;
+}
+
+.review-rule-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.review-rules p {
+  margin: 0;
+  color: var(--text-color-muted);
+  font-size: 0.95rem;
+}
+
+.review-rules code {
+  color: var(--color-blue-bright);
+  font-size: 0.88em;
+}
+
+/* Setup: show one table pane at a time via radio hack (no JS yet) */
+.setup-pane {
+  display: none;
+}
+
+#setup-tab-people:checked ~ .setup-panes #people-pane,
+#setup-tab-slots:checked ~ .setup-panes #slots-pane {
+  display: block;
+}
+
+#setup-tab-people:checked ~ .app-subtabs label[for="setup-tab-people"],
+#setup-tab-slots:checked ~ .app-subtabs label[for="setup-tab-slots"] {
+  color: var(--text-color);
+  background: color-mix(in srgb, var(--color-blue) 28%, var(--color-navy));
+}
+
+.setup-tab-controls {
+  display: none;
+}
+
+.global-setup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem 1.25rem;
+  align-items: end;
+}
+
+/* Rules split */
+.rules-layout {
+  display: grid;
+  grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.rule-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rule-list-item {
+  display: grid;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  background: rgb(0 0 0 / 0.25);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rule-list-item:hover {
+  border-color: rgb(255 255 255 / 0.16);
+}
+
+.rule-list-item.is-selected {
+  border-color: color-mix(in srgb, var(--color-blue) 50%, transparent);
+  background: color-mix(in srgb, var(--color-blue) 14%, transparent);
+}
+
+.rule-list-item strong {
+  font-size: 0.95rem;
+}
+
+.rule-list-meta {
+  color: var(--text-color-muted);
+  font-size: 0.82rem;
+}
+
+.rule-hard-badge {
+  color: var(--color-yellow);
+  font-weight: 700;
+}
+
+.rule-editor {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.rule-editor-row {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.rule-editor-row > span {
+  padding-top: 0.55rem;
+  color: var(--text-color-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.rule-type-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.rule-type-grid label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
+  color: var(--text-color-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: rgb(0 0 0 / 0.28);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rule-type-grid input {
+  accent-color: var(--color-blue);
+}
+
+.rule-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.35rem;
+}
+
+/* Generate */
+.generate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+.generate-options-preview {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.option-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  background: rgb(0 0 0 / 0.22);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 10px;
+}
+
+.option-card strong {
+  font-size: 1rem;
+}
+
+.option-card-meta {
+  color: var(--text-color-muted);
+  font-size: 0.9rem;
+}
+
+/* Results */
+.results-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.results-block {
+  margin-top: 0.85rem;
+}
+
+.results-slot-group {
+  margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);
+}
+
+.results-slot-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.results-slot-group h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+.results-people {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-color-muted);
+}
+
+.results-people li {
+  padding: 0.2rem 0;
+}
+
+@media (max-width: 900px) {
+  .rules-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .review-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 800px) {
@@ -99,7 +498,12 @@ body:has(#results:target) .app-nav-item[href="#results"] {
     gap: 0.35rem;
     padding: 0.75rem;
     border-right: none;
-    border-bottom: 1px solid var(--line-color);
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .app-sidebar-label {
+    width: 100%;
+    margin: 0 0.25rem 0.15rem;
   }
 
   .app-nav-item {
@@ -110,6 +514,7 @@ body:has(#results:target) .app-nav-item[href="#results"] {
   body:not(:has(.app-panel:target)) .app-nav-item[href="#setup"],
   body:has(#setup:target) .app-nav-item[href="#setup"],
   body:has(#rules:target) .app-nav-item[href="#rules"],
+  body:has(#review:target) .app-nav-item[href="#review"],
   body:has(#generate:target) .app-nav-item[href="#generate"],
   body:has(#results:target) .app-nav-item[href="#results"] {
     border-left-color: transparent;

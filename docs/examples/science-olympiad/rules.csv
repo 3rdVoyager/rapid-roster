@@ -1,7 +1,7 @@
-rule,type,data,filter,options,priority,hard
-R1,Cluster,preferences.1 ↔ slots.name,,exact,10,no
-R2,Cluster,preferences.2 ↔ slots.name,,exact,8,no
-R3,Cluster,preferences.3 ↔ slots.name,,exact,6,no
-R4,Cluster,preferences.4 ↔ slots.name,,exact,4,no
-R5,Cluster,preferences.5 ↔ slots.name,,exact,3,no
-R6,Cluster,preferences.6 ↔ slots.name,,exact,1,no
+id,name,type,data,filter,options,priority,hard
+R1,1st choice,Cluster,preferences.1 ↔ slots.name,,exact,10,no
+R2,2nd choice,Cluster,preferences.2 ↔ slots.name,,exact,8,no
+R3,3rd choice,Cluster,preferences.3 ↔ slots.name,,exact,6,no
+R4,4th choice,Cluster,preferences.4 ↔ slots.name,,exact,4,no
+R5,5th choice,Cluster,preferences.5 ↔ slots.name,,exact,3,no
+R6,6th choice,Cluster,preferences.6 ↔ slots.name,,exact,1,no

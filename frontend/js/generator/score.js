@@ -55,6 +55,7 @@
  *     rules: [
  *       {
  *         id: "R1",
+ *         name: "Balance skill",
  *         type: "balance",
  *         hard: false,
  *         priority: 9,
@@ -62,6 +63,7 @@
  *       },
  *       {
  *         id: "R2",
+ *         name: "Cluster by school",
  *         type: "cluster",
  *         hard: false,
  *         priority: 8,

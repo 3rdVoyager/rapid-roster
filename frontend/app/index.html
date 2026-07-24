@@ -24,7 +24,7 @@
   </head>
   <body class="page-app page-dashboard">
     <header class="app-header">
-      <a class="site-brand" href="/app">
+      <a class="site-brand" href="/app/">
         <img
           src="/assets/rapid-roster-logo.png"
           alt=""
@@ -35,7 +35,7 @@
       </a>
 
       <div class="app-header-account">
-        <button class="button button-tertiary" type="button" disabled>
+        <button class="button button-tertiary button-small" type="button" id="account-menu-btn">
           Account ▾
         </button>
       </div>
@@ -44,46 +44,70 @@
     <main class="dashboard">
       <div class="dashboard-top">
         <div>
+          <p class="dashboard-kicker">Workspace</p>
           <h1>Projects</h1>
           <p class="dashboard-lead">
-            Open a saved project or start a new one.
+            Open a saved roster project or start a blank one.
           </p>
         </div>
-        <a class="button button-primary" href="/app/project/">New project</a>
+        <div class="dashboard-actions">
+          <button class="button button-ghost button-small" type="button" id="import-project-btn">
+            Import…
+          </button>
+          <a class="button button-primary" href="/app/project/" id="new-project-btn">
+            New project
+          </a>
+        </div>
       </div>
 
-      <ul class="project-list">
+      <ul class="project-list" id="project-list">
         <li>
-          <a class="project-row" href="/app/project/">
+          <a class="project-row" href="/app/project/?demo=scioly">
+            <span class="project-row-icon" aria-hidden="true">
+              <span class="material-symbols-outlined">science</span>
+            </span>
             <span class="project-row-main">
               <strong>Spring SciOly</strong>
-              <span class="project-row-meta">Updated recently · placeholder</span>
+              <span class="project-row-meta">Updated 2 days ago · 48 people · 18 events</span>
             </span>
-            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+            <span class="project-row-aside">
+              <span class="project-row-tag">Preset</span>
+              <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+            </span>
           </a>
         </li>
         <li>
-          <a class="project-row" href="/app/project/">
+          <a class="project-row" href="/app/project/?demo=volunteers">
+            <span class="project-row-icon" aria-hidden="true">
+              <span class="material-symbols-outlined">volunteer_activism</span>
+            </span>
             <span class="project-row-main">
               <strong>Volunteer weekend</strong>
-              <span class="project-row-meta">Updated recently · placeholder</span>
+              <span class="project-row-meta">Updated last week · 32 people · 6 shifts</span>
             </span>
-            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+            <span class="project-row-aside">
+              <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+            </span>
           </a>
         </li>
         <li>
-          <a class="project-row" href="/app/project/">
+          <a class="project-row" href="/app/project/?demo=sports">
+            <span class="project-row-icon" aria-hidden="true">
+              <span class="material-symbols-outlined">sports_soccer</span>
+            </span>
             <span class="project-row-main">
               <strong>Rec league teams</strong>
-              <span class="project-row-meta">Updated recently · placeholder</span>
+              <span class="project-row-meta">Updated 3 weeks ago · 26 people · 3 teams</span>
             </span>
-            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+            <span class="project-row-aside">
+              <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+            </span>
           </a>
         </li>
       </ul>
 
       <p class="dashboard-note">
-        Placeholder projects for layout only — real list comes with accounts and save later.
+        Sample projects for layout — list will load from save once accounts are wired.
       </p>
     </main>
   </body>

@@ -77,7 +77,8 @@ Every rule uses the same short flow:
    - *Cluster or Separate* - exact vs partial match
    - *Limit* - min/max counts
    - *Balance* - None
-4. **Set priority (1–10) and hard vs soft**
+4. **Name the rule** (short label for the list / Review / satisfaction report)
+5. **Set priority (1–10) and hard vs soft**
 
 ---
 

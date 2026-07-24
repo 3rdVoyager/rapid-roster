@@ -159,7 +159,8 @@ project = {
 
   rules: [
     {
-      id, type,           // cluster | separate | limit | balance
+      id, name,           // name = label shown in the UI (user-editable)
+      type,               // cluster | separate | limit | balance
       data, filter,       // which columns / cells
       options,            // exact/partial, min/max, ...
       priority,           // 1–10
