@@ -221,6 +221,10 @@
   flex: 1 1 auto;
 }
 
+#import-people-file {
+  display: none;
+}
+
 .app-section {
   margin-bottom: 1.5rem;
   padding: 1.15rem 1.2rem;

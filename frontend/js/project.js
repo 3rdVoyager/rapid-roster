@@ -63,7 +63,7 @@ import {
   setDirty,
   saveProject,
   loadProject,
-  createDemoProject
+  createDemoProject,
 } from "/js/state.js";
 
 import { buildLegalConfig, buildScoreConfig } from "/js/project-config.js";
@@ -272,7 +272,8 @@ function renderRuleList(project) {
   }
 
   if (project.rules.length === 0) {
-    html = "<li><p class=\"app-empty-hint\">No rules yet. Click + Add rule.</p></li>";
+    html =
+      '<li><p class="app-empty-hint">No rules yet. Click + Add rule.</p></li>';
   }
 
   list.innerHTML = html;
@@ -310,7 +311,10 @@ function fillRuleEditor(rule) {
 }
 
 function renderReview(project) {
-  setText("review-slots-per-person", String(project.setup.defaultSlotsPerPerson));
+  setText(
+    "review-slots-per-person",
+    String(project.setup.defaultSlotsPerPerson),
+  );
 
   let conflictText = "None";
   if (project.setup.conflictGroups.length > 0) {
@@ -322,9 +326,7 @@ function renderReview(project) {
   const peopleCount = document.getElementById("review-people-count");
   if (peopleCount !== null) {
     peopleCount.innerHTML =
-      "<strong>" +
-      project.people.rows.length +
-      "</strong> people loaded";
+      "<strong>" + project.people.rows.length + "</strong> people loaded";
   }
 
   const peoplePreview = document.getElementById("review-people-preview");
@@ -339,10 +341,7 @@ function renderReview(project) {
 
     if (project.people.rows.length > limit) {
       html =
-        html +
-        "<li>+" +
-        (project.people.rows.length - limit) +
-        " more</li>";
+        html + "<li>+" + (project.people.rows.length - limit) + " more</li>";
     }
 
     peoplePreview.innerHTML = html;
@@ -432,9 +431,7 @@ function describeRule(rule) {
 
   if (rule.type === "cluster" && rule.shape === "peopleTogether") {
     return (
-      "People with the same " +
-      rule.personAttribute +
-      " prefer the same slot."
+      "People with the same " + rule.personAttribute + " prefer the same slot."
     );
   }
 
@@ -453,9 +450,7 @@ function describeRule(rule) {
   }
 
   if (rule.type === "separate") {
-    return (
-      "Spread people who share " + rule.personAttribute + " across slots."
-    );
+    return "Spread people who share " + rule.personAttribute + " across slots.";
   }
 
   return "Type: " + rule.type;
@@ -729,6 +724,16 @@ function wireControls() {
     nameInput.addEventListener("change", onProjectNameBlur);
   }
 
+  const importPeopleFile = document.getElementById("import-people-file");
+  if (importPeopleFile !== null) {
+    importPeopleFile.addEventListener("change", onImportPeopleFileChange);
+  }
+
+  const clearPeopleBtn = document.getElementById("clear-people-btn");
+  if (clearPeopleBtn !== null) {
+    clearPeopleBtn.addEventListener("click", onClearPeopleClick);
+  }
+
   const slotsPerPerson = document.getElementById("slots-per-person");
   if (slotsPerPerson !== null) {
     slotsPerPerson.addEventListener("change", onSlotsPerPersonChange);
@@ -876,6 +881,105 @@ function showPanel(panelId) {
   }
 }
 
+async function onImportPeopleFileChange(event) {
+  const file = event.target.files[0];
+  if (file === null) {
+    return;
+  }
+  try {
+    const text = await file.text();
+    const data = text
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      .split("\n")
+      .map(function (line) {
+        return line.trim();
+      })
+      .filter(function (line) {
+        return line !== "";
+      });
+    const headers = data[0].split(",").map(function (header) {
+      return header.trim();
+    });
+    const dataLines = data.slice(1);
+    
+    const columns = [];
+    for (let i = 0; i < headers.length; i = i + 1) {
+      const key = headers[i];
+      let type = "text";
+
+      if (key.toLowerCase() === "id") {
+        type = "id";
+      } else if (!isNaN(Number(key))) {
+        type = "number";
+      }
+
+      columns.push({
+        key: key,
+        label: key,
+        type: type,
+      });
+    }
+
+    const rows = [];
+
+    // Which header is the id column? (matches "id", "ID", "Id", …)
+    // We store the real header spelling so cells[idHeader] works.
+    let idHeader = null;
+    for (let i = 0; i < headers.length; i = i + 1) {
+      if (headers[i].toLowerCase() === "id") {
+        idHeader = headers[i];
+      }
+    }
+
+    // Convert each data line into a row object with cells.
+    for (let i = 0; i < dataLines.length; i = i + 1) {
+      const cellsArray = dataLines[i].split(",").map(function (cell) {
+        return cell.trim();
+      });
+      const cells = {};
+
+      for (let j = 0; j < headers.length; j = j + 1) {
+        cells[headers[j]] = cellsArray[j];
+      }
+
+      // Prefer the CSV id cell; otherwise invent row-0, row-1, …
+      let rowId = "row-" + i;
+      if (idHeader !== null && cells[idHeader] !== undefined && cells[idHeader] !== "") {
+        rowId = String(cells[idHeader]);
+      }
+
+      rows.push({ id: rowId, cells: cells });
+    }
+
+    const project = getProject();
+    project.people.columns = columns;
+    project.people.rows = rows;
+    // Old generation results used the previous people ids — drop them.
+    project.results = null;
+    setDirty(true);
+    renderPeopleTable(project);
+    renderReview(project);
+    renderGenerateOptions(project);
+    renderResults(project);
+    renderHeader(project);
+  } catch (error) {
+    console.error("Could not read CSV:", error);
+  } finally {
+    event.target.value = "";
+  }
+}
+
+function onClearPeopleClick(event) {
+  const project = getProject();
+  project.people.columns = [];
+  project.people.rows = [];
+  project.results = null;
+  setDirty(true);
+  renderPeopleTable(project);
+  renderReview(project);
+}
+
 function onProjectNameInput(event) {
   const project = getProject();
 
@@ -1011,7 +1115,7 @@ function runGeneration(mergeWithExisting) {
           statusDetail.textContent =
             "Finished. Best score " + formatScore(info.bestScore);
         }
-      }
+      },
     });
 
     if (result.ok === false) {
@@ -1034,7 +1138,7 @@ function runGeneration(mergeWithExisting) {
 
     project.results = {
       options: options,
-      selectedRank: options[0].rank
+      selectedRank: options[0].rank,
     };
 
     setDirty(true);
