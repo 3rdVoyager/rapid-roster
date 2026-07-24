@@ -166,6 +166,190 @@ export function createEmptyProject(name) {
   };
 }
 
+/** Marker written into exported project files. */
+export const PROJECT_FILE_FORMAT = "rapidroster-project";
+
+/** Bump when the on-disk shape changes in a breaking way. */
+export const PROJECT_FILE_FORMAT_VERSION = 1;
+
+/**
+ * Build a JSON string for downloading the current project.
+ * Includes results so a teammate can open the same options.
+ *
+ * @param {Object} project
+ * @returns {string}
+ */
+export function serializeProjectFile(project) {
+  const payload = {
+    format: PROJECT_FILE_FORMAT,
+    formatVersion: PROJECT_FILE_FORMAT_VERSION,
+    exportedAt: new Date().toISOString(),
+    project: {
+      id: project.id,
+      name: project.name,
+      updatedAt: project.updatedAt,
+      presetId: project.presetId,
+      entries: project.entries,
+      slots: project.slots,
+      setup: project.setup,
+      rules: project.rules,
+      results: project.results
+    }
+  };
+
+  return JSON.stringify(payload, null, 2);
+}
+
+/**
+ * Parse an exported project file into a project object.
+ *
+ * @param {string} text
+ * @returns {{ ok: true, project: Object }|{ ok: false, error: string }}
+ */
+export function parseProjectFile(text) {
+  let data = null;
+
+  try {
+    data = JSON.parse(text);
+  } catch (error) {
+    return {
+      ok: false,
+      error: "That file is not valid JSON."
+    };
+  }
+
+  if (data === null || typeof data !== "object") {
+    return {
+      ok: false,
+      error: "That file does not look like a RapidRoster project."
+    };
+  }
+
+  // Wrapped export: { format, formatVersion, project }
+  let project = null;
+
+  if (data.format === PROJECT_FILE_FORMAT && data.project !== undefined) {
+    if (Number(data.formatVersion) > PROJECT_FILE_FORMAT_VERSION) {
+      return {
+        ok: false,
+        error:
+          "This project file is from a newer RapidRoster version. Update the app and try again."
+      };
+    }
+    project = data.project;
+  } else if (
+    data.entries !== undefined &&
+    data.slots !== undefined &&
+    data.rules !== undefined
+  ) {
+    // Bare project object (same shape as localStorage).
+    project = data;
+  } else {
+    return {
+      ok: false,
+      error: "That file is missing entries, slots, or rules."
+    };
+  }
+
+  const check = validateProjectShape(project);
+
+  if (check.ok === false) {
+    return check;
+  }
+
+  if (project.id === undefined || project.id === "") {
+    project.id = makeId("proj");
+  }
+
+  if (project.name === undefined || project.name === "") {
+    project.name = "Imported project";
+  }
+
+  if (project.updatedAt === undefined) {
+    project.updatedAt = new Date().toISOString();
+  }
+
+  if (project.setup === undefined) {
+    project.setup = {
+      defaultSlotsPerEntry: 1,
+      conflictGroups: []
+    };
+  }
+
+  if (project.setup.defaultSlotsPerEntry === undefined) {
+    project.setup.defaultSlotsPerEntry = 1;
+  }
+
+  if (project.setup.conflictGroups === undefined) {
+    project.setup.conflictGroups = [];
+  }
+
+  if (project.results === undefined) {
+    project.results = null;
+  }
+
+  return {
+    ok: true,
+    project: project
+  };
+}
+
+/**
+ * @param {Object} project
+ * @returns {{ ok: true }|{ ok: false, error: string }}
+ */
+function validateProjectShape(project) {
+  if (project === null || typeof project !== "object") {
+    return {
+      ok: false,
+      error: "That file does not contain a project object."
+    };
+  }
+
+  if (isTableShape(project.entries) === false) {
+    return {
+      ok: false,
+      error: "entries must have columns and rows arrays."
+    };
+  }
+
+  if (isTableShape(project.slots) === false) {
+    return {
+      ok: false,
+      error: "slots must have columns and rows arrays."
+    };
+  }
+
+  if (Array.isArray(project.rules) === false) {
+    return {
+      ok: false,
+      error: "rules must be an array."
+    };
+  }
+
+  return { ok: true };
+}
+
+/**
+ * @param {Object} table
+ * @returns {boolean}
+ */
+function isTableShape(table) {
+  if (table === null || typeof table !== "object") {
+    return false;
+  }
+
+  if (Array.isArray(table.columns) === false) {
+    return false;
+  }
+
+  if (Array.isArray(table.rows) === false) {
+    return false;
+  }
+
+  return true;
+}
+
 /**
  * Demo project based on the generator test data (teams + schools + skill).
  * Used when there is nothing saved yet so Generate works immediately.

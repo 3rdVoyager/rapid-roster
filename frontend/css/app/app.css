@@ -228,7 +228,8 @@
 
 #import-entries-file,
 #import-slots-file,
-#import-rules-file {
+#import-rules-file,
+#import-project-file {
   display: none;
 }
 

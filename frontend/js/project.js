@@ -64,6 +64,8 @@ import {
   saveProject,
   loadProject,
   createEmptyProject,
+  serializeProjectFile,
+  parseProjectFile
 } from "/js/state.js";
 
 import { buildLegalConfig, buildScoreConfig } from "/js/project-config.js";
@@ -1203,6 +1205,16 @@ function wireControls() {
     nameInput.addEventListener("change", onProjectNameBlur);
   }
 
+  const exportProjectBtn = document.getElementById("export-project-btn");
+  if (exportProjectBtn !== null) {
+    exportProjectBtn.addEventListener("click", onExportProjectClick);
+  }
+
+  const importProjectFile = document.getElementById("import-project-file");
+  if (importProjectFile !== null) {
+    importProjectFile.addEventListener("change", onImportProjectFileChange);
+  }
+
   const importEntriesFile = document.getElementById("import-entries-file");
   if (importEntriesFile !== null) {
     importEntriesFile.addEventListener("change", onImportEntriesFileChange);
@@ -1627,9 +1639,16 @@ function onExportRulesCsvClick() {
 /**
  * @param {string} filename
  * @param {string} text
+ * @param {string} [mimeType]
  */
-function downloadTextFile(filename, text) {
-  const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+function downloadTextFile(filename, text, mimeType) {
+  let type = "text/csv;charset=utf-8";
+
+  if (mimeType !== undefined && mimeType !== "") {
+    type = mimeType;
+  }
+
+  const blob = new Blob([text], { type: type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -1639,6 +1658,84 @@ function downloadTextFile(filename, text) {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+}
+
+/**
+ * Download the whole project as a .rapidroster.json file.
+ */
+function onExportProjectClick() {
+  const project = getProject();
+
+  if (project === null) {
+    return;
+  }
+
+  const text = serializeProjectFile(project);
+  const filename = safeProjectFilename(project.name) + ".rapidroster.json";
+  downloadTextFile(filename, text, "application/json;charset=utf-8");
+}
+
+/**
+ * Replace the current project from an exported JSON file.
+ *
+ * @param {Event} event
+ */
+async function onImportProjectFileChange(event) {
+  const file = event.target.files[0];
+
+  if (file === undefined || file === null) {
+    return;
+  }
+
+  const ok = window.confirm(
+    "Import this project file? It will replace the current entries, slots, rules, setup, and results."
+  );
+
+  if (ok === false) {
+    event.target.value = "";
+    return;
+  }
+
+  try {
+    const text = await file.text();
+    const parsed = parseProjectFile(text);
+
+    if (parsed.ok === false) {
+      window.alert(parsed.error);
+      return;
+    }
+
+    selectedEntryId = null;
+    selectedSlotId = null;
+    setProject(parsed.project);
+    saveProject();
+    setDirty(false);
+    renderAll();
+  } catch (error) {
+    console.error("Could not import project:", error);
+    window.alert("Could not read that project file.");
+  } finally {
+    event.target.value = "";
+  }
+}
+
+/**
+ * Turn a project name into a safe download filename stem.
+ *
+ * @param {string} name
+ * @returns {string}
+ */
+function safeProjectFilename(name) {
+  let stem = String(name || "project");
+  stem = stem.trim().toLowerCase();
+  stem = stem.replace(/[^a-z0-9]+/g, "-");
+  stem = stem.replace(/^-+|-+$/g, "");
+
+  if (stem === "") {
+    stem = "project";
+  }
+
+  return stem;
 }
 
 /**
