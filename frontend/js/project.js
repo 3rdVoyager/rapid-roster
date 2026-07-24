@@ -381,9 +381,6 @@ function renderEntriesList(project) {
       "<strong>" +
       escapeHtml(label) +
       "</strong>" +
-      '<span class="rule-list-meta">' +
-      escapeHtml(row.id) +
-      "</span>" +
       "</button>" +
       "</li>";
   }
@@ -431,15 +428,6 @@ function renderSlotsList(project) {
       selectedClass = " is-selected";
     }
 
-    let meta = row.id;
-    if (row.cells.min_size !== undefined || row.cells.max_size !== undefined) {
-      meta =
-        "min " +
-        String(row.cells.min_size || "—") +
-        " · max " +
-        String(row.cells.max_size || "—");
-    }
-
     html =
       html +
       "<li>" +
@@ -451,9 +439,6 @@ function renderSlotsList(project) {
       "<strong>" +
       escapeHtml(label) +
       "</strong>" +
-      '<span class="rule-list-meta">' +
-      escapeHtml(meta) +
-      "</span>" +
       "</button>" +
       "</li>";
   }
@@ -616,12 +601,6 @@ function renderRuleList(project) {
 
   for (let i = 0; i < project.rules.length; i = i + 1) {
     const rule = project.rules[i];
-    let hardLabel = "Soft";
-
-    if (rule.hard === true) {
-      hardLabel = '<span class="rule-hard-badge">Hard</span>';
-    }
-
     let selectedClass = "";
     if (i === 0) {
       selectedClass = " is-selected";
@@ -638,11 +617,6 @@ function renderRuleList(project) {
       "<strong>" +
       escapeHtml(rule.name) +
       "</strong>" +
-      '<span class="rule-list-meta">Priority ' +
-      escapeHtml(String(rule.priority)) +
-      " · " +
-      hardLabel +
-      "</span>" +
       "</button>" +
       "</li>";
   }
