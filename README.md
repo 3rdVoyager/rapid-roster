@@ -43,10 +43,36 @@ Accounts and saved projects; people into slots; Cluster / Separate / Limit / Bal
 rapid-roster/
 ├── docs/           # Specs + example CSVs
 ├── frontend/       # Pages site: landing, sign-in, /app/, /app/project/
+├── functions/      # Pages Functions (/api/auth, /api/projects)
+├── migrations/     # D1 schema
+├── wrangler.toml   # Pages + D1 binding
 └── README.md
 ```
 
 Live site: [rapidroster.pages.dev](https://rapidroster.pages.dev/).
+
+## Local cloud stack (Pages Functions + D1)
+
+```bash
+npm install
+npx wrangler d1 create rapid-roster   # copy the new database_id into wrangler.toml
+npm run db:migrate:local
+npm run dev                           # serves frontend/ + functions/
+```
+
+Sign in with any email. Until email is configured, the magic link is printed in the Wrangler terminal / Pages Function logs. Open that `/api/auth/verify?token=...` URL to set the session cookie.
+
+### Env / secrets
+
+| Name | Required | Purpose |
+| --- | --- | --- |
+| `SESSION_SECRET` | Recommended in production | Reserved for signed session material; set via `wrangler pages secret put SESSION_SECRET` |
+| `EMAIL_API_KEY` | Optional | When unset, magic links are logged instead of emailed |
+| `APP_ORIGIN` | Optional | Public origin for magic links (defaults to the request origin) |
+
+Bind the D1 database named `DB` on the existing Pages project (dashboard **Settings → Bindings**, or via `wrangler.toml` `database_id`).
+
+Unsigned users keep the previous localStorage-only flow. Signed-in users dual-write: local always, cloud when the project was created/opened from `/api/projects`.
 
 ## License
 

@@ -2,28 +2,13 @@
  * state.js
  *
  * Holds the current project in memory (one plain object).
- * Can save / load that object with localStorage so you can refresh
- * the page without losing work (no cloud login yet).
+ * Always saves to localStorage. When signed in, also syncs to D1 via /api.
  *
  * Other files import helpers like getProject() and saveProject().
  * They should not reach into localStorage themselves.
- *
- * ---------------------------------------------------------------------------
- * Browser storage tools used here
- * ---------------------------------------------------------------------------
- *
- * localStorage.setItem(key, text)
- *   Save a string under a key in this browser (survives refresh).
- *
- * localStorage.getItem(key)
- *   Read that string back (or null if nothing saved).
- *
- * JSON.stringify(object)
- *   Turn a plain object into a text string so it can be stored.
- *
- * JSON.parse(text)
- *   Turn that text back into a plain object.
  */
+
+import { fetchMe, updateCloudProject } from "/js/api.js";
 
 const STORAGE_KEY = "rapidroster.currentProject";
 
@@ -32,6 +17,15 @@ let currentProject = null;
 
 /** True when the in-memory project differs from the last save. */
 let isDirty = false;
+
+/**
+ * Cached sign-in state. null = unknown; object = signed in; false = signed out.
+ * @type {{ id: string, email: string }|false|null}
+ */
+let cachedUser = null;
+
+/** Last cloud sync outcome for the UI. */
+let lastCloudSync = "skipped";
 
 /**
  * Read the current project object.
@@ -71,11 +65,42 @@ export function getDirty() {
 }
 
 /**
- * Write the current project to localStorage.
+ * Write the current project to localStorage, then dual-write to the cloud
+ * when signed in (fire-and-forget from callers that ignore the Promise).
  *
- * @returns {boolean} true if save worked
+ * @returns {boolean} true if the local save worked
  */
 export function saveProject() {
+  const localOk = saveProjectLocal();
+
+  if (localOk === true) {
+    // Non-blocking cloud sync — editing must keep working offline.
+    void syncProjectToCloud();
+  }
+
+  return localOk;
+}
+
+/**
+ * Same as saveProject, but awaits cloud sync so the UI can show status.
+ *
+ * @returns {Promise<{ local: boolean, cloud: "ok"|"skipped"|"failed" }>}
+ */
+export async function persistProject() {
+  const localOk = saveProjectLocal();
+
+  if (localOk === false) {
+    return { local: false, cloud: "skipped" };
+  }
+
+  const cloud = await syncProjectToCloud();
+  return { local: true, cloud: cloud };
+}
+
+/**
+ * @returns {boolean}
+ */
+function saveProjectLocal() {
   if (currentProject === null) {
     return false;
   }
@@ -91,6 +116,76 @@ export function saveProject() {
     console.error("Could not save project:", error);
     return false;
   }
+}
+
+/**
+ * @returns {Promise<"ok"|"skipped"|"failed">}
+ */
+async function syncProjectToCloud() {
+  if (currentProject === null) {
+    lastCloudSync = "skipped";
+    return "skipped";
+  }
+
+  const user = await ensureAuthCache();
+  if (user === false || user === null) {
+    lastCloudSync = "skipped";
+    return "skipped";
+  }
+
+  // Only sync projects that already exist as cloud rows (opened/created via API).
+  if (currentProject.cloudSynced !== true) {
+    lastCloudSync = "skipped";
+    return "skipped";
+  }
+
+  try {
+    await updateCloudProject(currentProject.id, {
+      name: currentProject.name,
+      project: currentProject
+    });
+    lastCloudSync = "ok";
+    return "ok";
+  } catch (error) {
+    console.warn("Cloud sync failed:", error);
+    lastCloudSync = "failed";
+    return "failed";
+  }
+}
+
+/**
+ * @returns {"ok"|"skipped"|"failed"}
+ */
+export function getLastCloudSync() {
+  return lastCloudSync;
+}
+
+/**
+ * Refresh / read cached auth user.
+ *
+ * @param {boolean} [force]
+ * @returns {Promise<{ id: string, email: string }|false>}
+ */
+export async function ensureAuthCache(force) {
+  if (force !== true && cachedUser !== null) {
+    return cachedUser;
+  }
+
+  const user = await fetchMe();
+  cachedUser = user === null ? false : user;
+  return cachedUser;
+}
+
+/**
+ * Mark the current in-memory project as linked to a cloud row.
+ *
+ * @param {boolean} synced
+ */
+export function setCloudSynced(synced) {
+  if (currentProject === null) {
+    return;
+  }
+  currentProject.cloudSynced = synced === true;
 }
 
 /**
@@ -141,6 +236,7 @@ export function createEmptyProject(name) {
     id: makeId("proj"),
     name: projectName,
     updatedAt: new Date().toISOString(),
+    cloudSynced: false,
     entries: {
       columns: [
         { key: "id", label: "ID", type: "id" },

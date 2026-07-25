@@ -62,11 +62,17 @@ import {
   getDirty,
   setDirty,
   saveProject,
+  persistProject,
   loadProject,
   createEmptyProject,
   serializeProjectFile,
-  parseProjectFile
+  parseProjectFile,
+  setCloudSynced,
+  getLastCloudSync
 } from "/js/state.js";
+
+import { fetchCloudProject } from "/js/api.js";
+import { wireAccountMenu } from "/js/account.js";
 
 import { buildLegalConfig, buildScoreConfig } from "/js/project-config.js";
 import { runSearch, mergeOptions } from "/js/generator/search.js";
@@ -109,12 +115,25 @@ let saveTimerId = null;
 /**
  * Page startup.
  */
-function main() {
-  let project = loadProject();
+async function main() {
+  await wireAccountMenu();
+
+  const params = new URLSearchParams(window.location.search);
+  const cloudId = params.get("id");
+  let project = null;
+
+  if (cloudId !== null && cloudId !== "") {
+    project = await openCloudProject(cloudId);
+  }
+
+  if (project === null) {
+    project = loadProject();
+  }
 
   if (project === null) {
     project = createEmptyProject("Untitled project");
     setProject(project);
+    setCloudSynced(false);
     setDirty(false);
   } else {
     setProject(project);
@@ -126,6 +145,41 @@ function main() {
   wirePanelNavigation();
   wireLoadPresetModal();
   showPanelFromHash();
+}
+
+/**
+ * Fetch a cloud project, cache it locally, and return it.
+ * On failure (offline / 401 / 404), fall back to local cache if ids match.
+ *
+ * @param {string} cloudId
+ * @returns {Promise<Object|null>}
+ */
+async function openCloudProject(cloudId) {
+  try {
+    const data = await fetchCloudProject(cloudId);
+    const project = data.project || null;
+
+    if (project === null) {
+      return null;
+    }
+
+    project.id = data.id || cloudId;
+    if (typeof data.name === "string" && data.name !== "") {
+      project.name = data.name;
+    }
+    project.cloudSynced = true;
+    setProject(project);
+    setCloudSynced(true);
+    saveProject();
+    return project;
+  } catch (error) {
+    console.warn("Could not open cloud project; trying local cache.", error);
+    const local = loadProject();
+    if (local !== null && local.id === cloudId) {
+      return local;
+    }
+    return null;
+  }
 }
 
 /**
@@ -164,11 +218,19 @@ function renderHeader(project) {
   if (saveStateEl !== null) {
     if (getDirty() === true) {
       saveStateEl.textContent = "Unsaved";
-      // data-state is read by CSS ([data-state="unsaved"]) for colors.
       saveStateEl.setAttribute("data-state", "unsaved");
     } else {
-      saveStateEl.textContent = "Saved";
-      saveStateEl.setAttribute("data-state", "saved");
+      const cloud = getLastCloudSync();
+      if (cloud === "failed") {
+        saveStateEl.textContent = "Saved locally · Cloud sync failed";
+        saveStateEl.setAttribute("data-state", "cloud-failed");
+      } else if (cloud === "ok") {
+        saveStateEl.textContent = "Saved";
+        saveStateEl.setAttribute("data-state", "saved");
+      } else {
+        saveStateEl.textContent = "Saved";
+        saveStateEl.setAttribute("data-state", "saved");
+      }
     }
   }
 }
@@ -2472,10 +2534,10 @@ function markProjectChanged() {
     window.clearTimeout(saveTimerId);
   }
 
-  saveTimerId = window.setTimeout(function () {
+  saveTimerId = window.setTimeout(async function () {
     saveTimerId = null;
-    const ok = saveProject();
-    if (ok === true) {
+    const result = await persistProject();
+    if (result.local === true) {
       renderHeader(getProject());
     }
   }, 400);
