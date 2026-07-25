@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="/css/site/header.css" />
     <link rel="stylesheet" href="/css/site/footer.css" />
     <link rel="stylesheet" href="/css/site/sign-in.css" />
+    <link rel="stylesheet" href="/css/app/app.css" />
   </head>
   <body class="page-get-started">
     <header class="site-header">
@@ -66,12 +67,21 @@
             </span>
           </a>
 
-          <button class="get-started-choice" type="button" id="try-local-btn">
+          <button class="get-started-choice" type="button" id="try-local-btn" aria-expanded="false" aria-controls="try-local-panel">
             <span class="material-symbols-outlined" aria-hidden="true">devices</span>
             <span class="get-started-choice-body">
               <strong>Try in this browser</strong>
-              <span>Full editor, no account. Saved locally until you clear site data.</span>
+              <span>Full editor, no account. Pick a preset below — saved only on this device.</span>
             </span>
+          </button>
+        </div>
+
+        <div class="try-local-panel" id="try-local-panel" hidden>
+          <p class="app-label">Start from</p>
+          <div class="preset-choice-list" id="try-local-preset-list"></div>
+          <p class="app-empty-hint" id="try-local-summary"></p>
+          <button class="button button-primary" type="button" id="try-local-open">
+            Open local project
           </button>
         </div>
 

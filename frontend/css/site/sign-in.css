@@ -52,7 +52,7 @@
 
 /* Get started chooser (same shell as sign-in) */
 .get-started {
-  max-width: 28rem;
+  max-width: 32rem;
 }
 
 .get-started-choices {
@@ -123,6 +123,19 @@ button.get-started-choice:disabled {
 .get-started-status {
   margin: 1.25rem 0 0;
   color: var(--text-color-muted);
+}
+
+.try-local-panel {
+  margin-top: 1.25rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--line-color);
+  display: grid;
+  gap: 0.85rem;
+}
+
+.get-started-choice.is-selected {
+  border-color: color-mix(in srgb, var(--color-blue) 50%, transparent);
+  background: color-mix(in srgb, var(--color-blue) 12%, var(--header-bg-color));
 }
 
 @media (max-width: 600px) {
