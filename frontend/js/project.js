@@ -64,11 +64,15 @@ import {
   saveProject,
   persistProject,
   loadProject,
+  loadLocalProjectById,
   createEmptyProject,
   serializeProjectFile,
   parseProjectFile,
   setCloudSynced,
-  getLastCloudSync
+  getLastCloudSync,
+  ensureAuthCache,
+  canCreateLocalProject,
+  MAX_LOCAL_PROJECTS
 } from "/js/state.js";
 
 import { fetchCloudProject } from "/js/api.js";
@@ -112,6 +116,9 @@ const SLOTS_COLUMN_TYPES = ["id", "minSize", "maxSize", "text", "ignore"];
  */
 let saveTimerId = null;
 
+/** True when the preset modal was opened because this is a brand-new project. */
+let presetModalForNewProject = false;
+
 /**
  * Page startup.
  */
@@ -119,11 +126,18 @@ async function main() {
   await wireAccountMenu();
 
   const params = new URLSearchParams(window.location.search);
-  const cloudId = params.get("id");
+  const projectId = params.get("id");
+  const isNewProject = params.get("new") === "1";
   let project = null;
 
-  if (cloudId !== null && cloudId !== "") {
-    project = await openCloudProject(cloudId);
+  if (projectId !== null && projectId !== "") {
+    const auth = await ensureAuthCache();
+    if (auth !== false && auth !== null) {
+      project = await openCloudProject(projectId);
+    }
+    if (project === null) {
+      project = loadLocalProjectById(projectId);
+    }
   }
 
   if (project === null) {
@@ -131,6 +145,12 @@ async function main() {
   }
 
   if (project === null) {
+    const auth = await ensureAuthCache();
+    if (auth === false && canCreateLocalProject() === false) {
+      window.location.href = "/app/";
+      return;
+    }
+
     project = createEmptyProject("Untitled project");
     setProject(project);
     setCloudSynced(false);
@@ -145,6 +165,24 @@ async function main() {
   wirePanelNavigation();
   wireLoadPresetModal();
   showPanelFromHash();
+
+  if (isNewProject === true) {
+    clearNewProjectQueryParam();
+    openLoadPresetModal(true);
+  }
+}
+
+/**
+ * Drop ?new=1 from the URL so a refresh does not reopen the preset dialog.
+ */
+function clearNewProjectQueryParam() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.has("new") === false) {
+    return;
+  }
+  url.searchParams.delete("new");
+  const next = url.pathname + url.search + url.hash;
+  window.history.replaceState({}, "", next);
 }
 
 /**
@@ -1770,8 +1808,15 @@ async function onImportProjectFileChange(event) {
     selectedEntryId = null;
     selectedSlotId = null;
     setProject(parsed.project);
-    saveProject();
-    setDirty(false);
+    const saved = saveProject();
+    if (saved === false) {
+      window.alert(
+        "Could not save this import locally. This browser allows up to " +
+          String(MAX_LOCAL_PROJECTS) +
+          " projects — sign in for cloud saves, or delete one under Projects."
+      );
+    }
+    setDirty(saved === false);
     renderAll();
   } catch (error) {
     console.error("Could not import project:", error);
@@ -2815,6 +2860,7 @@ function findAncestor(startEl, selector) {
 
 /**
  * Load preset modal on the workspace (replaces current project data).
+ * Also auto-opens when arriving with ?new=1 after create / try-out.
  */
 function wireLoadPresetModal() {
   const openBtn = document.getElementById("load-preset-btn");
@@ -2824,17 +2870,18 @@ function wireLoadPresetModal() {
   const applyBtn = document.getElementById("load-preset-apply");
   const listEl = document.getElementById("load-preset-list");
 
-  if (openBtn === null || modal === null) {
+  if (modal === null) {
     return;
   }
 
   fillLoadPresetList(listEl, "sports");
   updateLoadPresetDetails("sports");
 
-  openBtn.addEventListener("click", function () {
-    modal.classList.add("is-open");
-    modal.setAttribute("aria-hidden", "false");
-  });
+  if (openBtn !== null) {
+    openBtn.addEventListener("click", function () {
+      openLoadPresetModal(false);
+    });
+  }
 
   if (cancelBtn !== null) {
     cancelBtn.addEventListener("click", function () {
@@ -2863,9 +2910,72 @@ function wireLoadPresetModal() {
   }
 }
 
+/**
+ * @param {boolean} forNewProject
+ */
+function openLoadPresetModal(forNewProject) {
+  const modal = document.getElementById("load-preset-modal");
+  if (modal === null) {
+    return;
+  }
+
+  presetModalForNewProject = forNewProject === true;
+  applyLoadPresetModalCopy(presetModalForNewProject);
+
+  const listEl = document.getElementById("load-preset-list");
+  fillLoadPresetList(listEl, "sports");
+  updateLoadPresetDetails("sports");
+
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+/**
+ * @param {boolean} forNewProject
+ */
+function applyLoadPresetModalCopy(forNewProject) {
+  const titleEl = document.getElementById("load-preset-title");
+  const leadEl = document.querySelector("#load-preset-modal .app-modal-lead");
+  const applyBtn = document.getElementById("load-preset-apply");
+  const cancelBtn = document.getElementById("load-preset-cancel");
+
+  if (forNewProject === true) {
+    if (titleEl !== null) {
+      titleEl.textContent = "Start from a preset";
+    }
+    if (leadEl !== null) {
+      leadEl.innerHTML =
+        "Choose a blank project or a sample pack (entries, slots, and rules). " +
+        "You can change this later with <strong>Load preset…</strong>.";
+    }
+    if (applyBtn !== null) {
+      applyBtn.textContent = "Start with this";
+    }
+    if (cancelBtn !== null) {
+      cancelBtn.textContent = "Keep blank";
+    }
+  } else {
+    if (titleEl !== null) {
+      titleEl.textContent = "Load preset";
+    }
+    if (leadEl !== null) {
+      leadEl.innerHTML =
+        "This <strong>replaces</strong> the current entries, slots, rules, and global setup " +
+        "with the chosen pack.";
+    }
+    if (applyBtn !== null) {
+      applyBtn.textContent = "Replace project data";
+    }
+    if (cancelBtn !== null) {
+      cancelBtn.textContent = "Cancel";
+    }
+  }
+}
+
 function closeLoadPresetModal(modal) {
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
+  presetModalForNewProject = false;
 }
 
 /**
@@ -2946,6 +3056,7 @@ async function onLoadPresetApply() {
   const statusEl = document.getElementById("load-preset-status");
   const applyBtn = document.getElementById("load-preset-apply");
   const modal = document.getElementById("load-preset-modal");
+  const applyingForNew = presetModalForNewProject === true;
 
   let presetId = "blank";
   if (selected !== null) {
@@ -2958,14 +3069,17 @@ async function onLoadPresetApply() {
     keepName = current.name;
   }
 
-  const confirmed = window.confirm(
-    "Replace entries, slots, rules, and setup with the \"" +
-      presetId +
-      "\" preset? This cannot be undone."
-  );
+  // Brand-new empty projects skip the replace warning.
+  if (applyingForNew === false) {
+    const confirmed = window.confirm(
+      "Replace entries, slots, rules, and setup with the \"" +
+        presetId +
+        "\" preset? This cannot be undone."
+    );
 
-  if (confirmed === false) {
-    return;
+    if (confirmed === false) {
+      return;
+    }
   }
 
   if (applyBtn !== null) {
@@ -2977,8 +3091,19 @@ async function onLoadPresetApply() {
   }
 
   try {
+    const wasCloudSynced =
+      current !== null && current.cloudSynced === true;
+    const keepId = current !== null ? current.id : null;
+
     const project = await buildProjectFromPreset(presetId, keepName);
+
+    if (keepId !== null) {
+      project.id = keepId;
+    }
+    project.cloudSynced = wasCloudSynced === true;
+
     setProject(project);
+    setCloudSynced(wasCloudSynced === true);
     markProjectChanged();
     renderAll();
     if (statusEl !== null) {

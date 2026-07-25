@@ -2,26 +2,30 @@
  * dashboard.js
  *
  * Project list page (/app/):
- *   - Signed out: local/new-project flow (browser storage only)
- *   - Signed in: list/create/open cloud projects from D1
+ *   - Signed out: multi-project local library (capped)
+ *   - Signed in: list/create/open/delete cloud projects from D1
+ *
+ * Preset packs are chosen in the project workspace after create (?new=1).
  */
 
 import {
-  PRESET_CATALOG,
-  getPresetInfo,
-  buildProjectFromPreset
-} from "/js/presets.js";
-
-import {
+  createEmptyProject,
   setProject,
   saveProject,
   loadProject,
-  setCloudSynced
+  setCloudSynced,
+  clearSavedProject,
+  listLocalProjects,
+  deleteLocalProject,
+  canCreateLocalProject,
+  getLocalProjectCount,
+  MAX_LOCAL_PROJECTS
 } from "/js/state.js";
 
 import {
   listProjects,
-  createCloudProject
+  createCloudProject,
+  deleteCloudProject
 } from "/js/api.js";
 
 import { wireAccountMenu } from "/js/account.js";
@@ -33,6 +37,7 @@ async function main() {
   currentUser = await wireAccountMenu();
   wireNewProjectModal();
   wireImportButton();
+  wireProjectListClicks();
   await renderProjectList();
 }
 
@@ -47,8 +52,13 @@ async function renderProjectList() {
   if (currentUser === null) {
     renderLocalList(listEl);
     if (noteEl !== null) {
+      const count = getLocalProjectCount();
       noteEl.innerHTML =
-        "Projects save in this browser for now. Sign in to sync across devices.";
+        "Projects save in this browser (" +
+        String(count) +
+        " / " +
+        String(MAX_LOCAL_PROJECTS) +
+        "). Sign in to sync across devices and save more.";
     }
     return;
   }
@@ -76,32 +86,19 @@ async function renderProjectList() {
       const p = projects[i];
       html =
         html +
-        "<li>" +
-        '<a class="project-row" href="/app/project/?id=' +
-        encodeURIComponent(p.id) +
-        '">' +
-        '<span class="project-row-icon" aria-hidden="true">' +
-        '<span class="material-symbols-outlined">folder_open</span>' +
-        "</span>" +
-        '<span class="project-row-main">' +
-        "<strong>" +
-        escapeHtml(p.name) +
-        "</strong>" +
-        '<span class="project-row-meta">Updated ' +
-        escapeHtml(formatUpdated(p.updated_at)) +
-        "</span>" +
-        "</span>" +
-        '<span class="project-row-aside">' +
-        '<span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>' +
-        "</span>" +
-        "</a>" +
-        "</li>";
+        buildProjectListItem({
+          href: "/app/project/?id=" + encodeURIComponent(p.id),
+          name: p.name,
+          meta: "Updated " + formatUpdated(p.updated_at),
+          deleteId: p.id,
+          deleteKind: "cloud"
+        });
     }
     listEl.innerHTML = html;
   } catch (error) {
     console.error(error);
     listEl.innerHTML =
-      '<li class="project-list-status">Could not load cloud projects. Showing local cache.</li>';
+      '<li class="project-list-status">Could not load cloud projects. Showing local library.</li>';
     renderLocalList(listEl, true);
   }
 }
@@ -111,43 +108,137 @@ async function renderProjectList() {
  * @param {boolean} [append]
  */
 function renderLocalList(listEl, append) {
-  const local = loadProject();
-  let name = "Open current project";
-  let meta = "Loads whatever is saved in this browser";
+  const projects = listLocalProjects();
 
-  if (local !== null && typeof local.name === "string" && local.name !== "") {
-    name = local.name;
-    meta = "Saved in this browser";
-    if (local.updatedAt) {
-      meta = meta + " · " + formatUpdated(local.updatedAt);
+  if (projects.length === 0) {
+    const empty =
+      '<li class="project-list-status">No local projects yet. Create one to get started.</li>';
+    if (append === true) {
+      listEl.innerHTML = listEl.innerHTML + empty;
+    } else {
+      listEl.innerHTML = empty;
     }
+    return;
   }
 
-  const row =
-    "<li>" +
-    '<a class="project-row" href="/app/project/">' +
+  let html = "";
+  for (let i = 0; i < projects.length; i = i + 1) {
+    const p = projects[i];
+    let meta = "Saved in this browser";
+    if (p.updatedAt) {
+      meta = meta + " · " + formatUpdated(p.updatedAt);
+    }
+    html =
+      html +
+      buildProjectListItem({
+        href: "/app/project/?id=" + encodeURIComponent(p.id),
+        name: p.name || "Untitled project",
+        meta: meta,
+        deleteId: p.id,
+        deleteKind: "local"
+      });
+  }
+
+  if (append === true) {
+    listEl.innerHTML = listEl.innerHTML + html;
+  } else {
+    listEl.innerHTML = html;
+  }
+}
+
+/**
+ * @param {{ href: string, name: string, meta: string, deleteId: string, deleteKind: string }} opts
+ * @returns {string}
+ */
+function buildProjectListItem(opts) {
+  return (
+    '<li class="project-list-item">' +
+    '<a class="project-row" href="' +
+    escapeHtml(opts.href) +
+    '">' +
     '<span class="project-row-icon" aria-hidden="true">' +
     '<span class="material-symbols-outlined">folder_open</span>' +
     "</span>" +
     '<span class="project-row-main">' +
     "<strong>" +
-    escapeHtml(name) +
+    escapeHtml(opts.name) +
     "</strong>" +
     '<span class="project-row-meta">' +
-    escapeHtml(meta) +
+    escapeHtml(opts.meta) +
     "</span>" +
     "</span>" +
     '<span class="project-row-aside">' +
     '<span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>' +
     "</span>" +
     "</a>" +
-    "</li>";
+    '<button class="button button-secondary button-small project-delete-btn" type="button" aria-label="Delete ' +
+    escapeHtml(opts.name) +
+    '" title="Delete" data-delete-id="' +
+    escapeHtml(opts.deleteId) +
+    '" data-delete-kind="' +
+    escapeHtml(opts.deleteKind) +
+    '" data-delete-name="' +
+    escapeHtml(opts.name) +
+    '">' +
+    '<span class="material-symbols-outlined" aria-hidden="true">delete</span>' +
+    "</button>" +
+    "</li>"
+  );
+}
 
-  if (append === true) {
-    listEl.innerHTML = listEl.innerHTML + row;
-  } else {
-    listEl.innerHTML = row;
+function wireProjectListClicks() {
+  const listEl = document.getElementById("project-list");
+  if (listEl === null) {
+    return;
   }
+
+  listEl.addEventListener("click", async function (event) {
+    const btn = event.target.closest(".project-delete-btn");
+    if (btn === null) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const kind = btn.getAttribute("data-delete-kind");
+    const id = btn.getAttribute("data-delete-id");
+    const name = btn.getAttribute("data-delete-name") || "this project";
+
+    const confirmed = window.confirm(
+      'Delete "' + name + '"? This cannot be undone.'
+    );
+    if (confirmed === false) {
+      return;
+    }
+
+    btn.disabled = true;
+
+    try {
+      if (kind === "cloud" && id !== null && id !== "") {
+        await deleteCloudProject(id);
+
+        const local = loadProject();
+        if (local !== null && local.id === id) {
+          clearSavedProject();
+          setProject(null);
+        }
+      } else if (kind === "local" && id !== null && id !== "") {
+        deleteLocalProject(id);
+        setProject(null);
+      }
+
+      await renderProjectList();
+    } catch (error) {
+      console.error(error);
+      window.alert(
+        error && error.message
+          ? error.message
+          : "Could not delete that project."
+      );
+      btn.disabled = false;
+    }
+  });
 }
 
 function wireNewProjectModal() {
@@ -156,14 +247,10 @@ function wireNewProjectModal() {
   const backdrop = document.getElementById("new-project-backdrop");
   const cancelBtn = document.getElementById("new-project-cancel");
   const createBtn = document.getElementById("new-project-create");
-  const presetList = document.getElementById("new-project-preset-list");
 
   if (openBtn === null || modal === null) {
     return;
   }
-
-  renderPresetChoices(presetList, "blank");
-  updatePresetDetails("blank");
 
   openBtn.addEventListener("click", function (event) {
     event.preventDefault();
@@ -188,17 +275,6 @@ function wireNewProjectModal() {
     }
   });
 
-  if (presetList !== null) {
-    presetList.addEventListener("change", function (event) {
-      const input = event.target;
-      if (input.name !== "new-project-preset") {
-        return;
-      }
-      highlightSelectedPreset(presetList);
-      updatePresetDetails(input.value);
-    });
-  }
-
   if (createBtn !== null) {
     createBtn.addEventListener("click", onCreateProjectClick);
   }
@@ -210,95 +286,9 @@ function wireImportButton() {
     return;
   }
 
-  // Dashboard import is wired on the project page for now; keep button as a
-  // shortcut into the workspace import flow when unsigned/local.
   importBtn.addEventListener("click", function () {
     window.location.href = "/app/project/#entries";
   });
-}
-
-/**
- * @param {HTMLElement|null} listEl
- * @param {string} selectedId
- */
-function renderPresetChoices(listEl, selectedId) {
-  if (listEl === null) {
-    return;
-  }
-
-  let html = "";
-
-  for (let i = 0; i < PRESET_CATALOG.length; i = i + 1) {
-    const preset = PRESET_CATALOG[i];
-    let checked = "";
-    let selectedClass = "";
-
-    if (preset.id === selectedId) {
-      checked = " checked";
-      selectedClass = " is-selected";
-    }
-
-    html =
-      html +
-      '<label class="preset-choice' +
-      selectedClass +
-      '">' +
-      '<input type="radio" name="new-project-preset" value="' +
-      preset.id +
-      '"' +
-      checked +
-      " />" +
-      '<span class="preset-choice-body">' +
-      "<strong>" +
-      escapeHtml(preset.name) +
-      "</strong>" +
-      "<span>" +
-      escapeHtml(preset.summary) +
-      "</span>" +
-      "</span>" +
-      "</label>";
-  }
-
-  listEl.innerHTML = html;
-}
-
-function highlightSelectedPreset(listEl) {
-  if (listEl === null) {
-    return;
-  }
-
-  const labels = listEl.querySelectorAll(".preset-choice");
-
-  for (let i = 0; i < labels.length; i = i + 1) {
-    const input = labels[i].querySelector('input[type="radio"]');
-    if (input !== null && input.checked === true) {
-      labels[i].classList.add("is-selected");
-    } else {
-      labels[i].classList.remove("is-selected");
-    }
-  }
-}
-
-/**
- * @param {string} presetId
- */
-function updatePresetDetails(presetId) {
-  const info = getPresetInfo(presetId);
-  const summaryEl = document.getElementById("new-project-summary");
-  const warnEl = document.getElementById("new-project-overwrite-note");
-
-  if (summaryEl !== null && info !== null) {
-    summaryEl.textContent = info.summary;
-  }
-
-  if (warnEl !== null) {
-    if (presetId === "blank") {
-      warnEl.textContent = "Starts empty. Import CSVs or add rows in the project workspace.";
-    } else {
-      warnEl.textContent =
-        "Loads sample entries, slots, and rules for this pack. You can edit or re-import afterward.";
-    }
-  }
 }
 
 async function onCreateProjectClick() {
@@ -311,14 +301,6 @@ async function onCreateProjectClick() {
     name = nameInput.value.trim();
   }
 
-  const selected = document.querySelector(
-    'input[name="new-project-preset"]:checked'
-  );
-  let presetId = "blank";
-  if (selected !== null) {
-    presetId = selected.value;
-  }
-
   if (createBtn !== null) {
     createBtn.disabled = true;
   }
@@ -328,7 +310,20 @@ async function onCreateProjectClick() {
   }
 
   try {
-    const project = await buildProjectFromPreset(presetId, name);
+    if (currentUser === null && canCreateLocalProject() === false) {
+      if (statusEl !== null) {
+        statusEl.innerHTML =
+          "This browser already has " +
+          String(MAX_LOCAL_PROJECTS) +
+          ' local projects. <a href="/sign-in/">Sign in</a> to save more in the cloud, or delete one first.';
+      }
+      if (createBtn !== null) {
+        createBtn.disabled = false;
+      }
+      return;
+    }
+
+    const project = createEmptyProject(name);
 
     if (currentUser !== null) {
       const created = await createCloudProject({
@@ -343,14 +338,28 @@ async function onCreateProjectClick() {
       setCloudSynced(true);
       saveProject();
       window.location.href =
-        "/app/project/?id=" + encodeURIComponent(created.id);
+        "/app/project/?id=" +
+        encodeURIComponent(created.id) +
+        "&new=1";
       return;
     }
 
     setProject(project);
     setCloudSynced(false);
-    saveProject();
-    window.location.href = "/app/project/";
+    const saved = saveProject();
+    if (saved === false) {
+      if (statusEl !== null) {
+        statusEl.innerHTML =
+          "Could not save locally (limit or storage full). <a href=\"/sign-in/\">Sign in</a> or delete a project.";
+      }
+      if (createBtn !== null) {
+        createBtn.disabled = false;
+      }
+      return;
+    }
+
+    window.location.href =
+      "/app/project/?id=" + encodeURIComponent(project.id) + "&new=1";
   } catch (error) {
     console.error(error);
     if (statusEl !== null) {

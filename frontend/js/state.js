@@ -4,13 +4,23 @@
  * Holds the current project in memory (one plain object).
  * Always saves to localStorage. When signed in, also syncs to D1 via /api.
  *
+ * Local (unsigned) mode keeps up to MAX_LOCAL_PROJECTS projects in the browser.
+ * Cloud-synced projects still cache locally but do not count toward that cap.
+ *
  * Other files import helpers like getProject() and saveProject().
  * They should not reach into localStorage themselves.
  */
 
 import { fetchMe, updateCloudProject } from "/js/api.js";
 
-const STORAGE_KEY = "rapidroster.currentProject";
+/** Legacy single-slot key — migrated into the multi-project index. */
+const LEGACY_STORAGE_KEY = "rapidroster.currentProject";
+
+const INDEX_KEY = "rapidroster.localProjectIndex";
+const ACTIVE_KEY = "rapidroster.activeLocalProjectId";
+
+/** Max browser-only projects before we ask the user to sign in. */
+export const MAX_LOCAL_PROJECTS = 5;
 
 /** @type {Object|null} */
 let currentProject = null;
@@ -108,13 +118,261 @@ function saveProjectLocal() {
   currentProject.updatedAt = new Date().toISOString();
 
   try {
-    const text = JSON.stringify(currentProject);
-    localStorage.setItem(STORAGE_KEY, text);
+    // Cloud rows: keep a simple cache under the active/legacy slot so offline
+    // open still works; they do not use the 5-project local library.
+    if (currentProject.cloudSynced === true) {
+      localStorage.setItem(
+        LEGACY_STORAGE_KEY,
+        JSON.stringify(currentProject)
+      );
+      isDirty = false;
+      return true;
+    }
+
+    const id = String(currentProject.id || "");
+    if (id === "") {
+      return false;
+    }
+
+    migrateLegacyLocalProject();
+
+    const index = readLocalIndex();
+    const existing = findIndexEntry(index, id);
+
+    if (existing === null && index.length >= MAX_LOCAL_PROJECTS) {
+      console.warn(
+        "Local project limit reached (" + String(MAX_LOCAL_PROJECTS) + ")."
+      );
+      return false;
+    }
+
+    localStorage.setItem(projectStorageKey(id), JSON.stringify(currentProject));
+    upsertLocalIndex(index, {
+      id: id,
+      name: currentProject.name || "Untitled project",
+      updatedAt: currentProject.updatedAt
+    });
+    writeLocalIndex(index);
+    localStorage.setItem(ACTIVE_KEY, id);
+    // Keep legacy key in sync for older code paths / quick open.
+    localStorage.setItem(LEGACY_STORAGE_KEY, JSON.stringify(currentProject));
     isDirty = false;
     return true;
   } catch (error) {
     console.error("Could not save project:", error);
     return false;
+  }
+}
+
+/**
+ * @param {string} id
+ * @returns {string}
+ */
+function projectStorageKey(id) {
+  return "rapidroster.localProject." + id;
+}
+
+/**
+ * @returns {Array<{ id: string, name: string, updatedAt: string }>}
+ */
+function readLocalIndex() {
+  migrateLegacyLocalProject();
+
+  try {
+    const text = localStorage.getItem(INDEX_KEY);
+    if (text === null || text === "") {
+      return [];
+    }
+    const data = JSON.parse(text);
+    if (Array.isArray(data) === false) {
+      return [];
+    }
+    return data;
+  } catch (error) {
+    console.error("Could not read local project index:", error);
+    return [];
+  }
+}
+
+/**
+ * @param {Array<{ id: string, name: string, updatedAt: string }>} index
+ */
+function writeLocalIndex(index) {
+  localStorage.setItem(INDEX_KEY, JSON.stringify(index));
+}
+
+/**
+ * @param {Array<{ id: string, name: string, updatedAt: string }>} index
+ * @param {string} id
+ * @returns {{ id: string, name: string, updatedAt: string }|null}
+ */
+function findIndexEntry(index, id) {
+  for (let i = 0; i < index.length; i = i + 1) {
+    if (index[i].id === id) {
+      return index[i];
+    }
+  }
+  return null;
+}
+
+/**
+ * @param {Array<{ id: string, name: string, updatedAt: string }>} index
+ * @param {{ id: string, name: string, updatedAt: string }} entry
+ */
+function upsertLocalIndex(index, entry) {
+  for (let i = 0; i < index.length; i = i + 1) {
+    if (index[i].id === entry.id) {
+      index[i] = entry;
+      return;
+    }
+  }
+  index.push(entry);
+}
+
+/**
+ * Move the old single-slot save into the multi-project library once.
+ */
+function migrateLegacyLocalProject() {
+  try {
+    if (localStorage.getItem(INDEX_KEY) !== null) {
+      return;
+    }
+
+    const text = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (text === null || text === "") {
+      writeLocalIndex([]);
+      return;
+    }
+
+    const project = JSON.parse(text);
+    if (project === null || typeof project !== "object") {
+      writeLocalIndex([]);
+      return;
+    }
+
+    if (project.cloudSynced === true) {
+      writeLocalIndex([]);
+      return;
+    }
+
+    if (project.id === undefined || project.id === "") {
+      project.id = makeId("proj");
+    }
+
+    localStorage.setItem(
+      projectStorageKey(project.id),
+      JSON.stringify(project)
+    );
+    writeLocalIndex([
+      {
+        id: String(project.id),
+        name: project.name || "Untitled project",
+        updatedAt: project.updatedAt || new Date().toISOString()
+      }
+    ]);
+    localStorage.setItem(ACTIVE_KEY, String(project.id));
+  } catch (error) {
+    console.error("Could not migrate legacy local project:", error);
+    writeLocalIndex([]);
+  }
+}
+
+/**
+ * List local (browser-only) projects, newest first.
+ *
+ * @returns {Array<{ id: string, name: string, updatedAt: string }>}
+ */
+export function listLocalProjects() {
+  const index = readLocalIndex().slice();
+  index.sort(function (a, b) {
+    const at = a.updatedAt || "";
+    const bt = b.updatedAt || "";
+    if (at === bt) {
+      return 0;
+    }
+    return at < bt ? 1 : -1;
+  });
+  return index;
+}
+
+/**
+ * @returns {number}
+ */
+export function getLocalProjectCount() {
+  return readLocalIndex().length;
+}
+
+/**
+ * True if a new local project can be added (under the cap), or if this id
+ * already exists in the library (saving an open project again).
+ *
+ * @param {string} [projectId]
+ * @returns {boolean}
+ */
+export function canCreateLocalProject(projectId) {
+  const index = readLocalIndex();
+  if (projectId !== undefined && projectId !== "") {
+    if (findIndexEntry(index, projectId) !== null) {
+      return true;
+    }
+  }
+  return index.length < MAX_LOCAL_PROJECTS;
+}
+
+/**
+ * Load a local project by id into memory.
+ *
+ * @param {string} id
+ * @returns {Object|null}
+ */
+export function loadLocalProjectById(id) {
+  if (id === undefined || id === "") {
+    return null;
+  }
+
+  try {
+    migrateLegacyLocalProject();
+    const text = localStorage.getItem(projectStorageKey(id));
+    if (text === null || text === "") {
+      return null;
+    }
+    const project = JSON.parse(text);
+    currentProject = project;
+    isDirty = false;
+    localStorage.setItem(ACTIVE_KEY, id);
+    localStorage.setItem(LEGACY_STORAGE_KEY, text);
+    return project;
+  } catch (error) {
+    console.error("Could not load local project:", error);
+    return null;
+  }
+}
+
+/**
+ * Delete one local library project.
+ *
+ * @param {string} id
+ */
+export function deleteLocalProject(id) {
+  if (id === undefined || id === "") {
+    return;
+  }
+
+  migrateLegacyLocalProject();
+  localStorage.removeItem(projectStorageKey(id));
+
+  const index = readLocalIndex().filter(function (entry) {
+    return entry.id !== id;
+  });
+  writeLocalIndex(index);
+
+  const active = localStorage.getItem(ACTIVE_KEY);
+  if (active === id) {
+    localStorage.removeItem(ACTIVE_KEY);
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
+    if (currentProject !== null && currentProject.id === id) {
+      currentProject = null;
+    }
   }
 }
 
@@ -190,13 +448,23 @@ export function setCloudSynced(synced) {
 
 /**
  * Load a project from localStorage into memory.
+ * Prefers the active local library project, then the legacy single-slot key.
  *
  * @returns {Object|null} the loaded project, or null if none / invalid
  */
 export function loadProject() {
   try {
-    const text = localStorage.getItem(STORAGE_KEY);
+    migrateLegacyLocalProject();
 
+    const activeId = localStorage.getItem(ACTIVE_KEY);
+    if (activeId !== null && activeId !== "") {
+      const fromLibrary = loadLocalProjectById(activeId);
+      if (fromLibrary !== null) {
+        return fromLibrary;
+      }
+    }
+
+    const text = localStorage.getItem(LEGACY_STORAGE_KEY);
     if (text === null || text === "") {
       return null;
     }
@@ -212,11 +480,16 @@ export function loadProject() {
 }
 
 /**
- * Remove the saved project from localStorage.
- * Does not clear the in-memory project unless you also setProject(null).
+ * Remove the active/legacy saved project from localStorage.
+ * Prefer deleteLocalProject(id) when deleting from the library list.
  */
 export function clearSavedProject() {
-  localStorage.removeItem(STORAGE_KEY);
+  const activeId = localStorage.getItem(ACTIVE_KEY);
+  if (activeId !== null && activeId !== "") {
+    deleteLocalProject(activeId);
+    return;
+  }
+  localStorage.removeItem(LEGACY_STORAGE_KEY);
 }
 
 /**

@@ -117,6 +117,29 @@
   color: var(--text-color-muted);
 }
 
+.project-list-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.55rem;
+  align-items: stretch;
+}
+
+.project-list-item .project-row {
+  min-width: 0;
+}
+
+.project-delete-btn {
+  align-self: center;
+  flex-shrink: 0;
+  min-width: 2.5rem;
+  padding-inline: 0.55rem;
+}
+
+.project-delete-btn .material-symbols-outlined {
+  font-size: 1.2rem;
+  color: inherit;
+}
+
 .project-row-tag {
   padding: 0.2rem 0.5rem;
   font-size: 0.75rem;
