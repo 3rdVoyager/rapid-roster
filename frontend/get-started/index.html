@@ -5,13 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Sign in to RapidRoster with an email link. No password."
+      content="Get started with RapidRoster — sign in to save in the cloud, or try a local project in this browser."
     />
-    <title>Sign in — RapidRoster</title>
+    <title>Get started — RapidRoster</title>
     <link rel="icon" href="/assets/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+    />
     <link rel="stylesheet" href="/css/variables.css" />
     <link rel="stylesheet" href="/css/global.css" />
     <link rel="stylesheet" href="/css/buttons.css" />
@@ -19,7 +23,7 @@
     <link rel="stylesheet" href="/css/site/footer.css" />
     <link rel="stylesheet" href="/css/site/sign-in.css" />
   </head>
-  <body class="page-sign-in">
+  <body class="page-get-started">
     <header class="site-header">
       <a class="site-brand" href="/">
         <img
@@ -41,33 +45,37 @@
       </button>
       <nav class="site-nav" id="site-nav" aria-label="Primary">
         <a class="button button-tertiary" href="/">Back to home</a>
-        <a class="button button-tertiary" href="/get-started/">Get started</a>
+        <a class="button button-primary" href="/sign-in/">Sign in</a>
       </nav>
     </header>
 
     <main>
-      <section class="sign-in" aria-labelledby="sign-in-heading">
-        <h1 id="sign-in-heading">Sign in</h1>
+      <section class="sign-in get-started" aria-labelledby="get-started-heading">
+        <h1 id="get-started-heading">Get started</h1>
         <p class="sign-in-lead">
-          We'll email you a private sign-in link. No password.
+          Same workspace either way. Sign in to sync across devices, or try a temporary
+          project saved only in this browser.
         </p>
 
-        <form class="sign-in-form" action="/api/auth/request-link" method="post">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autocomplete="email"
-            required
-            placeholder="you@example.com"
-          />
-          <button class="button button-primary" type="submit">
-            Email me a link
-          </button>
-        </form>
+        <div class="get-started-choices">
+          <a class="get-started-choice" href="/sign-in/">
+            <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+            <span class="get-started-choice-body">
+              <strong>Sign in with email</strong>
+              <span>Cloud-saved projects you can open later on any device.</span>
+            </span>
+          </a>
 
-        <p class="sign-in-status" hidden aria-live="polite"></p>
+          <button class="get-started-choice" type="button" id="try-local-btn">
+            <span class="material-symbols-outlined" aria-hidden="true">devices</span>
+            <span class="get-started-choice-body">
+              <strong>Try in this browser</strong>
+              <span>Full editor, no account. Saved locally until you clear site data.</span>
+            </span>
+          </button>
+        </div>
+
+        <p class="get-started-status" id="get-started-status" hidden aria-live="polite"></p>
       </section>
     </main>
 
@@ -93,9 +101,9 @@
           <div class="site-footer-col">
             <h2>Product</h2>
             <ul>
+              <li><a href="/get-started/">Get started</a></li>
               <li><a href="/sign-in/">Sign in</a></li>
               <li><a href="/#how-it-works">How it works</a></li>
-              <li><a href="/#rules">Rules</a></li>
             </ul>
           </div>
           <div class="site-footer-col">
@@ -123,6 +131,6 @@
     </footer>
 
     <script type="module" src="/js/site-nav.js"></script>
-    <script type="module" src="/js/sign-in.js"></script>
+    <script type="module" src="/js/get-started.js"></script>
   </body>
 </html>

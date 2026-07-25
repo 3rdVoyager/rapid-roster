@@ -2,7 +2,7 @@
  * account.js
  *
  * Shared Account menu for /app/ and /app/project/.
- * Shows email + Sign out when signed in; Sign in link when signed out.
+ * Shows email + Sign out when signed in; Get started when signed out.
  */
 import { fetchMe, logout } from "/js/api.js";
 
@@ -113,9 +113,9 @@ function renderAccountMenu(user, label, actions, menu, btn) {
 
     const link = document.createElement("a");
     link.className = "account-menu-item";
-    link.href = "/sign-in/";
+    link.href = "/get-started/";
     link.setAttribute("role", "menuitem");
-    link.textContent = "Sign in";
+    link.textContent = "Get started";
     actions.appendChild(link);
   }
 }

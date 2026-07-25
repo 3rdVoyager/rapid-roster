@@ -7,9 +7,10 @@
   padding: 2.25rem 3.5rem 3.5rem;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 720px) {
   .dashboard {
     padding-inline: 1.25rem;
+    padding-top: 1.5rem;
   }
 }
 

@@ -796,26 +796,43 @@ html {
   }
 
   .app-sidebar {
+    position: sticky;
+    top: 3.5rem;
+    z-index: 50;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.35rem;
-    padding: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border-right: none;
     border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    background: color-mix(in srgb, var(--header-bg-color) 94%, transparent);
+    backdrop-filter: blur(10px);
   }
 
   .app-sidebar-label {
-    width: 100%;
-    margin: 0 0.25rem 0.15rem;
+    display: none;
   }
 
   .app-nav-item {
+    flex: 0 0 auto;
     border-left: none;
     border-bottom: 3px solid transparent;
+    white-space: nowrap;
   }
 
   .app-nav-item.is-active {
     border-left-color: transparent;
     border-bottom-color: var(--color-blue);
+  }
+
+  .app-main {
+    padding: 1rem 0.85rem 2rem;
+  }
+
+  .app-panel-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
   }
 }

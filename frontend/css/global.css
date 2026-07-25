@@ -138,3 +138,13 @@ em {
         transition-duration: 0.01ms !important;
     }
 }
+
+@media (max-width: 720px) {
+    body {
+        padding: 1.25rem;
+    }
+
+    .page-app {
+        padding: 0;
+    }
+}

@@ -57,9 +57,11 @@ Live site: [rapidroster.pages.dev](https://rapidroster.pages.dev/).
 npm install
 npx wrangler d1 create rapid-roster   # copy the new database_id into wrangler.toml
 npm run db:migrate:local
+npm run sync:functions                # copy functions/ -> frontend/functions/ for Git Pages
 npm run dev                           # serves frontend/ + functions/
 ```
 
+**Note:** The Pages project build root is `frontend/`, so production deploys Functions from `frontend/functions/`. Edit the source of truth in repo-root `functions/`, then run `npm run sync:functions` before pushing.
 Sign in with any email. Until email is configured, the magic link is printed in the Wrangler terminal / Pages Function logs. Open that `/api/auth/verify?token=...` URL to set the session cookie.
 
 ### Env / secrets

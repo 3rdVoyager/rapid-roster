@@ -48,17 +48,24 @@
       </div>
 
       <div class="app-header-account">
-        <button class="button button-ghost button-small" type="button" id="export-project-btn">
-          Export
-        </button>
-        <button class="button button-ghost button-small" type="button" id="import-project-btn">
-          <input type="file" id="import-project-file" accept=".json,.rapidroster.json,application/json" />
-          <label for="import-project-file">Import</label>
-        </button>
-        <button class="button button-ghost button-small" type="button" id="load-preset-btn">
-          Load preset…
-        </button>
-        <a class="button button-ghost button-small" href="/app/">All projects</a>
+        <details class="app-tools-details">
+          <summary class="button button-ghost button-small app-tools-summary">
+            Tools
+          </summary>
+          <div class="app-tools-panel">
+            <button class="button button-ghost button-small" type="button" id="export-project-btn">
+              Export
+            </button>
+            <button class="button button-ghost button-small" type="button" id="import-project-btn">
+              <input type="file" id="import-project-file" accept=".json,.rapidroster.json,application/json" />
+              <label for="import-project-file">Import</label>
+            </button>
+            <button class="button button-ghost button-small" type="button" id="load-preset-btn">
+              Load preset…
+            </button>
+            <a class="button button-ghost button-small" href="/app/">All projects</a>
+          </div>
+        </details>
         <button class="button button-tertiary button-small" type="button" id="account-menu-btn">
           Account ▾
         </button>

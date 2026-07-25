@@ -20,7 +20,7 @@ pages_build_output_dir = "frontend"
 [[d1_databases]]
 binding = "DB"
 database_name = "rapid-roster"
-database_id = "00000000-0000-0000-0000-000000000001"
+database_id = "7b7aafca-bcd3-44a4-8ff1-13b948be6c9f"
 migrations_dir = "migrations"
 
 # Non-secret defaults for local/dev. Override SESSION_SECRET in production.

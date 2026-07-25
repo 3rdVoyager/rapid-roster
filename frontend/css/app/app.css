@@ -166,6 +166,24 @@
   margin-left: auto;
 }
 
+/* Desktop: Tools <details> flattens into the header row */
+.app-tools-details {
+  display: contents;
+}
+
+.app-tools-summary {
+  display: none;
+  list-style: none;
+}
+
+.app-tools-summary::-webkit-details-marker {
+  display: none;
+}
+
+.app-tools-panel {
+  display: contents;
+}
+
 .account-menu-wrap {
   position: relative;
 }
@@ -540,6 +558,42 @@
   .app-header-project {
     width: 100%;
     order: 3;
+  }
+}
+
+@media (max-width: 800px) {
+  .app-tools-details {
+    display: block;
+    position: relative;
+  }
+
+  .app-tools-summary {
+    display: inline-flex;
+    cursor: pointer;
+  }
+
+  .app-tools-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    right: 0;
+    z-index: 40;
+    min-width: 11rem;
+    padding: 0.45rem;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: 0.65rem;
+    background: color-mix(in srgb, var(--surface-elevated, #1b2433) 92%, black);
+    box-shadow: 0 10px 28px rgb(0 0 0 / 0.28);
+  }
+
+  .app-tools-details[open] .app-tools-panel {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .app-tools-panel .button {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 
