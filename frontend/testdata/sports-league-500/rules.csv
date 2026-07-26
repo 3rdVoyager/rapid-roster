@@ -1,0 +1,11 @@
+id,name,type,data,filter,options,priority,hard
+R1,Balance skill,Balance,entries.skill,,,9,no
+R2,Balance experience,Balance,entries.experience,,,6,no
+R3,Teammate requests,Cluster,entries.teammate_requests > entries.name,,exact,8,no
+R4,Availability match,Cluster,entries.availability > slots.practice_night,,partial,7,no
+R5,Same school together,Cluster,entries.school,,exact,5,no
+R6,Same region together,Cluster,entries.region,,exact,3,no
+R7,Spread schools a bit,Separate,entries.school,,exact,2,no
+R8,Limit keepers,Limit,entries.role,keeper,max=2,9,yes
+R9,Require a coach,Limit,entries.role,coach,min=1,10,yes
+R10,Cap coaches,Limit,entries.role,coach,max=1,8,yes

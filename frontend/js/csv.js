@@ -87,6 +87,15 @@ export function guessEntriesColumnType(header) {
     return "number";
   }
 
+  if (
+    lower === "slots_per_entry" ||
+    lower === "slotsperentry" ||
+    lower === "num_slots" ||
+    lower === "max_slots"
+  ) {
+    return "number";
+  }
+
   // Preference columns named "1", "2", … stay text (cell = slot name).
   return "text";
 }

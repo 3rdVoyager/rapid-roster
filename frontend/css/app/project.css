@@ -327,6 +327,84 @@ html {
   border-top: 1px solid rgb(255 255 255 / 0.08);
 }
 
+#conflict-groups-modal .app-modal-panel {
+  width: min(44rem, 100%);
+  max-height: min(90vh, 52rem);
+}
+
+.conflict-modal-actions {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.conflict-modal-actions-end {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.conflict-editor-list {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0 1.25rem;
+  max-height: min(55vh, 28rem);
+  overflow: auto;
+}
+
+.conflict-editor-group {
+  padding: 0.85rem 1rem;
+  background: rgb(0 0 0 / 0.28);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 10px;
+}
+
+.conflict-editor-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.65rem 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.conflict-editor-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.35rem 0.75rem;
+}
+
+.conflict-slot-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.conflict-slot-check input {
+  margin-top: 0.15rem;
+}
+
+.conflict-slot-id {
+  font-size: 0.75em;
+  opacity: 0.65;
+}
+
+.editor-field-row {
+  grid-template-columns: minmax(6rem, 9rem) minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.editor-field-row > span {
+  padding-top: 0;
+}
+
+.editor-field-delete {
+  min-width: 2rem;
+  padding: 0.3rem 0.45rem;
+  line-height: 1;
+}
+
 .list-panel-head {
   display: flex;
   flex-wrap: wrap;
@@ -467,6 +545,36 @@ html {
   margin-bottom: 1.25rem;
 }
 
+.generate-progress {
+  margin-top: 0.85rem;
+}
+
+.generate-progress-track {
+  height: 0.55rem;
+  overflow: hidden;
+  background: rgb(0 0 0 / 0.35);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 999px;
+}
+
+.generate-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-blue) 75%, white),
+    var(--color-yellow)
+  );
+  border-radius: inherit;
+  transition: width 0.2s ease;
+}
+
+.generate-progress-label {
+  margin: 0.45rem 0 0;
+  color: var(--text-color-muted);
+  font-size: 0.82rem;
+}
+
 .generate-options-preview {
   display: grid;
   gap: 0.55rem;
@@ -538,6 +646,51 @@ html {
   background: color-mix(in srgb, var(--card-bg-color) 80%, black);
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 12px;
+}
+
+.results-score-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 1.35rem 1.75rem;
+  padding: 0.55rem 0.9rem;
+  background: color-mix(in srgb, var(--card-bg-color) 72%, black);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 12px;
+}
+
+.results-score-stats[hidden] {
+  display: none;
+}
+
+.results-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.12rem;
+  min-width: 6.5rem;
+}
+
+.results-stat-label {
+  color: var(--text-color-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.results-stat-value {
+  color: var(--text-color);
+  font-size: 1.2rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.results-stat-note {
+  color: var(--text-color-muted);
+  font-size: 0.72rem;
+  line-height: 1.25;
 }
 
 .results-toggle-group {

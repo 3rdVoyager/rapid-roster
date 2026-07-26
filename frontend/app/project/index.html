@@ -494,6 +494,20 @@
                   <option value="3">3</option>
                   <option value="4">4</option>
                 </select>
+                <p class="app-empty-hint" style="margin: 0.45rem 0 0">
+                  Override per person with a
+                  <code>slots_per_entry</code> column on Entries (blank = use this default).
+                </p>
+              </div>
+              <div class="app-field">
+                <label>Per-entry overrides</label>
+                <button
+                  class="button button-ghost button-small"
+                  type="button"
+                  id="add-slots-per-entry-col-btn"
+                >
+                  Add slots_per_entry column
+                </button>
               </div>
             </div>
 
@@ -503,7 +517,8 @@
                   <h3 class="app-section-title">Conflict groups</h3>
                   <p class="app-empty-hint" style="margin: 0.35rem 0 0">
                     Slots in the same group cannot be held by the same entry at once
-                    (for example two overlapping events).
+                    (for example two overlapping events). Use a
+                    <code>conflict_group</code> column on Slots, or Manage below.
                   </p>
                 </div>
                 <button class="button button-ghost button-small" type="button" id="manage-conflicts-btn">
@@ -612,7 +627,8 @@
             <div>
               <h1>Generate</h1>
               <p class="app-panel-lead">
-                Runs many searches, keeps the top five ranked options, and stops when scores stop improving.
+                Runs searches in the background, keeps the top ranked options, and stops when
+                scores plateau or a time budget is reached on large projects.
               </p>
             </div>
             <a class="button button-primary button-small" href="#results">Continue to Results</a>
@@ -622,7 +638,12 @@
             <button class="button button-primary" type="button" id="generate-btn">
               Generate
             </button>
-            <button class="button button-ghost" type="button" id="cancel-generate-btn">
+            <button
+              class="button button-ghost"
+              type="button"
+              id="cancel-generate-btn"
+              disabled
+            >
               Cancel
             </button>
           </div>
@@ -635,6 +656,18 @@
               <p class="app-status-detail" id="generate-status-detail">
                 Ready when entries, slots, and rules look right.
               </p>
+              <div class="generate-progress" id="generate-progress" hidden>
+                <div
+                  class="generate-progress-track"
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-labelledby="generate-progress-label"
+                >
+                  <div class="generate-progress-fill" id="generate-progress-fill"></div>
+                </div>
+                <p class="generate-progress-label" id="generate-progress-label"></p>
+              </div>
             </div>
 
             <div class="generate-options-preview" id="generate-options-list">
@@ -716,6 +749,13 @@
             </div>
 
             <div
+              class="results-score-stats"
+              id="results-score-stats"
+              hidden
+              aria-label="Score summary"
+            ></div>
+
+            <div
               class="results-option-picker"
               id="result-set-picker"
               role="group"
@@ -766,6 +806,56 @@
       </div>
     </div>
 
+    <div
+      class="app-modal"
+      id="conflict-groups-modal"
+      aria-hidden="true"
+    >
+      <div class="app-modal-backdrop" data-close-conflict-modal></div>
+      <div
+        class="app-modal-panel app-modal-panel-wide"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="conflict-groups-modal-title"
+      >
+        <div class="app-modal-head">
+          <div>
+            <p class="app-kicker">Rules · Global</p>
+            <h2 class="app-modal-title" id="conflict-groups-modal-title">Conflict groups</h2>
+          </div>
+          <button
+            class="button button-ghost button-small"
+            type="button"
+            data-close-conflict-modal
+          >
+            Close
+          </button>
+        </div>
+
+        <p class="app-empty-hint" style="margin-top: 0">
+          Each group is a set of slots that the same person cannot hold together.
+          Saving writes a <code>conflict_group</code> column on Slots (group name in that cell).
+        </p>
+
+        <div class="conflict-editor-list" id="conflict-groups-editor"></div>
+
+        <div class="app-modal-actions conflict-modal-actions">
+          <button class="button button-ghost" type="button" id="conflict-add-group-btn">
+            Add group
+          </button>
+          <div class="conflict-modal-actions-end">
+            <button class="button button-ghost" type="button" data-close-conflict-modal>
+              Cancel
+            </button>
+            <button class="button button-primary" type="button" id="conflict-groups-save">
+              Save groups
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/js/project.js"></script>
   </body>
 </html>
+

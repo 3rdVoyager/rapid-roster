@@ -1,9 +1,16 @@
 id,name,1,2,3,4,5,6
-ava,Ava Chen,Astronomy,Optics,Forensics,Robotics,Chemistry Lab,Codebusters
-noah,Noah Patel,Optics,Forensics,Astronomy,Chemistry Lab,Robotics,Codebusters
-mia,Mia Brooks,Forensics,Astronomy,Optics,Robotics,Chemistry Lab,
-jordan,Jordan Lee,Robotics,Chemistry Lab,Codebusters,Optics,Astronomy,Experimental Design
-sam,Sam Okonkwo,Robotics,Optics,Forensics,Chemistry Lab,Codebusters,Experimental Design
-riley,Riley Quinn,Forensics,Robotics,Chemistry Lab,Codebusters,Optics,Experimental Design
+ava,Ava Chen,Astronomy,Optics,Forensics,Robot Tour,Chemistry Lab,Codebusters
+noah,Noah Patel,Optics,Forensics,Astronomy,Chemistry Lab,Robot Tour,Codebusters
+mia,Mia Brooks,Forensics,Astronomy,Optics,Robot Tour,Chemistry Lab,Ecology
+jordan,Jordan Lee,Robot Tour,Chemistry Lab,Codebusters,Optics,Astronomy,Experimental Design
+sam,Sam Okonkwo,Robot Tour,Optics,Forensics,Chemistry Lab,Codebusters,Bridge
+riley,Riley Quinn,Forensics,Robot Tour,Chemistry Lab,Codebusters,Optics,Flight
 casey,Casey Nguyen,Optics,Forensics,Chemistry Lab,Astronomy,Codebusters,Experimental Design
-taylor,Taylor Kim,Chemistry Lab,Codebusters,Robotics,Forensics,Experimental Design,Astronomy
+taylor,Taylor Kim,Chemistry Lab,Codebusters,Robot Tour,Forensics,Experimental Design,Astronomy
+jamie,Jamie Ortiz,Anatomy & Physiology,Ecology,Fossils,Meteorology,Dynamic Planet,Astronomy
+drew,Drew Hassan,Ecology,Fossils,Anatomy & Physiology,Dynamic Planet,Meteorology,Optics
+alex,Alex Rivera,Bridge,Flight,Write It Do It,Robot Tour,Codebusters,Experimental Design
+morgan,Morgan Blake,Flight,Bridge,Write It Do It,Optics,Forensics,Chemistry Lab
+quinn,Quinn Hayes,Write It Do It,Experimental Design,Codebusters,Bridge,Flight,Robot Tour
+sky,Sky Jordan,Meteorology,Dynamic Planet,Fossils,Ecology,Anatomy & Physiology,Astronomy
+parker,Parker Diaz,Dynamic Planet,Fossils,Meteorology,Ecology,Anatomy & Physiology,Optics

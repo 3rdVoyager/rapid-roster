@@ -144,27 +144,61 @@ async function fetchText(url) {
 }
 
 /**
+ * @param {{ columns: Object[] }} slotsTable
+ * @returns {string|null}
+ */
+export function findConflictGroupColumnKey(slotsTable) {
+  if (slotsTable === undefined || slotsTable === null || slotsTable.columns === undefined) {
+    return null;
+  }
+
+  for (let i = 0; i < slotsTable.columns.length; i = i + 1) {
+    const key = String(slotsTable.columns[i].key || "");
+    if (key.toLowerCase() === "conflict_group") {
+      return slotsTable.columns[i].key;
+    }
+  }
+
+  return null;
+}
+
+/**
  * If slots have a conflict_group column, group slot ids that share a value.
+ * Only groups with 2+ slots matter for the legal engine.
  *
  * @param {{ columns: Object[], rows: Object[] }} slotsTable
  * @returns {string[][]}
  */
-function buildConflictGroupsFromSlots(slotsTable) {
-  let groupKey = null;
+export function buildConflictGroupsFromSlots(slotsTable) {
+  const named = listNamedConflictGroupsFromSlots(slotsTable);
+  const groups = [];
 
-  for (let i = 0; i < slotsTable.columns.length; i = i + 1) {
-    const key = slotsTable.columns[i].key;
-    if (key.toLowerCase() === "conflict_group") {
-      groupKey = key;
+  for (let i = 0; i < named.length; i = i + 1) {
+    if (named[i].slotIds.length >= 2) {
+      groups.push(named[i].slotIds.slice());
     }
   }
+
+  return groups;
+}
+
+/**
+ * Named groups from the conflict_group column (includes size-1 groups
+ * so the Manage UI can edit incomplete groups).
+ *
+ * @param {{ columns: Object[], rows: Object[] }} slotsTable
+ * @returns {{ name: string, slotIds: string[] }[]}
+ */
+export function listNamedConflictGroupsFromSlots(slotsTable) {
+  const groupKey = findConflictGroupColumnKey(slotsTable);
 
   if (groupKey === null) {
     return [];
   }
 
-  // Map: group name → list of slot ids
+  // Map: group name → list of slot ids (preserve first-seen order of names)
   const buckets = {};
+  const nameOrder = [];
 
   for (let r = 0; r < slotsTable.rows.length; r = r + 1) {
     const row = slotsTable.rows[r];
@@ -176,22 +210,78 @@ function buildConflictGroupsFromSlots(slotsTable) {
 
     if (buckets[groupName] === undefined) {
       buckets[groupName] = [];
+      nameOrder.push(groupName);
     }
 
     buckets[groupName].push(row.id);
   }
 
   const groups = [];
-  const names = Object.keys(buckets);
 
-  for (let i = 0; i < names.length; i = i + 1) {
-    const slotIds = buckets[names[i]];
-    if (slotIds.length >= 2) {
-      groups.push(slotIds);
-    }
+  for (let i = 0; i < nameOrder.length; i = i + 1) {
+    const name = nameOrder[i];
+    groups.push({
+      name: name,
+      slotIds: buckets[name]
+    });
   }
 
   return groups;
+}
+
+/**
+ * Ensure a conflict_group column exists, clear it, then write each named group.
+ * A slot may only belong to one group (last write wins if duplicated in draft).
+ *
+ * @param {{ columns: Object[], rows: Object[] }} slotsTable
+ * @param {{ name: string, slotIds: string[] }[]} namedGroups
+ * @returns {string[][]} legal-sized conflict groups (2+ slots each)
+ */
+export function applyNamedConflictGroupsToSlots(slotsTable, namedGroups) {
+  let groupKey = findConflictGroupColumnKey(slotsTable);
+
+  if (groupKey === null) {
+    groupKey = "conflict_group";
+    slotsTable.columns.push({
+      key: groupKey,
+      label: "conflict_group",
+      type: "text"
+    });
+
+    for (let r = 0; r < slotsTable.rows.length; r = r + 1) {
+      slotsTable.rows[r].cells[groupKey] = "";
+    }
+  } else {
+    for (let r = 0; r < slotsTable.rows.length; r = r + 1) {
+      slotsTable.rows[r].cells[groupKey] = "";
+    }
+  }
+
+  // slotId → which row (for fast lookup)
+  const rowById = {};
+  for (let r = 0; r < slotsTable.rows.length; r = r + 1) {
+    rowById[slotsTable.rows[r].id] = slotsTable.rows[r];
+  }
+
+  for (let g = 0; g < namedGroups.length; g = g + 1) {
+    const group = namedGroups[g];
+    let name = String(group.name || "").trim();
+
+    if (name === "") {
+      name = "group_" + String(g + 1);
+    }
+
+    const slotIds = group.slotIds || [];
+
+    for (let s = 0; s < slotIds.length; s = s + 1) {
+      const row = rowById[slotIds[s]];
+      if (row !== undefined) {
+        row.cells[groupKey] = name;
+      }
+    }
+  }
+
+  return buildConflictGroupsFromSlots(slotsTable);
 }
 
 /** Column order for rules.csv import / export / table view. */
@@ -447,10 +537,9 @@ function applyDataField(rule, data) {
     return;
   }
 
-  // "left > right" form (legacy "↔" still accepted)
-  const sep = findMatchDataSeparator(data);
-  if (sep !== null) {
-    const parts = data.split(sep);
+  // "left > right" form
+  if (data.indexOf(">") !== -1) {
+    const parts = data.split(">");
     const left = cleanAttrPath(parts[0]);
     const right = cleanAttrPath(parts[1]);
 
@@ -479,23 +568,6 @@ function applyDataField(rule, data) {
     rule.shape = "entriesTogether";
     rule.match = "exact";
   }
-}
-
-/**
- * Separator between entry and slot sides in a Cluster/Separate data cell.
- * Prefer ">" (easy to type). Legacy "↔" still parses.
- *
- * @param {string} data
- * @returns {string|null}
- */
-function findMatchDataSeparator(data) {
-  if (data.indexOf("↔") !== -1) {
-    return "↔";
-  }
-  if (data.indexOf(">") !== -1) {
-    return ">";
-  }
-  return null;
 }
 
 /**

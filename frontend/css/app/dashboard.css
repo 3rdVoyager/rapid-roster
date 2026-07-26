@@ -133,24 +133,15 @@
 }
 
 .project-list-item {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.55rem;
-  align-items: stretch;
-}
-
-.project-list-item .project-row {
-  min-width: 0;
+  list-style: none;
 }
 
 .project-row {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.9rem 1rem;
-  padding: 1rem 1.1rem;
-  color: var(--text-color);
-  text-decoration: none;
+  gap: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   background: color-mix(in srgb, var(--card-bg-color) 90%, black);
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 12px;
@@ -161,10 +152,23 @@
 }
 
 .project-row:hover {
-  color: var(--text-color);
   border-color: color-mix(in srgb, var(--color-blue) 45%, transparent);
   background: var(--color-navy);
   transform: translateY(-1px);
+}
+
+.project-row-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.9rem 1rem;
+  min-width: 0;
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.project-row-link:hover {
+  color: var(--text-color);
 }
 
 .project-row-icon {
@@ -196,42 +200,12 @@
   font-size: 0.9rem;
 }
 
-.project-row-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-top: 0.15rem;
-}
-
-.project-row-aside {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  color: var(--text-color-muted);
-}
-
-.project-row-tag {
-  padding: 0.2rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-blue-bright);
-  background: color-mix(in srgb, var(--color-blue) 16%, transparent);
-  border-radius: 6px;
-}
-
-.project-row-tag-soft {
-  color: var(--color-yellow);
-  background: color-mix(in srgb, var(--color-yellow) 14%, transparent);
-}
-
 .project-row-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.35rem;
-  align-self: center;
 }
 
 .project-delete-btn {
@@ -245,12 +219,13 @@
 }
 
 @media (max-width: 720px) {
-  .project-list-item {
+  .project-row {
     grid-template-columns: 1fr;
   }
 
   .project-row-actions {
-    justify-content: flex-end;
+    justify-content: flex-start;
+    padding-left: calc(2.5rem + 1rem);
   }
 }
 

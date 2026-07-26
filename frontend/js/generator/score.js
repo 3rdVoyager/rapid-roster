@@ -160,6 +160,33 @@ export function scorePlacement(assignments, scoreConfig) {
 }
 
 /**
+ * Highest total soft score if every soft rule is fully met (howWellMet = 1).
+ * Soft rules only: hard rules are constraints and do not add points.
+ *
+ * @param {Object[]} rules
+ * @returns {number}
+ */
+export function maxPossibleSoftScore(rules) {
+  let maxScore = 0;
+
+  if (rules === undefined || rules === null) {
+    return 0;
+  }
+
+  for (let i = 0; i < rules.length; i = i + 1) {
+    const rule = rules[i];
+
+    if (rule.hard === true) {
+      continue;
+    }
+
+    maxScore = maxScore + getPriority(rule);
+  }
+
+  return maxScore;
+}
+
+/**
  * Score a single soft rule. Returns howWellMet from 0 to 1.
  *
  * @param {Object} assignments

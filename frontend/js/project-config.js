@@ -8,6 +8,8 @@
  * need to know about table columns or row.cells shapes.
  */
 
+import { buildConflictGroupsFromSlots } from "/js/presets.js";
+
 /**
  * Build the config object for checkLegal / runSearch.
  *
@@ -51,19 +53,110 @@ export function buildLegalConfig(project) {
     defaultSlotsPerEntry = project.setup.defaultSlotsPerEntry;
   }
 
-  let conflictGroups = [];
+  // Prefer conflict_group column on slots when present; else saved setup groups.
+  let conflictGroups = buildConflictGroupsFromSlots(project.slots);
 
-  if (project.setup !== undefined && project.setup.conflictGroups !== undefined) {
+  if (
+    conflictGroups.length === 0 &&
+    project.setup !== undefined &&
+    project.setup.conflictGroups !== undefined
+  ) {
     conflictGroups = project.setup.conflictGroups;
   }
+
+  const slotsPerEntryById = buildSlotsPerEntryById(project);
 
   return {
     slotIds: slotIds,
     slotMinSizes: slotMinSizes,
     slotMaxSizes: slotMaxSizes,
     defaultSlotsPerEntry: defaultSlotsPerEntry,
+    slotsPerEntryById: slotsPerEntryById,
     conflictGroups: conflictGroups
   };
+}
+
+/**
+ * Per-entry slot caps from an optional slots_per_entry column.
+ * Blank / invalid cells fall back to the project default (not listed here).
+ *
+ * @param {Object} project
+ * @param {number} defaultSlotsPerEntry
+ * @returns {Object} entryId → number
+ */
+function buildSlotsPerEntryById(project) {
+  const byId = {};
+  const key = findSlotsPerEntryColumnKey(project.entries.columns);
+
+  if (key === null) {
+    return byId;
+  }
+
+  for (let i = 0; i < project.entries.rows.length; i = i + 1) {
+    const row = project.entries.rows[i];
+    const raw = row.cells[key];
+
+    if (raw === undefined || raw === null || String(raw).trim() === "") {
+      continue;
+    }
+
+    const value = Number(raw);
+
+    if (Number.isNaN(value) === true || value < 0) {
+      continue;
+    }
+
+    byId[row.id] = value;
+  }
+
+  return byId;
+}
+
+/**
+ * @param {Object[]} columns
+ * @returns {string|null}
+ */
+export function findSlotsPerEntryColumnKey(columns) {
+  if (columns === undefined || columns === null) {
+    return null;
+  }
+
+  for (let i = 0; i < columns.length; i = i + 1) {
+    const key = String(columns[i].key || "").toLowerCase();
+    if (
+      key === "slots_per_entry" ||
+      key === "slotsperentry" ||
+      key === "num_slots" ||
+      key === "max_slots"
+    ) {
+      return columns[i].key;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * How many slots one entry may hold.
+ *
+ * @param {Object} legalConfig
+ * @param {string} entryId
+ * @returns {number}
+ */
+export function getMaxSlotsForEntry(legalConfig, entryId) {
+  if (
+    legalConfig.slotsPerEntryById !== undefined &&
+    legalConfig.slotsPerEntryById[entryId] !== undefined
+  ) {
+    return legalConfig.slotsPerEntryById[entryId];
+  }
+
+  let maxSlots = legalConfig.defaultSlotsPerEntry;
+  if (maxSlots === undefined) {
+    maxSlots = 1;
+  }
+
+  return maxSlots;
 }
 
 /**
@@ -152,4 +245,4 @@ function copyCells(cells) {
 
   return copy;
 }
-
+

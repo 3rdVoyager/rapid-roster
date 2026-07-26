@@ -40,13 +40,20 @@
  *     maxShakes: 3,
  *     shakeSwaps: 12,
  *     maxImprovePasses: 30,
- *     onProgress: function (info) { console.log(info); }
+ *     maxSwapSamples: null,   // null = try every swap partner; number = sample that many
+ *     timeBudgetMs: null,     // stop after this many ms (keep best so far)
+ *     shouldCancel: function () { return false; },
+ *     onProgress: function (info) { console.log(info); },
+ *     onOptionsUpdate: function (update) { console.log(update); }
  *   });
+ *
+ * Prefer defaultSearchOptions(entryCount) for size-aware defaults.
  *
  *   // result.ok === false → could not find any legal start
  *   // result.ok === true
  *   //   result.options     → [{ rank, assignments, totalScore, scoresByRule }, ...]
  *   //   result.assignments → same as options[0] (best), for convenience
+ *   //   result.stopReason  → "max-attempts" | "stagnation" | "time-budget" | "cancelled"
  *
  * legalConfig and scoreConfig are the same shapes used by legal.js and score.js.
  * Person ids come from scoreConfig.entriesAttrs (every key is a person).
@@ -66,17 +73,85 @@ import {
 
 import { checkLegal } from "./legal.js";
 import { scorePlacement } from "./score.js";
+import { getMaxSlotsForEntry } from "../project-config.js";
+
+/**
+ * Size-aware search knobs. Small projects stay thorough; large ones sample
+ * swaps, run fewer attempts, and respect a time budget.
+ *
+ * @param {number} entryCount
+ * @returns {Object}
+ */
+export function defaultSearchOptions(entryCount) {
+  const n = entryCount || 0;
+
+  // Large projects: many short finished attempts beat one long climb that
+  // eats the whole time budget and leaves a single half-done option.
+  if (n > 250) {
+    return {
+      optionCount: 5,
+      maxAttempts: 12,
+      stagnationLimit: 3,
+      maxShakes: 0,
+      shakeSwaps: 0,
+      maxImprovePasses: 2,
+      maxSwapSamples: 16,
+      timeBudgetMs: 90000
+    };
+  }
+
+  if (n > 100) {
+    return {
+      optionCount: 5,
+      maxAttempts: 16,
+      stagnationLimit: 4,
+      maxShakes: 1,
+      shakeSwaps: 8,
+      maxImprovePasses: 4,
+      maxSwapSamples: 32,
+      timeBudgetMs: 60000
+    };
+  }
+
+  if (n > 40) {
+    return {
+      optionCount: 5,
+      maxAttempts: 40,
+      stagnationLimit: 10,
+      maxShakes: 2,
+      shakeSwaps: 12,
+      maxImprovePasses: 12,
+      maxSwapSamples: 80,
+      timeBudgetMs: 45000
+    };
+  }
+
+  return {
+    optionCount: 5,
+    maxAttempts: 60,
+    stagnationLimit: 15,
+    maxShakes: 2,
+    shakeSwaps: 12,
+    maxImprovePasses: 20,
+    maxSwapSamples: null,
+    timeBudgetMs: null
+  };
+}
 
 /**
  * Main entry point.
  *
  * Runs many independent attempts, keeps only the top optionCount layouts
- * after each attempt, and stops early once a full set stops improving.
+ * after each attempt, and stops early once a full set stops improving,
+ * time runs out between attempts, or shouldCancel() returns true.
+ *
+ * Time budget never aborts mid-attempt (that produced half-finished options).
+ * Cancel still stops as soon as the current improve step notices it.
  *
  * @param {Object} legalConfig
  * @param {Object} scoreConfig
  * @param {Object} [options]
- * @returns {Object} result (see header)
+ * @returns {Object} result (see file header)
  */
 export function runSearch(legalConfig, scoreConfig, options) {
   if (options === undefined) {
@@ -117,14 +192,78 @@ export function runSearch(legalConfig, scoreConfig, options) {
     maxImprovePasses = 30;
   }
 
+  // null / undefined = try every other person (fine for small projects).
+  const maxSwapSamples = options.maxSwapSamples;
+
+  let timeBudgetMs = options.timeBudgetMs;
+  if (timeBudgetMs === undefined) {
+    timeBudgetMs = null;
+  }
+
   const onProgress = options.onProgress;
+  const shouldCancel = options.shouldCancel;
+  const startedAt = Date.now();
+
   /** @type {Object[]} */
   let ranked = [];
   let stagnantAttempts = 0;
   let lastSignature = "";
   let stopReason = "max-attempts";
+  let lastAttemptMs = 0;
+
+  function isCancelled() {
+    return typeof shouldCancel === "function" && shouldCancel() === true;
+  }
+
+  function isTimedOut() {
+    return timeBudgetMs !== null && Date.now() - startedAt >= timeBudgetMs;
+  }
+
+  /**
+   * Skip starting another attempt when the budget is effectively spent.
+   * Uses the last attempt's runtime as a hint so we do not begin a climb
+   * we almost certainly cannot finish before the deadline.
+   */
+  function shouldSkipNewAttempt() {
+    if (timeBudgetMs === null) {
+      return false;
+    }
+
+    const elapsedMs = Date.now() - startedAt;
+    const remainingMs = timeBudgetMs - elapsedMs;
+
+    if (remainingMs <= 0) {
+      return true;
+    }
+
+    // Need a little headroom for the next climb.
+    if (lastAttemptMs > 0 && remainingMs < lastAttemptMs * 0.6) {
+      return true;
+    }
+
+    // Absolute floor so tiny leftovers do not start another 500-person pass.
+    if (remainingMs < 2500) {
+      return true;
+    }
+
+    return false;
+  }
 
   for (let attempt = 1; attempt <= maxAttempts; attempt = attempt + 1) {
+    if (isCancelled() === true) {
+      stopReason = "cancelled";
+      break;
+    }
+
+    // Soft deadline: do not start another climb once the budget is spent.
+    // The attempt already in progress (if any) always finishes first.
+    if (shouldSkipNewAttempt() === true) {
+      stopReason = "time-budget";
+      break;
+    }
+
+    const elapsedMs = Date.now() - startedAt;
+
     reportProgress(onProgress, {
       phase: "attempt",
       attempt: attempt,
@@ -132,7 +271,9 @@ export function runSearch(legalConfig, scoreConfig, options) {
       maxAttempts: maxAttempts,
       kept: ranked.length,
       bestScore: ranked.length > 0 ? ranked[0].totalScore : null,
-      stagnantAttempts: stagnantAttempts
+      stagnantAttempts: stagnantAttempts,
+      elapsedMs: elapsedMs,
+      timeBudgetMs: timeBudgetMs
     });
 
     // Only the first attempt may reuse a caller-provided start map.
@@ -141,14 +282,23 @@ export function runSearch(legalConfig, scoreConfig, options) {
       startAssignments = options.startAssignments;
     }
 
+    const attemptStartedAt = Date.now();
+
     const one = runOneAttempt(legalConfig, scoreConfig, {
       startAssignments: startAssignments,
       maxShakes: maxShakes,
       shakeSwaps: shakeSwaps,
       maxImprovePasses: maxImprovePasses,
+      maxSwapSamples: maxSwapSamples,
       onProgress: onProgress,
-      attempt: attempt
+      attempt: attempt,
+      // Cancel may interrupt a climb; time budget waits for this attempt to finish.
+      shouldStop: function () {
+        return isCancelled() === true;
+      }
     });
+
+    lastAttemptMs = Date.now() - attemptStartedAt;
 
     if (one.ok === true) {
       const combined = ranked.slice();
@@ -166,6 +316,9 @@ export function runSearch(legalConfig, scoreConfig, options) {
       } else {
         stagnantAttempts = 0;
         lastSignature = signature;
+        // Let the UI show options as soon as the kept set changes
+        // (first unique layout, then better / additional ones).
+        emitOptionsUpdate(options.onOptionsUpdate, ranked);
       }
     } else if (attempt === 1 && ranked.length === 0) {
       // If even the first attempt cannot start, fail clearly.
@@ -175,10 +328,23 @@ export function runSearch(legalConfig, scoreConfig, options) {
         assignments: null,
         totalScore: 0,
         scoresByRule: [],
-        options: []
+        options: [],
+        stopReason: "failed"
       };
     } else {
       stagnantAttempts = stagnantAttempts + 1;
+    }
+
+    if (isCancelled() === true) {
+      stopReason = "cancelled";
+      break;
+    }
+
+    // After a finished attempt, stop if there is not enough budget left
+    // for another full climb.
+    if (shouldSkipNewAttempt() === true) {
+      stopReason = "time-budget";
+      break;
     }
 
     // Only plateau-stop once we have a full unique set. Stopping earlier
@@ -193,13 +359,18 @@ export function runSearch(legalConfig, scoreConfig, options) {
   }
 
   if (ranked.length === 0) {
+    let reasons = ["No legal placements were found."];
+    if (stopReason === "cancelled") {
+      reasons = ["Cancelled before a legal placement was found."];
+    }
     return {
       ok: false,
-      reasons: ["No legal placements were found."],
+      reasons: reasons,
       assignments: null,
       totalScore: 0,
       scoresByRule: [],
-      options: []
+      options: [],
+      stopReason: stopReason
     };
   }
 
@@ -208,7 +379,9 @@ export function runSearch(legalConfig, scoreConfig, options) {
     bestScore: ranked[0].totalScore,
     optionCount: ranked.length,
     stopReason: stopReason,
-    stagnantAttempts: stagnantAttempts
+    stagnantAttempts: stagnantAttempts,
+    elapsedMs: Date.now() - startedAt,
+    timeBudgetMs: timeBudgetMs
   });
 
   return {
@@ -221,6 +394,28 @@ export function runSearch(legalConfig, scoreConfig, options) {
     options: ranked,
     stopReason: stopReason
   };
+}
+
+/**
+ * Notify the caller that the current top options list changed.
+ *
+ * @param {Function|undefined} onOptionsUpdate
+ * @param {Object[]} ranked
+ */
+function emitOptionsUpdate(onOptionsUpdate, ranked) {
+  if (typeof onOptionsUpdate !== "function") {
+    return;
+  }
+
+  if (ranked.length === 0) {
+    return;
+  }
+
+  onOptionsUpdate({
+    options: ranked,
+    kept: ranked.length,
+    bestScore: ranked[0].totalScore
+  });
 }
 
 /**
@@ -335,13 +530,19 @@ function runOneAttempt(legalConfig, scoreConfig, options) {
   let shakesUsed = 0;
 
   while (shakesUsed <= options.maxShakes) {
+    if (typeof options.shouldStop === "function" && options.shouldStop() === true) {
+      break;
+    }
+
     const improved = improveAssignments(
       workingAssignments,
       workingScore,
       legalConfig,
       scoreConfig,
       options.maxImprovePasses,
-      options.onProgress
+      options.maxSwapSamples,
+      options.onProgress,
+      options.shouldStop
     );
 
     workingAssignments = improved.assignments;
@@ -490,7 +691,9 @@ function improveAssignments(
   legalConfig,
   scoreConfig,
   maxImprovePasses,
-  onProgress
+  maxSwapSamples,
+  onProgress,
+  shouldStop
 ) {
   let current = assignments;
   let bestScore = startingScore;
@@ -507,10 +710,19 @@ function improveAssignments(
       break;
     }
 
+    if (typeof shouldStop === "function" && shouldStop() === true) {
+      break;
+    }
+
     const entryIds = Object.keys(current);
     let improvedThisPass = false;
 
     for (let p = 0; p < entryIds.length; p = p + 1) {
+      if (typeof shouldStop === "function" && shouldStop() === true) {
+        keepGoing = false;
+        break;
+      }
+
       const entryId = entryIds[p];
 
       reportProgress(onProgress, {
@@ -527,7 +739,8 @@ function improveAssignments(
         entryId,
         bestScore,
         legalConfig,
-        scoreConfig
+        scoreConfig,
+        maxSwapSamples
       );
 
       if (afterEntry.improved === true) {
@@ -556,7 +769,7 @@ function improveAssignments(
  *
  * Order:
  *   1. Move each of their slots → each other slot
- *   2. Swap with every other person
+ *   2. Swap with sampled (or all) other people
  *   3. Add them to a slot they are not in
  *   4. Remove them from one of their slots
  *
@@ -567,7 +780,8 @@ function improveOneEntry(
   entryId,
   currentScore,
   legalConfig,
-  scoreConfig
+  scoreConfig,
+  maxSwapSamples
 ) {
   const slotIds = legalConfig.slotIds;
   const otherEntries = Object.keys(assignments);
@@ -598,14 +812,11 @@ function improveOneEntry(
     }
   }
 
-  // ----- 2. Swaps -----
-  for (let i = 0; i < otherEntries.length; i = i + 1) {
-    const otherId = otherEntries[i];
+  // ----- 2. Swaps (all partners on small sets; sample on large ones) -----
+  const swapPartners = pickSwapPartners(otherEntries, entryId, maxSwapSamples);
 
-    if (otherId === entryId) {
-      continue;
-    }
-
+  for (let i = 0; i < swapPartners.length; i = i + 1) {
+    const otherId = swapPartners[i];
     const swapped = swapEntries(assignments, entryId, otherId);
     const accepted = acceptIfBetter(
       swapped,
@@ -662,6 +873,35 @@ function improveOneEntry(
     bestScore: currentScore,
     scoresByRule: []
   };
+}
+
+/**
+ * Choose who to try swapping with.
+ * null / undefined maxSwapSamples → every other person.
+ *
+ * @param {string[]} otherEntries
+ * @param {string} entryId
+ * @param {number|null|undefined} maxSwapSamples
+ * @returns {string[]}
+ */
+function pickSwapPartners(otherEntries, entryId, maxSwapSamples) {
+  const partners = [];
+
+  for (let i = 0; i < otherEntries.length; i = i + 1) {
+    if (otherEntries[i] !== entryId) {
+      partners.push(otherEntries[i]);
+    }
+  }
+
+  if (
+    maxSwapSamples === undefined ||
+    maxSwapSamples === null ||
+    maxSwapSamples >= partners.length
+  ) {
+    return partners;
+  }
+
+  return shuffledCopy(partners).slice(0, maxSwapSamples);
 }
 
 /**
@@ -780,12 +1020,6 @@ function buildInitialAssignments(legalConfig, scoreConfig) {
   let assignments = createEmptyAssignments(entryIds);
   const slotIds = legalConfig.slotIds;
 
-  // How many slots each person may hold (same default as legal.js).
-  let maxSlotsPerEntry = legalConfig.defaultSlotsPerEntry;
-  if (maxSlotsPerEntry === undefined) {
-    maxSlotsPerEntry = 1;
-  }
-
   // ----- Fill slot minimums first -----
   for (let s = 0; s < slotIds.length; s = s + 1) {
     const slotId = slotIds[s];
@@ -795,8 +1029,7 @@ function buildInitialAssignments(legalConfig, scoreConfig) {
       const entryId = findEntryWhoCanTakeSlot(
         assignments,
         slotId,
-        legalConfig,
-        maxSlotsPerEntry
+        legalConfig
       );
 
       if (entryId === null) {
@@ -807,11 +1040,12 @@ function buildInitialAssignments(legalConfig, scoreConfig) {
     }
   }
 
-  // ----- Place anyone still under their slot limit -----
+  // ----- Place anyone still under their own slot limit -----
   for (let p = 0; p < entryIds.length; p = p + 1) {
     const entryId = entryIds[p];
+    const maxSlots = getMaxSlotsForEntry(legalConfig, entryId);
 
-    while (getSlotsForEntry(assignments, entryId).length < maxSlotsPerEntry) {
+    while (getSlotsForEntry(assignments, entryId).length < maxSlots) {
       const slotId = findSlotForEntry(
         assignments,
         entryId,
@@ -850,8 +1084,7 @@ function buildInitialAssignments(legalConfig, scoreConfig) {
 function findEntryWhoCanTakeSlot(
   assignments,
   slotId,
-  legalConfig,
-  maxSlotsPerEntry
+  legalConfig
 ) {
   const entryIds = Object.keys(assignments);
 
@@ -865,7 +1098,10 @@ function findEntryWhoCanTakeSlot(
       continue;
     }
 
-    if (getSlotsForEntry(assignments, entryId).length >= maxSlotsPerEntry) {
+    if (
+      getSlotsForEntry(assignments, entryId).length >=
+      getMaxSlotsForEntry(legalConfig, entryId)
+    ) {
       continue;
     }
 
@@ -917,6 +1153,7 @@ function breaksHardCapacity(assignments, legalConfig) {
     slotMinSizes: 0,
     slotMaxSizes: legalConfig.slotMaxSizes,
     defaultSlotsPerEntry: legalConfig.defaultSlotsPerEntry,
+    slotsPerEntryById: legalConfig.slotsPerEntryById,
     conflictGroups: legalConfig.conflictGroups
   };
 

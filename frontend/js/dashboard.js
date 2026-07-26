@@ -204,32 +204,20 @@ function renderLocalList(listEl, projects) {
 function buildProjectListItem(p) {
   const name = p.name || "Untitled project";
   const href = "/app/project/?id=" + encodeURIComponent(p.id);
-  let meta = formatUpdated(p.updatedAt);
-  const counts =
+  const meta =
+    formatUpdated(p.updatedAt) +
+    " · " +
     String(p.entryCount || 0) +
     " entries · " +
     String(p.slotCount || 0) +
     " slots · " +
     String(p.ruleCount || 0) +
     " rules";
-  meta = meta + " · " + counts;
-
-  let tags = "";
-  const preset = p.presetId ? getPresetInfo(p.presetId) : null;
-  if (preset !== null && preset.id !== "blank") {
-    tags =
-      tags +
-      '<span class="project-row-tag">' +
-      escapeHtml(preset.name) +
-      "</span>";
-  }
-  if (p.hasResults === true) {
-    tags = tags + '<span class="project-row-tag project-row-tag-soft">Has results</span>';
-  }
 
   return (
     '<li class="project-list-item">' +
-    '<a class="project-row" href="' +
+    '<div class="project-row">' +
+    '<a class="project-row-link" href="' +
     escapeHtml(href) +
     '">' +
     '<span class="project-row-icon" aria-hidden="true">' +
@@ -242,10 +230,6 @@ function buildProjectListItem(p) {
     '<span class="project-row-meta">' +
     escapeHtml(meta) +
     "</span>" +
-    (tags !== "" ? '<span class="project-row-tags">' + tags + "</span>" : "") +
-    "</span>" +
-    '<span class="project-row-aside">' +
-    '<span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>' +
     "</span>" +
     "</a>" +
     '<div class="project-row-actions">' +
@@ -268,6 +252,7 @@ function buildProjectListItem(p) {
     '">' +
     '<span class="material-symbols-outlined" aria-hidden="true">delete</span>' +
     "</button>" +
+    "</div>" +
     "</div>" +
     "</li>"
   );

@@ -1,0 +1,501 @@
+id,name,skill,experience,role,school,region,availability,teammate_requests
+1,Nathan Price,10,1,coach,Northwest HS,East,Wed;Fri,
+2,Nathan Young,5,6,coach,Parkview,West,Mon;Thu;Fri,
+3,Emery Owens,8,8,coach,Southeast HS,North,Tue,
+4,Chloe Santos,6,1,coach,Parkview,West,Mon,Emery Owens;Henry Graham
+5,Sienna Khan,3,2,coach,Northwest HS,South,Wed,Grace Turner;Lucas Okonkwo
+6,Morgan Hayes,8,1,coach,Southeast HS,West,Thu;Wed;Fri,Avery Santos;Ruby Blake
+7,Sage Walsh,5,3,coach,Southwest HS,West,Wed;Fri,
+8,Maya Reed,10,4,coach,Northeast HS,North,Thu;Tue,Ava Thomas;Mia Cruz
+9,Reese Ali,8,3,coach,Northwest HS,North,Fri,Elena Turner
+10,Felix Carter,7,7,coach,Northwest HS,North,Fri;Mon,Drew Perez;Cameron Foster
+11,Jade Jackson,2,1,coach,Summit,East,Mon,
+12,Morgan Lopez,2,6,coach,Summit,East,Wed,Jade Moore
+13,Sam Price,3,7,coach,Parkview,East,Wed,
+14,Chloe Price,10,6,coach,Oakridge,West,Wed,
+15,Drew Anderson,3,3,coach,Riverdale Prep,West,Mon;Thu;Fri,
+16,Lena Nelson,5,8,coach,Summit,South,Fri;Thu;Mon,
+17,Alex Young,9,3,coach,Parkview,West,Fri;Wed,Chloe Turner
+18,Daniel Thomas,5,5,coach,Lakeside,South,Wed;Fri,Hayden Zhang;Sky Fox
+19,Elena Turner,5,5,coach,Oakridge,North,Wed;Tue,Casey Khan;Lena Dixon
+20,Noah Young,5,3,coach,Southeast HS,North,Thu;Mon,
+21,Emery Ibrahim,8,7,keeper,Southwest HS,North,Thu,
+22,Ivy Brown,6,7,keeper,Central Academy,South,Thu;Wed;Fri,
+23,Noah Cole,1,2,keeper,Lakeside,West,Thu,Adrian Carter
+24,Lila Douglas,7,7,keeper,Summit,South,Tue;Thu;Fri,Clara Ng;Hayden Foster
+25,Theo Singh,4,4,keeper,Hillcrest,West,Tue,
+26,Taylor Ali,1,7,keeper,Summit,West,Fri,
+27,Lena Foster,7,6,keeper,Hillcrest,West,Thu;Tue,Sky Fox
+28,Avery Turner,5,4,keeper,Northeast HS,South,Wed;Mon;Fri,
+29,Maya Reed,2,7,keeper,Parkview,East,Thu;Tue;Wed,
+30,Morgan Thomas,6,6,keeper,Northeast HS,East,Wed;Thu;Fri,
+31,Ava Lopez,4,6,keeper,Parkview,South,Mon;Wed;Thu,
+32,Ruby Turner,2,6,keeper,Riverdale Prep,South,Thu;Tue;Mon,Lucas Okonkwo
+33,Rowan Singh,1,1,keeper,Central Academy,West,Tue;Thu,Sienna Carter
+34,Chloe Singh,5,6,keeper,Southwest HS,West,Mon;Fri;Wed,Jordan Jenkins;Priya Wu
+35,Lena Graham,2,6,keeper,Valley Forge,North,Wed;Mon;Thu,Drew Evans
+36,Ruby Fox,1,1,keeper,Lakeside,East,Wed,Nathan Young;Jordan Bennett
+37,Priya Perez,10,1,keeper,Riverdale Prep,North,Wed,Leo Douglas;Cruz Garcia
+38,Hayden Foster,7,5,keeper,Parkview,West,Wed;Thu,
+39,Ruby Price,10,6,keeper,Riverdale Prep,West,Mon;Thu,
+40,Isaac Rivera,7,6,keeper,Northeast HS,East,Thu;Wed;Fri,Sam Martinez;Julian Price
+41,Jade Singh,4,8,keeper,Southeast HS,East,Thu;Fri,
+42,Parker Bennett,1,2,keeper,Lakeside,North,Thu,
+43,Sage Okonkwo,7,1,keeper,Parkview,North,Mon,Julian Price
+44,Nathan Cruz,4,6,keeper,Lakeside,North,Thu;Tue,Blake Hassan
+45,Finley Bailey,3,8,keeper,Northeast HS,North,Wed;Tue,
+46,Priya Wu,2,1,keeper,Northwest HS,East,Mon;Tue;Fri,Zoe Brooks
+47,Parker Brown,7,1,keeper,Northwest HS,East,Mon,
+48,Jade Taylor,9,4,keeper,Northwest HS,North,Fri,
+49,Iris Abbott,3,1,keeper,Northeast HS,East,Fri,
+50,Julian Ellis,8,6,keeper,Northwest HS,North,Wed;Fri,Theo Murphy;Maya Reed
+51,Chloe Owens,6,3,keeper,Southwest HS,North,Wed;Tue,Leo Wilson
+52,Amara Santos,7,7,keeper,Riverdale Prep,South,Wed;Fri,
+53,Alex Wilson,7,4,keeper,Summit,West,Fri;Mon,
+54,Chloe Dixon,9,3,keeper,Southwest HS,East,Thu,Chloe Ali
+55,Jordan Jenkins,3,3,keeper,Lakeside,East,Tue,
+56,Isaac Blake,2,7,keeper,Riverdale Prep,East,Fri;Mon,
+57,Nora Wu,8,2,keeper,Southwest HS,North,Mon,
+58,Caleb Fox,6,6,keeper,Southwest HS,South,Wed,Lila Vargas;Julian Wu
+59,Sofia Evans,4,6,keeper,Summit,East,Thu;Wed,
+60,Sienna Cruz,10,3,keeper,Oakridge,North,Thu;Mon,Alex Vargas
+61,Noah Diaz,9,6,player,Central Academy,West,Thu;Tue,
+62,Marcus Brown,4,7,player,Parkview,North,Tue,
+63,Finley Brooks,10,1,player,Riverdale Prep,East,Mon,
+64,Theo Evans,3,6,player,Valley Forge,East,Tue;Wed,
+65,Maya Bennett,6,1,player,Central Academy,North,Mon;Tue,
+66,Isaac Reed,5,4,player,Northeast HS,West,Wed;Thu,
+67,Cameron Foster,2,4,player,Southwest HS,South,Wed;Tue,
+68,Ethan Nguyen,9,5,player,Lakeside,South,Fri,Reese Cole
+69,Elena Cruz,8,2,player,Central Academy,East,Tue;Mon,
+70,Ava Garcia,3,6,player,Southwest HS,South,Thu;Tue;Wed,Zoe Nguyen;Ivy Rivera
+71,Morgan Ali,3,3,player,Summit,East,Fri;Mon,
+72,Vera Turner,7,2,player,Hillcrest,North,Wed;Thu;Fri,
+73,Emery Graham,1,1,player,Valley Forge,South,Mon,
+74,Lena Bennett,7,8,player,Summit,West,Mon,Elena Hayes;Sienna Foster
+75,Grace Singh,4,2,player,Lakeside,North,Tue;Thu,
+76,Leo Ortiz,8,3,player,Riverdale Prep,East,Fri,
+77,Kai Khan,2,5,player,Hillcrest,South,Tue,
+78,Amara Ortiz,1,5,player,Southeast HS,East,Tue;Thu,
+79,Nora Hassan,5,6,player,Oakridge,West,Mon;Fri;Wed,
+80,Vera Young,10,1,player,Southeast HS,North,Thu;Mon;Wed,
+81,Theo Wu,8,3,player,Central Academy,South,Fri,
+82,Parker Evans,4,4,player,Northwest HS,East,Wed;Tue,
+83,Isaac Cruz,2,5,player,Southwest HS,North,Wed,
+84,Alex Moore,5,3,player,Hillcrest,North,Fri,
+85,Alex Cruz,10,1,player,Hillcrest,West,Mon;Tue;Fri,Isaac Singh
+86,Ivy Jackson,3,5,player,Summit,West,Tue;Mon,Kai Khan
+87,Chloe Douglas,1,8,player,Northwest HS,East,Tue;Thu,
+88,Elena Chen,8,7,player,Parkview,West,Wed;Fri;Thu,Owen Lopez
+89,Vera Jackson,9,2,player,Northwest HS,West,Fri,
+90,Avery Santos,3,2,player,Oakridge,West,Wed,Clara Wu;Iris Ortiz
+91,Nathan Moore,5,8,player,Northeast HS,South,Mon;Fri,
+92,Sienna Khan,7,8,player,Northeast HS,South,Fri;Tue,
+93,Aisha Khan,5,6,player,Hillcrest,South,Tue;Wed;Mon,Rowan Scott;Ivy Ali
+94,Alex Vargas,8,1,player,Central Academy,South,Mon;Thu;Wed,Cruz Douglas;Lena Nguyen
+95,Nora Taylor,9,7,player,Northwest HS,East,Fri,
+96,Nina Dixon,2,3,player,Riverdale Prep,East,Fri,Quinn Hayes
+97,Aisha Martinez,2,4,player,Parkview,West,Wed;Tue,Clara Martinez;Zoe Nguyen
+98,Noah Jenkins,3,2,player,Northeast HS,North,Wed;Thu,
+99,Chloe Owens,9,3,player,Summit,South,Fri;Tue,
+100,Blake Walsh,8,4,player,Hillcrest,West,Thu,Henry Ibrahim
+101,Zoe Brooks,1,8,player,Central Academy,North,Mon;Fri;Thu,
+102,Parker Turner,5,8,player,Northwest HS,South,Mon;Tue,Nathan Hughes;Chloe Dixon
+103,Grace Price,7,8,player,Riverdale Prep,South,Thu;Wed,
+104,Hayden Zhang,8,8,player,Southwest HS,South,Wed;Thu,Mia Bennett
+105,Sam Perez,4,7,player,Oakridge,West,Thu;Tue,
+106,Nathan Hughes,5,6,player,Northwest HS,East,Tue,
+107,Maya Young,10,7,player,Summit,South,Mon;Fri,
+108,Riley Diaz,6,5,player,Central Academy,South,Thu;Wed,Ava Bailey
+109,Adrian Graham,10,5,player,Riverdale Prep,North,Tue;Mon,Cruz Khan
+110,Parker Graham,6,8,player,Lakeside,South,Fri;Wed,
+111,Finley Quinn,3,5,player,Hillcrest,West,Fri;Mon,
+112,Marcus Price,1,4,player,Northeast HS,West,Fri;Wed,
+113,Zoe Hayes,2,8,player,Central Academy,West,Tue,
+114,Finley Martinez,5,1,player,Valley Forge,South,Thu;Tue;Fri,Theo Bennett;Kai Khan
+115,Leo Zhang,7,7,player,Southeast HS,South,Wed,
+116,Ava Diaz,4,8,player,Lakeside,North,Thu;Tue;Wed,
+117,Sienna Owens,6,1,player,Parkview,East,Mon,
+118,Aisha Walsh,2,5,player,Northwest HS,North,Fri,
+119,Taylor Foster,2,3,player,Summit,East,Fri;Thu,Leo Zhang
+120,Julian Okonkwo,4,5,player,Oakridge,South,Thu;Wed,
+121,Daniel Hughes,6,5,player,Valley Forge,North,Wed;Thu;Fri,
+122,Noah Kim,8,6,player,Northwest HS,West,Tue,Taylor Hassan
+123,Julian Price,1,2,player,Oakridge,North,Wed;Fri;Tue,
+124,Emery Reed,7,7,player,Southwest HS,South,Mon;Thu,
+125,Daniel Bailey,8,7,player,Parkview,South,Fri;Tue;Thu,
+126,Lena Vargas,8,1,player,Southeast HS,East,Tue,Ava Patel;Aisha Chen
+127,Morgan Reed,9,5,player,Hillcrest,South,Fri,Alex Moore;Daniel Bailey
+128,Morgan Ibrahim,6,7,player,Summit,North,Fri,Caleb Murphy
+129,Caleb Murphy,3,3,player,Oakridge,North,Mon;Wed;Tue,Priya Wu;Sienna Ali
+130,Daniel Diaz,1,5,player,Valley Forge,North,Mon,Mia Turner;Sienna Singh
+131,Drew Scott,3,7,player,Hillcrest,South,Tue;Wed,
+132,Emery Jackson,1,5,player,Central Academy,North,Tue,Nathan Park
+133,Amara Cole,1,2,player,Parkview,West,Tue,
+134,Mia Ibrahim,3,8,player,Riverdale Prep,West,Fri,
+135,Vera Nguyen,7,3,player,Southwest HS,South,Fri;Tue,
+136,Drew Fox,6,6,player,Valley Forge,East,Thu,
+137,Caleb Santos,4,7,player,Hillcrest,East,Tue,Sienna Khan
+138,Felix Young,4,5,player,Oakridge,West,Tue,Vera Scott
+139,Sofia Jordan,1,8,player,Parkview,West,Thu;Wed,
+140,Maya Dixon,8,6,player,Central Academy,North,Thu,
+141,Taylor Hassan,10,3,player,Northeast HS,East,Fri,Emery Abbott;Elena Hayes
+142,Mia Cruz,6,2,player,Valley Forge,South,Thu,
+143,Julian Evans,8,1,player,Southeast HS,South,Fri,Sam Perez
+144,Elena Reed,7,7,player,Central Academy,South,Thu;Fri,
+145,Sam Walsh,3,1,player,Southeast HS,East,Wed;Tue,
+146,Hayden Foster,2,1,player,Southeast HS,North,Fri;Wed;Tue,
+147,Priya Thomas,7,6,player,Oakridge,South,Mon,Jordan Bennett
+148,Cruz Nelson,1,6,player,Lakeside,West,Thu;Fri,Hayden Scott;Elena Turner
+149,Daniel Park,7,5,player,Southeast HS,East,Wed,
+150,Jamie Blake,9,5,player,Riverdale Prep,North,Wed,
+151,Elena Kim,10,5,player,Lakeside,East,Mon;Fri;Wed,
+152,Aisha Brooks,3,2,player,Parkview,East,Tue,
+153,Sky Vargas,1,3,player,Riverdale Prep,East,Fri;Mon;Wed,
+154,Daniel Abbott,3,3,player,Valley Forge,East,Mon,
+155,Isaac Santos,9,5,player,Lakeside,West,Tue;Mon;Wed,
+156,Finley Carter,2,7,player,Northeast HS,East,Wed,Sage Murphy
+157,Owen Walsh,8,1,player,Southeast HS,North,Wed;Thu;Tue,
+158,Ethan Santos,10,5,player,Oakridge,South,Wed;Fri,Grace Jackson
+159,Isaac Okonkwo,5,6,player,Hillcrest,North,Mon;Fri;Tue,
+160,Casey Rivera,8,4,player,Hillcrest,West,Wed;Mon,
+161,Marcus Khan,9,3,player,Northeast HS,West,Mon,
+162,Kai Khan,6,2,player,Riverdale Prep,East,Thu;Mon,Avery Walsh;Nathan Nelson
+163,Sam Martinez,6,1,player,Southwest HS,West,Fri;Mon;Wed,Ivy Jackson
+164,Ivy Walsh,3,5,player,Lakeside,East,Mon;Fri;Thu,Kai Perez
+165,Clara Wu,3,2,player,Central Academy,West,Thu;Mon;Tue,Owen Bailey
+166,Daniel Kim,7,6,player,Valley Forge,South,Fri,
+167,Aisha Reed,3,8,player,Northeast HS,South,Fri,Owen Lopez;Priya Perez
+168,Lucas Khan,2,7,player,Southeast HS,East,Mon;Tue,
+169,Avery Walsh,2,4,player,Riverdale Prep,North,Tue;Thu,
+170,Ivy Reed,6,4,player,Central Academy,East,Wed;Thu,
+171,Daniel Bennett,1,1,player,Northeast HS,West,Mon;Tue;Fri,
+172,Alex Fox,3,6,player,Lakeside,North,Fri;Thu,Quinn Anderson
+173,Maya Foster,3,3,player,Northeast HS,West,Thu;Mon;Fri,
+174,Theo Hayes,6,5,player,Oakridge,East,Fri;Thu;Wed,
+175,Ivy Abbott,5,8,player,Northeast HS,West,Thu;Wed,Morgan Scott
+176,Nora Khan,3,8,player,Summit,West,Fri;Wed;Tue,
+177,Henry Ellis,5,8,player,Oakridge,North,Mon;Tue;Wed,
+178,Caleb Walsh,6,4,player,Northeast HS,West,Tue,
+179,Adrian Bennett,5,5,player,Lakeside,East,Tue;Mon;Fri,
+180,Ivy Scott,9,1,player,Summit,West,Thu;Wed;Fri,
+181,Maya Cruz,2,4,player,Oakridge,West,Fri,
+182,Mia Bennett,5,2,player,Southeast HS,South,Wed;Fri,
+183,Hannah Ellis,10,5,player,Southeast HS,North,Mon;Wed;Fri,
+184,Aisha Thomas,7,8,player,Southwest HS,East,Wed;Fri,
+185,Nathan Ellis,10,8,player,Central Academy,North,Tue,Leo Zhang
+186,Felix Hughes,1,4,player,Oakridge,North,Tue,Ivy Ali
+187,Ava Thomas,3,1,player,Riverdale Prep,East,Wed,
+188,Diego Nguyen,2,3,player,Central Academy,South,Wed;Tue,
+189,Sienna Singh,4,7,player,Northeast HS,South,Mon;Tue,
+190,Ivy Anderson,8,8,player,Parkview,East,Fri;Wed,Isaac Bennett
+191,Sam Martinez,2,8,player,Oakridge,West,Thu;Wed;Fri,
+192,Zoe Nguyen,7,5,player,Riverdale Prep,West,Thu;Tue,
+193,Hayden Scott,3,2,player,Northwest HS,East,Mon;Tue;Thu,Nathan Carter;Theo Foster
+194,Jordan Bennett,1,3,player,Summit,East,Mon;Wed,Sam Park
+195,Lena Nguyen,9,2,player,Hillcrest,East,Tue;Mon;Wed,Reese Evans
+196,Nina Patel,6,8,player,Riverdale Prep,North,Mon,Vera Turner
+197,Finley Brown,4,6,player,Central Academy,South,Thu;Tue;Fri,Grace Price
+198,Priya Bennett,2,8,player,Central Academy,West,Thu;Wed,
+199,Amara Jordan,2,6,player,Central Academy,East,Tue;Fri,
+200,Diego Wilson,10,7,player,Summit,North,Wed;Thu;Tue,Morgan Lopez
+201,Aisha Lopez,9,2,player,Southwest HS,West,Mon,Caleb Fox
+202,Jamie Price,3,2,player,Valley Forge,East,Fri;Tue;Thu,
+203,Theo Murphy,9,4,player,Summit,North,Mon,
+204,Avery Taylor,7,1,player,Riverdale Prep,East,Thu;Wed,
+205,Vera Hughes,2,6,player,Hillcrest,South,Mon;Tue,Ava Patel;Isaac Diaz
+206,Sienna Carter,9,3,player,Central Academy,South,Fri,Vera Hughes
+207,Ruby Vargas,2,7,player,Riverdale Prep,North,Fri,
+208,Omar Martinez,5,4,player,Valley Forge,East,Fri,Mateo Bailey;Chloe Bennett
+209,Finley Abbott,9,1,player,Summit,North,Fri,
+210,Jamie Fox,7,3,player,Northwest HS,South,Fri;Tue;Wed,
+211,Kai Evans,8,1,player,Riverdale Prep,South,Fri,Cruz Garcia;Jamie Price
+212,Julian Evans,1,8,player,Summit,South,Wed,Ivy Hughes
+213,Cruz Khan,4,1,player,Hillcrest,West,Tue,Sienna Scott
+214,Vera Taylor,4,6,player,Northeast HS,West,Tue;Mon,
+215,Adrian Chen,7,5,player,Riverdale Prep,West,Thu;Tue,Casey Khan;Isaac Singh
+216,Cruz Khan,6,5,player,Northwest HS,West,Wed;Mon;Thu,Lucas Khan
+217,Casey Khan,1,1,player,Southwest HS,West,Fri;Wed;Mon,
+218,Julian Kim,3,7,player,Riverdale Prep,West,Thu;Wed,
+219,Theo Kim,4,3,player,Valley Forge,North,Tue;Fri,
+220,Vera Ellis,4,5,player,Southeast HS,North,Fri,Morgan Scott;Julian Santos
+221,Julian Wu,8,5,player,Southwest HS,West,Mon;Fri,
+222,Drew Brooks,10,2,player,Southeast HS,North,Fri;Wed,Casey Khan;Zoe Hayes
+223,Cruz Garcia,7,4,player,Southwest HS,West,Thu;Tue,Leo Nguyen;Jordan Okonkwo
+224,Jamie Zhang,9,1,player,Southeast HS,West,Fri;Tue,
+225,Avery Kim,5,6,player,Oakridge,East,Tue,
+226,Jordan Okonkwo,4,3,player,Hillcrest,West,Thu;Tue;Fri,Chloe Rivera
+227,Sofia Young,10,2,player,Southeast HS,East,Tue,
+228,Cruz Douglas,8,7,player,Riverdale Prep,East,Wed,Amara Cole
+229,Amara Fox,4,4,player,Northwest HS,North,Fri,
+230,Reese Chen,10,6,player,Northeast HS,South,Mon;Thu;Fri,
+231,Ivy Ali,9,8,player,Summit,South,Mon,
+232,Grace Douglas,7,7,player,Northwest HS,North,Fri;Mon;Tue,
+233,Diego Owens,3,6,player,Northwest HS,West,Mon;Wed,
+234,Blake Cruz,2,5,player,Hillcrest,South,Fri,
+235,Parker Evans,1,5,player,Valley Forge,West,Fri,
+236,Maya Owens,8,8,player,Northeast HS,East,Mon;Wed,
+237,Ivy Rivera,4,5,player,Oakridge,East,Thu;Wed;Mon,
+238,Clara Ng,6,5,player,Northeast HS,West,Fri,
+239,Diego Santos,10,6,player,Lakeside,West,Mon,Sofia Evans;Ava Diaz
+240,Marcus Anderson,10,3,player,Lakeside,East,Mon;Wed;Thu,
+241,Theo Brooks,3,3,player,Southwest HS,North,Fri;Wed;Thu,
+242,Rowan Anderson,10,1,player,Oakridge,South,Fri,
+243,Chloe Bennett,7,4,player,Northwest HS,South,Fri;Mon;Thu,
+244,Ivy Hughes,3,1,player,Southeast HS,South,Thu,
+245,Sky Hayes,9,8,player,Lakeside,North,Thu,Noah Jenkins
+246,Henry Cruz,9,3,player,Northeast HS,West,Thu,
+247,Morgan Singh,7,6,player,Summit,West,Mon,
+248,Caleb Carter,3,5,player,Hillcrest,East,Wed;Thu,
+249,Diego Brown,6,7,player,Riverdale Prep,East,Thu;Fri,
+250,Diego Chen,6,8,player,Valley Forge,South,Fri;Wed,Noah Okonkwo
+251,Cameron Scott,9,3,player,Central Academy,North,Wed,
+252,Leo Chen,6,2,player,Southwest HS,North,Thu,
+253,Drew Evans,4,7,player,Northwest HS,West,Thu;Wed;Mon,
+254,Quinn Cruz,7,2,player,Oakridge,North,Thu;Mon,Henry Walsh;Caleb Graham
+255,Ethan Bailey,4,8,player,Oakridge,North,Thu;Fri;Wed,
+256,Quinn Thomas,5,7,player,Central Academy,West,Thu;Tue,
+257,Morgan Bailey,5,5,player,Oakridge,West,Wed;Thu;Mon,
+258,Blake Park,5,3,player,Southeast HS,South,Thu,
+259,Lila Abbott,10,1,player,Valley Forge,South,Tue;Fri;Mon,
+260,Mateo Hughes,1,8,player,Oakridge,South,Mon;Thu;Fri,
+261,Morgan Scott,6,3,player,Northwest HS,South,Wed;Mon,Hayden Garcia
+262,Finley Graham,7,7,player,Hillcrest,West,Mon;Wed;Tue,Alex Moore
+263,Caleb Kim,3,1,player,Oakridge,East,Thu;Tue,
+264,Nora Scott,9,2,player,Summit,South,Thu,
+265,Avery Moore,10,5,player,Northeast HS,West,Mon;Thu,
+266,Daniel Reed,3,3,player,Northeast HS,East,Thu,
+267,Adrian Wilson,6,8,player,Central Academy,South,Thu;Mon,Drew Hassan;Owen Chen
+268,Ethan Hassan,6,2,player,Southeast HS,West,Thu,Mia Ibrahim
+269,Quinn Dixon,5,2,player,Northeast HS,North,Mon;Thu;Fri,
+270,Cruz Anderson,4,1,player,Northeast HS,West,Fri;Wed,
+271,Parker Cole,8,6,player,Lakeside,East,Fri;Wed,
+272,Sofia Jackson,8,8,player,Valley Forge,West,Fri;Thu;Mon,Hayden Garcia
+273,Henry Graham,4,7,player,Northeast HS,West,Wed;Fri,
+274,Mia Graham,7,3,player,Parkview,South,Fri,Taylor Foster;Ava Brooks
+275,Nina Rivera,1,6,player,Hillcrest,West,Wed;Thu,Sage Walsh
+276,Ruby Blake,2,4,player,Northeast HS,East,Fri;Thu,
+277,Caleb Graham,9,8,player,Hillcrest,South,Wed,Sofia Vargas;Nathan Carter
+278,Cruz Rivera,5,4,player,Hillcrest,South,Thu,Omar Ortiz
+279,Morgan Lopez,8,5,player,Lakeside,South,Mon;Thu,
+280,Henry Hassan,2,8,player,Valley Forge,East,Tue,Nora Wu
+281,Mia Thomas,2,5,player,Southwest HS,South,Mon,
+282,Nathan Turner,1,6,player,Parkview,East,Tue;Mon;Thu,
+283,Morgan Diaz,3,5,player,Southeast HS,South,Mon;Wed;Tue,
+284,Marcus Garcia,2,3,player,Northeast HS,West,Mon,Maya Owens
+285,Aisha Cole,7,8,player,Southwest HS,North,Mon,
+286,Sienna Murphy,9,8,player,Oakridge,East,Wed;Tue;Mon,
+287,Ava Brooks,9,3,player,Central Academy,South,Fri,Adrian Hassan
+288,Lucas Hughes,3,8,player,Southwest HS,East,Wed;Fri,
+289,Reese Cole,7,7,player,Valley Forge,South,Wed,Chloe Ng
+290,Isaac Singh,4,6,player,Southeast HS,South,Thu,
+291,Clara Blake,5,3,player,Central Academy,West,Thu;Tue;Fri,
+292,Nathan Young,10,4,player,Oakridge,South,Thu;Wed;Mon,
+293,Sienna Thomas,5,7,player,Summit,West,Fri,
+294,Clara Martinez,6,4,player,Valley Forge,West,Tue;Wed;Thu,Jordan Hughes;Nathan Ellis
+295,Rowan Ng,5,4,player,Central Academy,South,Wed;Tue;Mon,
+296,Leo Douglas,3,8,player,Oakridge,West,Mon;Fri,Maya Reed
+297,Owen Quinn,6,2,player,Southeast HS,East,Wed;Fri,
+298,Riley Price,4,3,player,Lakeside,West,Fri,
+299,Vera Scott,7,3,player,Northeast HS,North,Wed,
+300,Emery Owens,10,8,player,Oakridge,East,Wed;Fri,
+301,Theo Cruz,2,4,player,Northeast HS,North,Fri,
+302,Omar Evans,2,8,player,Parkview,West,Tue;Thu,
+303,Caleb Ali,9,7,player,Lakeside,West,Mon;Fri,
+304,Theo Foster,1,6,player,Lakeside,North,Wed;Fri;Mon,Alex Vargas
+305,Cruz Taylor,10,1,player,Southeast HS,South,Fri,
+306,Hayden Price,5,2,player,Oakridge,North,Thu;Fri;Mon,
+307,Adrian Thomas,9,1,player,Lakeside,South,Fri,
+308,Grace Blake,10,6,player,Riverdale Prep,South,Fri;Wed,
+309,Sofia Patel,2,3,player,Oakridge,West,Fri,
+310,Casey Santos,3,2,player,Central Academy,East,Mon,
+311,Quinn Hayes,9,7,player,Hillcrest,East,Tue,
+312,Rowan Taylor,3,3,player,Summit,North,Thu;Tue,
+313,Nina Thomas,8,3,player,Summit,West,Tue;Fri,Nathan Carter
+314,Clara Jordan,2,3,player,Hillcrest,East,Wed;Fri;Thu,Isaac Singh
+315,Isaac Brooks,9,2,player,Oakridge,East,Mon,Ethan Bailey
+316,Kai Perez,2,7,player,Riverdale Prep,East,Fri,
+317,Riley Kim,7,6,player,Southeast HS,East,Fri,
+318,Jade Young,4,6,player,Parkview,North,Thu,
+319,Lena Garcia,9,2,player,Lakeside,South,Wed,Henry Martinez;Nathan Young
+320,Marcus Jordan,10,6,player,Summit,South,Mon;Tue,Ruby Blake
+321,Rowan Owens,6,7,player,Summit,North,Thu,Grace Douglas;Julian Okonkwo
+322,Drew Graham,7,4,player,Hillcrest,East,Tue;Wed,
+323,Jamie Singh,6,2,player,Riverdale Prep,West,Tue;Fri,
+324,Nathan Carter,5,3,player,Summit,West,Thu,
+325,Hayden Garcia,1,5,player,Hillcrest,West,Tue;Mon;Fri,
+326,Lila Vargas,3,7,player,Parkview,West,Fri;Wed;Mon,
+327,Leo Nguyen,3,7,player,Hillcrest,West,Tue;Wed,Zoe Brooks;Priya Perez
+328,Morgan Kim,3,2,player,Hillcrest,South,Tue;Mon,
+329,Adrian Hassan,9,5,player,Hillcrest,East,Thu;Wed,Casey Santos
+330,Sienna Singh,8,2,player,Southeast HS,West,Fri,
+331,Mateo Bailey,6,3,player,Northwest HS,East,Fri,Lena Vargas
+332,Daniel Graham,7,2,player,Parkview,East,Fri;Wed;Mon,
+333,Diego Singh,10,6,player,Parkview,East,Fri;Thu;Tue,Sky Fox;Henry Hassan
+334,Diego Vargas,6,6,player,Lakeside,West,Tue;Mon,
+335,Jade Brooks,10,1,player,Central Academy,West,Wed;Mon;Thu,
+336,Henry Martinez,5,1,player,Parkview,East,Tue;Mon;Thu,
+337,Jade Brown,3,6,player,Hillcrest,North,Fri;Tue;Wed,Quinn Dixon
+338,Sienna Diaz,1,3,player,Southeast HS,East,Tue;Mon,Leo Chen;Sage Walsh
+339,Nathan Cruz,6,8,player,Parkview,West,Fri;Wed,Iris Abbott;Adrian Hassan
+340,Lucas Vargas,8,1,player,Summit,West,Wed;Tue,
+341,Vera Scott,9,7,player,Valley Forge,North,Tue;Mon;Wed,
+342,Chloe Turner,3,2,player,Northwest HS,East,Mon;Fri;Wed,
+343,Noah Okonkwo,7,7,player,Riverdale Prep,North,Fri,Amara Ortiz
+344,Finley Martinez,10,5,player,Northwest HS,South,Wed;Mon,Finley Martinez
+345,Morgan Chen,1,2,player,Hillcrest,South,Mon,
+346,Lucas Okonkwo,5,4,player,Southwest HS,East,Thu;Wed,
+347,Aisha Owens,9,7,player,Summit,West,Tue;Wed,
+348,Isaac Bennett,6,5,player,Summit,West,Thu;Fri,
+349,Zoe Quinn,6,4,player,Lakeside,East,Thu,Casey Santos;Marcus Moore
+350,Henry Walsh,3,7,player,Parkview,West,Mon;Tue;Thu,Lucas Wilson
+351,Daniel Jordan,3,7,player,Riverdale Prep,North,Thu;Fri,
+352,Hannah Brown,2,1,player,Valley Forge,South,Mon;Fri;Thu,
+353,Diego Nguyen,2,6,player,Central Academy,South,Fri;Tue,
+354,Lena Dixon,7,5,player,Northwest HS,West,Tue;Fri,Isaac Moore
+355,Lena Ali,5,2,player,Riverdale Prep,East,Mon,
+356,Blake Price,4,3,player,Southeast HS,North,Thu;Fri;Mon,
+357,Isaac Diaz,3,5,player,Southwest HS,West,Thu,
+358,Sienna Foster,8,7,player,Parkview,East,Wed,
+359,Clara Jenkins,4,5,player,Hillcrest,North,Tue;Wed,Morgan Ibrahim
+360,Mia Turner,3,6,player,Valley Forge,West,Thu;Fri;Tue,Isaac Blake;Riley Hassan
+361,Omar Foster,8,8,player,Central Academy,South,Tue;Wed;Mon,Nora Scott;Jordan Okonkwo
+362,Maya Lopez,2,1,player,Northwest HS,East,Fri,
+363,Julian Quinn,6,6,player,Southeast HS,East,Wed;Mon,
+364,Ruby Foster,3,2,player,Summit,South,Thu;Fri;Mon,
+365,Sky Zhang,9,4,player,Riverdale Prep,North,Fri,Ruby Foster
+366,Daniel Okonkwo,3,4,player,Southeast HS,South,Mon,
+367,Diego Santos,1,7,player,Southeast HS,West,Tue,Daniel Reed
+368,Jamie Lopez,9,8,player,Lakeside,South,Wed,
+369,Vera Ibrahim,8,1,player,Parkview,East,Wed,Noah Diaz
+370,Sam Fox,2,8,player,Central Academy,West,Wed,Diego Santos;Mia Okonkwo
+371,Ava Patel,10,3,player,Hillcrest,East,Thu,Priya Wu
+372,Morgan Vargas,6,1,player,Hillcrest,West,Wed;Tue;Fri,
+373,Lucas Graham,10,1,player,Valley Forge,West,Wed;Fri;Tue,
+374,Julian Vargas,3,5,player,Southeast HS,West,Wed;Tue,
+375,Sky Ellis,10,3,player,Lakeside,North,Mon;Tue,
+376,Jade Reed,8,4,player,Parkview,West,Wed,
+377,Rowan Scott,7,1,player,Summit,South,Mon,Sienna Owens
+378,Priya Hayes,3,2,player,Valley Forge,North,Wed;Thu;Mon,
+379,Henry Ibrahim,5,2,player,Lakeside,North,Thu;Wed,
+380,Cruz Cruz,10,6,player,Oakridge,East,Wed;Fri,Priya Bennett;Quinn Dixon
+381,Nina Graham,4,6,player,Southwest HS,West,Thu;Wed,Emery Graham;Iris Abbott
+382,Priya Cole,7,7,player,Hillcrest,East,Tue;Fri;Wed,
+383,Drew Perez,8,6,player,Hillcrest,South,Tue;Thu;Mon,
+384,Ivy Nelson,10,5,player,Southeast HS,North,Mon;Fri,Vera Turner;Diego Owens
+385,Leo Wilson,7,5,player,Central Academy,North,Thu,
+386,Mateo Evans,3,2,player,Southeast HS,South,Fri;Wed;Mon,
+387,Vera Cruz,10,3,player,Oakridge,West,Wed;Thu;Fri,Julian Kim;Ruby Fox
+388,Owen Fox,10,2,player,Northwest HS,East,Tue;Mon,Finley Martinez;Morgan Lopez
+389,Priya Perez,3,3,player,Southeast HS,East,Fri;Tue,
+390,Sienna Park,7,3,player,Central Academy,North,Thu;Fri,
+391,Grace Ibrahim,6,8,player,Summit,North,Thu,Riley Kim;Kai Lee
+392,Aisha Chen,1,6,player,Northwest HS,East,Tue,
+393,Nora Cole,8,3,player,Oakridge,South,Tue;Fri,
+394,Drew Hassan,7,4,player,Hillcrest,North,Thu;Wed;Mon,Blake Hassan;Daniel Graham
+395,Jamie Brooks,8,6,player,Northwest HS,South,Mon,Avery Taylor
+396,Drew Lopez,9,3,player,Parkview,South,Wed;Thu;Tue,Chloe Price;Isaac Reed
+397,Owen Lopez,5,5,player,Riverdale Prep,South,Wed;Fri,
+398,Diego Kim,4,7,player,Southeast HS,West,Mon;Wed,Mia Cruz;Ruby Price
+399,Sofia Vargas,1,3,player,Southeast HS,North,Tue;Mon;Wed,
+400,Jamie Ellis,9,6,player,Southeast HS,North,Wed;Fri,
+401,Owen Bailey,8,6,player,Northeast HS,South,Tue,Aisha Cole;Isaac Rivera
+402,Emery Abbott,8,2,player,Hillcrest,West,Wed;Fri,
+403,Sofia Okonkwo,1,2,player,Northwest HS,South,Fri,
+404,Caleb Quinn,1,2,player,Hillcrest,East,Fri,Daniel Jordan;Jamie Blake
+405,Riley Hassan,3,5,player,Summit,South,Thu,
+406,Ethan Thomas,6,2,player,Oakridge,East,Tue;Wed;Mon,Clara Jordan
+407,Felix Anderson,9,3,player,Parkview,South,Fri;Thu,Theo Cruz;Jade Brown
+408,Ava Ellis,7,5,player,Oakridge,East,Mon,
+409,Owen Chen,10,8,player,Oakridge,East,Wed;Thu;Mon,Amara Cole
+410,Julian Bennett,10,2,player,Northeast HS,South,Fri,
+411,Henry Vargas,3,5,player,Riverdale Prep,East,Thu,Ivy Dixon
+412,Reese Evans,9,1,player,Riverdale Prep,South,Thu;Mon,
+413,Adrian Singh,10,3,player,Hillcrest,East,Tue,
+414,Iris Foster,9,1,player,Northeast HS,East,Fri;Tue;Wed,Jade Young
+415,Jordan Hughes,6,3,player,Hillcrest,East,Tue;Wed,Ivy Jackson
+416,Cruz Turner,1,5,player,Lakeside,West,Thu;Fri,Sky Hayes;Morgan Hayes
+417,Felix Ibrahim,9,1,player,Lakeside,North,Wed,Nora Scott;Theo Bennett
+418,Daniel Jordan,7,7,player,Lakeside,North,Wed;Thu;Fri,
+419,Mia Perez,5,7,player,Northwest HS,West,Thu;Fri,Reese Carter;Clara Blake
+420,Cruz Garcia,3,1,player,Central Academy,East,Mon;Thu,
+421,Priya Rivera,6,2,player,Summit,South,Mon;Tue;Wed,
+422,Aisha Reed,10,2,player,Southwest HS,North,Mon,
+423,Nathan Nelson,1,3,player,Northwest HS,West,Fri;Wed,Sienna Scott
+424,Casey Patel,8,4,player,Southeast HS,South,Mon,
+425,Sofia Hughes,4,7,player,Central Academy,West,Mon;Thu,
+426,Iris Ortiz,9,1,player,Northeast HS,North,Mon;Thu;Wed,
+427,Sage Murphy,2,1,player,Lakeside,East,Wed;Fri;Tue,Isaac Santos
+428,Sienna Ali,6,1,player,Summit,West,Wed;Mon;Tue,Jade Brooks;Priya Bennett
+429,Sky Fox,6,6,player,Central Academy,West,Fri,
+430,Ethan Kim,10,6,player,Southeast HS,East,Tue;Mon,
+431,Sage Okonkwo,2,8,player,Hillcrest,North,Mon,
+432,Alex Hassan,5,8,player,Riverdale Prep,South,Thu;Fri,
+433,Drew Thomas,4,8,player,Riverdale Prep,West,Mon,
+434,Owen Wu,1,2,player,Summit,North,Mon;Tue;Thu,Theo Hayes
+435,Owen Lopez,2,2,player,Summit,East,Tue;Wed;Thu,
+436,Chloe Ellis,2,8,player,Northeast HS,East,Mon;Fri;Tue,Vera Scott
+437,Sofia Singh,8,7,player,Northwest HS,East,Thu;Wed,
+438,Chloe Ali,8,7,player,Central Academy,South,Wed,
+439,Casey Hayes,9,5,player,Lakeside,East,Mon,
+440,Ava Bailey,3,5,player,Riverdale Prep,North,Fri;Wed;Thu,
+441,Mia Okonkwo,10,4,player,Parkview,South,Fri;Wed,
+442,Cruz Hughes,2,6,player,Southeast HS,East,Mon,
+443,Sky Evans,4,5,player,Parkview,North,Tue;Thu;Wed,Sofia Okonkwo
+444,Finley Moore,5,6,player,Oakridge,East,Wed;Fri;Mon,Priya Wu;Finley Brown
+445,Maya Rivera,10,1,player,Oakridge,South,Tue;Thu,
+446,Kai Zhang,6,3,player,Lakeside,South,Mon;Fri,
+447,Ava Ellis,8,8,player,Summit,West,Tue;Mon;Fri,Cruz Douglas
+448,Blake Chen,2,5,player,Northwest HS,East,Mon,
+449,Taylor Rivera,10,5,player,Riverdale Prep,West,Fri;Tue,
+450,Nathan Park,4,4,player,Northwest HS,North,Fri;Thu,Diego Santos
+451,Daniel Hayes,9,1,player,Northwest HS,East,Wed;Tue,Isaac Santos;Drew Scott
+452,Grace Jackson,2,7,player,Summit,South,Tue;Thu;Fri,Theo Foster;Isaac Cruz
+453,Kai Lee,4,5,player,Southwest HS,East,Mon,
+454,Julian Santos,3,6,player,Southwest HS,North,Mon;Tue,Noah Jenkins;Lena Ali
+455,Isaac Cole,5,1,player,Southwest HS,West,Fri;Thu,
+456,Lila Cole,5,8,player,Southeast HS,South,Tue,
+457,Lila Perez,7,5,player,Central Academy,West,Fri;Wed,
+458,Diego Rivera,5,7,player,Northwest HS,West,Tue;Mon,Maya Young
+459,Ivy Dixon,1,7,player,Hillcrest,East,Mon;Thu;Wed,Grace Douglas;Henry Martinez
+460,Reese Carter,9,7,player,Riverdale Prep,West,Fri;Wed,
+461,Lucas Wilson,5,8,player,Lakeside,East,Mon;Fri;Thu,
+462,Kai Lee,10,2,player,Hillcrest,West,Tue;Wed;Mon,Aisha Chen;Felix Hughes
+463,Jordan Singh,3,7,player,Lakeside,East,Thu,
+464,Drew Perez,2,2,player,Southwest HS,North,Thu,Caleb Kim;Sky Evans
+465,Henry Hayes,3,4,player,Oakridge,West,Wed;Thu;Tue,Nathan Cruz;Theo Brooks
+466,Lena Young,7,7,player,Southwest HS,South,Wed;Tue,
+467,Adrian Carter,1,4,player,Lakeside,East,Thu;Wed,
+468,Hannah Fox,8,8,player,Summit,North,Mon,
+469,Sofia Wu,3,7,player,Parkview,North,Fri;Mon,
+470,Zoe Vargas,7,8,player,Central Academy,North,Fri;Thu,
+471,Elena Hayes,10,2,player,Oakridge,West,Fri;Tue,
+472,Omar Ortiz,9,4,player,Parkview,North,Mon;Fri;Wed,
+473,Elena Wilson,3,3,player,Parkview,East,Mon;Thu,
+474,Blake Hassan,6,1,player,Central Academy,North,Tue,Jordan Bennett;Elena Chen
+475,Diego Graham,10,3,player,Parkview,West,Wed;Fri,
+476,Julian Jackson,4,1,player,Northwest HS,West,Wed;Fri,Aisha Martinez;Jordan Singh
+477,Nathan Cruz,6,5,player,Oakridge,West,Tue,Caleb Kim
+478,Nathan Hayes,1,2,player,Hillcrest,North,Thu;Fri;Tue,
+479,Morgan Nguyen,8,7,player,Summit,East,Thu,Elena Wilson;Owen Chen
+480,Quinn Anderson,5,2,player,Summit,North,Fri;Tue,Maya Bennett;Cruz Nelson
+481,Chloe Ng,2,6,player,Northwest HS,South,Tue;Mon;Wed,Adrian Carter
+482,Felix Brooks,5,6,player,Parkview,West,Fri;Mon,Drew Anderson
+483,Theo Bennett,8,5,player,Summit,South,Mon;Fri;Tue,
+484,Sam Khan,2,7,player,Northeast HS,West,Tue;Thu,Blake Price
+485,Chloe Rivera,3,5,player,Summit,South,Wed,Kai Lee;Blake Price
+486,Grace Turner,10,6,player,Northeast HS,South,Wed;Tue;Fri,
+487,Chloe Nelson,1,6,player,Northwest HS,East,Thu;Wed;Fri,
+488,Sam Park,10,6,player,Lakeside,East,Fri,
+489,Zoe Nguyen,6,4,player,Central Academy,West,Fri,
+490,Jade Moore,4,7,player,Parkview,North,Fri,Caleb Carter;Sam Park
+491,Clara Taylor,10,1,player,Valley Forge,North,Fri;Thu,Theo Kim
+492,Marcus Moore,3,5,player,Northwest HS,North,Fri;Mon,
+493,Daniel Hughes,4,6,player,Summit,South,Fri;Wed,
+494,Diego Dixon,9,6,player,Riverdale Prep,South,Wed;Fri;Thu,Riley Kim
+495,Caleb Patel,3,1,player,Northeast HS,South,Mon;Tue;Fri,
+496,Sienna Scott,10,8,player,Parkview,North,Tue;Mon;Wed,
+497,Isaac Moore,9,5,player,Northwest HS,South,Wed;Mon,Emery Owens;Maya Young
+498,Kai Reed,4,3,player,Riverdale Prep,East,Thu;Mon;Fri,
+499,Quinn Ali,2,2,player,Southeast HS,West,Thu;Tue;Fri,Maya Rivera;Iris Ortiz
+500,Avery Garcia,7,8,player,Parkview,South,Tue,
