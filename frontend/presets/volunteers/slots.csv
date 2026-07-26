@@ -1,0 +1,7 @@
+slot_id,name,min_size,max_size,needed_strengths,time_block
+r1,Front Gate,2,3,check-in;crowd,Sat AM
+r2,Info Desk,1,2,check-in,Sat AM
+r3,Tech Booth,1,2,tech;stage,Sat AM
+r4,First Aid Tent,1,2,first-aid,Sat PM
+r5,Food Line,2,3,food;crowd,Sat PM
+r6,Stage Crew,2,2,stage;setup,Sat PM
