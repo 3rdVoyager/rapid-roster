@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Sign in to RapidRoster with an email link. No password."
+      content="RapidRoster accounts are coming soon. Use the app locally in this browser for now."
     />
-    <title>Sign in — RapidRoster</title>
+    <title>Accounts — RapidRoster</title>
     <link rel="icon" href="/assets/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
@@ -49,33 +49,21 @@
         <a class="button button-tertiary" href="/examples/">Examples</a>
         <a class="button button-tertiary" href="/docs/">Docs</a>
         <a class="button button-tertiary" href="/faq/">FAQ</a>
-        <a class="button button-primary" href="/get-started/">Get started</a>
+        <a class="button button-primary" href="/app/">Open App</a>
       </nav>
     </header>
 
     <main>
       <section class="sign-in" aria-labelledby="sign-in-heading">
-        <h1 id="sign-in-heading">Sign in</h1>
+        <h1 id="sign-in-heading">Accounts coming soon</h1>
         <p class="sign-in-lead">
-          We'll email you a private sign-in link. No password.
+          Cloud accounts and sync are not available yet. You can use RapidRoster
+          locally in this browser — projects save on this device.
         </p>
 
-        <form class="sign-in-form" action="/api/auth/request-link" method="post">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autocomplete="email"
-            required
-            placeholder="you@example.com"
-          />
-          <button class="button button-primary" type="submit">
-            Email me a link
-          </button>
-        </form>
-
-        <p class="sign-in-status" hidden aria-live="polite"></p>
+        <p class="sign-in-cta">
+          <a class="button button-primary" href="/app/">Open App</a>
+        </p>
       </section>
     </main>
 
@@ -126,8 +114,7 @@
           <div class="site-footer-col">
             <h2>Product</h2>
             <ul>
-              <li><a href="/get-started/">Get started</a></li>
-              <li><a href="/sign-in/">Sign in</a></li>
+              <li><a href="/app/">Open App</a></li>
               <li><a href="/how-it-works/">How it works</a></li>
               <li><a href="/examples/">Examples</a></li>
             </ul>
@@ -157,6 +144,5 @@
     </footer>
 
     <script type="module" src="/js/site-nav.js"></script>
-    <script type="module" src="/js/sign-in.js"></script>
   </body>
 </html>

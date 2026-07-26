@@ -2,7 +2,7 @@
  * POST /api/auth/request-link
  *
  * Upsert user by email, create a short-lived token, email the magic link
- * (or log it when EMAIL_API_KEY is not configured).
+ * (or log it when Cloudflare Email Sending is not configured).
  */
 import {
   errorJson,
@@ -13,6 +13,7 @@ import {
   readEmailFromBody
 } from "../../_lib/http.js";
 import { AUTH_TOKEN_TTL_MS } from "../../_lib/auth.js";
+import { sendMagicLinkEmail } from "../../_lib/email.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -62,7 +63,7 @@ export async function onRequestPost(context) {
   const origin = getAppOrigin(request, env);
   const magicUrl = origin + "/api/auth/verify?token=" + encodeURIComponent(token);
 
-  const emailed = await maybeSendMagicLink(env, email, magicUrl);
+  const emailed = await sendMagicLinkEmail(env, email, magicUrl);
 
   if (emailed === false) {
     // Dev mode: link appears in Wrangler / Pages Function logs.
@@ -107,35 +108,4 @@ function getAppOrigin(request, env) {
     return env.APP_ORIGIN.replace(/\/$/, "");
   }
   return new URL(request.url).origin;
-}
-
-/**
- * Optional email send. Returns true when a provider was used.
- * Without EMAIL_API_KEY we only log (dev mode).
- *
- * @param {Record<string, unknown>} env
- * @param {string} email
- * @param {string} magicUrl
- * @returns {Promise<boolean>}
- */
-async function maybeSendMagicLink(env, email, magicUrl) {
-  const apiKey = env.EMAIL_API_KEY;
-  if (typeof apiKey !== "string" || apiKey.trim() === "") {
-    return false;
-  }
-
-  // Placeholder for a real provider (Resend / Mailchannels / etc.).
-  // Keep fail-open for MVP: if send fails, still log the link.
-  try {
-    console.log(
-      "[auth] EMAIL_API_KEY is set but no provider is wired yet. Link for " +
-        email +
-        ": " +
-        magicUrl
-    );
-  } catch (error) {
-    console.error("[auth] email send failed", error);
-  }
-
-  return false;
 }

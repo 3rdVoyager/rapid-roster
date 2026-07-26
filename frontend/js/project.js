@@ -67,16 +67,8 @@ import {
   loadLocalProjectById,
   createEmptyProject,
   serializeProjectFile,
-  parseProjectFile,
-  setCloudSynced,
-  getLastCloudSync,
-  ensureAuthCache,
-  canCreateLocalProject,
-  MAX_LOCAL_PROJECTS
+  parseProjectFile
 } from "/js/state.js";
-
-import { fetchCloudProject } from "/js/api.js";
-import { wireAccountMenu } from "/js/account.js";
 
 import {
   buildLegalConfig,
@@ -134,21 +126,13 @@ let presetModalForNewProject = false;
  * Page startup.
  */
 async function main() {
-  await wireAccountMenu();
-
   const params = new URLSearchParams(window.location.search);
   const projectId = params.get("id");
   const isNewProject = params.get("new") === "1";
   let project = null;
 
   if (projectId !== null && projectId !== "") {
-    const auth = await ensureAuthCache();
-    if (auth !== false && auth !== null) {
-      project = await openCloudProject(projectId);
-    }
-    if (project === null) {
-      project = loadLocalProjectById(projectId);
-    }
+    project = loadLocalProjectById(projectId);
   }
 
   if (project === null) {
@@ -156,15 +140,8 @@ async function main() {
   }
 
   if (project === null) {
-    const auth = await ensureAuthCache();
-    if (auth === false && canCreateLocalProject() === false) {
-      window.location.href = "/app/";
-      return;
-    }
-
     project = createEmptyProject("Untitled project");
     setProject(project);
-    setCloudSynced(false);
     setDirty(false);
   } else {
     setProject(project);
@@ -194,41 +171,6 @@ function clearNewProjectQueryParam() {
   url.searchParams.delete("new");
   const next = url.pathname + url.search + url.hash;
   window.history.replaceState({}, "", next);
-}
-
-/**
- * Fetch a cloud project, cache it locally, and return it.
- * On failure (offline / 401 / 404), fall back to local cache if ids match.
- *
- * @param {string} cloudId
- * @returns {Promise<Object|null>}
- */
-async function openCloudProject(cloudId) {
-  try {
-    const data = await fetchCloudProject(cloudId);
-    const project = data.project || null;
-
-    if (project === null) {
-      return null;
-    }
-
-    project.id = data.id || cloudId;
-    if (typeof data.name === "string" && data.name !== "") {
-      project.name = data.name;
-    }
-    project.cloudSynced = true;
-    setProject(project);
-    setCloudSynced(true);
-    saveProject();
-    return project;
-  } catch (error) {
-    console.warn("Could not open cloud project; trying local cache.", error);
-    const local = loadProject();
-    if (local !== null && local.id === cloudId) {
-      return local;
-    }
-    return null;
-  }
 }
 
 /**
@@ -269,17 +211,8 @@ function renderHeader(project) {
       saveStateEl.textContent = "Unsaved";
       saveStateEl.setAttribute("data-state", "unsaved");
     } else {
-      const cloud = getLastCloudSync();
-      if (cloud === "failed") {
-        saveStateEl.textContent = "Saved locally · Cloud sync failed";
-        saveStateEl.setAttribute("data-state", "cloud-failed");
-      } else if (cloud === "ok") {
-        saveStateEl.textContent = "Saved";
-        saveStateEl.setAttribute("data-state", "saved");
-      } else {
-        saveStateEl.textContent = "Saved";
-        saveStateEl.setAttribute("data-state", "saved");
-      }
+      saveStateEl.textContent = "Saved";
+      saveStateEl.setAttribute("data-state", "saved");
     }
   }
 }
@@ -1815,9 +1748,7 @@ async function onImportProjectFileChange(event) {
     const saved = saveProject();
     if (saved === false) {
       window.alert(
-        "Could not save this import locally. This browser allows up to " +
-          String(MAX_LOCAL_PROJECTS) +
-          " projects — sign in for cloud saves, or delete one under Projects."
+        "Could not save this import in this browser. Check storage space, or delete a project under Projects."
       );
     }
     setDirty(saved === false);
@@ -3133,8 +3064,6 @@ async function onLoadPresetApply() {
   }
 
   try {
-    const wasCloudSynced =
-      current !== null && current.cloudSynced === true;
     const keepId = current !== null ? current.id : null;
 
     const project = await buildProjectFromPreset(presetId, keepName);
@@ -3142,10 +3071,8 @@ async function onLoadPresetApply() {
     if (keepId !== null) {
       project.id = keepId;
     }
-    project.cloudSynced = wasCloudSynced === true;
 
     setProject(project);
-    setCloudSynced(wasCloudSynced === true);
     markProjectChanged();
     renderAll();
     if (statusEl !== null) {

@@ -1,9 +1,7 @@
 /**
  * dashboard.js
  *
- * Project list page (/app/):
- *   - Signed out: multi-project local library (capped)
- *   - Signed in: list/create/open/delete cloud projects from D1
+ * Project list page (/app/): local multi-project library in this browser.
  *
  * Preset packs are chosen in the project workspace after create (?new=1).
  */
@@ -12,35 +10,17 @@ import {
   createEmptyProject,
   setProject,
   saveProject,
-  loadProject,
-  setCloudSynced,
-  clearSavedProject,
   listLocalProjects,
-  deleteLocalProject,
-  canCreateLocalProject,
-  getLocalProjectCount,
-  MAX_LOCAL_PROJECTS
+  deleteLocalProject
 } from "/js/state.js";
 
-import {
-  listProjects,
-  createCloudProject,
-  deleteCloudProject
-} from "/js/api.js";
-
-import { wireAccountMenu } from "/js/account.js";
-
-/** @type {{ id: string, email: string }|null} */
-let currentUser = null;
-
 async function main() {
-  currentUser = await wireAccountMenu();
   wireNewProjectModal();
   wireProjectListClicks();
-  await renderProjectList();
+  renderProjectList();
 }
 
-async function renderProjectList() {
+function renderProjectList() {
   const listEl = document.getElementById("project-list");
   const noteEl = document.querySelector(".dashboard-note");
 
@@ -48,90 +28,24 @@ async function renderProjectList() {
     return;
   }
 
-  const storageEl = document.getElementById("dashboard-storage");
-
-  if (currentUser === null) {
-    renderLocalList(listEl);
-    const count = getLocalProjectCount();
-    if (storageEl !== null) {
-      storageEl.hidden = false;
-      storageEl.innerHTML =
-        "<strong>" +
-        String(count) +
-        " / " +
-        String(MAX_LOCAL_PROJECTS) +
-        "</strong>" +
-        "<span>local projects in this browser</span>" +
-        '<a href="/sign-in/">Sign in to get more storage</a>';
-    }
-    if (noteEl !== null) {
-      noteEl.hidden = true;
-      noteEl.textContent = "";
-    }
-    return;
-  }
-
-  if (storageEl !== null) {
-    storageEl.hidden = true;
-    storageEl.innerHTML = "";
-  }
-
   if (noteEl !== null) {
     noteEl.hidden = false;
     noteEl.textContent =
-      "Signed in as " +
-      currentUser.email +
-      ". Projects sync to the cloud.";
+      "Projects save in this browser on this device.";
   }
 
-  listEl.innerHTML =
-    '<li class="project-list-status">Loading projects…</li>';
-
-  try {
-    const projects = await listProjects();
-    if (projects.length === 0) {
-      listEl.innerHTML =
-        '<li class="project-list-status">No cloud projects yet. Create one to get started.</li>';
-      return;
-    }
-
-    let html = "";
-    for (let i = 0; i < projects.length; i = i + 1) {
-      const p = projects[i];
-      html =
-        html +
-        buildProjectListItem({
-          href: "/app/project/?id=" + encodeURIComponent(p.id),
-          name: p.name,
-          meta: "Updated " + formatUpdated(p.updated_at),
-          deleteId: p.id,
-          deleteKind: "cloud"
-        });
-    }
-    listEl.innerHTML = html;
-  } catch (error) {
-    console.error(error);
-    listEl.innerHTML =
-      '<li class="project-list-status">Could not load cloud projects. Showing local library.</li>';
-    renderLocalList(listEl, true);
-  }
+  renderLocalList(listEl);
 }
 
 /**
  * @param {HTMLElement} listEl
- * @param {boolean} [append]
  */
-function renderLocalList(listEl, append) {
+function renderLocalList(listEl) {
   const projects = listLocalProjects();
 
   if (projects.length === 0) {
-    const empty =
-      '<li class="project-list-status">No local projects yet. Create one to get started.</li>';
-    if (append === true) {
-      listEl.innerHTML = listEl.innerHTML + empty;
-    } else {
-      listEl.innerHTML = empty;
-    }
+    listEl.innerHTML =
+      '<li class="project-list-status">No projects yet. Create one to get started.</li>';
     return;
   }
 
@@ -148,20 +62,15 @@ function renderLocalList(listEl, append) {
         href: "/app/project/?id=" + encodeURIComponent(p.id),
         name: p.name || "Untitled project",
         meta: meta,
-        deleteId: p.id,
-        deleteKind: "local"
+        deleteId: p.id
       });
   }
 
-  if (append === true) {
-    listEl.innerHTML = listEl.innerHTML + html;
-  } else {
-    listEl.innerHTML = html;
-  }
+  listEl.innerHTML = html;
 }
 
 /**
- * @param {{ href: string, name: string, meta: string, deleteId: string, deleteKind: string }} opts
+ * @param {{ href: string, name: string, meta: string, deleteId: string }} opts
  * @returns {string}
  */
 function buildProjectListItem(opts) {
@@ -189,8 +98,6 @@ function buildProjectListItem(opts) {
     escapeHtml(opts.name) +
     '" title="Delete" data-delete-id="' +
     escapeHtml(opts.deleteId) +
-    '" data-delete-kind="' +
-    escapeHtml(opts.deleteKind) +
     '" data-delete-name="' +
     escapeHtml(opts.name) +
     '">' +
@@ -206,7 +113,7 @@ function wireProjectListClicks() {
     return;
   }
 
-  listEl.addEventListener("click", async function (event) {
+  listEl.addEventListener("click", function (event) {
     const btn = event.target.closest(".project-delete-btn");
     if (btn === null) {
       return;
@@ -215,7 +122,6 @@ function wireProjectListClicks() {
     event.preventDefault();
     event.stopPropagation();
 
-    const kind = btn.getAttribute("data-delete-kind");
     const id = btn.getAttribute("data-delete-id");
     const name = btn.getAttribute("data-delete-name") || "this project";
 
@@ -229,20 +135,11 @@ function wireProjectListClicks() {
     btn.disabled = true;
 
     try {
-      if (kind === "cloud" && id !== null && id !== "") {
-        await deleteCloudProject(id);
-
-        const local = loadProject();
-        if (local !== null && local.id === id) {
-          clearSavedProject();
-          setProject(null);
-        }
-      } else if (kind === "local" && id !== null && id !== "") {
+      if (id !== null && id !== "") {
         deleteLocalProject(id);
         setProject(null);
       }
-
-      await renderProjectList();
+      renderProjectList();
     } catch (error) {
       console.error(error);
       window.alert(
@@ -313,47 +210,13 @@ async function onCreateProjectClick() {
   }
 
   try {
-    if (currentUser === null && canCreateLocalProject() === false) {
-      if (statusEl !== null) {
-        statusEl.innerHTML =
-          "This browser already has " +
-          String(MAX_LOCAL_PROJECTS) +
-          ' local projects. <a href="/sign-in/">Sign in</a> to save more in the cloud, or delete one first.';
-      }
-      if (createBtn !== null) {
-        createBtn.disabled = false;
-      }
-      return;
-    }
-
     const project = createEmptyProject(name);
-
-    if (currentUser !== null) {
-      const created = await createCloudProject({
-        name: name,
-        project: project
-      });
-      const cloudProject = created.project || project;
-      cloudProject.id = created.id;
-      cloudProject.name = created.name || name;
-      cloudProject.cloudSynced = true;
-      setProject(cloudProject);
-      setCloudSynced(true);
-      saveProject();
-      window.location.href =
-        "/app/project/?id=" +
-        encodeURIComponent(created.id) +
-        "&new=1";
-      return;
-    }
-
     setProject(project);
-    setCloudSynced(false);
     const saved = saveProject();
     if (saved === false) {
       if (statusEl !== null) {
-        statusEl.innerHTML =
-          "Could not save locally (limit or storage full). <a href=\"/sign-in/\">Sign in</a> or delete a project.";
+        statusEl.textContent =
+          "Could not save in this browser. Check storage space, or delete a project.";
       }
       if (createBtn !== null) {
         createBtn.disabled = false;

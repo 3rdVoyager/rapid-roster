@@ -34,11 +34,6 @@
         <span>Rapid<span class="brand-accent">Roster</span></span>
       </a>
 
-      <div class="app-header-account">
-        <button class="button button-tertiary button-small" type="button" id="account-menu-btn">
-          Account ▾
-        </button>
-      </div>
     </header>
 
     <main class="dashboard">
@@ -49,7 +44,6 @@
           <p class="dashboard-lead">
             Open a saved project or start a new one.
           </p>
-          <p class="dashboard-storage" id="dashboard-storage" hidden></p>
         </div>
         <div class="dashboard-actions">
           <button class="button button-primary" type="button" id="new-project-btn">
@@ -59,24 +53,11 @@
       </div>
 
       <ul class="project-list" id="project-list">
-        <li>
-          <a class="project-row" href="/app/project/">
-            <span class="project-row-icon" aria-hidden="true">
-              <span class="material-symbols-outlined">folder_open</span>
-            </span>
-            <span class="project-row-main">
-              <strong>Open current project</strong>
-              <span class="project-row-meta">Loads whatever is saved in this browser</span>
-            </span>
-            <span class="project-row-aside">
-              <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-            </span>
-          </a>
-        </li>
+        <li class="project-list-status">Loading projects…</li>
       </ul>
 
       <p class="dashboard-note">
-        Projects save in this browser. Sign in to get more storage and sync them to the cloud across devices.
+        Projects save in this browser on this device.
       </p>
     </main>
 

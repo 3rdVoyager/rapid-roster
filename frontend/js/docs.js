@@ -26,14 +26,14 @@ const CONTENT = {
         {
           type: "ol",
           items: [
-            "Open <strong>Projects</strong> from Get started (or go to <code>/app/</code>).",
+            "Open <strong>Projects</strong> from <strong>Open App</strong> (or go to <code>/app/</code>).",
             "Click <strong>New project</strong> and give it a clear name you will recognize later.",
             "Choose a blank start, or load a sample <strong>preset</strong> (sports, Science Olympiad, volunteers) so you have data to explore immediately."
           ]
         },
         {
           type: "callout",
-          html: "<strong>Local vs signed in.</strong> Without an account you can keep up to five projects in this browser. Sign in with email when you want more storage and sync across devices."
+          html: "<strong>Saved in this browser.</strong> Projects stay on this device in local storage. Cloud accounts and sync are planned for later."
         }
       ]
     },
@@ -337,7 +337,7 @@ const CONTENT = {
             type: "actions",
             links: [
               { href: "/examples/", label: "Browse examples", primary: false },
-              { href: "/get-started/", label: "Open a project", primary: true }
+              { href: "/app/", label: "Open App", primary: true }
             ]
           }
         ]

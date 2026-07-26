@@ -1,28 +1,8 @@
-# Cloudflare Pages + D1 for RapidRoster
-# Static site: frontend/  |  API: functions/
+# Cloudflare Pages (static site only for now)
+# Build output: frontend/
 #
-# Create a real D1 database, then replace database_id:
-#   npx wrangler d1 create rapid-roster
-# Apply schema (local):
-#   npx wrangler d1 migrations apply rapid-roster --local
-# Apply schema (remote):
-#   npx wrangler d1 migrations apply rapid-roster --remote
-#
-# Secrets (dashboard or CLI):
-#   npx wrangler pages secret put SESSION_SECRET
-# Optional email (when unset, magic links are logged):
-#   npx wrangler pages secret put EMAIL_API_KEY
+# Accounts / D1 / Pages Functions are archived under future/ until needed.
 
 name = "rapid-roster"
 compatibility_date = "2026-07-22"
 pages_build_output_dir = "frontend"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "rapid-roster"
-database_id = "7b7aafca-bcd3-44a4-8ff1-13b948be6c9f"
-migrations_dir = "migrations"
-
-# Non-secret defaults for local/dev. Override SESSION_SECRET in production.
-[vars]
-APP_NAME = "RapidRoster"

@@ -55,12 +55,11 @@ function buildNav(currentPath) {
     );
   });
 
-  const ctaCurrent =
-    currentPath === "/get-started/" ? ' aria-current="page"' : "";
+  const ctaCurrent = currentPath === "/app/" ? ' aria-current="page"' : "";
   links.push(
-    '        <a class="button button-primary" href="/get-started/"' +
+    '        <a class="button button-primary" href="/app/"' +
       ctaCurrent +
-      ">Get started</a>"
+      ">Open App</a>"
   );
 
   return links.join("\n");
@@ -92,8 +91,7 @@ function buildFooterInner() {
           <div class="site-footer-col">
             <h2>Product</h2>
             <ul>
-              <li><a href="/get-started/">Get started</a></li>
-              <li><a href="/sign-in/">Sign in</a></li>
+              <li><a href="/app/">Open App</a></li>
               <li><a href="/how-it-works/">How it works</a></li>
               <li><a href="/examples/">Examples</a></li>
             </ul>

@@ -247,7 +247,7 @@ project.js  →  asks worker to run
 | **Pages Functions** | `functions/api/...` — auth + project CRUD |
 | **D1** | Users, sessions, projects |
 | **Wrangler** | Local dev + deploy + migrations |
-| **Email sending** | Magic links from a Function (Cloudflare Email Routing / Email Workers or Mailchannels — pick one during auth build) |
+| **Email / accounts** | Deferred — archived under `future/` (Functions, D1 migrations, auth client JS) |
 
 Deploy target stays the same site family as today: [rapidroster.pages.dev](https://rapidroster.pages.dev/).
 

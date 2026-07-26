@@ -2,16 +2,13 @@
  * state.js
  *
  * Holds the current project in memory (one plain object).
- * Always saves to localStorage. When signed in, also syncs to D1 via /api.
- *
- * Local (unsigned) mode keeps up to MAX_LOCAL_PROJECTS projects in the browser.
- * Cloud-synced projects still cache locally but do not count toward that cap.
+ * Saves to localStorage in this browser (no count cap).
  *
  * Other files import helpers like getProject() and saveProject().
  * They should not reach into localStorage themselves.
+ *
+ * Cloud/auth dual-write code lives under /future until accounts return.
  */
-
-import { fetchMe, updateCloudProject } from "/js/api.js";
 
 /** Legacy single-slot key — migrated into the multi-project index. */
 const LEGACY_STORAGE_KEY = "rapidroster.currentProject";
@@ -19,23 +16,11 @@ const LEGACY_STORAGE_KEY = "rapidroster.currentProject";
 const INDEX_KEY = "rapidroster.localProjectIndex";
 const ACTIVE_KEY = "rapidroster.activeLocalProjectId";
 
-/** Max browser-only projects before we ask the user to sign in. */
-export const MAX_LOCAL_PROJECTS = 5;
-
 /** @type {Object|null} */
 let currentProject = null;
 
 /** True when the in-memory project differs from the last save. */
 let isDirty = false;
-
-/**
- * Cached sign-in state. null = unknown; object = signed in; false = signed out.
- * @type {{ id: string, email: string }|false|null}
- */
-let cachedUser = null;
-
-/** Last cloud sync outcome for the UI. */
-let lastCloudSync = "skipped";
 
 /**
  * Read the current project object.
@@ -78,36 +63,22 @@ export function getDirty() {
 }
 
 /**
- * Write the current project to localStorage, then dual-write to the cloud
- * when signed in (fire-and-forget from callers that ignore the Promise).
+ * Write the current project to localStorage.
  *
  * @returns {boolean} true if the local save worked
  */
 export function saveProject() {
-  const localOk = saveProjectLocal();
-
-  if (localOk === true) {
-    // Non-blocking cloud sync — editing must keep working offline.
-    void syncProjectToCloud();
-  }
-
-  return localOk;
+  return saveProjectLocal();
 }
 
 /**
- * Same as saveProject, but awaits cloud sync so the UI can show status.
+ * Async save for callers that await a result object.
  *
- * @returns {Promise<{ local: boolean, cloud: "ok"|"skipped"|"failed" }>}
+ * @returns {Promise<{ local: boolean }>}
  */
 export async function persistProject() {
   const localOk = saveProjectLocal();
-
-  if (localOk === false) {
-    return { local: false, cloud: "skipped" };
-  }
-
-  const cloud = await syncProjectToCloud();
-  return { local: true, cloud: cloud };
+  return { local: localOk };
 }
 
 /**
@@ -121,17 +92,6 @@ function saveProjectLocal() {
   currentProject.updatedAt = new Date().toISOString();
 
   try {
-    // Cloud rows: keep a simple cache under the active/legacy slot so offline
-    // open still works; they do not use the 5-project local library.
-    if (currentProject.cloudSynced === true) {
-      localStorage.setItem(
-        LEGACY_STORAGE_KEY,
-        JSON.stringify(currentProject)
-      );
-      isDirty = false;
-      return true;
-    }
-
     const id = String(currentProject.id || "");
     if (id === "") {
       return false;
@@ -140,14 +100,6 @@ function saveProjectLocal() {
     migrateLegacyLocalProject();
 
     const index = readLocalIndex();
-    const existing = findIndexEntry(index, id);
-
-    if (existing === null && index.length >= MAX_LOCAL_PROJECTS) {
-      console.warn(
-        "Local project limit reached (" + String(MAX_LOCAL_PROJECTS) + ")."
-      );
-      return false;
-    }
 
     localStorage.setItem(projectStorageKey(id), JSON.stringify(currentProject));
     upsertLocalIndex(index, {
@@ -253,11 +205,6 @@ function migrateLegacyLocalProject() {
       return;
     }
 
-    if (project.cloudSynced === true) {
-      writeLocalIndex([]);
-      return;
-    }
-
     if (project.id === undefined || project.id === "") {
       project.id = makeId("proj");
     }
@@ -306,20 +253,15 @@ export function getLocalProjectCount() {
 }
 
 /**
- * True if a new local project can be added (under the cap), or if this id
- * already exists in the library (saving an open project again).
+ * Always true — local project count is uncapped.
+ * Kept so older call sites can import a stable helper.
  *
  * @param {string} [projectId]
  * @returns {boolean}
  */
 export function canCreateLocalProject(projectId) {
-  const index = readLocalIndex();
-  if (projectId !== undefined && projectId !== "") {
-    if (findIndexEntry(index, projectId) !== null) {
-      return true;
-    }
-  }
-  return index.length < MAX_LOCAL_PROJECTS;
+  void projectId;
+  return true;
 }
 
 /**
@@ -378,76 +320,6 @@ export function deleteLocalProject(id) {
       currentProject = null;
     }
   }
-}
-
-/**
- * @returns {Promise<"ok"|"skipped"|"failed">}
- */
-async function syncProjectToCloud() {
-  if (currentProject === null) {
-    lastCloudSync = "skipped";
-    return "skipped";
-  }
-
-  const user = await ensureAuthCache();
-  if (user === false || user === null) {
-    lastCloudSync = "skipped";
-    return "skipped";
-  }
-
-  // Only sync projects that already exist as cloud rows (opened/created via API).
-  if (currentProject.cloudSynced !== true) {
-    lastCloudSync = "skipped";
-    return "skipped";
-  }
-
-  try {
-    await updateCloudProject(currentProject.id, {
-      name: currentProject.name,
-      project: currentProject
-    });
-    lastCloudSync = "ok";
-    return "ok";
-  } catch (error) {
-    console.warn("Cloud sync failed:", error);
-    lastCloudSync = "failed";
-    return "failed";
-  }
-}
-
-/**
- * @returns {"ok"|"skipped"|"failed"}
- */
-export function getLastCloudSync() {
-  return lastCloudSync;
-}
-
-/**
- * Refresh / read cached auth user.
- *
- * @param {boolean} [force]
- * @returns {Promise<{ id: string, email: string }|false>}
- */
-export async function ensureAuthCache(force) {
-  if (force !== true && cachedUser !== null) {
-    return cachedUser;
-  }
-
-  const user = await fetchMe();
-  cachedUser = user === null ? false : user;
-  return cachedUser;
-}
-
-/**
- * Mark the current in-memory project as linked to a cloud row.
- *
- * @param {boolean} synced
- */
-export function setCloudSynced(synced) {
-  if (currentProject === null) {
-    return;
-  }
-  currentProject.cloudSynced = synced === true;
 }
 
 /**
@@ -514,7 +386,6 @@ export function createEmptyProject(name) {
     id: makeId("proj"),
     name: projectName,
     updatedAt: new Date().toISOString(),
-    cloudSynced: false,
     entries: {
       columns: [
         { key: "id", label: "ID", type: "id" },

@@ -2,6 +2,7 @@
  * account.js
  *
  * Shared account control for /app/ and /app/project/.
+ * UI is deferred (local-first); keep this module for when accounts return.
  * Signed out: Sign in button (no empty dropdown).
  * Signed in: menu with email, Projects, Sign out.
  */
