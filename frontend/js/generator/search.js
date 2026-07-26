@@ -20,20 +20,23 @@
  *      repeat full passes until one pass finds nothing better
  * 3. Optionally SHAKE (random legal swaps), then improve again
  * 4. Always remember the GLOBAL BEST score seen (shakes may go downhill)
- * 5. By default, do several independent attempts and return the TOP OPTIONS
- *    ranked by score so the user can pick one (Generate / Retry in the UI)
+ * 5. Run many independent attempts, keep only the TOP optionCount layouts
+ *    (trim after every attempt to save memory). Once the kept set is full,
+ *    stop early when scores stop improving for stagnationLimit attempts
+ *    in a row (never early-stop while still short of optionCount uniques).
  *
  * ---------------------------------------------------------------------------
  * How to call this file
  * ---------------------------------------------------------------------------
  *
- *   import { runSearch, mergeOptions } from "./search.js";
+ *   import { runSearch } from "./search.js";
  *
  *   const result = runSearch(legalConfig, scoreConfig, {
  *     // optional (defaults shown):
  *     startAssignments: existingMap, // only used on attempt 1, if provided
- *     optionCount: 3,         // how many ranked options to return
- *     attempts: 3,            // how many independent searches to try
+ *     optionCount: 5,         // how many ranked options to keep / return
+ *     maxAttempts: 60,        // hard cap on independent searches
+ *     stagnationLimit: 15,    // after a full set, stop after this many flat attempts
  *     maxShakes: 3,
  *     shakeSwaps: 12,
  *     maxImprovePasses: 30,
@@ -44,10 +47,6 @@
  *   // result.ok === true
  *   //   result.options     → [{ rank, assignments, totalScore, scoresByRule }, ...]
  *   //   result.assignments → same as options[0] (best), for convenience
- *
- * Later UI "Retry":
- *   const more = runSearch(legalConfig, scoreConfig, { optionCount: 3, attempts: 3 });
- *   const combined = mergeOptions(existingOptions, more.options, 6); // or whatever cap
  *
  * legalConfig and scoreConfig are the same shapes used by legal.js and score.js.
  * Person ids come from scoreConfig.entriesAttrs (every key is a person).
@@ -71,8 +70,8 @@ import { scorePlacement } from "./score.js";
 /**
  * Main entry point.
  *
- * Runs one or more independent attempts, keeps the best layout from each,
- * then returns the top optionCount layouts ranked by totalScore.
+ * Runs many independent attempts, keeps only the top optionCount layouts
+ * after each attempt, and stops early once a full set stops improving.
  *
  * @param {Object} legalConfig
  * @param {Object} scoreConfig
@@ -86,12 +85,21 @@ export function runSearch(legalConfig, scoreConfig, options) {
 
   let optionCount = options.optionCount;
   if (optionCount === undefined) {
-    optionCount = 3;
+    optionCount = 5;
   }
 
-  let attempts = options.attempts;
-  if (attempts === undefined) {
-    attempts = optionCount;
+  // Prefer maxAttempts; fall back to legacy `attempts` if callers still pass it.
+  let maxAttempts = options.maxAttempts;
+  if (maxAttempts === undefined) {
+    maxAttempts = options.attempts;
+  }
+  if (maxAttempts === undefined) {
+    maxAttempts = 60;
+  }
+
+  let stagnationLimit = options.stagnationLimit;
+  if (stagnationLimit === undefined) {
+    stagnationLimit = 15;
   }
 
   let maxShakes = options.maxShakes;
@@ -110,13 +118,21 @@ export function runSearch(legalConfig, scoreConfig, options) {
   }
 
   const onProgress = options.onProgress;
-  const collected = [];
+  /** @type {Object[]} */
+  let ranked = [];
+  let stagnantAttempts = 0;
+  let lastSignature = "";
+  let stopReason = "max-attempts";
 
-  for (let attempt = 1; attempt <= attempts; attempt = attempt + 1) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt = attempt + 1) {
     reportProgress(onProgress, {
       phase: "attempt",
       attempt: attempt,
-      attempts: attempts
+      attempts: maxAttempts,
+      maxAttempts: maxAttempts,
+      kept: ranked.length,
+      bestScore: ranked.length > 0 ? ranked[0].totalScore : null,
+      stagnantAttempts: stagnantAttempts
     });
 
     // Only the first attempt may reuse a caller-provided start map.
@@ -135,15 +151,24 @@ export function runSearch(legalConfig, scoreConfig, options) {
     });
 
     if (one.ok === true) {
-      collected.push({
+      const combined = ranked.slice();
+      combined.push({
         assignments: one.assignments,
         totalScore: one.totalScore,
         scoresByRule: one.scoresByRule
       });
-    } else if (attempt === 1 && collected.length === 0) {
+      // Memory: never keep more than the top optionCount unique layouts.
+      ranked = rankAndTrimOptions(combined, optionCount);
+
+      const signature = topOptionsSignature(ranked);
+      if (signature === lastSignature) {
+        stagnantAttempts = stagnantAttempts + 1;
+      } else {
+        stagnantAttempts = 0;
+        lastSignature = signature;
+      }
+    } else if (attempt === 1 && ranked.length === 0) {
       // If even the first attempt cannot start, fail clearly.
-      // (Later attempts might still work if randomness helps, but a
-      //  hard-impossible setup will keep failing.)
       return {
         ok: false,
         reasons: one.reasons,
@@ -152,10 +177,20 @@ export function runSearch(legalConfig, scoreConfig, options) {
         scoresByRule: [],
         options: []
       };
+    } else {
+      stagnantAttempts = stagnantAttempts + 1;
+    }
+
+    // Only plateau-stop once we have a full unique set. Stopping earlier
+    // left users with 3–4 options when many attempts converged to the same layouts.
+    if (
+      ranked.length >= optionCount &&
+      stagnantAttempts >= stagnationLimit
+    ) {
+      stopReason = "stagnation";
+      break;
     }
   }
-
-  const ranked = rankAndTrimOptions(collected, optionCount);
 
   if (ranked.length === 0) {
     return {
@@ -171,7 +206,9 @@ export function runSearch(legalConfig, scoreConfig, options) {
   reportProgress(onProgress, {
     phase: "done",
     bestScore: ranked[0].totalScore,
-    optionCount: ranked.length
+    optionCount: ranked.length,
+    stopReason: stopReason,
+    stagnantAttempts: stagnantAttempts
   });
 
   return {
@@ -181,17 +218,28 @@ export function runSearch(legalConfig, scoreConfig, options) {
     assignments: ranked[0].assignments,
     totalScore: ranked[0].totalScore,
     scoresByRule: ranked[0].scoresByRule,
-    options: ranked
+    options: ranked,
+    stopReason: stopReason
   };
 }
 
 /**
- * Merge two option lists for a later UI "Retry" button.
+ * Stable signature of the current top option scores (high → low).
+ * Used to detect when another attempt did not improve the kept set.
  *
- * - Combines old + new
- * - Drops duplicate layouts
- * - Sorts by score (highest first)
- * - Keeps at most keepCount items
+ * @param {Object[]} ranked
+ * @returns {string}
+ */
+function topOptionsSignature(ranked) {
+  const parts = [];
+  for (let i = 0; i < ranked.length; i = i + 1) {
+    parts.push(String(ranked[i].totalScore));
+  }
+  return parts.join("|");
+}
+
+/**
+ * Merge two option lists, drop duplicate layouts, keep top keepCount by score.
  *
  * @param {Object[]} existingOptions
  * @param {Object[]} newOptions
@@ -211,7 +259,7 @@ export function mergeOptions(existingOptions, newOptions, keepCount) {
   }
 
   if (keepCount === undefined) {
-    keepCount = 6;
+    keepCount = 5;
   }
 
   const combined = [];
@@ -919,7 +967,7 @@ function pickRandomFromList(list) {
 function shuffledCopy(list) {
   const copy = list.slice();
 
-  // Fisher–Yates shuffle (simple and clear).
+  // Fisher-Yates shuffle (simple and clear).
   for (let i = copy.length - 1; i > 0; i = i - 1) {
     const j = Math.floor(Math.random() * (i + 1));
     const temp = copy[i];

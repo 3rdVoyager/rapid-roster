@@ -42,21 +42,17 @@ html {
 }
 
 .app-nav-item {
-  display: flex;
-  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
   gap: 0.65rem;
   padding: 0.7rem 0.85rem;
-  color: var(--text-color-muted);
-  font-weight: 600;
   font-size: 0.95rem;
-  text-decoration: none;
-  border-radius: 8px;
-  border-left: 3px solid transparent;
+  transform: none;
 }
 
-.app-nav-item:hover {
-  color: var(--text-color);
-  background: rgb(255 255 255 / 0.04);
+.app-nav-item:hover,
+.app-nav-item:active {
+  transform: none;
 }
 
 .app-nav-item .material-symbols-outlined {
@@ -111,8 +107,8 @@ html {
 
 .app-nav-item.is-active {
   color: var(--text-color);
-  background: color-mix(in srgb, var(--color-blue) 18%, var(--color-navy));
-  border-left-color: var(--color-blue);
+  border-color: var(--tertiary-button-border-hover);
+  background: color-mix(in srgb, var(--color-white) 10%, transparent);
 }
 
 /* Review panel */

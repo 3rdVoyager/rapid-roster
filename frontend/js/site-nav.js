@@ -11,17 +11,26 @@ function main() {
     return;
   }
 
+  function setOpen(open) {
+    if (open === true) {
+      nav.classList.add("is-open");
+      toggle.setAttribute("aria-expanded", "true");
+      toggle.setAttribute("aria-label", "Close menu");
+    } else {
+      nav.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Open menu");
+    }
+  }
+
   toggle.addEventListener("click", function () {
-    const open = nav.classList.toggle("is-open");
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
-    toggle.textContent = open ? "Close" : "Menu";
+    const open = nav.classList.contains("is-open") === false;
+    setOpen(open);
   });
 
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && nav.classList.contains("is-open")) {
-      nav.classList.remove("is-open");
-      toggle.setAttribute("aria-expanded", "false");
-      toggle.textContent = "Menu";
+      setOpen(false);
     }
   });
 }

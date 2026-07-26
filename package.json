@@ -6,7 +6,8 @@
     "deploy": "wrangler pages deploy",
     "db:migrate:local": "wrangler d1 migrations apply rapid-roster --local",
     "db:migrate:remote": "wrangler d1 migrations apply rapid-roster --remote",
-    "sync:functions": "node -e \"const fs=require('fs');fs.rmSync('frontend/functions',{recursive:true,force:true});fs.cpSync('functions','frontend/functions',{recursive:true});console.log('Synced functions/ -> frontend/functions/');\""
+    "sync:functions": "node -e \"const fs=require('fs');fs.rmSync('frontend/functions',{recursive:true,force:true});fs.cpSync('functions','frontend/functions',{recursive:true});console.log('Synced functions/ -> frontend/functions/');\"",
+    "sync:site-chrome": "node scripts/sync-site-chrome.js"
   },
   "devDependencies": {
     "wrangler": "^4.28.0"

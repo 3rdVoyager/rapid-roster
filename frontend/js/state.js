@@ -54,6 +54,9 @@ export function getProject() {
  * @param {Object} project
  */
 export function setProject(project) {
+  if (project !== null && project !== undefined) {
+    upgradeLegacyNameColumns(project);
+  }
   currentProject = project;
   isDirty = true;
 }
@@ -337,6 +340,7 @@ export function loadLocalProjectById(id) {
       return null;
     }
     const project = JSON.parse(text);
+    upgradeLegacyNameColumns(project);
     currentProject = project;
     isDirty = false;
     localStorage.setItem(ACTIVE_KEY, id);
@@ -470,6 +474,7 @@ export function loadProject() {
     }
 
     const project = JSON.parse(text);
+    upgradeLegacyNameColumns(project);
     currentProject = project;
     isDirty = false;
     return project;
@@ -513,14 +518,14 @@ export function createEmptyProject(name) {
     entries: {
       columns: [
         { key: "id", label: "ID", type: "id" },
-        { key: "name", label: "Name", type: "text" }
+        { key: "name", label: "Name", type: "name" }
       ],
       rows: []
     },
     slots: {
       columns: [
         { key: "id", label: "ID", type: "id" },
-        { key: "name", label: "Name", type: "text" },
+        { key: "name", label: "Name", type: "name" },
         { key: "min_size", label: "Min", type: "minSize" },
         { key: "max_size", label: "Max", type: "maxSize" }
       ],
@@ -657,10 +662,47 @@ export function parseProjectFile(text) {
     project.results = null;
   }
 
+  upgradeLegacyNameColumns(project);
+
   return {
     ok: true,
     project: project
   };
+}
+
+/**
+ * Older projects used a text column keyed "name" as the display label.
+ * Promote that to type "name" when no name column is configured yet.
+ *
+ * @param {Object} project
+ */
+function upgradeLegacyNameColumns(project) {
+  upgradeLegacyNameColumnOnTable(project.entries);
+  upgradeLegacyNameColumnOnTable(project.slots);
+}
+
+/**
+ * @param {Object|undefined} table
+ */
+function upgradeLegacyNameColumnOnTable(table) {
+  if (table === undefined || Array.isArray(table.columns) === false) {
+    return;
+  }
+
+  for (let i = 0; i < table.columns.length; i = i + 1) {
+    if (table.columns[i].type === "name") {
+      return;
+    }
+  }
+
+  for (let i = 0; i < table.columns.length; i = i + 1) {
+    const col = table.columns[i];
+
+    if (col.key === "name" && col.type === "text") {
+      col.type = "name";
+      return;
+    }
+  }
 }
 
 /**
@@ -728,7 +770,7 @@ function isTableShape(table) {
 export function createDemoProject() {
   const entriesColumns = [
     { key: "id", label: "ID", type: "id" },
-    { key: "name", label: "Name", type: "text" },
+    { key: "name", label: "Name", type: "name" },
     { key: "skill", label: "Skill", type: "number" },
     { key: "school", label: "School", type: "text" },
     { key: "availability", label: "Availability", type: "text" }
@@ -790,7 +832,7 @@ export function createDemoProject() {
     slots: {
       columns: [
         { key: "id", label: "ID", type: "id" },
-        { key: "name", label: "Name", type: "text" },
+        { key: "name", label: "Name", type: "name" },
         { key: "min_size", label: "Min", type: "minSize" },
         { key: "max_size", label: "Max", type: "maxSize" },
         { key: "practice_night", label: "Practice", type: "text" }

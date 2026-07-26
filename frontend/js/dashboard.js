@@ -36,7 +36,6 @@ let currentUser = null;
 async function main() {
   currentUser = await wireAccountMenu();
   wireNewProjectModal();
-  wireImportButton();
   wireProjectListClicks();
   await renderProjectList();
 }
@@ -49,25 +48,40 @@ async function renderProjectList() {
     return;
   }
 
+  const storageEl = document.getElementById("dashboard-storage");
+
   if (currentUser === null) {
     renderLocalList(listEl);
-    if (noteEl !== null) {
-      const count = getLocalProjectCount();
-      noteEl.innerHTML =
-        "Projects save in this browser (" +
+    const count = getLocalProjectCount();
+    if (storageEl !== null) {
+      storageEl.hidden = false;
+      storageEl.innerHTML =
+        "<strong>" +
         String(count) +
         " / " +
         String(MAX_LOCAL_PROJECTS) +
-        "). Sign in to sync across devices and save more.";
+        "</strong>" +
+        "<span>local projects in this browser</span>" +
+        '<a href="/sign-in/">Sign in to get more storage</a>';
+    }
+    if (noteEl !== null) {
+      noteEl.hidden = true;
+      noteEl.textContent = "";
     }
     return;
   }
 
+  if (storageEl !== null) {
+    storageEl.hidden = true;
+    storageEl.innerHTML = "";
+  }
+
   if (noteEl !== null) {
+    noteEl.hidden = false;
     noteEl.textContent =
       "Signed in as " +
       currentUser.email +
-      ". Projects sync to the cloud; this browser also keeps a local cache.";
+      ". Projects sync to the cloud.";
   }
 
   listEl.innerHTML =
@@ -278,17 +292,6 @@ function wireNewProjectModal() {
   if (createBtn !== null) {
     createBtn.addEventListener("click", onCreateProjectClick);
   }
-}
-
-function wireImportButton() {
-  const importBtn = document.getElementById("import-project-btn");
-  if (importBtn === null) {
-    return;
-  }
-
-  importBtn.addEventListener("click", function () {
-    window.location.href = "/app/project/#entries";
-  });
 }
 
 async function onCreateProjectClick() {

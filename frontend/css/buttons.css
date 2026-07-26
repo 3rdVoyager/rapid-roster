@@ -61,13 +61,16 @@
 .button-tertiary {
   color: var(--text-color);
   background: var(--tertiary-button-color);
+  border-color: var(--tertiary-button-border);
 }
 
 .button-tertiary:hover {
   color: var(--text-color);
-  background: color-mix(in srgb, var(--color-white) 14%, var(--tertiary-button-color));
+  border-color: var(--tertiary-button-border-hover);
+  background: color-mix(in srgb, var(--color-white) 10%, transparent);
 }
 
 .button-tertiary:active {
-  background: color-mix(in srgb, var(--color-white) 8%, var(--color-navy));
+  border-color: var(--tertiary-button-border-hover);
+  background: color-mix(in srgb, var(--color-white) 16%, transparent);
 }

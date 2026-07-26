@@ -26,6 +26,10 @@
   object-fit: cover;
 }
 
+.site-brand-icon {
+  gap: 0;
+}
+
 /* Same gradient “bubbles” as the marketing site (global.css body) */
 .page-app {
   display: flex;
@@ -68,14 +72,14 @@
   border-bottom: 1px solid rgb(255 255 255 / 0.08);
 }
 
-/* Dashboard only: match the site’s 3.5rem content inset */
+/* Dashboard: match site / editor side inset */
 .page-dashboard .app-header {
-  padding-inline: 3.5rem;
+  padding-inline: var(--page-inline);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 720px) {
   .page-dashboard .app-header {
-    padding-inline: 1.25rem;
+    padding-inline: var(--page-inline-mobile);
   }
 }
 
@@ -171,12 +175,6 @@
   display: flex;
   align-items: center;
   gap: 0.65rem;
-}
-
-.account-local-hint {
-  color: var(--text-color-muted);
-  font-size: 0.8rem;
-  white-space: nowrap;
 }
 
 .account-menu {

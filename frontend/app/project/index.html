@@ -24,14 +24,13 @@
   </head>
   <body class="page-app page-project">
     <header class="app-header">
-      <a class="site-brand" href="/app/">
+      <a class="site-brand site-brand-icon" href="/app/" aria-label="RapidRoster projects">
         <img
           src="/assets/rapid-roster-logo.png"
           alt=""
           width="36"
           height="36"
         />
-        <span>Rapid<span class="brand-accent">Roster</span></span>
       </a>
 
       <div class="app-header-project">
@@ -68,27 +67,27 @@
     <div class="app-shell">
       <nav class="app-sidebar" aria-label="Workspace">
         <p class="app-sidebar-label">Workflow</p>
-        <a class="app-nav-item is-active" href="#entries">
+        <a class="button button-tertiary app-nav-item is-active" href="#entries">
           <span class="material-symbols-outlined" aria-hidden="true">group</span>
           Entries
         </a>
-        <a class="app-nav-item" href="#slots">
+        <a class="button button-tertiary app-nav-item" href="#slots">
           <span class="material-symbols-outlined" aria-hidden="true">view_week</span>
           Slots
         </a>
-        <a class="app-nav-item" href="#rules">
+        <a class="button button-tertiary app-nav-item" href="#rules">
           <span class="material-symbols-outlined" aria-hidden="true">tune</span>
           Rules
         </a>
-        <a class="app-nav-item" href="#review">
+        <a class="button button-tertiary app-nav-item" href="#review">
           <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
           Review
         </a>
-        <a class="app-nav-item" href="#generate">
+        <a class="button button-tertiary app-nav-item" href="#generate">
           <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
           Generate
         </a>
-        <a class="app-nav-item" href="#results">
+        <a class="button button-tertiary app-nav-item" href="#results">
           <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
           Results
         </a>
@@ -605,7 +604,7 @@
             <div>
               <h1>Generate</h1>
               <p class="app-panel-lead">
-                Uses configured entries, slots, and rules, returning multiple ranked options for review.
+                Runs many searches, keeps the top five ranked options, and stops when scores stop improving.
               </p>
             </div>
             <a class="button button-primary button-small" href="#results">Continue to Results</a>
@@ -613,10 +612,7 @@
 
           <div class="generate-actions">
             <button class="button button-primary" type="button" id="generate-btn">
-              Generate options
-            </button>
-            <button class="button button-secondary" type="button" id="retry-generate-btn">
-              Retry (+3 more)
+              Generate
             </button>
             <button class="button button-ghost" type="button" id="cancel-generate-btn">
               Cancel

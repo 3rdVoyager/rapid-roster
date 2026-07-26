@@ -125,7 +125,7 @@ rapid-roster/
 └── LICENSE
 ```
 
-**Naming habit:** one job per file. If a file grows past ~300–400 lines and mixes jobs, split it. Prefer `doThing()` functions with obvious names over nested one-liners.
+**Naming habit:** one job per file. If a file grows past ~300-400 lines and mixes jobs, split it. Prefer `doThing()` functions with obvious names over nested one-liners.
 
 ---
 
@@ -144,12 +144,12 @@ project = {
   updatedAt: "...",
 
   entries: {
-    columns: [ { key, label, type } ],   // type: id | number | time | text | ignore
+    columns: [ { key, label, type } ],   // type: id | name | number | time | text | ignore
     rows: [ { id, cells: { ... } } ]
   },
 
   slots: {
-    columns: [ { key, label, type } ],   // type: id | minSize | maxSize | text | ignore
+    columns: [ { key, label, type } ],   // type: id | name | minSize | maxSize | text | ignore
     rows: [ { id, cells: { ... } } ]
   },
 
@@ -165,7 +165,7 @@ project = {
       type,               // cluster | separate | limit | balance
       data, filter,       // which columns / cells
       options,            // exact/partial, min/max, ...
-      priority,           // 1–10
+      priority,           // 1-10
       hard: true/false
     }
   ],

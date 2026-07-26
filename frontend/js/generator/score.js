@@ -15,7 +15,7 @@
  *
  *   ruleScore = priority × howWellMet
  *
- * - priority is 1–10 (higher = more important)
+ * - priority is 1-10 (higher = more important)
  * - howWellMet is a number from 0 (not met) to 1 (fully met)
  * - Partial success still counts (for example 0.6)
  *
@@ -191,7 +191,7 @@ function scoreOneRule(assignments, scoreConfig, rule) {
 }
 
 /**
- * Read priority safely. Default to 5 (middle of 1–10) if missing.
+ * Read priority safely. Default to 5 (middle of 1-10) if missing.
  *
  * @param {Object} rule
  * @returns {number}
@@ -219,7 +219,7 @@ function getPriority(rule) {
  * 3. If they are equal → howWellMet = 1.
  * 4. If they differ a lot compared to the overall value range → closer to 0.
  *
- * @returns {number} 0–1
+ * @returns {number} 0-1
  */
 function scoreBalance(assignments, scoreConfig, rule) {
   const attributeName = rule.entryAttribute;
@@ -325,9 +325,9 @@ function scoreBalance(assignments, scoreConfig, rule) {
  *
  * Example: max 2 keepers per team; min 1 coach per team.
  *
- * Soft version: each slot gets a 0–1 satisfaction, then we average slots.
+ * Soft version: each slot gets a 0-1 satisfaction, then we average slots.
  *
- * @returns {number} 0–1
+ * @returns {number} 0-1
  */
 function scoreLimit(assignments, scoreConfig, rule) {
   const attributeName = rule.entryAttribute;
@@ -365,7 +365,7 @@ function scoreLimit(assignments, scoreConfig, rule) {
  *
  * @param {number} matchCount
  * @param {Object} rule
- * @returns {number} 0–1
+ * @returns {number} 0-1
  */
 function limitSatisfactionForSlot(matchCount, rule) {
   let minPart = 1;
@@ -415,7 +415,7 @@ function limitSatisfactionForSlot(matchCount, rule) {
  *    A person's attribute should match a slot attribute.
  *    Example: availability ↔ practice_night, or pref column ↔ slot name.
  *
- * @returns {number} 0–1
+ * @returns {number} 0-1
  */
 function scoreCluster(assignments, scoreConfig, rule) {
   const shape = rule.shape;
@@ -435,7 +435,7 @@ function scoreCluster(assignments, scoreConfig, rule) {
  * Separate: people who share an attribute prefer DIFFERENT slots.
  * Reuses the "people together" grouping, but scores the opposite way.
  *
- * @returns {number} 0–1
+ * @returns {number} 0-1
  */
 function scoreSeparate(assignments, scoreConfig, rule) {
   return scoreEntriesTogether(assignments, scoreConfig, rule, false);
@@ -448,7 +448,7 @@ function scoreSeparate(assignments, scoreConfig, rule) {
  * wantTogether === false → Separate: reward groups spread across slots
  *
  * @param {boolean} wantTogether
- * @returns {number} 0–1
+ * @returns {number} 0-1
  */
 function scoreEntriesTogether(assignments, scoreConfig, rule, wantTogether) {
   const attributeName = rule.entryAttribute;
@@ -571,7 +571,7 @@ function scoreEntriesTogether(assignments, scoreConfig, rule, wantTogether) {
  *   Ava availability "Mon;Wed", Team A practice_night "Mon" → match (partial)
  *   Pref column "1" = "Optics", and Ava is in slot named Optics → match
  *
- * @returns {number} 0–1
+ * @returns {number} 0-1
  */
 function scoreEntryMatchesSlot(assignments, scoreConfig, rule) {
   const entryAttribute = rule.entryAttribute;

@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Sign in to RapidRoster with an email link. No password."
+      content="Privacy information for RapidRoster — what we store for local and signed-in projects."
     />
-    <title>Sign in — RapidRoster</title>
+    <title>Privacy — RapidRoster</title>
     <link rel="icon" href="/assets/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
@@ -17,17 +17,13 @@
     <link rel="stylesheet" href="/css/buttons.css" />
     <link rel="stylesheet" href="/css/site/header.css" />
     <link rel="stylesheet" href="/css/site/footer.css" />
-    <link rel="stylesheet" href="/css/site/sign-in.css" />
+    <link rel="stylesheet" href="/css/site/home.css" />
+    <link rel="stylesheet" href="/css/site/content.css" />
   </head>
-  <body class="page-sign-in">
+  <body class="page-privacy">
     <header class="site-header">
       <a class="site-brand" href="/">
-        <img
-          src="/assets/rapid-roster-logo.png"
-          alt=""
-          width="36"
-          height="36"
-        />
+        <img src="/assets/rapid-roster-logo.png" alt="" width="36" height="36" />
         <span>Rapid<span class="brand-accent">Roster</span></span>
       </a>
       <button
@@ -39,12 +35,10 @@
         aria-label="Open menu"
       >
         <span class="site-nav-burger" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
+          <span></span><span></span><span></span>
         </span>
       </button>
-      <nav class="site-nav" id="site-nav" aria-label="Primary">
+      <nav class="site-nav" aria-label="Primary" id="site-nav">
         <a class="button button-tertiary" href="/how-it-works/">How it works</a>
         <a class="button button-tertiary" href="/examples/">Examples</a>
         <a class="button button-tertiary" href="/presets/">Presets</a>
@@ -54,28 +48,61 @@
     </header>
 
     <main>
-      <section class="sign-in" aria-labelledby="sign-in-heading">
-        <h1 id="sign-in-heading">Sign in</h1>
-        <p class="sign-in-lead">
-          We'll email you a private sign-in link. No password.
+      <header class="page-intro">
+        <h1>Privacy</h1>
+        <p class="page-intro-lead">
+          Plain-language notes on what RapidRoster stores. This is an early product page,
+          not a law-firm policy — ask if you need something more formal.
         </p>
+      </header>
 
-        <form class="sign-in-form" action="/api/auth/request-link" method="post">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autocomplete="email"
-            required
-            placeholder="you@example.com"
-          />
-          <button class="button button-primary" type="submit">
-            Email me a link
-          </button>
-        </form>
+      <section class="section">
+        <div class="page-grid-2 page-grid">
+          <article class="page-card">
+            <h3>Without an account</h3>
+            <p>
+              Projects stay in your browser (local storage) on this device. We do not receive
+              those projects unless you later sign in and sync them. Clearing site data or
+              using another browser removes local projects.
+            </p>
+          </article>
+          <article class="page-card">
+            <h3>With an account</h3>
+            <p>
+              Sign-in uses your email address and a short-lived magic link. We store your
+              email, session, and the project data you save so you can open it on other devices.
+              Generation still runs in your browser for typical roster sizes.
+            </p>
+          </article>
+        </div>
+      </section>
 
-        <p class="sign-in-status" hidden aria-live="polite"></p>
+      <section class="section">
+        <h2>What we use data for</h2>
+        <ul class="detail-list">
+          <li>Sending sign-in links to the address you provide</li>
+          <li>Saving and loading your cloud projects when you are signed in</li>
+          <li>Operating and debugging the service (for example, server logs of auth requests)</li>
+        </ul>
+        <p class="page-intro-lead page-lead-follow">
+          We do not sell your email or project contents. Project CSVs may include names and
+          other details you import — treat shared devices carefully, and only sign in on
+          browsers you trust.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Your choices</h2>
+        <ul class="detail-list">
+          <li>Use local-only mode and never create an account</li>
+          <li>Sign out from the account menu when you are done on a shared computer</li>
+          <li>Delete projects you no longer need from the Projects list</li>
+          <li>Contact us to ask about account or data questions</li>
+        </ul>
+        <div class="page-actions">
+          <a class="button button-primary" href="/contact/">Contact</a>
+          <a class="button button-secondary" href="/about/">About</a>
+        </div>
       </section>
     </main>
 
@@ -156,8 +183,6 @@
         <p>RapidRoster — open source under the MIT License.</p>
       </div>
     </footer>
-
     <script type="module" src="/js/site-nav.js"></script>
-    <script type="module" src="/js/sign-in.js"></script>
   </body>
 </html>

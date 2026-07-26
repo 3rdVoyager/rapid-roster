@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="RapidRoster helps organizers place people into teams, events, shifts, and classrooms using clear rules instead of fighting a spreadsheet."
+      content="RapidRoster’s four building-block rules: Cluster, Separate, Limit, and Balance."
     />
-    <title>RapidRoster — fair, rule-aware groupings</title>
+    <title>Rules — RapidRoster</title>
     <link rel="icon" href="/assets/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
@@ -22,8 +22,9 @@
     <link rel="stylesheet" href="/css/site/header.css" />
     <link rel="stylesheet" href="/css/site/footer.css" />
     <link rel="stylesheet" href="/css/site/home.css" />
+    <link rel="stylesheet" href="/css/site/content.css" />
   </head>
-  <body class="page-home">
+  <body class="page-rules">
     <header class="site-header">
       <a class="site-brand" href="/">
         <img
@@ -58,151 +59,61 @@
     </header>
 
     <main>
-      <section class="hero">
-        <div class="hero-copy">
-          <h1 class="hero-brand">
-            <span>Rapid<span class="brand-accent">Roster</span></span>
-          </h1>
-          <p class="hero-lead">
-            Turn a participant list into fair, rule-aware groups —
-            teams, events, shifts, classrooms, and more.
-          </p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="/get-started/">Get started</a>
-            <a class="button button-secondary" href="/how-it-works/">How it works</a>
-          </div>
-        </div>
-        <figure class="screenshot-frame hero-shot">
-          <img
-            src="/assets/screenshots/workspace.png"
-            alt="RapidRoster workspace showing results with Team A and Team B assignments from a sports roster"
-            width="1600"
-            height="1000"
-            decoding="async"
-          />
-          <figcaption class="visually-hidden">
-            Results workspace with generated team assignments and export.
-          </figcaption>
-        </figure>
-      </section>
-
-      <section id="problem" class="section">
-        <h2>The problem</h2>
-        <p class="section-lead">
-          Manually building rosters is slow, and spreadsheets make the tradeoffs invisible.
+      <header class="page-intro">
+        <h1>Four building-block rules</h1>
+        <p class="page-intro-lead">
+          Compose groupings from a few fundamental rules — not dozens of one-off settings.
         </p>
-        <ul class="problem-list">
-          <li>
-            <span class="material-symbols-outlined" aria-hidden="true">schedule</span>
-            <div>
-              <strong>Everything fights everything</strong>
-              <p>
-                Teammate requests, availability, roles, and skill balance all pull in different directions.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="material-symbols-outlined" aria-hidden="true">table</span>
-            <div>
-              <strong>Rules can't be seen in cells</strong>
-              <p>
-                The sheet holds only names and numbers. The real constraints live in your
-                head.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="material-symbols-outlined" aria-hidden="true">replay</span>
-            <div>
-              <strong>One change breaks three others</strong>
-              <p>
-                Move one person and you redo half the grid. Fairness becomes
-                guesswork, and you never know what you traded off.
-              </p>
-            </div>
-          </li>
-        </ul>
-      </section>
+      </header>
 
       <section class="section">
-        <div class="section-split">
-          <div class="section-copy">
-            <h2>Why RapidRoster</h2>
+        <div class="page-grid page-grid-2">
+          <article class="page-card">
+            <span class="material-symbols-outlined" aria-hidden="true">group_work</span>
+            <h3>Cluster</h3>
             <p>
-              RapidRoster lets organizers state tradeoffs as an explicit
-              rule list — then finds placements that respect hard constraints
-              and score best on the soft ones.
+              Keep matched people together, or place someone in a matching
+              slot — teammate requests, preference columns, overlapping availability.
             </p>
+          </article>
+          <article class="page-card">
+            <span class="material-symbols-outlined" aria-hidden="true">call_split</span>
+            <h3>Separate</h3>
             <p>
-              Import people and slots, set priorities, generate assignments,
-              review what was traded off, and export when it feels right.
+              Spread similar participants apart — schools across teams,
+              experienced players, people who should not share a slot.
             </p>
-            <div class="hero-actions">
-              <a class="button button-secondary" href="/rules/">Explore rules</a>
-              <a class="button button-tertiary" href="/about/">About the project</a>
-            </div>
-          </div>
-          <figure class="screenshot-frame">
-            <img
-              src="/assets/screenshots/rules.png"
-              alt="Rules editor with Balance skill, teammate requests, and hard limits"
-              width="1600"
-              height="1000"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
+          </article>
+          <article class="page-card">
+            <span class="material-symbols-outlined" aria-hidden="true">filter_alt</span>
+            <h3>Limit</h3>
+            <p>
+              Cap or require counts per slot — maximum 2 keepers, minimum 1 coach.
+            </p>
+          </article>
+          <article class="page-card">
+            <span class="material-symbols-outlined" aria-hidden="true">balance</span>
+            <h3>Balance</h3>
+            <p>
+              Even out a number across slots — skill, age, or any other score you track.
+            </p>
+          </article>
         </div>
-      </section>
-
-      <section class="section">
-        <h2>See it in the product</h2>
-        <p class="section-lead">
-          Setup, rules, generate, and results — one workspace for every kind of roster.
+        <p class="rules-note">
+          Soft rules guide the search by score (partial success still counts).
+          Hard rules never allow illegal placements. Mark priority from 1-10.
         </p>
-        <div class="screenshot-row">
-          <figure class="screenshot-frame">
-            <img
-              src="/assets/screenshots/entries.png"
-              alt="Entries setup with player list and editor fields"
-              width="1600"
-              height="1000"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>Setup — entries &amp; fields</figcaption>
-          </figure>
-          <figure class="screenshot-frame">
-            <img
-              src="/assets/screenshots/generate.png"
-              alt="Generate panel with ranked roster options and scores"
-              width="1600"
-              height="1000"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>Generate — primary + alternatives</figcaption>
-          </figure>
-          <figure class="screenshot-frame">
-            <img
-              src="/assets/screenshots/results.png"
-              alt="Results panel listing who landed in each team"
-              width="1600"
-              height="1000"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>Results — assignments to export</figcaption>
-          </figure>
-        </div>
       </section>
 
       <section class="section section-cta">
-        <h2>Ready to stop wrestling the spreadsheet?</h2>
+        <h2>Ready to try them?</h2>
         <p class="section-lead">
-          Open a project and turn your lists into placements — start locally or sign in to sync across devices and get more storage.
+          Open a project, load a preset or your own CSVs, and start with a few rules.
         </p>
-        <a class="button button-primary" href="/get-started/">Get started</a>
+        <div class="page-actions page-actions-center">
+          <a class="button button-primary" href="/get-started/">Get started</a>
+          <a class="button button-secondary" href="/how-it-works/">How it works</a>
+        </div>
       </section>
     </main>
 

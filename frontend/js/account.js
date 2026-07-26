@@ -6,10 +6,6 @@
  * Signed in: menu with email, Projects, Sign out.
  */
 import { fetchMe, logout } from "/js/api.js";
-import {
-  getLocalProjectCount,
-  MAX_LOCAL_PROJECTS
-} from "/js/state.js";
 
 /**
  * Wire the Account control in the app header.
@@ -22,16 +18,16 @@ export async function wireAccountMenu() {
     return null;
   }
 
-  const wrap = ensureMenuShell(btn);
+  ensureMenuShell(btn);
   const menu = document.getElementById("account-menu");
   const user = await fetchMe();
 
   if (user === null) {
-    renderSignedOut(wrap, btn, menu);
+    renderSignedOut(btn, menu);
     return null;
   }
 
-  renderSignedIn(wrap, btn, menu, user);
+  renderSignedIn(btn, menu, user);
   wireDropdown(btn, menu);
   return user;
 }
@@ -66,28 +62,16 @@ function ensureMenuShell(btn) {
 }
 
 /**
- * @param {HTMLElement} wrap
  * @param {HTMLElement} btn
  * @param {HTMLElement|null} menu
  */
-function renderSignedOut(wrap, btn, menu) {
+function renderSignedOut(btn, menu) {
   if (menu !== null) {
     menu.hidden = true;
   }
 
-  clearHint(wrap);
-
-  const count = getLocalProjectCount();
-  if (count > 0) {
-    const hint = document.createElement("span");
-    hint.className = "account-local-hint";
-    hint.textContent =
-      "Local " + String(count) + "/" + String(MAX_LOCAL_PROJECTS);
-    wrap.insertBefore(hint, btn);
-  }
-
   const link = document.createElement("a");
-  link.className = btn.className;
+  link.className = "button button-primary button-small";
   link.href = "/sign-in/";
   link.id = "account-menu-btn";
   link.textContent = "Sign in";
@@ -95,14 +79,11 @@ function renderSignedOut(wrap, btn, menu) {
 }
 
 /**
- * @param {HTMLElement} wrap
  * @param {HTMLElement} btn
  * @param {HTMLElement|null} menu
  * @param {{ id: string, email: string }} user
  */
-function renderSignedIn(wrap, btn, menu, user) {
-  clearHint(wrap);
-
+function renderSignedIn(btn, menu, user) {
   btn.textContent = "Account ▾";
   btn.setAttribute("aria-haspopup", "menu");
   btn.setAttribute("aria-expanded", "false");
@@ -153,16 +134,6 @@ function renderSignedIn(wrap, btn, menu, user) {
     window.location.href = "/sign-in/";
   });
   actions.appendChild(logoutBtn);
-}
-
-/**
- * @param {HTMLElement} wrap
- */
-function clearHint(wrap) {
-  const old = wrap.querySelector(".account-local-hint");
-  if (old !== null) {
-    old.remove();
-  }
 }
 
 /**

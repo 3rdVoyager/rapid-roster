@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Sign in to RapidRoster with an email link. No password."
+      content="RapidRoster is open source under the MIT License."
     />
-    <title>Sign in — RapidRoster</title>
+    <title>License — RapidRoster</title>
     <link rel="icon" href="/assets/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
@@ -17,9 +17,10 @@
     <link rel="stylesheet" href="/css/buttons.css" />
     <link rel="stylesheet" href="/css/site/header.css" />
     <link rel="stylesheet" href="/css/site/footer.css" />
-    <link rel="stylesheet" href="/css/site/sign-in.css" />
+    <link rel="stylesheet" href="/css/site/home.css" />
+    <link rel="stylesheet" href="/css/site/content.css" />
   </head>
-  <body class="page-sign-in">
+  <body class="page-license">
     <header class="site-header">
       <a class="site-brand" href="/">
         <img
@@ -44,7 +45,7 @@
           <span></span>
         </span>
       </button>
-      <nav class="site-nav" id="site-nav" aria-label="Primary">
+      <nav class="site-nav" aria-label="Primary" id="site-nav">
         <a class="button button-tertiary" href="/how-it-works/">How it works</a>
         <a class="button button-tertiary" href="/examples/">Examples</a>
         <a class="button button-tertiary" href="/presets/">Presets</a>
@@ -54,28 +55,39 @@
     </header>
 
     <main>
-      <section class="sign-in" aria-labelledby="sign-in-heading">
-        <h1 id="sign-in-heading">Sign in</h1>
-        <p class="sign-in-lead">
-          We'll email you a private sign-in link. No password.
+      <header class="page-intro">
+        <h1>License</h1>
+        <p class="page-intro-lead">
+          RapidRoster is open source under the MIT License.
         </p>
+      </header>
 
-        <form class="sign-in-form" action="/api/auth/request-link" method="post">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autocomplete="email"
-            required
-            placeholder="you@example.com"
-          />
-          <button class="button button-primary" type="submit">
-            Email me a link
-          </button>
-        </form>
+      <section class="section">
+          <pre class="license-text">MIT License
 
-        <p class="sign-in-status" hidden aria-live="polite"></p>
+Copyright (c) 2026 Joshua Cheng
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</pre>
+          <div class="page-actions">
+            <a class="button button-secondary" href="/about/">About</a>
+            <a class="button button-primary" href="/get-started/">Get started</a>
+          </div>
       </section>
     </main>
 
@@ -156,8 +168,6 @@
         <p>RapidRoster — open source under the MIT License.</p>
       </div>
     </footer>
-
     <script type="module" src="/js/site-nav.js"></script>
-    <script type="module" src="/js/sign-in.js"></script>
   </body>
 </html>

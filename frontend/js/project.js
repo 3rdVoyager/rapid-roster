@@ -78,8 +78,12 @@ import {
 import { fetchCloudProject } from "/js/api.js";
 import { wireAccountMenu } from "/js/account.js";
 
-import { buildLegalConfig, buildScoreConfig } from "/js/project-config.js";
-import { runSearch, mergeOptions } from "/js/generator/search.js";
+import {
+  buildLegalConfig,
+  buildScoreConfig,
+  findColumnKeyByType
+} from "/js/project-config.js";
+import { runSearch } from "/js/generator/search.js";
 import { getEntriesInSlot, getSlotsForEntry } from "/js/generator/placement.js";
 import { parseCsvText, csvToTable, tableToCsv } from "/js/csv.js";
 import {
@@ -107,8 +111,15 @@ let selectedEntryId = null;
 let selectedSlotId = null;
 
 /** Column types the user can pick in Setup headers. */
-const ENTRIES_COLUMN_TYPES = ["id", "number", "time", "text", "ignore"];
-const SLOTS_COLUMN_TYPES = ["id", "minSize", "maxSize", "text", "ignore"];
+const ENTRIES_COLUMN_TYPES = ["id", "name", "number", "time", "text", "ignore"];
+const SLOTS_COLUMN_TYPES = [
+  "id",
+  "name",
+  "minSize",
+  "maxSize",
+  "text",
+  "ignore"
+];
 
 /**
  * Id of a pending autosave timer from window.setTimeout.
@@ -465,7 +476,7 @@ function renderEntriesList(project) {
 
   for (let i = 0; i < project.entries.rows.length; i = i + 1) {
     const row = project.entries.rows[i];
-    const label = rowDisplayName(row);
+    const label = rowDisplayLabel(row, project.entries.columns);
     let selectedClass = "";
 
     if (row.id === selectedEntryId) {
@@ -523,7 +534,7 @@ function renderSlotsList(project) {
 
   for (let i = 0; i < project.slots.rows.length; i = i + 1) {
     const row = project.slots.rows[i];
-    const label = rowDisplayName(row);
+    const label = rowDisplayLabel(row, project.slots.columns);
     let selectedClass = "";
 
     if (row.id === selectedSlotId) {
@@ -558,10 +569,24 @@ function renderSlotsList(project) {
  * @param {Object} row
  * @returns {string}
  */
-function rowDisplayName(row) {
-  if (row.cells.name !== undefined && String(row.cells.name) !== "") {
-    return String(row.cells.name);
+/**
+ * Label for lists/results: optional name column when set, else the row id.
+ *
+ * @param {Object} row
+ * @param {Object[]} columns
+ * @returns {string}
+ */
+function rowDisplayLabel(row, columns) {
+  const nameKey = findColumnKeyByType(columns, "name");
+
+  if (nameKey !== null) {
+    const value = row.cells[nameKey];
+
+    if (value !== undefined && String(value) !== "") {
+      return String(value);
+    }
   }
+
   return row.id;
 }
 
@@ -864,8 +889,11 @@ function renderReview(project) {
     const limit = Math.min(8, project.entries.rows.length);
 
     for (let i = 0; i < limit; i = i + 1) {
-      const name = project.entries.rows[i].cells.name;
-      html = html + "<li>" + escapeHtml(String(name)) + "</li>";
+      const label = rowDisplayLabel(
+        project.entries.rows[i],
+        project.entries.columns
+      );
+      html = html + "<li>" + escapeHtml(label) + "</li>";
     }
 
     if (project.entries.rows.length > limit) {
@@ -888,7 +916,7 @@ function renderReview(project) {
 
     for (let i = 0; i < project.slots.rows.length; i = i + 1) {
       const row = project.slots.rows[i];
-      const name = row.cells.name;
+      const label = rowDisplayLabel(row, project.slots.columns);
       const minSize = row.cells.min_size;
       const maxSize = row.cells.max_size;
       const practice = row.cells.practice_night;
@@ -896,7 +924,7 @@ function renderReview(project) {
       html =
         html +
         "<li><strong>" +
-        escapeHtml(String(name)) +
+        escapeHtml(label) +
         "</strong><span>min " +
         escapeHtml(String(minSize)) +
         " · max " +
@@ -994,7 +1022,7 @@ function renderGenerateOptions(project) {
 
   if (project.results === null || project.results.options === undefined) {
     list.innerHTML =
-      '<p class="app-empty-hint">No options yet. Click Generate options.</p>';
+      '<p class="app-empty-hint">No options yet. Click Generate to search.</p>';
     return;
   }
 
@@ -1155,11 +1183,7 @@ function renderResultsBySlot(project, selected) {
   for (let s = 0; s < project.slots.rows.length; s = s + 1) {
     const slotRow = project.slots.rows[s];
     const slotId = slotRow.id;
-    let slotName = slotId;
-
-    if (slotRow.cells.name !== undefined) {
-      slotName = slotRow.cells.name;
-    }
+    const slotName = rowDisplayLabel(slotRow, project.slots.columns);
 
     const entryIds = getEntriesInSlot(selected.assignments, slotId);
 
@@ -1168,7 +1192,7 @@ function renderResultsBySlot(project, selected) {
       '<section class="results-group">' +
       '<header class="results-group-head">' +
       "<strong>" +
-      escapeHtml(String(slotName)) +
+      escapeHtml(slotName) +
       "</strong>" +
       '<span class="results-slot-count">' +
       entryIds.length +
@@ -1178,11 +1202,13 @@ function renderResultsBySlot(project, selected) {
 
     for (let p = 0; p < entryIds.length; p = p + 1) {
       const entryRow = findEntryRow(project, entryIds[p]);
-      html =
-        html +
-        "<li>" +
-        escapeHtml(entryDisplayName(entryIds[p], entryRow)) +
-        "</li>";
+      let label = entryIds[p];
+
+      if (entryRow !== null) {
+        label = rowDisplayLabel(entryRow, project.entries.columns);
+      }
+
+      html = html + "<li>" + escapeHtml(label) + "</li>";
     }
 
     if (entryIds.length === 0) {
@@ -1212,7 +1238,7 @@ function renderResultsByEntry(project, selected) {
   for (let i = 0; i < project.entries.rows.length; i = i + 1) {
     const entryRow = project.entries.rows[i];
     const entryId = entryRow.id;
-    const displayName = entryDisplayName(entryId, entryRow);
+    const displayName = rowDisplayLabel(entryRow, project.entries.columns);
     const slotIds = getSlotsForEntry(selected.assignments, entryId);
 
     let slotHtml = "";
@@ -1221,14 +1247,14 @@ function renderResultsByEntry(project, selected) {
       const slotRow = findSlotRow(project, slotIds[s]);
       let slotName = slotIds[s];
 
-      if (slotRow !== null && slotRow.cells.name !== undefined) {
-        slotName = slotRow.cells.name;
+      if (slotRow !== null) {
+        slotName = rowDisplayLabel(slotRow, project.slots.columns);
       }
 
       slotHtml =
         slotHtml +
         '<span class="results-assign-pill">' +
-        escapeHtml(String(slotName)) +
+        escapeHtml(slotName) +
         "</span>";
     }
 
@@ -1254,23 +1280,6 @@ function renderResultsByEntry(project, selected) {
 
   html = html + "</div>";
   return html;
-}
-
-/**
- * @param {string} entryId
- * @param {Object|null} entryRow
- * @returns {string}
- */
-function entryDisplayName(entryId, entryRow) {
-  if (
-    entryRow !== null &&
-    entryRow.cells.name !== undefined &&
-    String(entryRow.cells.name) !== ""
-  ) {
-    return String(entryRow.cells.name);
-  }
-
-  return entryId;
 }
 
 function findEntryRow(project, entryId) {
@@ -1450,11 +1459,6 @@ function wireControls() {
   const generateBtn = document.getElementById("generate-btn");
   if (generateBtn !== null) {
     generateBtn.addEventListener("click", onGenerateClick);
-  }
-
-  const retryBtn = document.getElementById("retry-generate-btn");
-  if (retryBtn !== null) {
-    retryBtn.addEventListener("click", onRetryClick);
   }
 
   // One listener on the whole list (event delegation):
@@ -2345,7 +2349,7 @@ function ensureDefaultEntriesColumns(project) {
 
   project.entries.columns = [
     { key: "id", label: "id", type: "id" },
-    { key: "name", label: "name", type: "text" }
+    { key: "name", label: "name", type: "name" }
   ];
 }
 
@@ -2356,7 +2360,7 @@ function ensureDefaultSlotsColumns(project) {
 
   project.slots.columns = [
     { key: "id", label: "id", type: "id" },
-    { key: "name", label: "name", type: "text" },
+    { key: "name", label: "name", type: "name" },
     { key: "min_size", label: "min_size", type: "minSize" },
     { key: "max_size", label: "max_size", type: "maxSize" }
   ];
@@ -2490,6 +2494,16 @@ function onSetupTableChange(event) {
   table.columns[colIndex].type = target.value;
   project.results = null;
   markProjectChanged();
+
+  // Name (and other typed columns) affect list/results labels.
+  if (tableKind === "entries") {
+    renderEntriesList(project);
+  } else if (tableKind === "slots") {
+    renderSlotsList(project);
+  }
+
+  renderReview(project);
+  renderResults(project);
 }
 
 /**
@@ -2697,38 +2711,41 @@ function onResultsLayoutClick(event) {
 }
 
 function onGenerateClick() {
-  runGeneration(false);
-}
-
-function onRetryClick() {
-  runGeneration(true);
+  runGeneration();
 }
 
 /**
- * @param {boolean} mergeWithExisting - Retry: keep old options and merge
+ * Run many independent searches, keep the top 5 unique layouts,
+ * then stop early once scores plateau.
  */
-function runGeneration(mergeWithExisting) {
+function runGeneration() {
   const project = getProject();
   const legalConfig = buildLegalConfig(project);
   const scoreConfig = buildScoreConfig(project);
 
   const statusTitle = document.getElementById("generate-status-title");
   const statusDetail = document.getElementById("generate-status-detail");
+  const generateBtn = document.getElementById("generate-btn");
+
+  if (generateBtn !== null) {
+    generateBtn.disabled = true;
+  }
 
   if (statusTitle !== null) {
     statusTitle.textContent = "Working…";
   }
 
   if (statusDetail !== null) {
-    statusDetail.textContent = "Searching for legal, high-scoring placements.";
+    statusDetail.textContent =
+      "Running many searches and keeping the top 5 options.";
   }
 
   // Let the browser paint "Working…" before the heavy search loop runs.
-  // setTimeout(fn, 20) means: run fn about 20 milliseconds from now.
   window.setTimeout(function () {
     const result = runSearch(legalConfig, scoreConfig, {
-      optionCount: 3,
-      attempts: 3,
+      optionCount: 5,
+      maxAttempts: 60,
+      stagnationLimit: 15,
       maxShakes: 2,
       maxImprovePasses: 20,
       onProgress: function (info) {
@@ -2737,8 +2754,24 @@ function runGeneration(mergeWithExisting) {
         }
 
         if (info.phase === "attempt") {
-          statusDetail.textContent =
-            "Attempt " + info.attempt + " of " + info.attempts;
+          let detail =
+            "Attempt " +
+            info.attempt +
+            " of up to " +
+            info.maxAttempts +
+            " · keeping top " +
+            String(info.kept);
+          if (info.bestScore !== null && info.bestScore !== undefined) {
+            detail =
+              detail + " · best " + formatScore(info.bestScore);
+          }
+          if (info.stagnantAttempts > 0) {
+            detail =
+              detail +
+              " · no improvement ×" +
+              String(info.stagnantAttempts);
+          }
+          statusDetail.textContent = detail;
         }
 
         if (info.phase === "improving" && info.entryIndex === 1) {
@@ -2750,11 +2783,20 @@ function runGeneration(mergeWithExisting) {
         }
 
         if (info.phase === "done") {
-          statusDetail.textContent =
+          let done =
             "Finished. Best score " + formatScore(info.bestScore);
+          if (info.stopReason === "stagnation") {
+            done =
+              done + " · stopped after scores stopped improving";
+          }
+          statusDetail.textContent = done;
         }
-      },
+      }
     });
+
+    if (generateBtn !== null) {
+      generateBtn.disabled = false;
+    }
 
     if (result.ok === false) {
       if (statusTitle !== null) {
@@ -2768,15 +2810,11 @@ function runGeneration(mergeWithExisting) {
       return;
     }
 
-    let options = result.options;
-
-    if (mergeWithExisting === true && project.results !== null) {
-      options = mergeOptions(project.results.options, result.options, 6);
-    }
+    const options = result.options;
 
     project.results = {
       options: options,
-      selectedRank: options[0].rank,
+      selectedRank: options[0].rank
     };
 
     markProjectChanged();
@@ -2786,10 +2824,14 @@ function runGeneration(mergeWithExisting) {
     }
 
     if (statusDetail !== null) {
-      statusDetail.textContent =
+      let detail =
         options.length +
         " option(s) ready · best score " +
         formatScore(options[0].totalScore);
+      if (result.stopReason === "stagnation") {
+        detail = detail + " · search plateaued";
+      }
+      statusDetail.textContent = detail;
     }
 
     renderGenerateOptions(project);

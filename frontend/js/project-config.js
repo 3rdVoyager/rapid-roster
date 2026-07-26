@@ -103,13 +103,13 @@ export function buildScoreConfig(project) {
 }
 
 /**
- * Find the first column key with a given type (id, minSize, …).
+ * Find the first column key with a given type (id, name, minSize, …).
  *
  * @param {Object[]} columns
  * @param {string} typeName
  * @returns {string|null}
  */
-function findColumnKeyByType(columns, typeName) {
+export function findColumnKeyByType(columns, typeName) {
   if (columns === undefined) {
     return null;
   }

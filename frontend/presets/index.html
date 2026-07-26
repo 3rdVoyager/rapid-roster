@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="RapidRoster helps organizers place people into teams, events, shifts, and classrooms using clear rules instead of fighting a spreadsheet."
+      content="RapidRoster presets — blank, sports, Science Olympiad, and volunteers starter packs."
     />
-    <title>RapidRoster — fair, rule-aware groupings</title>
+    <title>Presets — RapidRoster</title>
     <link rel="icon" href="/assets/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
@@ -22,16 +22,12 @@
     <link rel="stylesheet" href="/css/site/header.css" />
     <link rel="stylesheet" href="/css/site/footer.css" />
     <link rel="stylesheet" href="/css/site/home.css" />
+    <link rel="stylesheet" href="/css/site/content.css" />
   </head>
-  <body class="page-home">
+  <body class="page-presets">
     <header class="site-header">
       <a class="site-brand" href="/">
-        <img
-          src="/assets/rapid-roster-logo.png"
-          alt=""
-          width="36"
-          height="36"
-        />
+        <img src="/assets/rapid-roster-logo.png" alt="" width="36" height="36" />
         <span>Rapid<span class="brand-accent">Roster</span></span>
       </a>
       <button
@@ -43,166 +39,117 @@
         aria-label="Open menu"
       >
         <span class="site-nav-burger" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
+          <span></span><span></span><span></span>
         </span>
       </button>
       <nav class="site-nav" aria-label="Primary" id="site-nav">
         <a class="button button-tertiary" href="/how-it-works/">How it works</a>
         <a class="button button-tertiary" href="/examples/">Examples</a>
-        <a class="button button-tertiary" href="/presets/">Presets</a>
+        <a class="button button-tertiary" href="/presets/" aria-current="page">Presets</a>
         <a class="button button-tertiary" href="/faq/">FAQ</a>
         <a class="button button-primary" href="/get-started/">Get started</a>
       </nav>
     </header>
 
     <main>
-      <section class="hero">
-        <div class="hero-copy">
-          <h1 class="hero-brand">
-            <span>Rapid<span class="brand-accent">Roster</span></span>
-          </h1>
-          <p class="hero-lead">
-            Turn a participant list into fair, rule-aware groups —
-            teams, events, shifts, classrooms, and more.
-          </p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="/get-started/">Get started</a>
-            <a class="button button-secondary" href="/how-it-works/">How it works</a>
-          </div>
-        </div>
-        <figure class="screenshot-frame hero-shot">
-          <img
-            src="/assets/screenshots/workspace.png"
-            alt="RapidRoster workspace showing results with Team A and Team B assignments from a sports roster"
-            width="1600"
-            height="1000"
-            decoding="async"
-          />
-          <figcaption class="visually-hidden">
-            Results workspace with generated team assignments and export.
-          </figcaption>
-        </figure>
-      </section>
-
-      <section id="problem" class="section">
-        <h2>The problem</h2>
-        <p class="section-lead">
-          Manually building rosters is slow, and spreadsheets make the tradeoffs invisible.
+      <header class="page-intro">
+        <h1>Presets</h1>
+        <p class="page-intro-lead">
+          Starter packs that load sample entries, slots, and rules. After you apply one,
+          the project is normal editable data on the same engine.
         </p>
-        <ul class="problem-list">
-          <li>
-            <span class="material-symbols-outlined" aria-hidden="true">schedule</span>
-            <div>
-              <strong>Everything fights everything</strong>
-              <p>
-                Teammate requests, availability, roles, and skill balance all pull in different directions.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="material-symbols-outlined" aria-hidden="true">table</span>
-            <div>
-              <strong>Rules can't be seen in cells</strong>
-              <p>
-                The sheet holds only names and numbers. The real constraints live in your
-                head.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="material-symbols-outlined" aria-hidden="true">replay</span>
-            <div>
-              <strong>One change breaks three others</strong>
-              <p>
-                Move one person and you redo half the grid. Fairness becomes
-                guesswork, and you never know what you traded off.
-              </p>
-            </div>
-          </li>
-        </ul>
-      </section>
+      </header>
 
       <section class="section">
-        <div class="section-split">
-          <div class="section-copy">
-            <h2>Why RapidRoster</h2>
+        <div class="page-grid-2 page-grid">
+          <article class="page-card" id="blank">
+            <span class="material-symbols-outlined" aria-hidden="true">note_add</span>
+            <h3>Blank project</h3>
             <p>
-              RapidRoster lets organizers state tradeoffs as an explicit
-              rule list — then finds placements that respect hard constraints
-              and score best on the soft ones.
+              Empty tables. Download CSV templates, then import your own people and slots.
             </p>
+            <ul class="detail-list">
+              <li>No sample data</li>
+              <li>Best when you already have lists ready</li>
+            </ul>
+          </article>
+
+          <article class="page-card" id="sports">
+            <span class="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
+            <h3>Sports teams</h3>
             <p>
-              Import people and slots, set priorities, generate assignments,
-              review what was traded off, and export when it feels right.
+              Players into teams. Balance skill, cluster availability and requests, limit
+              keepers and coaches.
             </p>
-            <div class="hero-actions">
-              <a class="button button-secondary" href="/rules/">Explore rules</a>
-              <a class="button button-tertiary" href="/about/">About the project</a>
-            </div>
-          </div>
-          <figure class="screenshot-frame">
-            <img
-              src="/assets/screenshots/rules.png"
-              alt="Rules editor with Balance skill, teammate requests, and hard limits"
-              width="1600"
-              height="1000"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
+            <ul class="detail-list">
+              <li>Includes sample entries, slots, and rules</li>
+              <li>One team slot per player by default</li>
+            </ul>
+          </article>
+
+          <article class="page-card" id="science-olympiad">
+            <span class="material-symbols-outlined" aria-hidden="true">science</span>
+            <h3>Science Olympiad</h3>
+            <p>
+              Students into events with ranked preference columns. Conflict groups by time block.
+            </p>
+            <ul class="detail-list">
+              <li>Preference columns map to event names</li>
+              <li>Two events per student by default</li>
+            </ul>
+          </article>
+
+          <article class="page-card" id="volunteers">
+            <span class="material-symbols-outlined" aria-hidden="true">volunteer_activism</span>
+            <h3>Volunteers</h3>
+            <p>
+              Volunteers into shifts. Cluster strengths to needs and availability to time.
+            </p>
+            <ul class="detail-list">
+              <li>Lightweight rule set — easy to extend</li>
+              <li>One shift per volunteer by default</li>
+            </ul>
+          </article>
         </div>
       </section>
 
       <section class="section">
-        <h2>See it in the product</h2>
-        <p class="section-lead">
-          Setup, rules, generate, and results — one workspace for every kind of roster.
-        </p>
-        <div class="screenshot-row">
-          <figure class="screenshot-frame">
-            <img
-              src="/assets/screenshots/entries.png"
-              alt="Entries setup with player list and editor fields"
-              width="1600"
-              height="1000"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>Setup — entries &amp; fields</figcaption>
-          </figure>
-          <figure class="screenshot-frame">
-            <img
-              src="/assets/screenshots/generate.png"
-              alt="Generate panel with ranked roster options and scores"
-              width="1600"
-              height="1000"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>Generate — primary + alternatives</figcaption>
-          </figure>
-          <figure class="screenshot-frame">
-            <img
-              src="/assets/screenshots/results.png"
-              alt="Results panel listing who landed in each team"
-              width="1600"
-              height="1000"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>Results — assignments to export</figcaption>
-          </figure>
+        <h2>How to load a preset</h2>
+        <ol class="flow-list">
+          <li>
+            <span class="flow-step-num" aria-hidden="true"></span>
+            <div>
+              <h3>Open or create a project</h3>
+              <p>
+                From <a href="/get-started/">Get started</a>, open the projects list and
+                create a project (local or signed in).
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="flow-step-num" aria-hidden="true"></span>
+            <div>
+              <h3>Choose Load preset</h3>
+              <p>
+                New projects open the preset dialog. You can also load a preset later from
+                the workspace tools — it replaces entries, slots, and rules.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="flow-step-num" aria-hidden="true"></span>
+            <div>
+              <h3>Edit and generate</h3>
+              <p>
+                Tweak the sample data, adjust priorities, then regenerate to see ranked options.
+              </p>
+            </div>
+          </li>
+        </ol>
+        <div class="page-actions">
+          <a class="button button-primary" href="/get-started/">Get started</a>
+          <a class="button button-secondary" href="/examples/">See examples</a>
         </div>
-      </section>
-
-      <section class="section section-cta">
-        <h2>Ready to stop wrestling the spreadsheet?</h2>
-        <p class="section-lead">
-          Open a project and turn your lists into placements — start locally or sign in to sync across devices and get more storage.
-        </p>
-        <a class="button button-primary" href="/get-started/">Get started</a>
       </section>
     </main>
 
