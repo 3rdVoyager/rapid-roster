@@ -10,7 +10,7 @@ const root = path.join(__dirname, "..", "frontend");
 const NAV_ITEMS = [
   { href: "/how-it-works/", label: "How it works" },
   { href: "/examples/", label: "Examples" },
-  { href: "/presets/", label: "Presets" },
+  { href: "/docs/", label: "Docs" },
   { href: "/faq/", label: "FAQ" }
 ];
 
@@ -95,14 +95,13 @@ function buildFooterInner() {
               <li><a href="/get-started/">Get started</a></li>
               <li><a href="/sign-in/">Sign in</a></li>
               <li><a href="/how-it-works/">How it works</a></li>
-              <li><a href="/rules/">Rules</a></li>
               <li><a href="/examples/">Examples</a></li>
             </ul>
           </div>
           <div class="site-footer-col">
             <h2>Resources</h2>
             <ul>
-              <li><a href="/presets/">Presets</a></li>
+              <li><a href="/docs/">Docs</a></li>
               <li><a href="/faq/">FAQ</a></li>
               <li><a href="/contact/">Contact</a></li>
             </ul>
