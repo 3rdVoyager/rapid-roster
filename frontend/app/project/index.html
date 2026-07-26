@@ -58,6 +58,12 @@
           Load preset…
         </button>
         <a class="button button-ghost button-small" href="/app/">All projects</a>
+        <a
+          class="button button-ghost button-small"
+          href="/docs/#walkthroughs/project"
+        >
+          Help
+        </a>
       </div>
     </header>
 
@@ -465,9 +471,14 @@
               <p class="app-empty-hint">
                 Same format as preset <code>rules.csv</code>:
                 <code>entries.skill</code>,
-                <code>entries.availability ↔ slots.practice_night</code>,
+                <code>entries.availability &gt; slots.practice_night</code>,
                 limit options like <code>max=2</code> / <code>min=1</code>, hard
-                <code>yes</code>/<code>no</code>.
+                <code>yes</code>/<code>no</code>. Use <code>&gt;</code> to link an
+                entry column to a slot column. For times or tags, put discrete
+                values in the cell separated by <code>;</code> (for example
+                <code>Sat AM;Sat PM</code>) and use match option
+                <code>partial</code> — the engine does not yet detect overlapping
+                ranges.
               </p>
             </div>
           </div>

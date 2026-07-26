@@ -88,7 +88,7 @@ Every rule uses the same short flow:
 
 | Type | What it does | Example |
 | --- | --- | --- |
-| **Cluster** | Keep matched things together: people who share a value in the same slot, **or** a person in a slot whose name/ID matches a preference cell | Same school together; teammate requests; pref column `1` ↔ slot name |
+| **Cluster** | Keep matched things together: people who share a value in the same slot, **or** a person in a slot whose name/ID matches a preference cell | Same school together; teammate requests; pref column `1` > slot name |
 | **Separate** | Keep matched things apart | Spread schools; keep two people apart |
 | **Limit** | Min/max how many of a filtered set appear in each slot | Max 2 keepers; min 1 coach |
 | **Balance** | Keep a number roughly even across slots | Balance skill or age |
@@ -96,7 +96,7 @@ Every rule uses the same short flow:
 ### Cluster: two common data shapes
 
 1. **One participant column** — people with the same value prefer the same slot (school, tags with partial overlap, etc.).
-2. **Participant column(s) ↔ slot column** — when values match, prefer that **person in that slot** (preference rank columns full of slot names; strengths ↔ needed strengths; availability ↔ practice night).
+2. **Participant column(s) > slot column** — when values match, prefer that **person in that slot** (preference rank columns full of slot names; strengths > needed strengths; availability > practice night). Use `>` in the rule data cell (legacy `↔` still loads). For times or multi-tags, list discrete tokens with `;` and use **partial** match — overlapping ranges are not supported yet.
 
 Ranked slot picks (Science Olympiad / Google Form style) use shape 2: columns named `1`…`6` contain slot names; one soft Cluster rule per column with descending priority. See [examples/science-olympiad/](./examples/science-olympiad/).
 

@@ -34,31 +34,79 @@
         <span>Rapid<span class="brand-accent">Roster</span></span>
       </a>
 
+      <nav class="app-header-nav" aria-label="App">
+        <a class="app-header-nav-link" href="#projects" id="nav-projects" aria-current="page">
+          Projects
+        </a>
+        <a class="app-header-nav-link" href="#presets" id="nav-presets">Presets</a>
+        <a
+          class="app-header-nav-link"
+          href="/docs/#walkthroughs/project"
+          id="nav-help"
+        >
+          Help
+        </a>
+      </nav>
+
+      <div class="app-header-account">
+        <button class="button button-ghost button-small" type="button" id="export-all-btn">
+          Export all
+        </button>
+        <button class="button button-ghost button-small" type="button" id="import-hub-btn">
+          <input
+            type="file"
+            id="import-hub-file"
+            accept=".json,.rapidroster.json,application/json"
+          />
+          <label for="import-hub-file">Import</label>
+        </button>
+      </div>
     </header>
 
     <main class="dashboard">
-      <div class="dashboard-top">
-        <div>
-          <p class="dashboard-kicker">Workspace</p>
-          <h1>Projects</h1>
-          <p class="dashboard-lead">
-            Open a saved project or start a new one.
-          </p>
+      <section class="hub-view" id="view-projects" data-view="projects">
+        <div class="dashboard-top">
+          <div>
+            <p class="dashboard-kicker">Workspace</p>
+            <h1>Projects</h1>
+            <p class="dashboard-lead">
+              Open a saved project or start a new one. Everything stays in this browser.
+            </p>
+          </div>
+          <div class="dashboard-actions">
+            <button class="button button-primary" type="button" id="new-project-btn">
+              New project
+            </button>
+          </div>
         </div>
-        <div class="dashboard-actions">
-          <button class="button button-primary" type="button" id="new-project-btn">
-            New project
-          </button>
+
+        <div class="hub-status" id="hub-status" hidden aria-live="polite"></div>
+
+        <div class="hub-empty" id="hub-empty" hidden>
+          <h2>Start your first roster</h2>
+          <p>Projects save in this browser. Create one to get started.</p>
         </div>
-      </div>
 
-      <ul class="project-list" id="project-list">
-        <li class="project-list-status">Loading projects…</li>
-      </ul>
+        <ul class="project-list" id="project-list" hidden></ul>
 
-      <p class="dashboard-note">
-        Projects save in this browser on this device.
-      </p>
+        <p class="dashboard-note" id="projects-note">
+          Projects save in this browser on this device.
+        </p>
+      </section>
+
+      <section class="hub-view" id="view-presets" data-view="presets" hidden>
+        <div class="dashboard-top">
+          <div>
+            <p class="dashboard-kicker">Starters</p>
+            <h1>Presets</h1>
+            <p class="dashboard-lead">
+              Sample packs with entries, slots, and rules — or start blank and import your own CSVs.
+            </p>
+          </div>
+        </div>
+
+        <div class="preset-grid" id="preset-grid"></div>
+      </section>
     </main>
 
     <div
@@ -72,9 +120,9 @@
       <div class="app-modal-backdrop" id="new-project-backdrop"></div>
       <div class="app-modal-panel">
         <h2 id="new-project-title">New project</h2>
-        <p class="app-modal-lead">
-          Name your project to open the workspace. You’ll choose a blank start or a sample
-          preset next.
+        <p class="app-modal-lead" id="new-project-lead">
+          Name your project to open the workspace. You’ll choose a blank start or a
+          sample preset next.
         </p>
 
         <div class="app-field">

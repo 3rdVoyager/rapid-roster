@@ -69,7 +69,7 @@ Shared flow (details in [generator.md](./generator.md)):
 
 | Type | Intent |
 | --- | --- |
-| **Cluster** | Keep matched people together, or a person in a matching slot (including preference columns ↔ slot names) |
+| **Cluster** | Keep matched people together, or a person in a matching slot (including preference columns > slot names) |
 | **Separate** | Keep matched people apart / spread a value |
 | **Limit** | Min/max how many of a filtered set appear in each slot |
 | **Balance** | Keep a number roughly even across slots |

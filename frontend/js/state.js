@@ -102,11 +102,7 @@ function saveProjectLocal() {
     const index = readLocalIndex();
 
     localStorage.setItem(projectStorageKey(id), JSON.stringify(currentProject));
-    upsertLocalIndex(index, {
-      id: id,
-      name: currentProject.name || "Untitled project",
-      updatedAt: currentProject.updatedAt
-    });
+    upsertLocalIndex(index, buildIndexEntryFromProject(currentProject));
     writeLocalIndex(index);
     localStorage.setItem(ACTIVE_KEY, id);
     // Keep legacy key in sync for older code paths / quick open.
@@ -213,13 +209,7 @@ function migrateLegacyLocalProject() {
       projectStorageKey(project.id),
       JSON.stringify(project)
     );
-    writeLocalIndex([
-      {
-        id: String(project.id),
-        name: project.name || "Untitled project",
-        updatedAt: project.updatedAt || new Date().toISOString()
-      }
-    ]);
+    writeLocalIndex([buildIndexEntryFromProject(project)]);
     localStorage.setItem(ACTIVE_KEY, String(project.id));
   } catch (error) {
     console.error("Could not migrate legacy local project:", error);
@@ -228,12 +218,93 @@ function migrateLegacyLocalProject() {
 }
 
 /**
- * List local (browser-only) projects, newest first.
+ * Build a rich index row from a full project object.
  *
- * @returns {Array<{ id: string, name: string, updatedAt: string }>}
+ * @param {Object} project
+ * @returns {Object}
+ */
+export function buildIndexEntryFromProject(project) {
+  const entryCount =
+    project.entries && Array.isArray(project.entries.rows)
+      ? project.entries.rows.length
+      : 0;
+  const slotCount =
+    project.slots && Array.isArray(project.slots.rows)
+      ? project.slots.rows.length
+      : 0;
+  const ruleCount = Array.isArray(project.rules) ? project.rules.length : 0;
+  const hasResults =
+    project.results !== null && project.results !== undefined;
+
+  return {
+    id: String(project.id || ""),
+    name: project.name || "Untitled project",
+    updatedAt: project.updatedAt || new Date().toISOString(),
+    presetId:
+      typeof project.presetId === "string" ? project.presetId : "",
+    entryCount: entryCount,
+    slotCount: slotCount,
+    ruleCount: ruleCount,
+    hasResults: hasResults
+  };
+}
+
+/**
+ * Read a local project from storage without changing the in-memory project.
+ *
+ * @param {string} id
+ * @returns {Object|null}
+ */
+export function peekLocalProjectById(id) {
+  if (id === undefined || id === "") {
+    return null;
+  }
+
+  try {
+    migrateLegacyLocalProject();
+    const text = localStorage.getItem(projectStorageKey(id));
+    if (text === null || text === "") {
+      return null;
+    }
+    const project = JSON.parse(text);
+    upgradeLegacyNameColumns(project);
+    return project;
+  } catch (error) {
+    console.error("Could not peek local project:", error);
+    return null;
+  }
+}
+
+/**
+ * List local (browser-only) projects, newest first.
+ * Migrates slim index rows to include counts when missing.
+ *
+ * @returns {Array<Object>}
  */
 export function listLocalProjects() {
   const index = readLocalIndex().slice();
+  let dirty = false;
+
+  for (let i = 0; i < index.length; i = i + 1) {
+    const entry = index[i];
+    if (entry === null || typeof entry !== "object") {
+      continue;
+    }
+    if (typeof entry.entryCount === "number") {
+      continue;
+    }
+    const project = peekLocalProjectById(entry.id);
+    if (project === null) {
+      continue;
+    }
+    index[i] = buildIndexEntryFromProject(project);
+    dirty = true;
+  }
+
+  if (dirty === true) {
+    writeLocalIndex(index);
+  }
+
   index.sort(function (a, b) {
     const at = a.updatedAt || "";
     const bt = b.updatedAt || "";
@@ -292,6 +363,89 @@ export function loadLocalProjectById(id) {
     console.error("Could not load local project:", error);
     return null;
   }
+}
+
+/**
+ * Duplicate a local project (new id, "Copy of …" name).
+ *
+ * @param {string} id
+ * @returns {Object|null} the saved copy
+ */
+export function duplicateLocalProject(id) {
+  const source = peekLocalProjectById(id);
+  if (source === null) {
+    return null;
+  }
+
+  const copy = JSON.parse(JSON.stringify(source));
+  copy.id = makeId("proj");
+  copy.name = "Copy of " + (source.name || "Untitled project");
+  copy.updatedAt = new Date().toISOString();
+
+  const previous = currentProject;
+  const previousDirty = isDirty;
+  currentProject = copy;
+  const saved = saveProjectLocal();
+  if (saved === false) {
+    currentProject = previous;
+    isDirty = previousDirty;
+    return null;
+  }
+
+  // Restore whatever was open in memory (hub usually has null).
+  currentProject = previous;
+  isDirty = previousDirty;
+  return copy;
+}
+
+/**
+ * Save an arbitrary project object into the local library.
+ * Assigns a new id when forceNewId is true or the id already exists.
+ *
+ * @param {Object} project
+ * @param {{ forceNewId?: boolean }} [options]
+ * @returns {{ ok: boolean, project: Object|null, error?: string }}
+ */
+export function saveProjectIntoLibrary(project, options) {
+  const opts = options || {};
+  if (project === null || typeof project !== "object") {
+    return { ok: false, project: null, error: "Invalid project." };
+  }
+
+  const next = JSON.parse(JSON.stringify(project));
+  upgradeLegacyNameColumns(next);
+
+  let id = String(next.id || "");
+  if (
+    opts.forceNewId === true ||
+    id === "" ||
+    peekLocalProjectById(id) !== null
+  ) {
+    id = makeId("proj");
+    next.id = id;
+  }
+
+  if (next.name === undefined || next.name === "") {
+    next.name = "Imported project";
+  }
+  next.updatedAt = new Date().toISOString();
+
+  const previous = currentProject;
+  const previousDirty = isDirty;
+  currentProject = next;
+  const saved = saveProjectLocal();
+  currentProject = previous;
+  isDirty = previousDirty;
+
+  if (saved === false) {
+    return {
+      ok: false,
+      project: null,
+      error: "Could not save in this browser."
+    };
+  }
+
+  return { ok: true, project: next };
 }
 
 /**
@@ -414,8 +568,14 @@ export function createEmptyProject(name) {
 /** Marker written into exported project files. */
 export const PROJECT_FILE_FORMAT = "rapidroster-project";
 
+/** Marker for multi-project backup files. */
+export const LIBRARY_FILE_FORMAT = "rapidroster-library";
+
 /** Bump when the on-disk shape changes in a breaking way. */
 export const PROJECT_FILE_FORMAT_VERSION = 1;
+
+/** Library backup format version. */
+export const LIBRARY_FILE_FORMAT_VERSION = 1;
 
 /**
  * Build a JSON string for downloading the current project.
@@ -424,25 +584,219 @@ export const PROJECT_FILE_FORMAT_VERSION = 1;
  * @param {Object} project
  * @returns {string}
  */
+/**
+ * @param {Object} project
+ * @returns {Object}
+ */
+function projectExportPayload(project) {
+  return {
+    id: project.id,
+    name: project.name,
+    updatedAt: project.updatedAt,
+    presetId: project.presetId,
+    entries: project.entries,
+    slots: project.slots,
+    setup: project.setup,
+    rules: project.rules,
+    results: project.results
+  };
+}
+
 export function serializeProjectFile(project) {
   const payload = {
     format: PROJECT_FILE_FORMAT,
     formatVersion: PROJECT_FILE_FORMAT_VERSION,
     exportedAt: new Date().toISOString(),
-    project: {
-      id: project.id,
-      name: project.name,
-      updatedAt: project.updatedAt,
-      presetId: project.presetId,
-      entries: project.entries,
-      slots: project.slots,
-      setup: project.setup,
-      rules: project.rules,
-      results: project.results
-    }
+    project: projectExportPayload(project)
   };
 
   return JSON.stringify(payload, null, 2);
+}
+
+/**
+ * Build a JSON backup of many projects.
+ *
+ * @param {Object[]} projects
+ * @returns {string}
+ */
+export function serializeLibraryFile(projects) {
+  const list = Array.isArray(projects) ? projects : [];
+  const payload = {
+    format: LIBRARY_FILE_FORMAT,
+    formatVersion: LIBRARY_FILE_FORMAT_VERSION,
+    exportedAt: new Date().toISOString(),
+    projects: list.map(function (project) {
+      return projectExportPayload(project);
+    })
+  };
+  return JSON.stringify(payload, null, 2);
+}
+
+/**
+ * Parse a library backup file.
+ *
+ * @param {string} text
+ * @returns {{ ok: true, projects: Object[] }|{ ok: false, error: string }}
+ */
+export function parseLibraryFile(text) {
+  let data = null;
+
+  try {
+    data = JSON.parse(text);
+  } catch (error) {
+    return { ok: false, error: "That file is not valid JSON." };
+  }
+
+  if (data === null || typeof data !== "object") {
+    return {
+      ok: false,
+      error: "That file does not look like a RapidRoster backup."
+    };
+  }
+
+  if (data.format !== LIBRARY_FILE_FORMAT) {
+    return {
+      ok: false,
+      error: "That file is not a RapidRoster library backup."
+    };
+  }
+
+  if (Number(data.formatVersion) > LIBRARY_FILE_FORMAT_VERSION) {
+    return {
+      ok: false,
+      error:
+        "This backup is from a newer RapidRoster version. Update the app and try again."
+    };
+  }
+
+  if (Array.isArray(data.projects) === false) {
+    return { ok: false, error: "That backup has no projects list." };
+  }
+
+  const projects = [];
+  for (let i = 0; i < data.projects.length; i = i + 1) {
+    const parsed = parseProjectFile(
+      JSON.stringify({
+        format: PROJECT_FILE_FORMAT,
+        formatVersion: PROJECT_FILE_FORMAT_VERSION,
+        project: data.projects[i]
+      })
+    );
+    if (parsed.ok === false) {
+      return {
+        ok: false,
+        error: "Project " + String(i + 1) + ": " + parsed.error
+      };
+    }
+    projects.push(parsed.project);
+  }
+
+  return { ok: true, projects: projects };
+}
+
+/**
+ * Detect single-project vs library backup and return projects to import.
+ *
+ * @param {string} text
+ * @returns {{ ok: true, projects: Object[], kind: "project"|"library" }|{ ok: false, error: string }}
+ */
+export function parseImportFile(text) {
+  let data = null;
+  try {
+    data = JSON.parse(text);
+  } catch (error) {
+    return { ok: false, error: "That file is not valid JSON." };
+  }
+
+  if (data !== null && typeof data === "object" && data.format === LIBRARY_FILE_FORMAT) {
+    const lib = parseLibraryFile(text);
+    if (lib.ok === false) {
+      return lib;
+    }
+    return { ok: true, projects: lib.projects, kind: "library" };
+  }
+
+  const single = parseProjectFile(text);
+  if (single.ok === false) {
+    return single;
+  }
+  return { ok: true, projects: [single.project], kind: "project" };
+}
+
+/**
+ * @param {string} name
+ * @returns {string}
+ */
+export function safeDownloadFilename(name) {
+  let stem = String(name || "project");
+  stem = stem.trim().toLowerCase();
+  stem = stem.replace(/[^a-z0-9]+/g, "-");
+  stem = stem.replace(/^-+|-+$/g, "");
+  if (stem === "") {
+    stem = "project";
+  }
+  return stem;
+}
+
+/**
+ * Trigger a browser download of a text file.
+ *
+ * @param {string} filename
+ * @param {string} text
+ * @param {string} [mime]
+ */
+export function downloadTextFile(filename, text, mime) {
+  const type = mime || "application/json;charset=utf-8";
+  const blob = new Blob([text], { type: type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Download one project as a .rapidroster.json file.
+ *
+ * @param {Object} project
+ */
+export function downloadProjectFile(project) {
+  const text = serializeProjectFile(project);
+  const filename =
+    safeDownloadFilename(project.name) + ".rapidroster.json";
+  downloadTextFile(filename, text);
+}
+
+/**
+ * Download every local project as one library backup file.
+ *
+ * @returns {boolean} false when there is nothing to export
+ */
+export function downloadLibraryBackup() {
+  const index = listLocalProjects();
+  if (index.length === 0) {
+    return false;
+  }
+
+  const projects = [];
+  for (let i = 0; i < index.length; i = i + 1) {
+    const project = peekLocalProjectById(index[i].id);
+    if (project !== null) {
+      projects.push(project);
+    }
+  }
+
+  if (projects.length === 0) {
+    return false;
+  }
+
+  const text = serializeLibraryFile(projects);
+  const day = new Date().toISOString().slice(0, 10);
+  downloadTextFile("rapidroster-backup-" + day + ".json", text);
+  return true;
 }
 
 /**

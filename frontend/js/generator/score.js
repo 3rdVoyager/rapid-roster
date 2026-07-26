@@ -79,7 +79,7 @@
  *         type: "cluster",
  *         hard: false,
  *         priority: 7,
- *         shape: "entryMatchesSlot", // person value ↔ slot value
+ *         shape: "entryMatchesSlot", // person value > slot value
  *         entryAttribute: "availability",
  *         slotAttribute: "practice_night",
  *         match: "partial"
@@ -413,7 +413,7 @@ function limitSatisfactionForSlot(matchCount, rule) {
  *
  * 2. entryMatchesSlot
  *    A person's attribute should match a slot attribute.
- *    Example: availability ↔ practice_night, or pref column ↔ slot name.
+ *    Example: availability > practice_night, or pref column > slot name.
  *
  * @returns {number} 0-1
  */

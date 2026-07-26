@@ -42,7 +42,7 @@ export const PRESET_CATALOG = [
     id: "volunteers",
     name: "Volunteers",
     summary:
-      "Volunteers into shifts. Cluster strengths ↔ needs and availability ↔ time.",
+      "Volunteers into shifts. Cluster strengths > needs and availability > time.",
     defaultSlotsPerEntry: 1,
     loadsSampleData: true
   }
@@ -212,8 +212,8 @@ export const RULES_CSV_HEADERS = [
  * Expected columns: id, name, type, data, filter, options, priority, hard
  * data examples:
  *   entries.skill
- *   entries.availability ↔ slots.practice_night
- *   preferences.1 ↔ slots.name  (treated as entry column "1")
+ *   entries.availability > slots.practice_night
+ *   preferences.1 > slots.name  (treated as entry column "1")
  *
  * @param {string} text
  * @returns {Object[]}
@@ -389,7 +389,7 @@ function ruleDataToCsv(rule) {
   if (rule.shape === "entryMatchesSlot") {
     const left = rule.entryAttribute || "";
     const right = rule.slotAttribute || "";
-    return "entries." + left + " ↔ slots." + right;
+    return "entries." + left + " > slots." + right;
   }
 
   if (rule.entryAttribute !== undefined && rule.entryAttribute !== "") {
@@ -447,9 +447,10 @@ function applyDataField(rule, data) {
     return;
   }
 
-  // "left ↔ right" form
-  if (data.indexOf("↔") !== -1) {
-    const parts = data.split("↔");
+  // "left > right" form (legacy "↔" still accepted)
+  const sep = findMatchDataSeparator(data);
+  if (sep !== null) {
+    const parts = data.split(sep);
     const left = cleanAttrPath(parts[0]);
     const right = cleanAttrPath(parts[1]);
 
@@ -460,7 +461,7 @@ function applyDataField(rule, data) {
         rule.slotAttribute = right.attribute;
         rule.match = "exact";
       } else {
-        // entries.X ↔ entries.Y — treat as "same value together" on left attr for now
+        // entries.X > entries.Y — treat as "same value together" on left attr for now
         rule.shape = "entriesTogether";
         rule.entryAttribute = left.attribute;
         rule.match = "exact";
@@ -478,6 +479,23 @@ function applyDataField(rule, data) {
     rule.shape = "entriesTogether";
     rule.match = "exact";
   }
+}
+
+/**
+ * Separator between entry and slot sides in a Cluster/Separate data cell.
+ * Prefer ">" (easy to type). Legacy "↔" still parses.
+ *
+ * @param {string} data
+ * @returns {string|null}
+ */
+function findMatchDataSeparator(data) {
+  if (data.indexOf("↔") !== -1) {
+    return "↔";
+  }
+  if (data.indexOf(">") !== -1) {
+    return ">";
+  }
+  return null;
 }
 
 /**

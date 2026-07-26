@@ -209,7 +209,7 @@ const CONTENT = {
             type: "ol",
             items: [
               "Load the <strong>Volunteers</strong> preset into a new project.",
-              "Check that strengths ↔ needs and availability ↔ time are set as Cluster rules.",
+              "Check that strengths > needs and availability > time are set as Cluster rules.",
               "Add a Limit rule if a shift needs a minimum number of experienced volunteers.",
               "Generate, review By slot for thin coverage, then adjust and regenerate.",
               "Export CSV for your staffing sheet."

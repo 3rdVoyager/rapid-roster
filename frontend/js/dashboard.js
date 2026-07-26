@@ -1,108 +1,274 @@
 /**
  * dashboard.js
  *
- * Project list page (/app/): local multi-project library in this browser.
- *
- * Preset packs are chosen in the project workspace after create (?new=1).
+ * Local app hub (/app/):
+ *   - Projects view (empty state + rich list)
+ *   - Presets view
+ *   - Create from blank or preset
+ *   - Export all / import backup
  */
 
 import {
-  createEmptyProject,
   setProject,
   saveProject,
   listLocalProjects,
-  deleteLocalProject
+  deleteLocalProject,
+  duplicateLocalProject,
+  peekLocalProjectById,
+  saveProjectIntoLibrary,
+  downloadProjectFile,
+  downloadLibraryBackup,
+  parseImportFile
 } from "/js/state.js";
 
+import {
+  PRESET_CATALOG,
+  getPresetInfo,
+  buildProjectFromPreset
+} from "/js/presets.js";
+
+/** @type {"projects"|"presets"} */
+let currentView = "projects";
+
+/** Preset id selected in the create modal. */
+let selectedCreatePresetId = "blank";
+
 async function main() {
+  wireHeaderNav();
+  wireHubActions();
   wireNewProjectModal();
   wireProjectListClicks();
-  renderProjectList();
+  fillPresetGrid();
+  applyHashView();
+  window.addEventListener("hashchange", applyHashView);
+  await refreshProjectsView();
 }
 
-function renderProjectList() {
-  const listEl = document.getElementById("project-list");
-  const noteEl = document.querySelector(".dashboard-note");
+function wireHeaderNav() {
+  const projects = document.getElementById("nav-projects");
+  const presets = document.getElementById("nav-presets");
 
-  if (listEl === null) {
+  if (projects !== null) {
+    projects.addEventListener("click", function (event) {
+      event.preventDefault();
+      setView("projects");
+    });
+  }
+
+  if (presets !== null) {
+    presets.addEventListener("click", function (event) {
+      event.preventDefault();
+      setView("presets");
+    });
+  }
+}
+
+/**
+ * @param {"projects"|"presets"} view
+ */
+function setView(view) {
+  currentView = view === "presets" ? "presets" : "projects";
+  const nextHash = currentView === "presets" ? "#presets" : "#projects";
+  if (window.location.hash !== nextHash) {
+    window.history.replaceState({}, "", nextHash);
+  }
+  renderViewShell();
+}
+
+function applyHashView() {
+  const hash = String(window.location.hash || "").toLowerCase();
+  if (hash === "#presets") {
+    currentView = "presets";
+  } else {
+    currentView = "projects";
+  }
+  renderViewShell();
+}
+
+function renderViewShell() {
+  const projectsView = document.getElementById("view-projects");
+  const presetsView = document.getElementById("view-presets");
+  const navProjects = document.getElementById("nav-projects");
+  const navPresets = document.getElementById("nav-presets");
+
+  if (projectsView !== null) {
+    projectsView.hidden = currentView !== "projects";
+  }
+  if (presetsView !== null) {
+    presetsView.hidden = currentView !== "presets";
+  }
+  if (navProjects !== null) {
+    if (currentView === "projects") {
+      navProjects.setAttribute("aria-current", "page");
+    } else {
+      navProjects.removeAttribute("aria-current");
+    }
+  }
+  if (navPresets !== null) {
+    if (currentView === "presets") {
+      navPresets.setAttribute("aria-current", "page");
+    } else {
+      navPresets.removeAttribute("aria-current");
+    }
+  }
+}
+
+function wireHubActions() {
+  const exportAllBtn = document.getElementById("export-all-btn");
+  if (exportAllBtn !== null) {
+    exportAllBtn.addEventListener("click", function () {
+      const ok = downloadLibraryBackup();
+      if (ok === false) {
+        setHubStatus("No projects to export yet.", true);
+      } else {
+        setHubStatus("Backup downloaded.", false);
+      }
+    });
+  }
+
+  const importFile = document.getElementById("import-hub-file");
+  if (importFile !== null) {
+    importFile.addEventListener("change", onImportHubFileChange);
+  }
+}
+
+/**
+ * @param {string|null} message
+ * @param {boolean} [isError]
+ */
+function setHubStatus(message, isError) {
+  const el = document.getElementById("hub-status");
+  if (el === null) {
+    return;
+  }
+  if (message === null || message === "") {
+    el.hidden = true;
+    el.textContent = "";
+    el.classList.remove("is-error");
+    return;
+  }
+  el.hidden = false;
+  el.textContent = message;
+  if (isError === true) {
+    el.classList.add("is-error");
+  } else {
+    el.classList.remove("is-error");
+  }
+}
+
+async function refreshProjectsView() {
+  const listEl = document.getElementById("project-list");
+  const emptyEl = document.getElementById("hub-empty");
+  const noteEl = document.getElementById("projects-note");
+
+  if (listEl === null || emptyEl === null) {
     return;
   }
 
-  if (noteEl !== null) {
-    noteEl.hidden = false;
-    noteEl.textContent =
-      "Projects save in this browser on this device.";
+  const projects = listLocalProjects();
+
+  if (projects.length === 0) {
+    emptyEl.hidden = false;
+    listEl.hidden = true;
+    listEl.innerHTML = "";
+    if (noteEl !== null) {
+      noteEl.hidden = true;
+    }
+    return;
   }
 
-  renderLocalList(listEl);
+  emptyEl.hidden = true;
+  listEl.hidden = false;
+  if (noteEl !== null) {
+    noteEl.hidden = false;
+  }
+  renderLocalList(listEl, projects);
 }
 
 /**
  * @param {HTMLElement} listEl
+ * @param {Object[]} projects
  */
-function renderLocalList(listEl) {
-  const projects = listLocalProjects();
-
-  if (projects.length === 0) {
-    listEl.innerHTML =
-      '<li class="project-list-status">No projects yet. Create one to get started.</li>';
-    return;
-  }
-
+function renderLocalList(listEl, projects) {
   let html = "";
   for (let i = 0; i < projects.length; i = i + 1) {
-    const p = projects[i];
-    let meta = "Saved in this browser";
-    if (p.updatedAt) {
-      meta = meta + " · " + formatUpdated(p.updatedAt);
-    }
-    html =
-      html +
-      buildProjectListItem({
-        href: "/app/project/?id=" + encodeURIComponent(p.id),
-        name: p.name || "Untitled project",
-        meta: meta,
-        deleteId: p.id
-      });
+    html = html + buildProjectListItem(projects[i]);
   }
-
   listEl.innerHTML = html;
 }
 
 /**
- * @param {{ href: string, name: string, meta: string, deleteId: string }} opts
+ * @param {Object} p
  * @returns {string}
  */
-function buildProjectListItem(opts) {
+function buildProjectListItem(p) {
+  const name = p.name || "Untitled project";
+  const href = "/app/project/?id=" + encodeURIComponent(p.id);
+  let meta = formatUpdated(p.updatedAt);
+  const counts =
+    String(p.entryCount || 0) +
+    " entries · " +
+    String(p.slotCount || 0) +
+    " slots · " +
+    String(p.ruleCount || 0) +
+    " rules";
+  meta = meta + " · " + counts;
+
+  let tags = "";
+  const preset = p.presetId ? getPresetInfo(p.presetId) : null;
+  if (preset !== null && preset.id !== "blank") {
+    tags =
+      tags +
+      '<span class="project-row-tag">' +
+      escapeHtml(preset.name) +
+      "</span>";
+  }
+  if (p.hasResults === true) {
+    tags = tags + '<span class="project-row-tag project-row-tag-soft">Has results</span>';
+  }
+
   return (
     '<li class="project-list-item">' +
     '<a class="project-row" href="' +
-    escapeHtml(opts.href) +
+    escapeHtml(href) +
     '">' +
     '<span class="project-row-icon" aria-hidden="true">' +
     '<span class="material-symbols-outlined">folder_open</span>' +
     "</span>" +
     '<span class="project-row-main">' +
     "<strong>" +
-    escapeHtml(opts.name) +
+    escapeHtml(name) +
     "</strong>" +
     '<span class="project-row-meta">' +
-    escapeHtml(opts.meta) +
+    escapeHtml(meta) +
     "</span>" +
+    (tags !== "" ? '<span class="project-row-tags">' + tags + "</span>" : "") +
     "</span>" +
     '<span class="project-row-aside">' +
     '<span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>' +
     "</span>" +
     "</a>" +
-    '<button class="button button-secondary button-small project-delete-btn" type="button" aria-label="Delete ' +
-    escapeHtml(opts.name) +
-    '" title="Delete" data-delete-id="' +
-    escapeHtml(opts.deleteId) +
-    '" data-delete-name="' +
-    escapeHtml(opts.name) +
+    '<div class="project-row-actions">' +
+    '<button class="button button-ghost button-small project-action-btn" type="button" data-action="duplicate" data-id="' +
+    escapeHtml(p.id) +
+    '" data-name="' +
+    escapeHtml(name) +
+    '" title="Duplicate">Duplicate</button>' +
+    '<button class="button button-ghost button-small project-action-btn" type="button" data-action="export" data-id="' +
+    escapeHtml(p.id) +
+    '" data-name="' +
+    escapeHtml(name) +
+    '" title="Export">Export</button>' +
+    '<button class="button button-secondary button-small project-action-btn project-delete-btn" type="button" data-action="delete" data-id="' +
+    escapeHtml(p.id) +
+    '" data-name="' +
+    escapeHtml(name) +
+    '" title="Delete" aria-label="Delete ' +
+    escapeHtml(name) +
     '">' +
     '<span class="material-symbols-outlined" aria-hidden="true">delete</span>' +
     "</button>" +
+    "</div>" +
     "</li>"
   );
 }
@@ -113,8 +279,8 @@ function wireProjectListClicks() {
     return;
   }
 
-  listEl.addEventListener("click", function (event) {
-    const btn = event.target.closest(".project-delete-btn");
+  listEl.addEventListener("click", async function (event) {
+    const btn = event.target.closest(".project-action-btn");
     if (btn === null) {
       return;
     }
@@ -122,34 +288,166 @@ function wireProjectListClicks() {
     event.preventDefault();
     event.stopPropagation();
 
-    const id = btn.getAttribute("data-delete-id");
-    const name = btn.getAttribute("data-delete-name") || "this project";
+    const action = btn.getAttribute("data-action");
+    const id = btn.getAttribute("data-id");
+    const name = btn.getAttribute("data-name") || "this project";
 
-    const confirmed = window.confirm(
-      'Delete "' + name + '"? This cannot be undone.'
-    );
-    if (confirmed === false) {
+    if (id === null || id === "") {
       return;
     }
 
     btn.disabled = true;
 
     try {
-      if (id !== null && id !== "") {
+      if (action === "delete") {
+        const confirmed = window.confirm(
+          'Delete "' + name + '"? This cannot be undone.'
+        );
+        if (confirmed === false) {
+          btn.disabled = false;
+          return;
+        }
         deleteLocalProject(id);
         setProject(null);
+        setHubStatus('Deleted "' + name + '".', false);
+        await refreshProjectsView();
+        return;
       }
-      renderProjectList();
+
+      if (action === "export") {
+        const project = peekLocalProjectById(id);
+        if (project === null) {
+          setHubStatus("Could not find that project.", true);
+        } else {
+          downloadProjectFile(project);
+          setHubStatus('Exported "' + name + '".', false);
+        }
+        btn.disabled = false;
+        return;
+      }
+
+      if (action === "duplicate") {
+        const copy = duplicateLocalProject(id);
+        if (copy === null) {
+          setHubStatus("Could not duplicate that project.", true);
+        } else {
+          setHubStatus('Duplicated as "' + copy.name + '".', false);
+          await refreshProjectsView();
+        }
+        return;
+      }
     } catch (error) {
       console.error(error);
-      window.alert(
-        error && error.message
-          ? error.message
-          : "Could not delete that project."
+      setHubStatus(
+        error && error.message ? error.message : "Something went wrong.",
+        true
       );
-      btn.disabled = false;
+    }
+
+    btn.disabled = false;
+  });
+}
+
+function fillPresetGrid() {
+  const grid = document.getElementById("preset-grid");
+  if (grid === null) {
+    return;
+  }
+
+  let html = "";
+  for (let i = 0; i < PRESET_CATALOG.length; i = i + 1) {
+    const preset = PRESET_CATALOG[i];
+    html =
+      html +
+      '<article class="preset-card">' +
+      "<h2>" +
+      escapeHtml(preset.name) +
+      "</h2>" +
+      "<p>" +
+      escapeHtml(preset.summary) +
+      "</p>" +
+      '<button class="button button-primary" type="button" data-use-preset="' +
+      escapeHtml(preset.id) +
+      '">Use this preset</button>' +
+      "</article>";
+  }
+  grid.innerHTML = html;
+
+  grid.addEventListener("click", function (event) {
+    const btn = event.target.closest("[data-use-preset]");
+    if (btn === null) {
+      return;
+    }
+    const presetId = btn.getAttribute("data-use-preset");
+    if (presetId) {
+      openCreateModal(presetId);
     }
   });
+}
+
+/**
+ * @param {string} [presetId]
+ */
+function openCreateModal(presetId) {
+  const modal = document.getElementById("new-project-modal");
+  if (modal === null) {
+    return;
+  }
+
+  selectedCreatePresetId =
+    typeof presetId === "string" && presetId !== "" ? presetId : "blank";
+
+  const lead = document.getElementById("new-project-lead");
+  const info = getPresetInfo(selectedCreatePresetId);
+  if (lead !== null) {
+    if (info !== null && info.loadsSampleData === true) {
+      lead.textContent =
+        "Name your project. It will open with the " + info.name + " sample data.";
+    } else {
+      lead.textContent =
+        "Name your project to open the workspace. You’ll choose a blank start or a sample preset next.";
+    }
+  }
+
+  syncNameDefaultFromPreset(true);
+  setCreateStatus("");
+  openModal(modal);
+}
+
+/**
+ * @param {boolean} force
+ */
+function syncNameDefaultFromPreset(force) {
+  const nameInput = document.getElementById("new-project-name");
+  if (nameInput === null) {
+    return;
+  }
+
+  const info = getPresetInfo(selectedCreatePresetId);
+  const defaultName =
+    info !== null && info.id !== "blank" ? info.name : "Untitled project";
+
+  if (
+    force === true ||
+    nameInput.value.trim() === "" ||
+    nameInput.value === "Untitled project" ||
+    isKnownPresetName(nameInput.value.trim())
+  ) {
+    nameInput.value = defaultName;
+  }
+}
+
+/**
+ * @param {string} name
+ * @returns {boolean}
+ */
+function isKnownPresetName(name) {
+  for (let i = 0; i < PRESET_CATALOG.length; i = i + 1) {
+    if (PRESET_CATALOG[i].name === name) {
+      return true;
+    }
+  }
+  return name === "Untitled project";
 }
 
 function wireNewProjectModal() {
@@ -159,14 +457,16 @@ function wireNewProjectModal() {
   const cancelBtn = document.getElementById("new-project-cancel");
   const createBtn = document.getElementById("new-project-create");
 
-  if (openBtn === null || modal === null) {
+  if (modal === null) {
     return;
   }
 
-  openBtn.addEventListener("click", function (event) {
-    event.preventDefault();
-    openModal(modal);
-  });
+  if (openBtn !== null) {
+    openBtn.addEventListener("click", function (event) {
+      event.preventDefault();
+      openCreateModal("blank");
+    });
+  }
 
   if (cancelBtn !== null) {
     cancelBtn.addEventListener("click", function () {
@@ -194,49 +494,113 @@ function wireNewProjectModal() {
 async function onCreateProjectClick() {
   const nameInput = document.getElementById("new-project-name");
   const createBtn = document.getElementById("new-project-create");
-  const statusEl = document.getElementById("new-project-status");
 
   let name = "Untitled project";
   if (nameInput !== null && nameInput.value.trim() !== "") {
     name = nameInput.value.trim();
   }
 
+  const presetId = selectedCreatePresetId || "blank";
+
   if (createBtn !== null) {
     createBtn.disabled = true;
   }
-
-  if (statusEl !== null) {
-    statusEl.textContent = "Creating project…";
-  }
+  setCreateStatus("Creating project…");
 
   try {
-    const project = createEmptyProject(name);
+    const project = await buildProjectFromPreset(presetId, name);
     setProject(project);
     const saved = saveProject();
     if (saved === false) {
-      if (statusEl !== null) {
-        statusEl.textContent =
-          "Could not save in this browser. Check storage space, or delete a project.";
-      }
+      setCreateStatus(
+        "Could not save in this browser. Check storage space, or delete a project."
+      );
       if (createBtn !== null) {
         createBtn.disabled = false;
       }
       return;
     }
 
-    window.location.href =
-      "/app/project/?id=" + encodeURIComponent(project.id) + "&new=1";
+    const info = getPresetInfo(presetId);
+    const useNewFlag = info === null || info.loadsSampleData !== true;
+    let href =
+      "/app/project/?id=" + encodeURIComponent(project.id);
+    if (useNewFlag === true) {
+      href = href + "&new=1";
+    }
+    window.location.href = href;
   } catch (error) {
     console.error(error);
-    if (statusEl !== null) {
-      statusEl.textContent =
-        error && error.message
-          ? error.message
-          : "Could not create project. Check the console for details.";
-    }
+    setCreateStatus(
+      error && error.message
+        ? error.message
+        : "Could not create project. Check the console for details."
+    );
     if (createBtn !== null) {
       createBtn.disabled = false;
     }
+  }
+}
+
+/**
+ * @param {string} message
+ */
+function setCreateStatus(message) {
+  const statusEl = document.getElementById("new-project-status");
+  if (statusEl !== null) {
+    statusEl.textContent = message;
+  }
+}
+
+async function onImportHubFileChange(event) {
+  const file = event.target.files[0];
+  if (file === undefined || file === null) {
+    return;
+  }
+
+  try {
+    const text = await file.text();
+    const parsed = parseImportFile(text);
+    if (parsed.ok === false) {
+      setHubStatus(parsed.error, true);
+      event.target.value = "";
+      return;
+    }
+
+    const label =
+      parsed.kind === "library"
+        ? String(parsed.projects.length) + " projects from this backup"
+        : "this project";
+    const ok = window.confirm(
+      "Import " + label + "? Existing projects with the same id will get a new id."
+    );
+    if (ok === false) {
+      event.target.value = "";
+      return;
+    }
+
+    let imported = 0;
+    for (let i = 0; i < parsed.projects.length; i = i + 1) {
+      const result = saveProjectIntoLibrary(parsed.projects[i], {
+        forceNewId: false
+      });
+      // saveProjectIntoLibrary already assigns new id on collision
+      if (result.ok === true) {
+        imported = imported + 1;
+      }
+    }
+
+    setView("projects");
+    await refreshProjectsView();
+    setHubStatus(
+      "Imported " + String(imported) + " project" + (imported === 1 ? "" : "s") + ".",
+      false
+    );
+  } catch (error) {
+    console.error(error);
+    setHubStatus("Could not read that file.", true);
+  } finally {
+    event.target.value = "";
   }
 }
 
@@ -249,6 +613,7 @@ function openModal(modal) {
   const nameInput = document.getElementById("new-project-name");
   if (nameInput !== null) {
     nameInput.focus();
+    nameInput.select();
   }
 }
 
@@ -265,12 +630,15 @@ function closeModal(modal) {
  * @returns {string}
  */
 function formatUpdated(iso) {
+  if (!iso) {
+    return "Saved in this browser";
+  }
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) {
       return String(iso);
     }
-    return d.toLocaleString();
+    return "Updated " + d.toLocaleString();
   } catch (error) {
     return String(iso);
   }

@@ -162,12 +162,51 @@
   letter-spacing: 0;
 }
 
+.app-header-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.35rem;
+}
+
+.app-header-nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  color: var(--text-color-muted);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.app-header-nav-link:hover {
+  color: var(--text-color);
+  background: rgb(255 255 255 / 0.06);
+}
+
+.app-header-nav-link[aria-current="page"] {
+  color: var(--text-color);
+  background: color-mix(in srgb, var(--color-blue) 18%, transparent);
+}
+
 .app-header-account {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
   margin-left: auto;
+}
+
+@media (max-width: 720px) {
+  .page-dashboard .app-header-nav {
+    order: 3;
+    width: 100%;
+  }
 }
 
 .account-menu-wrap {
@@ -300,7 +339,8 @@
 #import-entries-file,
 #import-slots-file,
 #import-rules-file,
-#import-project-file {
+#import-project-file,
+#import-hub-file {
   display: none;
 }
 
@@ -634,7 +674,8 @@
   border-radius: 10px;
 }
 
-.preset-choice.is-selected {
+.preset-choice.is-selected,
+.preset-choice:has(input:checked) {
   border-color: color-mix(in srgb, var(--color-blue) 55%, transparent);
   background: color-mix(in srgb, var(--color-blue) 12%, transparent);
 }
