@@ -59,7 +59,6 @@
 import {
   getProject,
   setProject,
-  getDirty,
   setDirty,
   saveProject,
   persistProject,
@@ -70,8 +69,8 @@ import {
   parseProjectFile
 } from "/js/state.js";
 
-import { buildLegalConfig, buildScoreConfig, findColumnKeyByType, findSlotsPerEntryColumnKey } from "/js/project-config.js";
-import { defaultSearchOptions } from "/js/generator/search.js";
+import { buildLegalConfig, buildScoreConfig, findColumnKeyByType } from "/js/project-config.js";
+import { buildSearchOptions, normalizeGenerateSettings } from "/js/generator/search.js";
 import { getEntriesInSlot, getSlotsForEntry } from "/js/generator/placement.js";
 import { maxPossibleSoftScore } from "/js/generator/score.js";
 import { parseCsvText, csvToTable, tableToCsv } from "/js/csv.js";
@@ -101,6 +100,9 @@ let resultsLayoutMode = "list";
 
 /** Active Generate worker (null when idle). */
 let generateWorker = null;
+
+/** True while a generate run is in progress (for status copy / browse hint). */
+let generateBusy = false;
 
 /** Bumps when a new run starts or cancel fires, so stale worker messages are ignored. */
 let generateRunId = 0;
@@ -203,6 +205,7 @@ function renderAll() {
   renderEntriesList(project);
   renderSlotsList(project);
   renderGlobalSetup(project);
+  renderGenerateSettings(project);
   renderRuleList(project);
   renderRulesTable(project);
   renderReview(project);
@@ -212,22 +215,11 @@ function renderAll() {
 
 function renderHeader(project) {
   const nameEl = document.getElementById("project-name");
-  const saveStateEl = document.getElementById("save-state");
 
   // Do not overwrite the input while the user is typing in it.
   // document.activeElement = whatever currently has keyboard focus.
   if (nameEl !== null && document.activeElement !== nameEl) {
     nameEl.value = project.name;
-  }
-
-  if (saveStateEl !== null) {
-    if (getDirty() === true) {
-      saveStateEl.textContent = "Unsaved";
-      saveStateEl.setAttribute("data-state", "unsaved");
-    } else {
-      saveStateEl.textContent = "Saved";
-      saveStateEl.setAttribute("data-state", "saved");
-    }
   }
 }
 
@@ -238,8 +230,85 @@ function renderGlobalSetup(project) {
     select.value = String(project.setup.defaultSlotsPerEntry);
   }
 
+  ensureSlotsPerEntryById(project);
+
   // Keep setup.conflictGroups aligned with any conflict_group column.
   syncConflictGroupsFromSlots(project);
+  renderSlotsPerEntryOverrides(project);
+}
+
+/**
+ * Fill Generate-page search settings from project.setup.generate.
+ *
+ * @param {Object} project
+ */
+function renderGenerateSettings(project) {
+  ensureGenerateSettings(project);
+  const settings = normalizeGenerateSettings(project.setup.generate);
+
+  const modeRadios = document.querySelectorAll('input[name="generate-mode"]');
+  for (let i = 0; i < modeRadios.length; i = i + 1) {
+    modeRadios[i].checked = modeRadios[i].value === settings.mode;
+  }
+
+  updateGenerateSettingsSummary(project);
+}
+
+/**
+ * @param {Object} project
+ */
+function updateGenerateSettingsSummary(project) {
+  const el = document.getElementById("generate-settings-summary");
+  if (el === null) {
+    return;
+  }
+
+  ensureGenerateSettings(project);
+  const settings = normalizeGenerateSettings(project.setup.generate);
+  const entryCount =
+    project.entries && project.entries.rows ? project.entries.rows.length : 0;
+  const opts = buildSearchOptions(entryCount, settings);
+
+  let modeLabel = "Balanced";
+  let idleLabel = "about half the people";
+  if (settings.mode === "quick") {
+    modeLabel = "Quick";
+    idleLabel = "a very short idle stretch";
+  } else if (settings.mode === "best") {
+    modeLabel = "Best";
+    idleLabel = "a full pass of people";
+  }
+
+  const idlePeople = Math.max(
+    1,
+    Math.ceil(entryCount * (opts.improveIdleFraction || 0.5))
+  );
+
+  el.textContent =
+    modeLabel +
+    " · improve pass ends after " +
+    idleLabel +
+    " with no gain" +
+    (entryCount > 0 ? " (~" + String(idlePeople) + " for this project)" : "") +
+    " · up to " +
+    String(opts.maxAttempts) +
+    " attempts · keeps top " +
+    String(opts.optionCount) +
+    " options";
+}
+
+/**
+ * @param {Object} project
+ */
+function ensureGenerateSettings(project) {
+  if (project.setup === undefined) {
+    project.setup = {};
+  }
+  if (project.setup.generate === undefined) {
+    project.setup.generate = normalizeGenerateSettings(null);
+  } else {
+    project.setup.generate = normalizeGenerateSettings(project.setup.generate);
+  }
 }
 
 function renderEntriesTable(project) {
@@ -305,7 +374,7 @@ function renderTableHeader(table, columns, tableKind) {
       escapeHtml(tableKind) +
       '" data-col-index="' +
       i +
-      '" title="Delete column" aria-label="Delete column ' +
+      '" title="Remove this column from the table and from every row." aria-label="Delete column ' +
       escapeHtml(col.label) +
       '">×</button>' +
       "</div>" +
@@ -387,7 +456,7 @@ function renderTableBody(tbody, columns, rows, tableKind) {
       escapeHtml(tableKind) +
       '" data-row-index="' +
       r +
-      '" aria-label="Delete row">×</button>' +
+      '" title="Delete this row from the table." aria-label="Delete row">×</button>' +
       "</td>";
 
     html = html + "</tr>";
@@ -445,7 +514,7 @@ function renderEntriesList(project) {
       selectedClass +
       '" type="button" data-entry-id="' +
       escapeHtml(row.id) +
-      '">' +
+      '" title="Select this entry to edit its fields.">' +
       "<strong>" +
       escapeHtml(label) +
       "</strong>" +
@@ -503,7 +572,7 @@ function renderSlotsList(project) {
       selectedClass +
       '" type="button" data-slot-id="' +
       escapeHtml(row.id) +
-      '">' +
+      '" title="Select this slot to edit its fields.">' +
       "<strong>" +
       escapeHtml(label) +
       "</strong>" +
@@ -667,7 +736,7 @@ function buildRowEditorFieldsHtml(columns, row, prefix) {
       escapeHtml(tableKind) +
       '" data-col-index="' +
       i +
-      '" title="Delete column" aria-label="Delete column ' +
+      '" title="Remove this column from the table and from every row." aria-label="Delete column ' +
       escapeHtml(col.label) +
       '">×</button>' +
       "</div>";
@@ -704,7 +773,7 @@ function renderRuleList(project) {
       selectedClass +
       '" type="button" data-rule-id="' +
       escapeHtml(rule.id) +
-      '">' +
+      '" title="Select this rule to edit its type, data, priority, and hard/soft setting.">' +
       "<strong>" +
       escapeHtml(rule.name) +
       "</strong>" +
@@ -769,7 +838,7 @@ function renderRulesTable(project) {
       '<td class="table-actions-col">' +
       '<button class="button button-ghost button-small table-row-delete" type="button" data-table="rules" data-row-index="' +
       r +
-      '" aria-label="Delete row">×</button>' +
+      '" title="Delete this rule row." aria-label="Delete row">×</button>' +
       "</td>";
 
     html = html + "</tr>";
@@ -813,22 +882,18 @@ function fillRuleEditor(rule) {
 
 function renderReview(project) {
   syncConflictGroupsFromSlots(project);
+  ensureSlotsPerEntryById(project);
 
-  const slotsPerKey = findSlotsPerEntryColumnKey(project.entries.columns);
   let slotsPerLabel = String(project.setup.defaultSlotsPerEntry);
-  if (slotsPerKey !== null) {
-    let overrideCount = 0;
-    for (let i = 0; i < project.entries.rows.length; i = i + 1) {
-      const raw = project.entries.rows[i].cells[slotsPerKey];
-      if (raw !== undefined && raw !== null && String(raw).trim() !== "") {
-        overrideCount = overrideCount + 1;
-      }
-    }
-    if (overrideCount > 0) {
-      slotsPerLabel = slotsPerLabel + " (" + overrideCount + " per-entry override(s))";
-    } else {
-      slotsPerLabel = slotsPerLabel + " (slots_per_entry column present)";
-    }
+  const overrideIds = Object.keys(project.setup.slotsPerEntryById);
+  if (overrideIds.length > 0) {
+    slotsPerLabel =
+      slotsPerLabel +
+      " (" +
+      overrideIds.length +
+      " override" +
+      (overrideIds.length === 1 ? "" : "s") +
+      ")";
   }
   setText("review-slots-per-entry", slotsPerLabel);
 
@@ -854,23 +919,11 @@ function renderReview(project) {
     }
   } else if (project.setup.conflictGroups.length > 0) {
     conflictSummary =
-      project.setup.conflictGroups.length +
-      " conflict group(s) (from saved setup; add a conflict_group column to edit names).";
+      project.setup.conflictGroups.length + " conflict group(s)";
   }
 
   setText("review-conflicts", conflictText);
   setText("conflict-groups-summary", conflictSummary);
-
-  let presetLabel = "—";
-  if (project.presetId !== undefined && project.presetId !== null) {
-    const info = getPresetInfo(project.presetId);
-    if (info !== null) {
-      presetLabel = info.name;
-    } else {
-      presetLabel = String(project.presetId);
-    }
-  }
-  setText("review-preset", presetLabel);
 
   const entriesCount = document.getElementById("review-entries-count");
   if (entriesCount !== null) {
@@ -1024,6 +1077,14 @@ function renderGenerateOptions(project) {
   const options = project.results.options;
   let html = "";
 
+  if (generateBusy === true && options.length > 0) {
+    html =
+      html +
+      '<p class="generate-options-live-note">' +
+      "Live preview — search is still looking for better scores. Open Results anytime." +
+      "</p>";
+  }
+
   for (let i = 0; i < options.length; i = i + 1) {
     const option = options[i];
     html =
@@ -1038,7 +1099,7 @@ function renderGenerateOptions(project) {
       "</span>" +
       "</div>" +
       '<div class="option-card-actions">' +
-      '<a class="button button-ghost button-small" href="#results">View</a>' +
+      '<a class="button button-ghost button-small" href="#results" title="Open Results to inspect this option’s assignments.">View</a>' +
       "</div>" +
       "</div>";
   }
@@ -1099,7 +1160,11 @@ function renderResults(project) {
         active +
         '" type="button" data-option="' +
         option.rank +
-        '">' +
+        '" title="Show option ' +
+        option.rank +
+        " (score " +
+        formatScore(option.totalScore) +
+        ').">' +
         '<span class="results-option-label">Option ' +
         option.rank +
         "</span>" +
@@ -1515,11 +1580,14 @@ function wireControls() {
     slotsPerEntry.addEventListener("change", onSlotsPerEntryChange);
   }
 
-  const addSlotsPerEntryColBtn = document.getElementById(
-    "add-slots-per-entry-col-btn",
-  );
-  if (addSlotsPerEntryColBtn !== null) {
-    addSlotsPerEntryColBtn.addEventListener("click", onAddSlotsPerEntryColClick);
+  const slotsOverrideAddBtn = document.getElementById("slots-override-add-btn");
+  if (slotsOverrideAddBtn !== null) {
+    slotsOverrideAddBtn.addEventListener("click", onSlotsOverrideAddClick);
+  }
+
+  const slotsOverrideList = document.getElementById("slots-override-list");
+  if (slotsOverrideList !== null) {
+    slotsOverrideList.addEventListener("click", onSlotsOverrideListClick);
   }
 
   const manageConflictsBtn = document.getElementById("manage-conflicts-btn");
@@ -1536,6 +1604,8 @@ function wireControls() {
   if (cancelGenerateBtn !== null) {
     cancelGenerateBtn.addEventListener("click", onCancelGenerateClick);
   }
+
+  wireGenerateSettingsControls();
 
   // One listener on the whole list (event delegation):
   // clicks on child buttons bubble up to #rule-list.
@@ -2374,11 +2444,14 @@ function onDeleteEntryClick() {
   }
 
   project.entries.rows = nextRows;
+  ensureSlotsPerEntryById(project);
+  delete project.setup.slotsPerEntryById[selectedEntryId];
   selectedEntryId = null;
   project.results = null;
   markProjectChanged();
   renderEntriesTable(project);
   renderEntriesList(project);
+  renderGlobalSetup(project);
   renderReview(project);
   renderGenerateOptions(project);
   renderResults(project);
@@ -2815,41 +2888,178 @@ function onSlotsPerEntryChange(event) {
 }
 
 /**
- * Add an optional slots_per_entry number column on Entries.
- * Blank cells keep using the global default.
+ * Wire Generate search-settings controls.
  */
-function onAddSlotsPerEntryColClick() {
-  const project = getProject();
-  ensureDefaultEntriesColumns(project);
+function wireGenerateSettingsControls() {
+  const modeRadios = document.querySelectorAll('input[name="generate-mode"]');
+  for (let i = 0; i < modeRadios.length; i = i + 1) {
+    modeRadios[i].addEventListener("change", onGenerateSettingsChange);
+  }
+}
 
-  const existing = findSlotsPerEntryColumnKey(project.entries.columns);
-  if (existing !== null) {
-    window.alert(
-      "Entries already has a \"" +
-        existing +
-        "\" column. Fill a number per person to override the global default; leave blank to use the default.",
-    );
-    window.location.hash = "#entries";
+function onGenerateSettingsChange() {
+  const project = getProject();
+  ensureGenerateSettings(project);
+
+  const modeChecked = document.querySelector(
+    'input[name="generate-mode"]:checked'
+  );
+  if (modeChecked !== null) {
+    project.setup.generate.mode = modeChecked.value;
+  }
+
+  project.setup.generate = normalizeGenerateSettings(project.setup.generate);
+  markProjectChanged();
+  updateGenerateSettingsSummary(project);
+}
+
+/**
+ * Ensure setup.slotsPerEntryById is a plain object map.
+ *
+ * @param {Object} project
+ */
+function ensureSlotsPerEntryById(project) {
+  if (project.setup === undefined) {
+    project.setup = {};
+  }
+  if (
+    project.setup.slotsPerEntryById === undefined ||
+    project.setup.slotsPerEntryById === null ||
+    typeof project.setup.slotsPerEntryById !== "object"
+  ) {
+    project.setup.slotsPerEntryById = {};
+  }
+}
+
+/**
+ * Fill the Global per-entry override picker + list.
+ *
+ * @param {Object} project
+ */
+function renderSlotsPerEntryOverrides(project) {
+  ensureSlotsPerEntryById(project);
+
+  const select = document.getElementById("slots-override-entry");
+  const listEl = document.getElementById("slots-override-list");
+
+  if (select !== null) {
+    const previous = select.value;
+    let optionsHtml = '<option value="">Select an entry…</option>';
+
+    for (let i = 0; i < project.entries.rows.length; i = i + 1) {
+      const row = project.entries.rows[i];
+      const label = rowDisplayLabel(row, project.entries.columns);
+      optionsHtml =
+        optionsHtml +
+        '<option value="' +
+        escapeHtml(row.id) +
+        '">' +
+        escapeHtml(label) +
+        "</option>";
+    }
+
+    select.innerHTML = optionsHtml;
+    if (previous !== "" && findTableRowById(project.entries.rows, previous) !== null) {
+      select.value = previous;
+    }
+  }
+
+  if (listEl === null) {
     return;
   }
 
-  const key = "slots_per_entry";
-  project.entries.columns.push({
-    key: key,
-    label: "slots_per_entry",
-    type: "number",
-  });
-
-  for (let i = 0; i < project.entries.rows.length; i = i + 1) {
-    project.entries.rows[i].cells[key] = "";
+  const ids = Object.keys(project.setup.slotsPerEntryById);
+  if (ids.length === 0) {
+    listEl.innerHTML =
+      '<li><p class="app-empty-hint">No overrides yet.</p></li>';
+    return;
   }
 
+  let html = "";
+  for (let i = 0; i < ids.length; i = i + 1) {
+    const entryId = ids[i];
+    const row = findTableRowById(project.entries.rows, entryId);
+    const label =
+      row !== null
+        ? rowDisplayLabel(row, project.entries.columns)
+        : entryId;
+    const maxSlots = project.setup.slotsPerEntryById[entryId];
+
+    html =
+      html +
+      '<li class="slots-override-item">' +
+      "<span>" +
+      escapeHtml(label) +
+      " → " +
+      String(maxSlots) +
+      "</span>" +
+      '<button class="button button-ghost button-small" type="button" data-remove-slots-override="' +
+      escapeHtml(entryId) +
+      '" title="Remove this override.">Remove</button>' +
+      "</li>";
+  }
+
+  listEl.innerHTML = html;
+}
+
+function onSlotsOverrideAddClick() {
+  const project = getProject();
+  if (project === null) {
+    return;
+  }
+
+  ensureSlotsPerEntryById(project);
+
+  const entrySelect = document.getElementById("slots-override-entry");
+  const maxSelect = document.getElementById("slots-override-max");
+
+  if (entrySelect === null || maxSelect === null) {
+    return;
+  }
+
+  const entryId = entrySelect.value;
+  if (entryId === "") {
+    window.alert("Pick an entry first.");
+    return;
+  }
+
+  const maxSlots = Number(maxSelect.value);
+  if (Number.isNaN(maxSlots) === true || maxSlots < 0) {
+    return;
+  }
+
+  project.setup.slotsPerEntryById[entryId] = maxSlots;
   project.results = null;
   markProjectChanged();
-  renderEntriesTable(project);
-  renderEntriesList(project);
+  renderSlotsPerEntryOverrides(project);
   renderReview(project);
-  window.location.hash = "#entries";
+}
+
+/**
+ * @param {MouseEvent} event
+ */
+function onSlotsOverrideListClick(event) {
+  const button = findAncestor(event.target, "[data-remove-slots-override]");
+  if (button === null) {
+    return;
+  }
+
+  const project = getProject();
+  if (project === null) {
+    return;
+  }
+
+  ensureSlotsPerEntryById(project);
+  const entryId = button.getAttribute("data-remove-slots-override");
+  if (entryId === null) {
+    return;
+  }
+
+  delete project.setup.slotsPerEntryById[entryId];
+  project.results = null;
+  markProjectChanged();
+  renderSlotsPerEntryOverrides(project);
+  renderReview(project);
 }
 
 function onRuleListClick(event) {
@@ -3005,6 +3215,8 @@ function cancelGeneration() {
  * @param {boolean} busy
  */
 function setGenerateBusy(busy) {
+  generateBusy = busy === true;
+
   const generateBtn = document.getElementById("generate-btn");
   const cancelBtn = document.getElementById("cancel-generate-btn");
 
@@ -3014,6 +3226,52 @@ function setGenerateBusy(busy) {
 
   if (cancelBtn !== null) {
     cancelBtn.disabled = busy !== true;
+  }
+
+  const settingsRoot = document.getElementById("generate-settings");
+  if (settingsRoot !== null) {
+    const controls = settingsRoot.querySelectorAll("input, select, button");
+    for (let i = 0; i < controls.length; i = i + 1) {
+      controls[i].disabled = busy === true;
+    }
+  }
+
+  if (busy !== true) {
+    setGenerateBrowseHint(false, 0, 0);
+  }
+}
+
+/**
+ * Show/hide the “you can browse while searching” notice.
+ *
+ * @param {boolean} show
+ * @param {number} optionCount
+ * @param {number} targetCount
+ */
+function setGenerateBrowseHint(show, optionCount, targetCount) {
+  const hint = document.getElementById("generate-browse-hint");
+  if (hint === null) {
+    return;
+  }
+
+  if (show !== true || optionCount < 1) {
+    hint.hidden = true;
+    return;
+  }
+
+  hint.hidden = false;
+
+  if (optionCount >= targetCount && targetCount > 0) {
+    hint.textContent =
+      "You already have " +
+      String(optionCount) +
+      " option(s) to review. Search is still running in the background to try to improve them — open Results anytime, or Cancel to stop and keep what you have.";
+  } else {
+    hint.textContent =
+      String(optionCount) +
+      " of up to " +
+      String(targetCount) +
+      " option(s) are ready. You can open Results and browse them while search keeps looking for more — or Cancel to stop early.";
   }
 }
 
@@ -3068,7 +3326,8 @@ function runGeneration() {
   const scoreConfig = buildScoreConfig(project);
   const entryCount =
     project.entries && project.entries.rows ? project.entries.rows.length : 0;
-  const searchOptions = defaultSearchOptions(entryCount);
+  ensureGenerateSettings(project);
+  const searchOptions = buildSearchOptions(entryCount, project.setup.generate);
 
   const statusTitle = document.getElementById("generate-status-title");
   const statusDetail = document.getElementById("generate-status-detail");
@@ -3097,25 +3356,20 @@ function runGeneration() {
   renderResults(project);
 
   if (statusTitle !== null) {
-    statusTitle.textContent = "Working…";
+    statusTitle.textContent = "Searching…";
   }
 
   if (statusDetail !== null) {
     let detail =
-      "Searching in the background · up to " +
+      "Looking for legal placements in the background · up to " +
       String(searchOptions.maxAttempts) +
-      " attempts · top " +
+      " attempts · keeping the top " +
       String(searchOptions.optionCount) +
-      " options";
-    if (searchOptions.timeBudgetMs !== null) {
-      detail =
-        detail +
-        " · time budget " +
-        String(Math.round(searchOptions.timeBudgetMs / 1000)) +
-        "s";
-    }
+      " options. Options will appear here as soon as they are found.";
     statusDetail.textContent = detail;
   }
+
+  setGenerateBrowseHint(false, 0, 0);
 
   let worker = null;
 
@@ -3195,9 +3449,33 @@ function runGeneration() {
  * @param {Object} searchOptions
  */
 function applyGenerateProgress(info, searchOptions) {
+  const statusTitle = document.getElementById("generate-status-title");
   const statusDetail = document.getElementById("generate-status-detail");
   const maxAttempts = searchOptions.maxAttempts || 1;
   const budgetMs = searchOptions.timeBudgetMs;
+  const targetCount = searchOptions.optionCount || 5;
+
+  const project = getProject();
+  let readyCount = 0;
+  if (
+    project !== null &&
+    project.results !== null &&
+    project.results.options !== undefined
+  ) {
+    readyCount = project.results.options.length;
+  }
+
+  const refining = readyCount > 0;
+
+  if (statusTitle !== null) {
+    if (refining === true && readyCount >= targetCount) {
+      statusTitle.textContent = "Improving options…";
+    } else if (refining === true) {
+      statusTitle.textContent = "Collecting options…";
+    } else {
+      statusTitle.textContent = "Searching…";
+    }
+  }
 
   let percent = 0;
   let label = "";
@@ -3210,59 +3488,78 @@ function applyGenerateProgress(info, searchOptions) {
       " of " +
       String(maxAttempts);
 
+    if (info.stagnantAttempts > 0) {
+      label =
+        label + " · no improvement ×" + String(info.stagnantAttempts);
+    }
+    if (info.elapsedMs !== undefined && budgetMs !== null) {
+      label =
+        label +
+        " · " +
+        String(Math.round(info.elapsedMs / 1000)) +
+        "s / " +
+        String(Math.round(budgetMs / 1000)) +
+        "s";
+    }
+
     if (statusDetail !== null) {
-      let detail =
-        "Attempt " +
-        info.attempt +
-        " of up to " +
-        info.maxAttempts +
-        " · keeping top " +
-        String(info.kept);
+      let detail = refining === true
+        ? String(readyCount) +
+          " of " +
+          String(targetCount) +
+          " options ready"
+        : "Searching…";
+
       if (info.bestScore !== null && info.bestScore !== undefined) {
         detail = detail + " · best " + formatScore(info.bestScore);
       }
-      if (info.stagnantAttempts > 0) {
-        detail =
-          detail +
-          " · no improvement ×" +
-          String(info.stagnantAttempts);
-      }
-      if (info.elapsedMs !== undefined && budgetMs !== null) {
-        detail =
-          detail +
-          " · " +
-          String(Math.round(info.elapsedMs / 1000)) +
-          "s / " +
-          String(Math.round(budgetMs / 1000)) +
-          "s";
-      }
+
       statusDetail.textContent = detail;
+    }
+
+    if (refining === true) {
+      setGenerateBrowseHint(true, readyCount, targetCount);
     }
   } else if (info.phase === "improving") {
     percent = Math.min(
       99,
       Math.round(((info.entryIndex || 0) / Math.max(info.entryCount || 1, 1)) * 100)
     );
-    // Prefer attempt progress when we know it from a prior attempt event —
-    // improving events do not always include attempt number.
     label =
       "Improve pass " +
       String(info.pass) +
       " · person " +
       String(info.entryIndex) +
       "/" +
-      String(info.entryCount);
+      String(info.entryCount) +
+      " · attempt " +
+      String(info.attempt || "") +
+      " of " +
+      String(maxAttempts);
 
     if (statusDetail !== null) {
-      statusDetail.textContent =
-        "Attempt improve pass " +
-        info.pass +
-        " · best " +
-        formatScore(info.bestScore);
+      let detail =
+        refining === true
+          ? String(readyCount) + " option(s) ready"
+          : "Fine-tuning…";
+      if (info.bestScore !== null && info.bestScore !== undefined) {
+        detail = detail + " · best " + formatScore(info.bestScore);
+      }
+      statusDetail.textContent = detail;
+    }
+
+    if (refining === true) {
+      setGenerateBrowseHint(true, readyCount, targetCount);
     }
   } else if (info.phase === "shake") {
     percent = Math.round(((info.attempt || 1) / maxAttempts) * 100);
-    label = "Shaking layout…";
+    label = "Trying a shuffled layout…";
+    if (statusDetail !== null) {
+      statusDetail.textContent =
+        refining === true
+          ? String(readyCount) + " option(s) ready"
+          : "Escaping a score plateau…";
+    }
   } else if (info.phase === "done") {
     percent = 100;
     label = "Finishing…";
@@ -3323,20 +3620,36 @@ function applyStreamingOptions(project, options, runId, searchOptions) {
   const statusTitle = document.getElementById("generate-status-title");
   const statusDetail = document.getElementById("generate-status-detail");
   const targetCount = searchOptions.optionCount || 5;
+  const readyCount = options.length;
 
   if (statusTitle !== null) {
-    statusTitle.textContent = "Working…";
+    if (readyCount >= targetCount) {
+      statusTitle.textContent = "Improving options…";
+    } else {
+      statusTitle.textContent = "Collecting options…";
+    }
   }
 
   if (statusDetail !== null) {
-    statusDetail.textContent =
-      String(options.length) +
-      " of up to " +
-      String(targetCount) +
-      " option(s) ready · best " +
-      formatScore(options[0].totalScore) +
-      " · still searching…";
+    if (readyCount >= targetCount) {
+      statusDetail.textContent =
+        "Top " +
+        String(readyCount) +
+        " options are ready (best " +
+        formatScore(options[0].totalScore) +
+        "). Still searching for better scores — open Results anytime, or Cancel to keep these.";
+    } else {
+      statusDetail.textContent =
+        String(readyCount) +
+        " of up to " +
+        String(targetCount) +
+        " option(s) ready (best " +
+        formatScore(options[0].totalScore) +
+        "). You can view them in Results while search continues.";
+    }
   }
+
+  setGenerateBrowseHint(true, readyCount, targetCount);
 }
 
 /**
@@ -3584,36 +3897,62 @@ function closeConflictGroupsModal() {
 }
 
 /**
+ * Prefer setup.conflictGroups when Manage has saved groups; otherwise
+ * fall back to a conflict_group column (presets / CSV import).
+ *
  * @param {Object} project
  * @returns {{ name: string, slotIds: string[] }[]}
  */
 function buildConflictEditorDraft(project) {
-  const named = listNamedConflictGroupsFromSlots(project.slots);
   const draft = [];
 
-  if (named.length > 0) {
+  if (
+    project.setup !== undefined &&
+    project.setup.conflictGroups !== undefined &&
+    project.setup.conflictGroups.length > 0
+  ) {
+    const nameBySlotId = {};
+    const named = listNamedConflictGroupsFromSlots(project.slots);
     for (let i = 0; i < named.length; i = i + 1) {
+      const g = named[i];
+      for (let s = 0; s < g.slotIds.length; s = s + 1) {
+        nameBySlotId[g.slotIds[s]] = g.name;
+      }
+    }
+
+    for (let i = 0; i < project.setup.conflictGroups.length; i = i + 1) {
+      const slotIds = project.setup.conflictGroups[i].slice();
+      let name = "group_" + String(i + 1);
+      for (let s = 0; s < slotIds.length; s = s + 1) {
+        if (nameBySlotId[slotIds[s]] !== undefined) {
+          name = nameBySlotId[slotIds[s]];
+          break;
+        }
+      }
       draft.push({
-        name: named[i].name,
-        slotIds: named[i].slotIds.slice()
+        name: name,
+        slotIds: slotIds
+      });
+    }
+
+    return draft;
+  }
+
+  const namedFromColumn = listNamedConflictGroupsFromSlots(project.slots);
+  if (namedFromColumn.length > 0) {
+    for (let i = 0; i < namedFromColumn.length; i = i + 1) {
+      draft.push({
+        name: namedFromColumn[i].name,
+        slotIds: namedFromColumn[i].slotIds.slice()
       });
     }
     return draft;
   }
 
-  for (let i = 0; i < project.setup.conflictGroups.length; i = i + 1) {
-    draft.push({
-      name: "group_" + String(i + 1),
-      slotIds: project.setup.conflictGroups[i].slice()
-    });
-  }
-
-  if (draft.length === 0) {
-    draft.push({
-      name: "group_1",
-      slotIds: []
-    });
-  }
+  draft.push({
+    name: "group_1",
+    slotIds: []
+  });
 
   return draft;
 }
@@ -3653,7 +3992,7 @@ function renderConflictGroupsEditor(project) {
       html +
       '<button class="button button-ghost button-small" type="button" data-remove-group="' +
       g +
-      '">Remove</button>';
+      '" title="Remove this conflict group from the editor.">Remove</button>';
     html = html + "</div>";
     html = html + '<div class="conflict-editor-slots">';
 

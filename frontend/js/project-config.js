@@ -77,36 +77,53 @@ export function buildLegalConfig(project) {
 }
 
 /**
- * Per-entry slot caps from an optional slots_per_entry column.
- * Blank / invalid cells fall back to the project default (not listed here).
+ * Per-entry slot caps: optional CSV column, then setup.slotsPerEntryById on top
+ * (Global overrides win over imported column values).
  *
  * @param {Object} project
- * @param {number} defaultSlotsPerEntry
  * @returns {Object} entryId → number
  */
 function buildSlotsPerEntryById(project) {
   const byId = {};
   const key = findSlotsPerEntryColumnKey(project.entries.columns);
 
-  if (key === null) {
-    return byId;
+  if (key !== null) {
+    for (let i = 0; i < project.entries.rows.length; i = i + 1) {
+      const row = project.entries.rows[i];
+      const raw = row.cells[key];
+
+      if (raw === undefined || raw === null || String(raw).trim() === "") {
+        continue;
+      }
+
+      const value = Number(raw);
+
+      if (Number.isNaN(value) === true || value < 0) {
+        continue;
+      }
+
+      byId[row.id] = value;
+    }
   }
 
-  for (let i = 0; i < project.entries.rows.length; i = i + 1) {
-    const row = project.entries.rows[i];
-    const raw = row.cells[key];
+  if (
+    project.setup !== undefined &&
+    project.setup.slotsPerEntryById !== undefined &&
+    project.setup.slotsPerEntryById !== null
+  ) {
+    const setupMap = project.setup.slotsPerEntryById;
+    const ids = Object.keys(setupMap);
 
-    if (raw === undefined || raw === null || String(raw).trim() === "") {
-      continue;
+    for (let i = 0; i < ids.length; i = i + 1) {
+      const entryId = ids[i];
+      const value = Number(setupMap[entryId]);
+
+      if (Number.isNaN(value) === true || value < 0) {
+        continue;
+      }
+
+      byId[entryId] = value;
     }
-
-    const value = Number(raw);
-
-    if (Number.isNaN(value) === true || value < 0) {
-      continue;
-    }
-
-    byId[row.id] = value;
   }
 
   return byId;

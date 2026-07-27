@@ -237,17 +237,17 @@ function buildProjectListItem(p) {
     escapeHtml(p.id) +
     '" data-name="' +
     escapeHtml(name) +
-    '" title="Duplicate">Duplicate</button>' +
+    '" title="Make a copy of this project under a new name.">Duplicate</button>' +
     '<button class="button button-ghost button-small project-action-btn" type="button" data-action="export" data-id="' +
     escapeHtml(p.id) +
     '" data-name="' +
     escapeHtml(name) +
-    '" title="Export">Export</button>' +
+    '" title="Download this project as a JSON file you can back up or share.">Export</button>' +
     '<button class="button button-secondary button-small project-action-btn project-delete-btn" type="button" data-action="delete" data-id="' +
     escapeHtml(p.id) +
     '" data-name="' +
     escapeHtml(name) +
-    '" title="Delete" aria-label="Delete ' +
+    '" title="Permanently delete this project from this browser." aria-label="Delete ' +
     escapeHtml(name) +
     '">' +
     '<span class="material-symbols-outlined" aria-hidden="true">delete</span>' +
@@ -353,7 +353,7 @@ function fillPresetGrid() {
       "</p>" +
       '<button class="button button-primary" type="button" data-use-preset="' +
       escapeHtml(preset.id) +
-      '">Use this preset</button>' +
+      '" title="Start a new project filled with this sample pack’s entries, slots, and rules.">Use this preset</button>' +
       "</article>";
   }
   grid.innerHTML = html;

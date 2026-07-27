@@ -41,13 +41,14 @@
  *     shakeSwaps: 12,
  *     maxImprovePasses: 30,
  *     maxSwapSamples: null,   // null = try every swap partner; number = sample that many
- *     timeBudgetMs: null,     // stop after this many ms (keep best so far)
+ *     improveIdleFraction: 0.5, // end pass after this fraction of people with no gain
+ *     timeBudgetMs: null,     // optional; usually null from the UI
  *     shouldCancel: function () { return false; },
  *     onProgress: function (info) { console.log(info); },
  *     onOptionsUpdate: function (update) { console.log(update); }
  *   });
  *
- * Prefer defaultSearchOptions(entryCount) for size-aware defaults.
+ * Prefer buildSearchOptions(entryCount, project.setup.generate) from the UI.
  *
  *   // result.ok === false → could not find any legal start
  *   // result.ok === true
@@ -77,7 +78,8 @@ import { getMaxSlotsForEntry } from "../project-config.js";
 
 /**
  * Size-aware search knobs. Small projects stay thorough; large ones sample
- * swaps, run fewer attempts, and respect a time budget.
+ * swaps and run fewer attempts. Quality mode mainly changes how soon an
+ * improve pass gives up after a streak of people with no gain.
  *
  * @param {number} entryCount
  * @returns {Object}
@@ -85,8 +87,7 @@ import { getMaxSlotsForEntry } from "../project-config.js";
 export function defaultSearchOptions(entryCount) {
   const n = entryCount || 0;
 
-  // Large projects: many short finished attempts beat one long climb that
-  // eats the whole time budget and leaves a single half-done option.
+  // Large projects: many short finished attempts beat one very long climb.
   if (n > 250) {
     return {
       optionCount: 5,
@@ -96,7 +97,8 @@ export function defaultSearchOptions(entryCount) {
       shakeSwaps: 0,
       maxImprovePasses: 2,
       maxSwapSamples: 16,
-      timeBudgetMs: 90000
+      timeBudgetMs: null,
+      improveIdleFraction: 0.5
     };
   }
 
@@ -109,7 +111,8 @@ export function defaultSearchOptions(entryCount) {
       shakeSwaps: 8,
       maxImprovePasses: 4,
       maxSwapSamples: 32,
-      timeBudgetMs: 60000
+      timeBudgetMs: null,
+      improveIdleFraction: 0.5
     };
   }
 
@@ -122,7 +125,8 @@ export function defaultSearchOptions(entryCount) {
       shakeSwaps: 12,
       maxImprovePasses: 12,
       maxSwapSamples: 80,
-      timeBudgetMs: 45000
+      timeBudgetMs: null,
+      improveIdleFraction: 0.5
     };
   }
 
@@ -134,7 +138,100 @@ export function defaultSearchOptions(entryCount) {
     shakeSwaps: 12,
     maxImprovePasses: 20,
     maxSwapSamples: null,
-    timeBudgetMs: null
+    timeBudgetMs: null,
+    improveIdleFraction: 0.5
+  };
+}
+
+/**
+ * Default Generate-page settings (stored on project.setup.generate).
+ *
+ * @returns {Object}
+ */
+export function defaultGenerateSettings() {
+  return {
+    mode: "balanced"
+  };
+}
+
+/**
+ * Merge size-aware defaults with the user's Generate quality mode.
+ *
+ * Quick → very short improve pass (idle fraction 0.05); aggressive caps on large n
+ * Balanced → after ~1/2
+ * Best → full pass required (fraction 1)
+ *
+ * @param {number} entryCount
+ * @param {Object} [generateSettings]
+ * @returns {Object} options for runSearch
+ */
+export function buildSearchOptions(entryCount, generateSettings) {
+  const settings = normalizeGenerateSettings(generateSettings);
+  const base = defaultSearchOptions(entryCount);
+  const n = Number(entryCount) || 0;
+  const opts = {
+    optionCount: base.optionCount,
+    maxAttempts: base.maxAttempts,
+    stagnationLimit: base.stagnationLimit,
+    maxShakes: base.maxShakes,
+    shakeSwaps: base.shakeSwaps,
+    maxImprovePasses: base.maxImprovePasses,
+    maxSwapSamples: base.maxSwapSamples,
+    timeBudgetMs: null,
+    improveIdleFraction: 0.5
+  };
+
+  if (settings.mode === "quick") {
+    opts.maxShakes = 0;
+    opts.maxImprovePasses = 1;
+    opts.improveIdleFraction = 0.05;
+    opts.stagnationLimit = Math.min(base.stagnationLimit, 3);
+
+    if (n > 250) {
+      opts.maxAttempts = 4;
+      opts.maxSwapSamples = 8;
+    } else if (n > 100) {
+      opts.maxAttempts = 6;
+      opts.maxSwapSamples = 12;
+    } else {
+      opts.maxAttempts = Math.max(6, Math.ceil(base.maxAttempts / 2));
+      if (opts.maxSwapSamples === null || opts.maxSwapSamples > 32) {
+        opts.maxSwapSamples = 32;
+      }
+    }
+  } else if (settings.mode === "best") {
+    opts.maxAttempts = Math.max(base.maxAttempts, 120);
+    opts.stagnationLimit = Math.max(base.stagnationLimit, 25);
+    opts.maxShakes = Math.max(base.maxShakes || 0, 3);
+    opts.shakeSwaps = Math.max(base.shakeSwaps || 0, 16);
+    opts.maxImprovePasses = Math.max(base.maxImprovePasses || 20, 200);
+    opts.maxSwapSamples = null;
+    opts.improveIdleFraction = 1;
+  } else {
+    opts.improveIdleFraction = 0.5;
+  }
+
+  return opts;
+}
+
+/**
+ * @param {Object|undefined} raw
+ * @returns {Object}
+ */
+export function normalizeGenerateSettings(raw) {
+  const defaults = defaultGenerateSettings();
+
+  if (raw === undefined || raw === null || typeof raw !== "object") {
+    return defaults;
+  }
+
+  let mode = defaults.mode;
+  if (raw.mode === "quick" || raw.mode === "balanced" || raw.mode === "best") {
+    mode = raw.mode;
+  }
+
+  return {
+    mode: mode
   };
 }
 
@@ -142,10 +239,10 @@ export function defaultSearchOptions(entryCount) {
  * Main entry point.
  *
  * Runs many independent attempts, keeps only the top optionCount layouts
- * after each attempt, and stops early once a full set stops improving,
- * time runs out between attempts, or shouldCancel() returns true.
+ * after each attempt, and stops early once a full set stops improving
+ * or shouldCancel() returns true.
  *
- * Time budget never aborts mid-attempt (that produced half-finished options).
+ * Optional timeBudgetMs (null by default) never aborts mid-attempt.
  * Cancel still stops as soon as the current improve step notices it.
  *
  * @param {Object} legalConfig
@@ -198,6 +295,22 @@ export function runSearch(legalConfig, scoreConfig, options) {
   let timeBudgetMs = options.timeBudgetMs;
   if (timeBudgetMs === undefined) {
     timeBudgetMs = null;
+  }
+
+  // End an improve pass after this fraction of people in a row with no gain.
+  // 0.05 = quick, 0.5 = balanced, 1 = best (full pass).
+  let improveIdleFraction = options.improveIdleFraction;
+  if (
+    improveIdleFraction === undefined ||
+    Number.isNaN(Number(improveIdleFraction)) === true
+  ) {
+    improveIdleFraction = 0.5;
+  }
+  if (improveIdleFraction < 0.01) {
+    improveIdleFraction = 0.01;
+  }
+  if (improveIdleFraction > 1) {
+    improveIdleFraction = 1;
   }
 
   const onProgress = options.onProgress;
@@ -290,6 +403,7 @@ export function runSearch(legalConfig, scoreConfig, options) {
       shakeSwaps: shakeSwaps,
       maxImprovePasses: maxImprovePasses,
       maxSwapSamples: maxSwapSamples,
+      improveIdleFraction: improveIdleFraction,
       onProgress: onProgress,
       attempt: attempt,
       // Cancel may interrupt a climb; time budget waits for this attempt to finish.
@@ -541,6 +655,7 @@ function runOneAttempt(legalConfig, scoreConfig, options) {
       scoreConfig,
       options.maxImprovePasses,
       options.maxSwapSamples,
+      options.improveIdleFraction,
       options.onProgress,
       options.shouldStop
     );
@@ -679,9 +794,11 @@ function assignmentFingerprint(assignments) {
 /**
  * Improve by full PERSON PASSES.
  *
- * One pass = walk every person once and try their moves.
+ * One pass = walk people and try their moves.
+ * Stop a pass early when improveIdleFraction of people in a row find no gain
+ * (quick ≈ 1/10, balanced ≈ 1/2, best = 1 = full pass).
  * If anything got better during the pass, run another pass.
- * Stop when a whole pass finds no improvement (or we hit maxImprovePasses).
+ * Stop when a pass finds no improvement (or we hit maxImprovePasses).
  *
  * @returns {{ assignments: Object, bestScore: number, scoresByRule: Object[] }}
  */
@@ -692,6 +809,7 @@ function improveAssignments(
   scoreConfig,
   maxImprovePasses,
   maxSwapSamples,
+  improveIdleFraction,
   onProgress,
   shouldStop
 ) {
@@ -699,6 +817,17 @@ function improveAssignments(
   let bestScore = startingScore;
   let scored = scorePlacement(current, scoreConfig);
   let bestBreakdown = scored.scoresByRule;
+
+  let fraction = improveIdleFraction;
+  if (fraction === undefined || Number.isNaN(Number(fraction)) === true) {
+    fraction = 0.5;
+  }
+  if (fraction < 0.01) {
+    fraction = 0.01;
+  }
+  if (fraction > 1) {
+    fraction = 1;
+  }
 
   let passNumber = 0;
   let keepGoing = true;
@@ -716,6 +845,9 @@ function improveAssignments(
 
     const entryIds = Object.keys(current);
     let improvedThisPass = false;
+    let idleStreak = 0;
+    // How many people in a row with no gain before we end this pass.
+    const idleLimit = Math.max(1, Math.ceil(entryIds.length * fraction));
 
     for (let p = 0; p < entryIds.length; p = p + 1) {
       if (typeof shouldStop === "function" && shouldStop() === true) {
@@ -748,6 +880,13 @@ function improveAssignments(
         bestScore = afterEntry.bestScore;
         bestBreakdown = afterEntry.scoresByRule;
         improvedThisPass = true;
+        idleStreak = 0;
+      } else {
+        idleStreak = idleStreak + 1;
+        if (idleStreak >= idleLimit) {
+          // Enough people in a row with no gain — end this pass.
+          break;
+        }
       }
     }
 

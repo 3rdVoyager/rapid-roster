@@ -469,7 +469,9 @@ function renderTabs(root, activeTab) {
       id +
       '" aria-selected="' +
       selected +
-      '">' +
+      '" title="Show the ' +
+      labels[id] +
+      ' section of the docs.">' +
       labels[id] +
       "</button></li>";
   }
@@ -495,7 +497,9 @@ function renderSide(root, layout, state) {
       html +
       '<button class="docs-side-btn" type="button" data-docs-step="' +
       step.id +
-      '"' +
+      '" title="Jump to the “' +
+      step.label +
+      '” walkthrough step."' +
       current +
       ">" +
       step.label +

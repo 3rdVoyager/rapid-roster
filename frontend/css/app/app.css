@@ -133,35 +133,6 @@
   border-color: color-mix(in srgb, var(--color-blue) 50%, transparent);
 }
 
-.app-save-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.2rem 0.55rem;
-  color: var(--color-yellow);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  background: color-mix(in srgb, var(--color-yellow) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-yellow) 35%, transparent);
-  border-radius: 999px;
-}
-
-.app-save-state[data-state="saved"] {
-  color: var(--color-blue-bright);
-  background: color-mix(in srgb, var(--color-blue) 14%, transparent);
-  border-color: color-mix(in srgb, var(--color-blue) 40%, transparent);
-}
-
-.app-save-state[data-state="cloud-failed"] {
-  color: var(--color-yellow);
-  background: color-mix(in srgb, var(--color-yellow) 12%, transparent);
-  border-color: color-mix(in srgb, var(--color-yellow) 35%, transparent);
-  text-transform: none;
-  letter-spacing: 0;
-}
-
 .app-header-nav {
   display: flex;
   flex-wrap: wrap;

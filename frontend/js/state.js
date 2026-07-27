@@ -558,7 +558,11 @@ export function createEmptyProject(name) {
     },
     setup: {
       defaultSlotsPerEntry: 1,
-      conflictGroups: []
+      slotsPerEntryById: {},
+      conflictGroups: [],
+      generate: {
+        mode: "balanced"
+      }
     },
     rules: [],
     results: null
@@ -871,7 +875,11 @@ export function parseProjectFile(text) {
   if (project.setup === undefined) {
     project.setup = {
       defaultSlotsPerEntry: 1,
-      conflictGroups: []
+      slotsPerEntryById: {},
+      conflictGroups: [],
+      generate: {
+        mode: "balanced"
+      }
     };
   }
 
@@ -879,8 +887,24 @@ export function parseProjectFile(text) {
     project.setup.defaultSlotsPerEntry = 1;
   }
 
+  if (
+    project.setup.slotsPerEntryById === undefined ||
+    project.setup.slotsPerEntryById === null ||
+    typeof project.setup.slotsPerEntryById !== "object"
+  ) {
+    project.setup.slotsPerEntryById = {};
+  }
+
   if (project.setup.conflictGroups === undefined) {
     project.setup.conflictGroups = [];
+  }
+
+  if (project.setup.generate === undefined) {
+    project.setup.generate = {
+      mode: "balanced"
+    };
+  } else if (project.setup.generate.mode === undefined) {
+    project.setup.generate.mode = "balanced";
   }
 
   if (project.results === undefined) {
@@ -1097,7 +1121,11 @@ export function createDemoProject() {
     },
     setup: {
       defaultSlotsPerEntry: 1,
-      conflictGroups: []
+      slotsPerEntryById: {},
+      conflictGroups: [],
+      generate: {
+        mode: "balanced"
+      }
     },
     rules: [
       {

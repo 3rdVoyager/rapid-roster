@@ -35,24 +35,35 @@
       </a>
 
       <nav class="app-header-nav" aria-label="App">
-        <a class="app-header-nav-link" href="#projects" id="nav-projects" aria-current="page">
+        <a class="app-header-nav-link" href="#projects" id="nav-projects" aria-current="page" title="View and open projects saved in this browser.">
           Projects
         </a>
-        <a class="app-header-nav-link" href="#presets" id="nav-presets">Presets</a>
+        <a class="app-header-nav-link" href="#presets" id="nav-presets" title="Browse starter packs you can turn into a new project.">Presets</a>
         <a
           class="app-header-nav-link"
           href="/docs/#walkthroughs/project"
           id="nav-help"
+          title="Open the walkthrough docs for using RapidRoster."
         >
           Help
         </a>
       </nav>
 
       <div class="app-header-account">
-        <button class="button button-ghost button-small" type="button" id="export-all-btn">
+        <button
+          class="button button-ghost button-small"
+          type="button"
+          id="export-all-btn"
+          title="Download a backup JSON of every project saved in this browser."
+        >
           Export all
         </button>
-        <button class="button button-ghost button-small" type="button" id="import-hub-btn">
+        <button
+          class="button button-ghost button-small"
+          type="button"
+          id="import-hub-btn"
+          title="Import a single project file or a full library backup into this browser."
+        >
           <input
             type="file"
             id="import-hub-file"
@@ -74,7 +85,12 @@
             </p>
           </div>
           <div class="dashboard-actions">
-            <button class="button button-primary" type="button" id="new-project-btn">
+            <button
+              class="button button-primary"
+              type="button"
+              id="new-project-btn"
+              title="Create a blank project in this browser, then choose a preset if you want."
+            >
               New project
             </button>
           </div>
@@ -139,8 +155,18 @@
         <p class="app-empty-hint" id="new-project-status" aria-live="polite"></p>
 
         <div class="app-modal-actions">
-          <button class="button button-ghost" type="button" id="new-project-cancel">Cancel</button>
-          <button class="button button-primary" type="button" id="new-project-create">
+          <button
+            class="button button-ghost"
+            type="button"
+            id="new-project-cancel"
+            title="Close without creating a project."
+          >Cancel</button>
+          <button
+            class="button button-primary"
+            type="button"
+            id="new-project-create"
+            title="Create the project and open the workspace editor."
+          >
             Create project
           </button>
         </div>
