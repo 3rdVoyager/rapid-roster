@@ -4,26 +4,15 @@ Goal: the **smallest set of sentence shapes** that still cover sports, SciOly, v
 
 ---
 
-## Entry and Slot selection:
+## Data selection:
 Like an SQL Query: SELECT FROM Entries WHERE Availability EQUALS Mon OR Tue
 
-Slots
+Data
 - All/Any Slots
 - Where attribute
     - Availability = Monday AND Wednesday 
     - Skill = 8 OR 9 OR 10
     - Teammate-Request matches another slot’s
-        - Name
-        - ID
-        - Class = Coach AND Name != Bob
-- Custom Selection 
-
-Entries
-- All/Any Entries
-- Where attribute
-    - Availability = Monday AND Wednesday 
-    - Skill = 8 OR 9 OR 10
-    - Teammate-Request matches another entry’s
         - Name
         - ID
         - Class = Coach AND Name != Bob
@@ -36,35 +25,31 @@ The selector will show a small preview of the selected entries or slots to ensur
 ## Core templates
 
 1. Cluster (Group Together)
-    - I want to [Cluster] [Entry(s)]
+    - I want to [Cluster] [Data]
         - I want to [Cluster] [Entries where teammate-request matches another entry’s ID]
 
 2. Separate (Group Apart)
-    - I want to [Separate] [Entry(s)]
+    - I want to [Separate] [Data]
         - I want to [Separate] [Entries where school matches another entry’s school]
 
 3. Limit (Require)
-    - I want to [Limit] the number of [Entry(s)] per [Slot(s)] to be between [Num] and [Num]
+    - I want to [Limit] the number of [Data] per [Data] to be between [Num] and [Num]
         - I want to [Limit] the number of [Entries where Type = Coach] per [All/Any Slots] to be between [1] and [1]
-    - I want to [Limit] the number of [Slot(s)] per [Entry(s)] to be between [Num] and [Num]
-        - I want to [Limit] the number of [Slots where conflict-group = group3] per [All/Any Entries] to be between [0] and [1]
 
 4. Assign (Place)
-    - I want to [Assign] [Entry(s)] to [Slot(s)]
+    - I want to [Assign] [Data] to [Data]
         - I want to [Assign] [Specific Entry] to [Specific Slot]
         - I want to [Assign] [Entries where Skill = High] to [Slots where Skill = High]
-    - I want to [Assign] [Slot(s)] to [Entry(s)]
-        - I want to [Assign] [Specific Slot] to [Specific Entry]
 
 5. Avoid Assignment (Remove)
-    - I want to [Avoid Assignment] of [Entry(s)] to [Slot(s)]
+    - I want to [Avoid Assignment] of [Data] to [Data]
         - I want to [Avoid Assignment] of [Specific Entry] to [Specific Slot]
-    - I want to [Avoid Assignment] of [Slot(s)] to [Entry(s)]
-        - I want to [Avoid Assignment] of [Specific Slot] to [Specific Entry]
 
-6. Tentative (Future)
-    - I want to [Balance] [Attribute(s)] across [Slot(s)]
-    - I want to [Match] [Attribute(s)] of [Entry(s)] to [Attribute(s)] of [Slot(s)]
+6. Match (Find Correlation)
+    - I want to [Match] [Attribute(s)] to [Attribute(s)]
+
+7. Balance (Even Distribution)
+    - I want to [Balance] [Attribute(s)] across [Data]
 
 ## Priority and Hard vs Soft
 

@@ -4,16 +4,15 @@ All rules share a top-level shape.
 
 ```json
 {
-  "action": "cluster | separate | assign | avoid | limit | balance",
   "label": "Short name shown in rule list",
-
   // 1-10, higher is more important. Or "hard" for hard rules.
   "priority": 1,
+  "action": "cluster | separate | assign | avoid | limit | match | balance",
   "config": {}
 }
 ```
 
-## Selector (reused across verbs)
+## Selector (reused across actions)
 
 ```json
 {
@@ -23,7 +22,7 @@ All rules share a top-level shape.
 
   // "entries" or "slots" with no dot after to select all/any
   // Can be an array of values `["value1", "value2"]` or a single value to find specific matches.
-  // Can also be a column selector like "entries.column" or "slots.column" to compare the two columns to find all matching values
+  // Can be a column selector like "entries.column" or "slots.column" to compare the two columns to find all matching values
   "parameter2": ""
   }
 ```
@@ -58,69 +57,25 @@ All rules share a top-level shape.
 }
 ```
 
-Engine derives direction from the data configuration.
+`direction` is inferred from the selectors. One side must reference entries, the other slots.
 
-## Examples
-
-### Science Olympiad: ranked preference column 1
+### Match
 
 ```json
 {
-  "action": "assign",
-  "label": "Prioritize 1st choice astronomy assignments",
-  "priority": 10,
-  "config": {
-    "data": {
-      "parameter1": "entries.1stchoice",
-      "parameter2": ["Astronomy"]
-    },
-    "data2": {
-      "parameter1": "slots.name",
-      "parameter2": ["Astronomy"] 
-    }
-  }
+  "entryColumn": "entries.1",
+  "slotColumn": "slots.name"
 }
 ```
 
-### Sports: max 2 coaches per team
+Match is an exception to the selector pattern. Instead of returning sets, it correlates values from two columns. The engine prefers placements where the entry column value equals the slot column value.
+
+### Balance
 
 ```json
 {
-  "action": "limit",
-  "label": "Min 1, Max 2 coaches per team",
-  "priority": "hard",
-  "config": {
-    "data": {
-      "parameter1": "entries.role",
-      "parameter2": ["coach"]
-    },
-    "data2": {
-      "parameter1": "slots",
-      "parameter2": "slots"
-    },
-    "min": 1,
-    "max": 2
-  }
-}
-```
-
-### Volunteers: conflict group (slots per entry)
-
-```json
-{
-  "action": "avoid",
-  "label": "Jerry should not be assigned to the fifth slot",
-  "priority": 8,
-  "config": {
-    "data": {
-      "parameter1": "entries.name",
-      "parameter2": ["Jerry"]
-    },
-    "data2": {
-      "parameter1": "slots.id",
-      "parameter2": ["5"]
-    }
-  }
+  "attribute": "",
+  "data": {}
 }
 ```
 
