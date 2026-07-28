@@ -38,8 +38,6 @@ The selector will show a small preview of the selected entries or slots to ensur
 1. Cluster (Group Together)
     - I want to [Cluster] [Entry(s)]
         - I want to [Cluster] [Entries where teammate-request matches another entry’s ID]
-    - I want to [Cluster] [Entry(s)] in [Slot(s)]
-        - I want to [Cluster] [Entries where teammate-request matches another entry’s ID] in [Slots where Time-Block = Morning]
 
 2. Separate (Group Apart)
     - I want to [Separate] [Entry(s)]
@@ -58,11 +56,11 @@ The selector will show a small preview of the selected entries or slots to ensur
     - I want to [Assign] [Slot(s)] to [Entry(s)]
         - I want to [Assign] [Specific Slot] to [Specific Entry]
 
-5. Prevent Assignment (Remove)
-    - I want to [Prevent Assignment] of [Entry(s)] to [Slot(s)]
-        - I want to [Prevent Assignment] of [Specific Entry] to [Specific Slot]
-    - I want to [Prevent Assignment] of [Slot(s)] to [Entry(s)]
-        - I want to [Prevent Assignment] of [Specific Slot] to [Specific Entry]
+5. Avoid Assignment (Remove)
+    - I want to [Avoid Assignment] of [Entry(s)] to [Slot(s)]
+        - I want to [Avoid Assignment] of [Specific Entry] to [Specific Slot]
+    - I want to [Avoid Assignment] of [Slot(s)] to [Entry(s)]
+        - I want to [Avoid Assignment] of [Specific Slot] to [Specific Entry]
 
 6. Tentative (Future)
     - I want to [Balance] [Attribute(s)] across [Slot(s)]
