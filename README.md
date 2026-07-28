@@ -42,9 +42,8 @@ Local saved projects; people into slots; Cluster / Separate / Limit / Balance; g
 ```
 rapid-roster/
 ├── docs/           # Specs + example CSVs
-├── frontend/       # Pages site: landing, /app/, /app/project/
-├── future/         # Archived accounts / D1 / Functions (not live)
-├── wrangler.toml   # Pages static deploy
+├── frontend/       # Site: landing, /app/, /app/project/
+├── future/         # Archived deploy config, D1, Functions, accounts
 └── README.md
 ```
 
@@ -52,10 +51,7 @@ Live site: [rapidroster.pages.dev](https://rapidroster.pages.dev/).
 
 ## Local development
 
-```bash
-npm install
-npm run dev           # serves frontend/ on Cloudflare Pages local
-```
+Open the `frontend/` folder in VS Code, install the **Live Server** extension, then open `frontend/index.html` and click **Go Live** (bottom-right). The site will open at `http://127.0.0.1:5500/frontend/`.
 
 Projects save in the browser (localStorage). Cloud accounts, D1, and Pages Functions are parked under [`future/`](./future/) until you are ready to bring them back.
 

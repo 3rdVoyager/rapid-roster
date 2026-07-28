@@ -1,8 +1,0 @@
-# Cloudflare Pages (static site only for now)
-# Build output: frontend/
-#
-# Accounts / D1 / Pages Functions are archived under future/ until needed.
-
-name = "rapid-roster"
-compatibility_date = "2026-07-22"
-pages_build_output_dir = "frontend"
