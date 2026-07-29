@@ -3,140 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="RapidRoster project workspace — set up entries and slots, add rules, generate, and review results."
-    />
     <title>Project — RapidRoster</title>
-    <link rel="icon" href="/assets/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
-    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
-    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" />
     <link rel="stylesheet" href="/css/variables.css" />
     <link rel="stylesheet" href="/css/global.css" />
     <link rel="stylesheet" href="/css/buttons.css" />
     <link rel="stylesheet" href="/css/app/app.css" />
-    <link rel="stylesheet" href="/css/app/project.css" />
+    <link rel="stylesheet" href="/css/app/workspace.css" />
   </head>
-  <body class="page-app page-project">
+  <body class="page-project">
     <header class="app-header">
-      <a class="site-brand site-brand-icon" href="/app/" aria-label="RapidRoster projects">
-        <img
-          src="/assets/rapid-roster-logo.png"
-          alt=""
-          width="36"
-          height="36"
-        />
+      <a class="site-brand site-brand-icon" href="/app/">
+        <img src="/assets/rapid-roster-logo.png" alt="" width="36" height="36" />
       </a>
 
       <div class="app-header-project">
         <label class="app-project-name-label" for="project-name">Project name</label>
-        <input
-          class="app-project-name-input"
-          id="project-name"
-          type="text"
-          value="Spring SciOly"
-          autocomplete="off"
-          spellcheck="false"
-        />
+        <input class="app-project-name-input" id="project-name" type="text" value="Spring SciOly" autocomplete="off" spellcheck="false" />
       </div>
 
-      <div class="app-header-account">
-        <button
-          class="button button-ghost button-small"
-          type="button"
-          id="export-project-btn"
-          title="Download this project as a JSON file you can back up or share."
-        >
-          Export
-        </button>
-        <button
-          class="button button-ghost button-small"
-          type="button"
-          id="import-project-btn"
-          title="Replace this project with a RapidRoster JSON file from disk."
-        >
+      <div class="app-header-actions">
+        <button type="button" id="export-project-btn" class="button button-ghost button-small" title="Download this project as JSON">Export</button>
+        <button type="button" id="import-project-btn" class="button button-ghost button-small" title="Replace this project with a RapidRoster JSON file">
           <input type="file" id="import-project-file" accept=".json,.rapidroster.json,application/json" />
           <label for="import-project-file">Import</label>
         </button>
-        <button
-          class="button button-ghost button-small"
-          type="button"
-          id="load-preset-btn"
-          title="Replace entries, slots, and rules with a starter pack (sports, SciOly, and more)."
-        >
-          Load preset…
-        </button>
-        <a
-          class="button button-ghost button-small"
-          href="/app/"
-          title="Return to your project list in this browser."
-        >All projects</a>
-        <a
-          class="button button-ghost button-small"
-          href="/docs/#walkthroughs/project"
-          title="Open the walkthrough docs for using the project workspace."
-        >
-          Help
-        </a>
+        <button type="button" id="load-preset-btn" class="button button-ghost button-small" title="Replace entries, slots, and rules with a starter pack">Load preset…</button>
+        <a href="/app/" class="button button-ghost button-small" title="Return to project list">All projects</a>
       </div>
     </header>
 
     <div class="app-shell">
-      <nav class="app-sidebar" aria-label="Workspace">
+      <nav class="app-sidebar" aria-label="Workflow">
         <p class="app-sidebar-label">Workflow</p>
-        <a
-          class="button button-tertiary app-nav-item is-active"
-          href="#entries"
-          title="People or items to place — edit in a form or CSV table."
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">group</span>
-          Entries
-        </a>
-        <a
-          class="button button-tertiary app-nav-item"
-          href="#slots"
-          title="Teams, events, or shifts that entries can be assigned to."
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">view_week</span>
-          Slots
-        </a>
-        <a
-          class="button button-tertiary app-nav-item"
-          href="#rules"
-          title="Scoring rules, slots-per-entry, and conflict groups."
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">tune</span>
-          Rules
-        </a>
-        <a
-          class="button button-tertiary app-nav-item"
-          href="#review"
-          title="Quick check of setup before you generate."
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
-          Review
-        </a>
-        <a
-          class="button button-tertiary app-nav-item"
-          href="#generate"
-          title="Choose search settings and run the roster search."
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
-          Generate
-        </a>
-        <a
-          class="button button-tertiary app-nav-item"
-          href="#results"
-          title="Inspect and export the ranked assignment options."
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
-          Results
-        </a>
+        <a class="app-nav-item is-active" href="#entries"><span class="material-symbols-outlined">group</span>Entries</a>
+        <a class="app-nav-item" href="#slots"><span class="material-symbols-outlined">view_week</span>Slots</a>
+        <a class="app-nav-item" href="#rules"><span class="material-symbols-outlined">tune</span>Rules</a>
+        <a class="app-nav-item" href="#review"><span class="material-symbols-outlined">fact_check</span>Review</a>
+        <a class="app-nav-item" href="#generate"><span class="material-symbols-outlined">auto_awesome</span>Generate</a>
+        <a class="app-nav-item" href="#results"><span class="material-symbols-outlined">analytics</span>Results</a>
       </nav>
 
       <main class="app-main">
@@ -145,82 +50,36 @@
           <div class="app-panel-header">
             <div>
               <h1>Entries</h1>
-              <p class="app-panel-lead">
-                Configure people or items to be placed into slots.
-              </p>
+              <p class="app-panel-lead">Configure people or items to be placed into slots.</p>
             </div>
             <div class="app-panel-header-actions">
-              <a
-                class="button button-primary button-small"
-                href="#slots"
-                title="Go to Slots after your people or items look right."
-              >Continue to Slots</a>
+              <a class="button button-primary button-small" href="#slots">Continue to Slots</a>
             </div>
           </div>
 
-          <input
-            class="setup-tab-controls"
-            type="radio"
-            name="entries-tab"
-            id="entries-tab-editor"
-            checked
-          />
-          <input
-            class="setup-tab-controls"
-            type="radio"
-            name="entries-tab"
-            id="entries-tab-csv"
-          />
-
-          <div class="app-subtabs" role="tablist" aria-label="Entries views">
-            <label class="app-subtab" for="entries-tab-editor">Editor</label>
+          <input class="setup-tab-controls" type="radio" name="entries-tab" id="entries-tab-editor" checked />
+          <input class="setup-tab-controls" type="radio" name="entries-tab" id="entries-tab-csv" />
+          <div class="app-subtabs">
+            <label class="app-subtab is-active" for="entries-tab-editor">Editor</label>
             <label class="app-subtab" for="entries-tab-csv">CSV table</label>
           </div>
 
           <div class="setup-panes">
             <div class="setup-pane" id="entries-editor-pane">
               <div class="rules-layout">
-                <div class="app-section" id="entry-list-panel">
-                  <div class="list-panel-head">
-                    <h2 class="app-section-title">Entry list</h2>
-                    <button
-                      class="button button-secondary button-small"
-                      type="button"
-                      id="add-entry-btn"
-                      title="Create a new person or item and open it in the form editor."
-                    >
-                      + Add entry
-                    </button>
+                <div class="app-section">
+                  <div class="card-header">
+                    <h2 class="card-title">Entry list</h2>
+                    <button type="button" id="add-entry-btn" class="button button-secondary button-small">+ Add entry</button>
                   </div>
-                  <ul class="rule-list" id="entry-list">
-                    <li>
-                      <p class="app-empty-hint">No entries yet. Click + Add entry or import a CSV.</p>
-                    </li>
-                  </ul>
+                  <ul class="item-list" id="entry-list"><li><p class="app-empty-hint">No entries yet. Click + Add entry or import a CSV.</p></li></ul>
                 </div>
-
                 <div class="app-section" id="entry-editor-panel">
-                  <h2 class="app-section-title">Editor</h2>
-                  <div class="rule-editor" id="entry-editor-fields">
-                    <p class="app-empty-hint">Select an entry to edit its fields.</p>
-                  </div>
-                  <div class="rule-editor-actions" id="entry-editor-actions" hidden>
-                    <button
-                      class="button button-primary button-small"
-                      type="button"
-                      id="save-entry-btn"
-                      title="Save the fields below into the selected entry."
-                    >
-                      Save entry
-                    </button>
-                    <button
-                      class="button button-ghost button-small"
-                      type="button"
-                      id="delete-entry-btn"
-                      title="Remove this entry from the project. Cannot be undone."
-                    >
-                      Delete entry
-                    </button>
+                  <h2 class="card-title">Editor</h2>
+                  <div class="rule-editor" id="entry-editor-fields"><p class="app-empty-hint">Select an entry to edit its fields.</p></div>
+                  <div class="panel-actions" id="entry-editor-actions" hidden>
+                    <button type="button" id="save-entry-btn" class="button button-primary button-small">Save entry</button>
+                    <button type="button" id="delete-entry-btn" class="button button-ghost button-small">Delete entry</button>
                   </div>
                 </div>
               </div>
@@ -228,59 +87,19 @@
 
             <div class="setup-pane" id="entries-csv-pane">
               <div class="app-toolbar">
-                <button
-                  class="button button-primary button-small"
-                  type="button"
-                  id="import-entries-btn"
-                  title="Replace the entries table with people or items from a CSV file."
-                >
-                  <input type="file" id="import-entries-file" accept=".csv,text/csv" />
-                  <label for="import-entries-file">Import CSV</label>
-                </button>
-                <button
-                  class="button button-ghost button-small"
-                  type="button"
-                  id="clear-entries-btn"
-                  title="Delete all entry rows but keep the column headers."
-                >
-                  Clear
-                </button>
+                <button type="button" id="import-entries-btn" class="button button-primary button-small"><input type="file" id="import-entries-file" accept=".csv,text/csv" /><label for="import-entries-file">Import CSV</label></button>
+                <button type="button" id="clear-entries-btn" class="button button-ghost button-small">Clear</button>
                 <span class="app-toolbar-spacer"></span>
-                <button
-                  class="button button-secondary button-small"
-                  type="button"
-                  id="add-entry-row-btn"
-                  title="Add a blank row to the entries CSV table."
-                >
-                  + Add row
-                </button>
-                <button
-                  class="button button-ghost button-small"
-                  type="button"
-                  id="export-entries-csv-btn"
-                  title="Download the current entries table as a CSV spreadsheet."
-                >
-                  Export CSV
-                </button>
+                <button type="button" id="add-entry-row-btn" class="button button-secondary button-small">+ Add row</button>
+                <button type="button" id="export-entries-csv-btn" class="button button-ghost button-small">Export CSV</button>
               </div>
               <div class="app-table-wrap">
-                <table class="app-table" id="entries-table">
-                  <thead>
-                    <tr>
-                      <th>id</th>
-                      <th>name</th>
-                    </tr>
-                  </thead>
-                  <tbody id="entries-table-body">
-                    <tr>
-                      <td colspan="2">No rows yet. Import a CSV or add a row.</td>
-                    </tr>
-                  </tbody>
+                <table class="data-table" id="entries-table">
+                  <thead><tr><th>id</th><th>name</th></tr></thead>
+                  <tbody id="entries-table-body"><tr><td colspan="2">No rows yet.</td></tr></tbody>
                 </table>
               </div>
-              <p class="app-empty-hint">
-                Edit cells directly. Use the type dropdown under each column header for the generator.
-              </p>
+              <p class="app-empty-hint">Edit cells directly. Use the type dropdown under each column header for the generator.</p>
             </div>
           </div>
         </section>
@@ -290,82 +109,33 @@
           <div class="app-panel-header">
             <div>
               <h1>Slots</h1>
-              <p class="app-panel-lead">
-                Configure teams, events, or shifts entries can be assigned to.
-              </p>
+              <p class="app-panel-lead">Configure teams, events, or shifts entries can be assigned to.</p>
             </div>
             <div class="app-panel-header-actions">
-              <a
-                class="button button-primary button-small"
-                href="#rules"
-                title="Go to Rules after your teams, events, or shifts look right."
-              >Continue to Rules</a>
+              <a class="button button-primary button-small" href="#rules">Continue to Rules</a>
             </div>
           </div>
 
-          <input
-            class="setup-tab-controls"
-            type="radio"
-            name="slots-tab"
-            id="slots-tab-editor"
-            checked
-          />
-          <input
-            class="setup-tab-controls"
-            type="radio"
-            name="slots-tab"
-            id="slots-tab-csv"
-          />
-
-          <div class="app-subtabs" role="tablist" aria-label="Slots views">
-            <label class="app-subtab" for="slots-tab-editor">Editor</label>
+          <input class="setup-tab-controls" type="radio" name="slots-tab" id="slots-tab-editor" checked />
+          <input class="setup-tab-controls" type="radio" name="slots-tab" id="slots-tab-csv" />
+          <div class="app-subtabs">
+            <label class="app-subtab is-active" for="slots-tab-editor">Editor</label>
             <label class="app-subtab" for="slots-tab-csv">CSV table</label>
           </div>
 
           <div class="setup-panes">
             <div class="setup-pane" id="slots-editor-pane">
               <div class="rules-layout">
-                <div class="app-section" id="slot-list-panel">
-                  <div class="list-panel-head">
-                    <h2 class="app-section-title">Slot list</h2>
-                    <button
-                      class="button button-secondary button-small"
-                      type="button"
-                      id="add-slot-btn"
-                      title="Create a new team, event, or shift and open it in the form editor."
-                    >
-                      + Add slot
-                    </button>
-                  </div>
-                  <ul class="rule-list" id="slot-list">
-                    <li>
-                      <p class="app-empty-hint">No slots yet. Click + Add slot or import a CSV.</p>
-                    </li>
-                  </ul>
+                <div class="app-section">
+                  <div class="card-header"><h2 class="card-title">Slot list</h2><button type="button" id="add-slot-btn" class="button button-secondary button-small">+ Add slot</button></div>
+                  <ul class="item-list" id="slot-list"><li><p class="app-empty-hint">No slots yet.</p></li></ul>
                 </div>
-
                 <div class="app-section" id="slot-editor-panel">
-                  <h2 class="app-section-title">Editor</h2>
-                  <div class="rule-editor" id="slot-editor-fields">
-                    <p class="app-empty-hint">Select a slot to edit its fields.</p>
-                  </div>
-                  <div class="rule-editor-actions" id="slot-editor-actions" hidden>
-                    <button
-                      class="button button-primary button-small"
-                      type="button"
-                      id="save-slot-btn"
-                      title="Save the fields below into the selected slot."
-                    >
-                      Save slot
-                    </button>
-                    <button
-                      class="button button-ghost button-small"
-                      type="button"
-                      id="delete-slot-btn"
-                      title="Remove this slot from the project. Cannot be undone."
-                    >
-                      Delete slot
-                    </button>
+                  <h2 class="card-title">Editor</h2>
+                  <div class="rule-editor" id="slot-editor-fields"><p class="app-empty-hint">Select a slot to edit its fields.</p></div>
+                  <div class="panel-actions" id="slot-editor-actions" hidden>
+                    <button type="button" id="save-slot-btn" class="button button-primary button-small">Save slot</button>
+                    <button type="button" id="delete-slot-btn" class="button button-ghost button-small">Delete slot</button>
                   </div>
                 </div>
               </div>
@@ -373,61 +143,19 @@
 
             <div class="setup-pane" id="slots-csv-pane">
               <div class="app-toolbar">
-                <button
-                  class="button button-primary button-small"
-                  type="button"
-                  id="import-slots-btn"
-                  title="Replace the slots table with teams, events, or shifts from a CSV file."
-                >
-                  <input type="file" id="import-slots-file" accept=".csv,text/csv" />
-                  <label for="import-slots-file">Import CSV</label>
-                </button>
-                <button
-                  class="button button-ghost button-small"
-                  type="button"
-                  id="clear-slots-btn"
-                  title="Delete all slot rows but keep the column headers."
-                >
-                  Clear
-                </button>
+                <button type="button" id="import-slots-btn" class="button button-primary button-small"><input type="file" id="import-slots-file" accept=".csv,text/csv" /><label for="import-slots-file">Import CSV</label></button>
+                <button type="button" id="clear-slots-btn" class="button button-ghost button-small">Clear</button>
                 <span class="app-toolbar-spacer"></span>
-                <button
-                  class="button button-secondary button-small"
-                  type="button"
-                  id="add-slot-row-btn"
-                  title="Add a blank row to the slots CSV table."
-                >
-                  + Add row
-                </button>
-                <button
-                  class="button button-ghost button-small"
-                  type="button"
-                  id="export-slots-csv-btn"
-                  title="Download the current slots table as a CSV spreadsheet."
-                >
-                  Export CSV
-                </button>
+                <button type="button" id="add-slot-row-btn" class="button button-secondary button-small">+ Add row</button>
+                <button type="button" id="export-slots-csv-btn" class="button button-ghost button-small">Export CSV</button>
               </div>
               <div class="app-table-wrap">
-                <table class="app-table" id="slots-table">
-                  <thead>
-                    <tr>
-                      <th>id</th>
-                      <th>name</th>
-                      <th>min_size</th>
-                      <th>max_size</th>
-                    </tr>
-                  </thead>
-                  <tbody id="slots-table-body">
-                    <tr>
-                      <td colspan="4">No rows yet. Import a CSV or add a row.</td>
-                    </tr>
-                  </tbody>
+                <table class="data-table" id="slots-table">
+                  <thead><tr><th>id</th><th>name</th><th>min_size</th><th>max_size</th></tr></thead>
+                  <tbody id="slots-table-body"><tr><td colspan="4">No rows yet.</td></tr></tbody>
                 </table>
               </div>
-              <p class="app-empty-hint">
-                Min/max sizes feed the generator’s legal checks. Edit cells or import a CSV.
-              </p>
+              <p class="app-empty-hint">Min/max sizes feed the generator’s legal checks.</p>
             </div>
           </div>
         </section>
@@ -437,132 +165,41 @@
           <div class="app-panel-header">
             <div>
               <h1>Rules</h1>
-              <p class="app-panel-lead">
-                Scoring rules, how many slots each entry can hold, and which slots conflict.
-              </p>
+              <p class="app-panel-lead">Scoring rules, slot limits per entry, and conflict groups.</p>
             </div>
             <div class="app-panel-header-actions">
-              <a
-                class="button button-primary button-small"
-                href="#review"
-                title="Go to Review to double-check setup before generating."
-              >Continue to Review</a>
+              <a class="button button-primary button-small" href="#review">Continue to Review</a>
             </div>
           </div>
 
-          <input
-            class="setup-tab-controls"
-            type="radio"
-            name="rules-tab"
-            id="rules-tab-editor"
-            checked
-          />
-          <input
-            class="setup-tab-controls"
-            type="radio"
-            name="rules-tab"
-            id="rules-tab-csv"
-          />
-
-          <div class="app-subtabs" role="tablist" aria-label="Rules views">
-            <label class="app-subtab" for="rules-tab-editor">Editor</label>
+          <input class="setup-tab-controls" type="radio" name="rules-tab" id="rules-tab-editor" checked />
+          <input class="setup-tab-controls" type="radio" name="rules-tab" id="rules-tab-csv" />
+          <div class="app-subtabs">
+            <label class="app-subtab is-active" for="rules-tab-editor">Editor</label>
             <label class="app-subtab" for="rules-tab-csv">CSV table</label>
           </div>
 
           <div class="setup-panes">
             <div class="setup-pane" id="rules-editor-pane">
               <div class="rules-layout">
-                <div class="app-section" id="rule-list-panel">
-                  <div class="list-panel-head">
-                    <h2 class="app-section-title">Rule list</h2>
-                    <button
-                      class="button button-secondary button-small"
-                      type="button"
-                      id="add-rule-btn"
-                      title="Create a new scoring or placement rule and open it in the editor."
-                    >
-                      + Add rule
-                    </button>
-                  </div>
-                  <ul class="rule-list" id="rule-list">
-                    <li>
-                      <p class="app-empty-hint">No rules yet. Click + Add rule or import a CSV.</p>
-                    </li>
-                  </ul>
+                <div class="app-section">
+                  <div class="card-header"><h2 class="card-title">Rule list</h2><button type="button" id="add-rule-btn" class="button button-secondary button-small">+ Add rule</button></div>
+                  <ul class="item-list" id="rule-list"><li><p class="app-empty-hint">No rules yet. Click + Add rule or import a CSV.</p></li></ul>
                 </div>
-
                 <div class="app-section" id="rule-editor">
-                  <h2 class="app-section-title">Editor</h2>
+                  <h2 class="card-title">Editor</h2>
                   <div class="rule-editor">
-                    <div class="rule-editor-row">
-                      <span>Name</span>
-                      <input
-                        class="app-input"
-                        id="rule-name"
-                        type="text"
-                        value=""
-                        placeholder="e.g. Balance skill"
-                        style="max-width: none"
-                      />
+                    <div class="form-row">
+                      <div class="form-field"><label for="rule-name">Name</label><input id="rule-name" type="text" placeholder="e.g. Balance skill" /></div>
+                      <div class="form-field"><label>Type</label><div class="rule-type-grid" id="rule-type"><label><input type="radio" name="rule-type" value="cluster" /> Cluster</label><label><input type="radio" name="rule-type" value="separate" /> Separate</label><label><input type="radio" name="rule-type" value="limit" /> Limit</label><label><input type="radio" name="rule-type" value="balance" checked /> Balance</label></div></div>
+                      <div class="form-field"><label for="rule-data">Data</label><select id="rule-data"><option>entries.skill</option><option>entries.school</option><option>entries.role</option></select></div>
+                      <div class="form-field"><label for="rule-filter">Filter</label><input id="rule-filter" type="text" placeholder="optional" /></div>
+                      <div class="form-field"><label for="rule-priority">Priority</label><input id="rule-priority" type="number" min="1" max="10" value="5" /></div>
+                      <div class="form-field"><label><input type="checkbox" id="rule-hard" /> Hard (must never break)</label></div>
                     </div>
-                    <div class="rule-editor-row">
-                      <span>Type</span>
-                      <div class="rule-type-grid" id="rule-type">
-                        <label><input type="radio" name="rule-type" value="cluster" /> Cluster</label>
-                        <label><input type="radio" name="rule-type" value="separate" /> Separate</label>
-                        <label><input type="radio" name="rule-type" value="limit" /> Limit</label>
-                        <label>
-                          <input type="radio" name="rule-type" value="balance" checked /> Balance
-                        </label>
-                      </div>
-                    </div>
-                    <div class="rule-editor-row">
-                      <span>Data</span>
-                      <select class="app-select" id="rule-data" style="max-width: none">
-                        <option>entries.skill</option>
-                        <option>entries.school</option>
-                        <option>entries.role</option>
-                      </select>
-                    </div>
-                    <div class="rule-editor-row">
-                      <span>Filter</span>
-                      <input class="app-input" id="rule-filter" type="text" placeholder="optional" />
-                    </div>
-                    <div class="rule-editor-row">
-                      <span>Priority</span>
-                      <input
-                        class="app-input"
-                        id="rule-priority"
-                        type="number"
-                        min="1"
-                        max="10"
-                        value="5"
-                      />
-                    </div>
-                    <div class="rule-editor-row">
-                      <span>Hard</span>
-                      <label>
-                        <input type="checkbox" id="rule-hard" />
-                        Must never break
-                      </label>
-                    </div>
-                    <div class="rule-editor-actions">
-                      <button
-                        class="button button-primary button-small"
-                        type="button"
-                        id="save-rule-btn"
-                        title="Save the rule fields above into the selected rule."
-                      >
-                        Save rule
-                      </button>
-                      <button
-                        class="button button-ghost button-small"
-                        type="button"
-                        id="delete-rule-btn"
-                        title="Remove this rule from the project. Cannot be undone."
-                      >
-                        Delete rule
-                      </button>
+                    <div class="panel-actions">
+                      <button type="button" id="save-rule-btn" class="button button-primary button-small">Save rule</button>
+                      <button type="button" id="delete-rule-btn" class="button button-ghost button-small">Delete rule</button>
                     </div>
                   </div>
                 </div>
@@ -571,154 +208,45 @@
 
             <div class="setup-pane" id="rules-csv-pane">
               <div class="app-toolbar">
-                <button
-                  class="button button-primary button-small"
-                  type="button"
-                  id="import-rules-btn"
-                  title="Replace all rules with a rules.csv file (same format as presets)."
-                >
-                  <input type="file" id="import-rules-file" accept=".csv,text/csv" />
-                  <label for="import-rules-file">Import CSV</label>
-                </button>
-                <button
-                  class="button button-ghost button-small"
-                  type="button"
-                  id="clear-rules-btn"
-                  title="Delete every rule in this project."
-                >
-                  Clear
-                </button>
+                <button type="button" id="import-rules-btn" class="button button-primary button-small"><input type="file" id="import-rules-file" accept=".csv,text/csv" /><label for="import-rules-file">Import CSV</label></button>
+                <button type="button" id="clear-rules-btn" class="button button-ghost button-small">Clear</button>
                 <span class="app-toolbar-spacer"></span>
-                <button
-                  class="button button-secondary button-small"
-                  type="button"
-                  id="add-rule-row-btn"
-                  title="Add a blank rule row to the rules CSV table."
-                >
-                  + Add row
-                </button>
-                <button
-                  class="button button-ghost button-small"
-                  type="button"
-                  id="export-rules-csv-btn"
-                  title="Download the current rules as a CSV spreadsheet."
-                >
-                  Export CSV
-                </button>
+                <button type="button" id="add-rule-row-btn" class="button button-secondary button-small">+ Add row</button>
+                <button type="button" id="export-rules-csv-btn" class="button button-ghost button-small">Export CSV</button>
               </div>
               <div class="app-table-wrap">
-                <table class="app-table" id="rules-table">
-                  <thead>
-                    <tr>
-                      <th>id</th>
-                      <th>name</th>
-                      <th>type</th>
-                      <th>data</th>
-                      <th>filter</th>
-                      <th>options</th>
-                      <th>priority</th>
-                      <th>hard</th>
-                      <th class="table-actions-col"><span class="visually-hidden">Actions</span></th>
-                    </tr>
-                  </thead>
-                  <tbody id="rules-table-body">
-                    <tr>
-                      <td colspan="9">No rules yet. Import a CSV or add a row.</td>
-                    </tr>
-                  </tbody>
+                <table class="data-table" id="rules-table">
+                  <thead><tr><th>id</th><th>name</th><th>type</th><th>data</th><th>filter</th><th>options</th><th>priority</th><th>hard</th><th></th></tr></thead>
+                  <tbody id="rules-table-body"><tr><td colspan="9">No rules yet.</td></tr></tbody>
                 </table>
               </div>
-              <p class="app-empty-hint">
-                Same format as preset <code>rules.csv</code>:
-                <code>entries.skill</code>,
-                <code>entries.availability &gt; slots.practice_night</code>,
-                limit options like <code>max=2</code> / <code>min=1</code>, hard
-                <code>yes</code>/<code>no</code>. Use <code>&gt;</code> to link an
-                entry column to a slot column. For times or tags, put discrete
-                values in the cell separated by <code>;</code> (for example
-                <code>Sat AM;Sat PM</code>) and use match option
-                <code>partial</code> — the engine does not yet detect overlapping
-                ranges.
-              </p>
+              <p class="app-empty-hint">Same format as preset rules.csv.</p>
             </div>
           </div>
 
           <div class="app-section" id="global-setup">
-            <h2 class="app-section-title">Global</h2>
-            <p class="app-empty-hint global-setup-lead">
-              Hard limits that apply to every placement — not soft scoring rules.
-            </p>
+            <h2 class="card-title">Global setup</h2>
+            <p class="app-empty-hint" style="margin: 0.35rem 0 0.85rem">Hard limits that apply to every placement — not soft scoring rules.</p>
             <div class="global-setup-grid">
-              <div class="app-field">
+              <div class="form-field">
                 <label for="slots-per-entry">Default slots per entry</label>
-                <select class="app-select" id="slots-per-entry">
-                  <option value="1" selected>1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                </select>
-                <p class="app-empty-hint" style="margin: 0.45rem 0 0">
-                  Most people get this many slots. Add overrides below for exceptions.
-                </p>
+                <select id="slots-per-entry" class="app-select"><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
+                <p class="app-empty-hint" style="margin: 0.45rem 0 0">Most people get this many slots. Add overrides below for exceptions.</p>
               </div>
             </div>
 
             <div class="global-slots-overrides" id="slots-per-entry-overrides">
-              <h3 class="app-section-title">Per-entry overrides</h3>
-              <p class="app-empty-hint" style="margin: 0.35rem 0 0.65rem">
-                Give a specific person a different max than the default.
-              </p>
+              <h3 class="card-title" style="margin-top:1.25rem">Per-entry overrides</h3>
               <div class="slots-override-add">
-                <label class="app-field" style="margin: 0; flex: 1; min-width: 10rem">
-                  <span class="visually-hidden">Entry</span>
-                  <select class="app-select" id="slots-override-entry" style="max-width: none">
-                    <option value="">Select an entry…</option>
-                  </select>
-                </label>
-                <label class="app-field" style="margin: 0">
-                  <span class="visually-hidden">Max slots</span>
-                  <select class="app-select" id="slots-override-max">
-                    <option value="0">0</option>
-                    <option value="1" selected>1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                  </select>
-                </label>
-                <button
-                  class="button button-ghost button-small"
-                  type="button"
-                  id="slots-override-add-btn"
-                  title="Save this entry’s max slots override."
-                >
-                  Add
-                </button>
+                <div class="form-field"><label><span class="visually-hidden">Entry</span><select id="slots-override-entry"><option value="">Select an entry…</option></select></label></div>
+                <div class="form-field"><label><span class="visually-hidden">Max slots</span><select id="slots-override-max"><option value="0">0</option><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label></div>
+                <button type="button" id="slots-override-add-btn" class="button button-ghost button-small">Add</button>
               </div>
-              <ul class="slots-override-list" id="slots-override-list">
-                <li>
-                  <p class="app-empty-hint">No overrides yet.</p>
-                </li>
-              </ul>
+              <ul class="slots-override-list item-list" id="slots-override-list"><li><p class="app-empty-hint">No overrides yet.</p></li></ul>
             </div>
 
-            <div class="global-conflicts" id="conflict-groups-panel">
-              <div class="review-card-head">
-                <div>
-                  <h3 class="app-section-title">Conflict groups</h3>
-                  <p class="app-empty-hint" style="margin: 0.35rem 0 0">
-                    Slots in the same group cannot be held by the same person
-                    (for example two overlapping events).
-                  </p>
-                </div>
-                <button
-                  class="button button-ghost button-small"
-                  type="button"
-                  id="manage-conflicts-btn"
-                  title="Edit which slots cannot be held together by the same person."
-                >
-                  Manage…
-                </button>
-              </div>
+            <div class="global-conflicts" id="conflict-groups-panel" style="margin-top:1.25rem; padding-top:1.25rem; border-top: 1px solid var(--line-color);">
+              <div class="review-card-head"><div><h3 class="card-title">Conflict groups</h3><p class="app-empty-hint" style="margin: 0.35rem 0 0">Slots in the same group cannot be held by the same person (for example two overlapping events).</p></div><button type="button" id="manage-conflicts-btn" class="button button-ghost button-small">Manage…</button></div>
               <p class="app-empty-hint" id="conflict-groups-summary">No conflict groups yet.</p>
             </div>
           </div>
@@ -729,81 +257,35 @@
           <div class="app-panel-header">
             <div>
               <h1>Review</h1>
-              <p class="app-panel-lead">
-                Quick check before you generate.
-              </p>
+              <p class="app-panel-lead">Quick check before you generate.</p>
             </div>
-            <a
-              class="button button-primary button-small"
-              href="#generate"
-              title="Go to Generate to choose search settings and run the roster."
-            >Continue to Generate</a>
+            <a class="button button-primary button-small" href="#generate">Continue to Generate</a>
           </div>
 
           <div class="review-grid" id="review-summary">
             <div class="app-section review-card review-card-wide" id="review-global">
-              <div class="review-card-head">
-                <h2 class="app-section-title">Global</h2>
-              </div>
+              <div class="review-card-head"><h2 class="card-title">Global</h2></div>
               <dl class="review-dl review-dl-inline">
-                <div>
-                  <dt>Slots per entry</dt>
-                  <dd id="review-slots-per-entry">1</dd>
-                </div>
-                <div>
-                  <dt>Conflict groups</dt>
-                  <dd id="review-conflicts">None</dd>
-                </div>
+                <div><dt>Slots per entry</dt><dd id="review-slots-per-entry">1</dd></div>
+                <div><dt>Conflict groups</dt><dd id="review-conflicts">None</dd></div>
               </dl>
             </div>
 
             <div class="app-section review-card" id="review-slots">
-              <div class="review-card-head">
-                <h2 class="app-section-title">Slots</h2>
-              </div>
-              <p class="review-stat" id="review-slots-count">
-                <strong>0</strong> slots
-              </p>
+              <div class="review-card-head"><h2 class="card-title">Slots</h2></div>
+              <p class="review-stat" id="review-slots-count"><strong>0</strong> slots</p>
               <ul class="review-list" id="review-slots-preview"></ul>
             </div>
 
             <div class="app-section review-card" id="review-entries">
-              <div class="review-card-head">
-                <h2 class="app-section-title">Entries</h2>
-              </div>
-              <p class="review-stat" id="review-entries-count">
-                <strong>0</strong> entries loaded
-              </p>
+              <div class="review-card-head"><h2 class="card-title">Entries</h2></div>
+              <p class="review-stat" id="review-entries-count"><strong>0</strong> entries loaded</p>
               <ul class="review-chip-list" id="review-entries-preview"></ul>
             </div>
 
             <div class="app-section review-card review-card-wide" id="review-rules">
-              <div class="review-card-head">
-                <h2 class="app-section-title">Rules</h2>
-              </div>
-              <ol class="review-rules" id="review-rules-list">
-                <li>
-                  <div class="review-rule-top">
-                    <strong>Balance skill</strong>
-                    <span class="app-pill">Soft · P9</span>
-                  </div>
-                  <p>Keep <code>entries.skill</code> even across slots.</p>
-                </li>
-                <li>
-                  <div class="review-rule-top">
-                    <strong>Cluster by school</strong>
-                    <span class="app-pill">Soft · P8</span>
-                  </div>
-                  <p>Entries with the same <code>school</code> prefer the same slot.</p>
-                </li>
-                <li>
-                  <div class="review-rule-top">
-                    <strong>Limit keepers</strong>
-                    <span class="app-pill is-active">Hard · P9</span>
-                  </div>
-                  <p>At most 2 entries with <code>role = keeper</code> per slot.</p>
-                </li>
-              </ol>
+              <div class="review-card-head"><h2 class="card-title">Rules</h2></div>
+              <ol class="review-rules" id="review-rules-list"></ol>
             </div>
           </div>
         </section>
@@ -813,137 +295,54 @@
           <div class="app-panel-header">
             <div>
               <h1>Generate</h1>
-              <p class="app-panel-lead">
-                Pick a search mode, then run. Cancel anytime.
-              </p>
+              <p class="app-panel-lead">Choose search settings and run the roster generator.</p>
             </div>
-            <a
-              class="button button-primary button-small"
-              href="#results"
-              title="Jump to Results to inspect assignments after a run finishes."
-            >Continue to Results</a>
+            <a class="button button-primary button-small" href="#results">Continue to Results</a>
           </div>
 
-          <div class="app-section generate-settings" id="generate-settings">
-            <h2 class="app-section-title">Search quality</h2>
-            <p class="app-empty-hint generate-settings-lead">
-              Saved with this project.
-            </p>
-
+          <div class="app-section">
+            <h2 class="card-title">Search quality</h2>
+            <p class="app-empty-hint generate-settings-lead">Saved with this project.</p>
             <div class="generate-settings-grid">
               <fieldset class="generate-mode-fieldset">
                 <legend class="generate-settings-legend">Mode</legend>
-                <div class="generate-mode-list" role="radiogroup" aria-label="Search quality">
-                  <label class="generate-mode-card">
-                    <input type="radio" name="generate-mode" value="quick" id="generate-mode-quick" />
-                    <span class="generate-mode-card-body">
-                      <strong>Quick</strong>
-                      <span>
-                        Very short improve pass. Fast first look — especially on large rosters.
-                      </span>
-                    </span>
-                  </label>
-                  <label class="generate-mode-card">
-                    <input
-                      type="radio"
-                      name="generate-mode"
-                      value="balanced"
-                      id="generate-mode-balanced"
-                      checked
-                    />
-                    <span class="generate-mode-card-body">
-                      <strong>Balanced</strong>
-                      <span>
-                        Stops after about half the people with no gain. Good default for most rosters.
-                      </span>
-                    </span>
-                  </label>
-                  <label class="generate-mode-card">
-                    <input type="radio" name="generate-mode" value="best" id="generate-mode-best" />
-                    <span class="generate-mode-card-body">
-                      <strong>Best</strong>
-                      <span>
-                        Needs a full pass with no improvement before stopping. Slowest, most thorough.
-                      </span>
-                    </span>
-                  </label>
+                <div class="generate-mode-list">
+                  <label class="generate-mode-card"><input type="radio" name="generate-mode" value="quick" id="generate-mode-quick" /><span class="generate-mode-card-body"><strong>Quick</strong><span>Very short improve pass. Fast first look — especially on large rosters.</span></span></label>
+                  <label class="generate-mode-card"><input type="radio" name="generate-mode" value="balanced" id="generate-mode-balanced" checked /><span class="generate-mode-card-body"><strong>Balanced</strong><span>Stops after about half the people with no gain. Good default for most rosters.</span></span></label>
+                  <label class="generate-mode-card"><input type="radio" name="generate-mode" value="best" id="generate-mode-best" /><span class="generate-mode-card-body"><strong>Best</strong><span>Needs a full pass with no improvement before stopping. Slowest, most thorough.</span></span></label>
                 </div>
               </fieldset>
-
-              <aside class="generate-explainer" aria-label="What this does">
+              <aside class="generate-explainer">
                 <h3 class="generate-explainer-title">What this does</h3>
                 <ul class="generate-explainer-list">
-                  <li>
-                    <strong>Quick</strong> — short search, fewer attempts on large lists. Use to
-                    check the setup.
-                  </li>
-                  <li>
-                    <strong>Balanced</strong> — everyday choice when you want better scores without
-                    a long wait.
-                  </li>
-                  <li>
-                    <strong>Best</strong> — keep refining until a full pass finds nothing better.
-                  </li>
-                  <li>
-                    Options appear as they are found. Open Results anytime, or hit Cancel to keep
-                    what you have.
-                  </li>
+                  <li><strong>Quick</strong> — short search, fewer attempts on large lists.</li>
+                  <li><strong>Balanced</strong> — everyday choice when you want better scores without a long wait.</li>
+                  <li><strong>Best</strong> — keep refining until a full pass finds nothing better.</li>
+                  <li>Options appear as they are found. Open Results anytime, or hit Cancel to keep what you have.</li>
                 </ul>
               </aside>
             </div>
-
             <p class="app-empty-hint" id="generate-settings-summary" aria-live="polite"></p>
           </div>
 
           <div class="generate-actions">
-            <button
-              class="button button-primary"
-              type="button"
-              id="generate-btn"
-              title="Start searching for legal placements using the settings above. Options appear as they are found."
-            >
-              Generate
-            </button>
-            <button
-              class="button button-ghost"
-              type="button"
-              id="cancel-generate-btn"
-              disabled
-              title="Stop the current search early and keep whatever options were already found."
-            >
-              Cancel
-            </button>
+            <button type="button" id="generate-btn" class="button button-primary">Generate</button>
+            <button type="button" id="cancel-generate-btn" class="button button-ghost" disabled>Cancel</button>
           </div>
 
           <div class="app-section">
-            <h2 class="app-section-title">Status</h2>
+            <h2 class="card-title">Status</h2>
             <div class="app-status-box" id="generate-status">
               <p class="app-status-label">State</p>
               <p class="app-status-title" id="generate-status-title">Idle</p>
-              <p class="app-status-detail" id="generate-status-detail">
-                Ready when entries, slots, and rules look right.
-              </p>
-              <p class="generate-browse-hint" id="generate-browse-hint" hidden>
-                You can open Results and browse the options below while search keeps running in the
-                background. Cancel anytime to keep what you have.
-              </p>
+              <p class="app-status-detail" id="generate-status-detail">Ready when entries, slots, and rules look right.</p>
+              <p class="generate-browse-hint" id="generate-browse-hint" hidden>You can open Results and browse the options below while search keeps running in the background. Cancel anytime to keep what you have.</p>
               <div class="generate-progress" id="generate-progress" hidden>
-                <div
-                  class="generate-progress-track"
-                  role="progressbar"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                  aria-labelledby="generate-progress-label"
-                >
-                  <div class="generate-progress-fill" id="generate-progress-fill"></div>
-                </div>
+                <div class="generate-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-labelledby="generate-progress-label"><div class="generate-progress-fill" id="generate-progress-fill"></div></div>
                 <p class="generate-progress-label" id="generate-progress-label"></p>
               </div>
             </div>
-
-            <div class="generate-options-preview" id="generate-options-list">
-              <p class="app-empty-hint">Run Generate to see ranked options here.</p>
-            </div>
+            <div class="generate-options-preview" id="generate-options-list"><p class="app-empty-hint">Run Generate to see ranked options here.</p></div>
           </div>
         </section>
 
@@ -952,193 +351,60 @@
           <div class="app-panel-header">
             <div>
               <h1>Results</h1>
-              <p class="app-panel-lead">
-                Review who landed in each slot, or flip to each entry’s assignments — then export.
-              </p>
+              <p class="app-panel-lead">Review who landed in each slot, or flip to each entry’s assignments — then export.</p>
             </div>
-            <button
-              class="button button-secondary button-small"
-              type="button"
-              id="export-csv-btn"
-              title="Download the selected result option as a CSV of who is in each slot."
-            >
-              Export CSV
-            </button>
+            <button type="button" id="export-csv-btn" class="button button-secondary button-small">Export CSV</button>
           </div>
 
           <div class="results-controls">
-            <div class="results-view-config" aria-label="View configuration">
-              <div
-                class="results-toggle-group"
-                id="results-layout-toggle"
-                role="group"
-                aria-label="Layout"
-              >
-                <button
-                  class="results-toggle-btn is-active"
-                  type="button"
-                  data-layout="list"
-                  title="Show results as a compact list."
-                >
-                  List
-                </button>
-                <button
-                  class="results-toggle-btn"
-                  type="button"
-                  data-layout="grid"
-                  title="Show results as cards in a grid."
-                >
-                  Grid
-                </button>
+            <div class="results-view-config">
+              <div class="results-toggle-group" id="results-layout-toggle" role="group" aria-label="Layout">
+                <button type="button" class="results-toggle-btn is-active" data-layout="list">List</button>
+                <button type="button" class="results-toggle-btn" data-layout="grid">Grid</button>
               </div>
-              <div
-                class="results-toggle-group"
-                id="results-group-toggle"
-                role="group"
-                aria-label="Group by"
-              >
-                <button
-                  class="results-toggle-btn is-active"
-                  type="button"
-                  data-view="by-slot"
-                  title="Group assignments by team, event, or shift."
-                >
-                  By slot
-                </button>
-                <button
-                  class="results-toggle-btn"
-                  type="button"
-                  data-view="by-entry"
-                  title="Group assignments by person or item."
-                >
-                  By entry
-                </button>
+              <div class="results-toggle-group" id="results-group-toggle" role="group" aria-label="Group by">
+                <button type="button" class="results-toggle-btn is-active" data-view="by-slot">By slot</button>
+                <button type="button" class="results-toggle-btn" data-view="by-entry">By entry</button>
               </div>
             </div>
-
-            <div
-              class="results-score-stats"
-              id="results-score-stats"
-              hidden
-              aria-label="Score summary"
-            ></div>
-
-            <div
-              class="results-option-picker"
-              id="result-set-picker"
-              role="group"
-              aria-label="Result set"
-            >
-              <p class="app-empty-hint">Generate options to pick among ranked results.</p>
-            </div>
+            <div class="results-score-stats" id="results-score-stats" hidden aria-label="Score summary"></div>
+            <div class="results-option-picker" id="result-set-picker" role="group" aria-label="Result set"><p class="app-empty-hint">Generate options to pick among ranked results.</p></div>
           </div>
 
-          <div class="app-section" id="results-main">
-            <p class="app-empty-hint">Run Generate first, then pick an option here.</p>
-          </div>
+          <div class="app-section" id="results-main"><p class="app-empty-hint">Run Generate first, then pick an option here.</p></div>
         </section>
       </main>
     </div>
 
-    <div
-      class="app-modal"
-      id="load-preset-modal"
-      aria-hidden="true"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="load-preset-title"
-    >
+    <div class="app-modal" id="load-preset-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="load-preset-title">
       <div class="app-modal-backdrop" id="load-preset-backdrop"></div>
       <div class="app-modal-panel">
         <h2 id="load-preset-title">Load preset</h2>
-        <p class="app-modal-lead">
-          This <strong>replaces</strong> the current entries, slots, rules, and global setup
-          with the chosen pack.
-        </p>
-
+        <p class="app-modal-lead"><strong>Replaces</strong> the current entries, slots, rules, and global setup with the chosen pack.</p>
         <div class="preset-choice-list" id="load-preset-list"></div>
         <p class="app-empty-hint" id="load-preset-summary"></p>
-
         <p class="app-empty-hint" id="load-preset-status" aria-live="polite"></p>
-
         <div class="app-modal-actions">
-          <button
-            class="button button-ghost"
-            type="button"
-            id="load-preset-cancel"
-            title="Close without changing the current project."
-          >Cancel</button>
-          <button
-            class="button button-primary"
-            type="button"
-            id="load-preset-apply"
-            title="Replace this project's entries, slots, rules, and setup with the selected pack."
-          >
-            Replace project data
-          </button>
+          <button type="button" id="load-preset-cancel" class="button button-ghost">Cancel</button>
+          <button type="button" id="load-preset-apply" class="button button-primary">Replace project data</button>
         </div>
       </div>
     </div>
 
-    <div
-      class="app-modal"
-      id="conflict-groups-modal"
-      aria-hidden="true"
-    >
+    <div class="app-modal" id="conflict-groups-modal" aria-hidden="true">
       <div class="app-modal-backdrop" data-close-conflict-modal></div>
-      <div
-        class="app-modal-panel app-modal-panel-wide"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="conflict-groups-modal-title"
-      >
+      <div class="app-modal-panel app-modal-panel-wide" role="dialog" aria-modal="true" aria-labelledby="conflict-groups-modal-title">
         <div class="app-modal-head">
-          <div>
-            <p class="app-kicker">Rules · Global</p>
-            <h2 class="app-modal-title" id="conflict-groups-modal-title">Conflict groups</h2>
-          </div>
-          <button
-            class="button button-ghost button-small"
-            type="button"
-            data-close-conflict-modal
-            title="Close without saving conflict group changes."
-          >
-            Close
-          </button>
+          <div><p class="app-kicker">Rules · Global</p><h2 class="app-modal-title" id="conflict-groups-modal-title">Conflict groups</h2></div>
+          <button type="button" class="button button-ghost button-small" data-close-conflict-modal>Close</button>
         </div>
-
-        <p class="app-empty-hint" style="margin-top: 0">
-          Each group is a set of slots that the same person cannot hold together.
-        </p>
-
+        <p class="app-empty-hint" style="margin-top: 0">Each group is a set of slots that the same person cannot hold together.</p>
         <div class="conflict-editor-list" id="conflict-groups-editor"></div>
-
         <div class="app-modal-actions conflict-modal-actions">
-          <button
-            class="button button-ghost"
-            type="button"
-            id="conflict-add-group-btn"
-            title="Add another named group of slots that conflict with each other."
-          >
-            Add group
-          </button>
+          <button type="button" id="conflict-add-group-btn" class="button button-ghost">Add group</button>
           <div class="conflict-modal-actions-end">
-            <button
-              class="button button-ghost"
-              type="button"
-              data-close-conflict-modal
-              title="Close without saving conflict group changes."
-            >
-              Cancel
-            </button>
-            <button
-              class="button button-primary"
-              type="button"
-              id="conflict-groups-save"
-              title="Write these groups onto the Slots table and use them for Generate."
-            >
-              Save groups
-            </button>
+            <button type="button" class="button button-ghost" data-close-conflict-modal>Cancel</button>
+            <button type="button" id="conflict-groups-save" class="button button-primary">Save groups</button>
           </div>
         </div>
       </div>
@@ -1147,4 +413,3 @@
     <script type="module" src="/js/project.js"></script>
   </body>
 </html>
-
