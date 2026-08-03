@@ -34,8 +34,8 @@
         <span>Rapid<span class="brand-accent">Roster</span></span>
       </a>
 
-      <nav class="app-header-nav" aria-label="App">
-        <a class="app-header-nav-link" href="#projects" id="nav-projects" aria-current="page" title="View and open projects saved in this browser.">
+      <nav class="app-header-nav">
+        <a class="app-header-nav-link" href="#projects" id="nav-projects" title="View and open projects saved in this browser.">
           Projects
         </a>
         <a class="app-header-nav-link" href="#presets" id="nav-presets" title="Browse starter packs you can turn into a new project.">Presets</a>
@@ -96,7 +96,7 @@
           </div>
         </div>
 
-        <div class="hub-status" id="hub-status" hidden aria-live="polite"></div>
+        <div class="hub-status" id="hub-status" hidden></div>
 
         <div class="hub-empty" id="hub-empty" hidden>
           <h2>Start your first roster</h2>
@@ -128,10 +128,6 @@
     <div
       class="app-modal"
       id="new-project-modal"
-      aria-hidden="true"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="new-project-title"
     >
       <div class="app-modal-backdrop" id="new-project-backdrop"></div>
       <div class="app-modal-panel">
@@ -152,7 +148,7 @@
           />
         </div>
 
-        <p class="app-empty-hint" id="new-project-status" aria-live="polite"></p>
+        <p class="app-empty-hint" id="new-project-status"></p>
 
         <div class="app-modal-actions">
           <button

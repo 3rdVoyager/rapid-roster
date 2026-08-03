@@ -24,7 +24,7 @@
   </head>
   <body class="page-app page-project">
     <header class="app-header">
-      <a class="site-header-brand site-header-brand-icon" href="/app/" aria-label="RapidRoster projects">
+      <a class="site-header-brand site-header-brand-icon" href="/app/">
         <img
           src="/assets/rapid-roster-logo.png"
           alt=""
@@ -87,14 +87,14 @@
     </header>
 
     <div class="app-shell">
-      <nav class="app-sidebar" aria-label="Workspace">
+      <nav class="app-sidebar">
         <p class="app-sidebar-label">Workflow</p>
         <a
           class="button button-tertiary app-nav-item is-active"
           href="#entries"
           title="People or items to place — edit in a form or CSV table."
         >
-          <span class="material-symbols-outlined" aria-hidden="true">group</span>
+          <span class="material-symbols-outlined">group</span>
           Entries
         </a>
         <a
@@ -102,7 +102,7 @@
           href="#slots"
           title="Teams, events, or shifts that entries can be assigned to."
         >
-          <span class="material-symbols-outlined" aria-hidden="true">view_week</span>
+          <span class="material-symbols-outlined">view_week</span>
           Slots
         </a>
         <a
@@ -110,7 +110,7 @@
           href="#rules"
           title="Scoring rules, slots-per-entry, and conflict groups."
         >
-          <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+          <span class="material-symbols-outlined">tune</span>
           Rules
         </a>
         <a
@@ -118,7 +118,7 @@
           href="#review"
           title="Quick check of setup before you generate."
         >
-          <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
+          <span class="material-symbols-outlined">fact_check</span>
           Review
         </a>
         <a
@@ -126,7 +126,7 @@
           href="#generate"
           title="Choose search settings and run the roster search."
         >
-          <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
+          <span class="material-symbols-outlined">auto_awesome</span>
           Generate
         </a>
         <a
@@ -134,7 +134,7 @@
           href="#results"
           title="Inspect and export the ranked assignment options."
         >
-          <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
+          <span class="material-symbols-outlined">analytics</span>
           Results
         </a>
       </nav>
@@ -172,7 +172,7 @@
             id="entries-tab-csv"
           />
 
-          <div class="app-subtabs" role="tablist" aria-label="Entries views">
+          <div class="app-subtabs">
             <label class="app-subtab" for="entries-tab-editor">Editor</label>
             <label class="app-subtab" for="entries-tab-csv">CSV table</label>
           </div>
@@ -317,7 +317,7 @@
             id="slots-tab-csv"
           />
 
-          <div class="app-subtabs" role="tablist" aria-label="Slots views">
+          <div class="app-subtabs">
             <label class="app-subtab" for="slots-tab-editor">Editor</label>
             <label class="app-subtab" for="slots-tab-csv">CSV table</label>
           </div>
@@ -464,7 +464,7 @@
             id="rules-tab-csv"
           />
 
-          <div class="app-subtabs" role="tablist" aria-label="Rules views">
+          <div class="app-subtabs">
             <label class="app-subtab" for="rules-tab-editor">Editor</label>
             <label class="app-subtab" for="rules-tab-csv">CSV table</label>
           </div>
@@ -833,7 +833,7 @@
             <div class="generate-settings-grid">
               <fieldset class="generate-mode-fieldset">
                 <legend class="generate-settings-legend">Mode</legend>
-                <div class="generate-mode-list" role="radiogroup" aria-label="Search quality">
+                <div class="generate-mode-list">
                   <label class="generate-mode-card">
                     <input type="radio" name="generate-mode" value="quick" id="generate-mode-quick" />
                     <span class="generate-mode-card-body">
@@ -870,7 +870,7 @@
                 </div>
               </fieldset>
 
-              <aside class="generate-explainer" aria-label="What this does">
+              <aside class="generate-explainer">
                 <h3 class="generate-explainer-title">What this does</h3>
                 <ul class="generate-explainer-list">
                   <li>
@@ -892,7 +892,7 @@
               </aside>
             </div>
 
-            <p class="app-empty-hint" id="generate-settings-summary" aria-live="polite"></p>
+            <p class="app-empty-hint" id="generate-settings-summary"></p>
           </div>
 
           <div class="generate-actions">
@@ -930,10 +930,6 @@
               <div class="generate-progress" id="generate-progress" hidden>
                 <div
                   class="generate-progress-track"
-                  role="progressbar"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                  aria-labelledby="generate-progress-label"
                 >
                   <div class="generate-progress-fill" id="generate-progress-fill"></div>
                 </div>
@@ -967,12 +963,10 @@
           </div>
 
           <div class="results-controls">
-            <div class="results-view-config" aria-label="View configuration">
+            <div class="results-view-config">
               <div
                 class="results-toggle-group"
                 id="results-layout-toggle"
-                role="group"
-                aria-label="Layout"
               >
                 <button
                   class="results-toggle-btn is-active"
@@ -994,8 +988,6 @@
               <div
                 class="results-toggle-group"
                 id="results-group-toggle"
-                role="group"
-                aria-label="Group by"
               >
                 <button
                   class="results-toggle-btn is-active"
@@ -1020,14 +1012,11 @@
               class="results-score-stats"
               id="results-score-stats"
               hidden
-              aria-label="Score summary"
             ></div>
 
             <div
               class="results-option-picker"
               id="result-set-picker"
-              role="group"
-              aria-label="Result set"
             >
               <p class="app-empty-hint">Generate options to pick among ranked results.</p>
             </div>
@@ -1043,10 +1032,6 @@
     <div
       class="app-modal"
       id="load-preset-modal"
-      aria-hidden="true"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="load-preset-title"
     >
       <div class="app-modal-backdrop" id="load-preset-backdrop"></div>
       <div class="app-modal-panel">
@@ -1059,7 +1044,7 @@
         <div class="preset-choice-list" id="load-preset-list"></div>
         <p class="app-empty-hint" id="load-preset-summary"></p>
 
-        <p class="app-empty-hint" id="load-preset-status" aria-live="polite"></p>
+        <p class="app-empty-hint" id="load-preset-status"></p>
 
         <div class="app-modal-actions">
           <button
@@ -1083,14 +1068,10 @@
     <div
       class="app-modal"
       id="conflict-groups-modal"
-      aria-hidden="true"
     >
       <div class="app-modal-backdrop" data-close-conflict-modal></div>
       <div
         class="app-modal-panel app-modal-panel-wide"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="conflict-groups-modal-title"
       >
         <div class="app-modal-head">
           <div>
