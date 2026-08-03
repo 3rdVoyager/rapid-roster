@@ -32,7 +32,7 @@
       </a>
       <button
         title="Toggle navigation menu"
-        class="site-nav-toggle button button-tertiary button-small"
+        class="site-nav-toggle button button-tertiary"
         type="button"
         id="site-nav-toggle"
       >
@@ -50,8 +50,8 @@
     </header>
 
     <main>
-      <section class="hero">
-        <div class="hero-copy">
+    <section class="hero-section">
+      <div class="hero-content">
           <h1 class="hero-brand">
             <span>Rapid<span class="brand-accent">Roster</span></span>
           </h1>
@@ -59,7 +59,7 @@
             Turn a participant list into fair, rule-aware groups —
             teams, events, shifts, classrooms, and more.
           </p>
-          <div class="hero-actions">
+          <div class="site-buttons">
             <a class="button button-primary" href="/app/">Open App</a>
             <a class="button button-secondary" href="/how-it-works/">How it works</a>
           </div>
@@ -67,7 +67,7 @@
         <figure class="screenshot-frame hero-shot">
           <img
             src="/assets/screenshots/workspace.png"
-            alt="RapidRoster workspace showing results with Team A and Team B assignments from a sports roster"
+            alt="RapidRoster workspace showing results with assignments for a sports roster"
             width="1600"
             height="1000"
             decoding="async"
@@ -78,9 +78,9 @@
         </figure>
       </section>
 
-      <section id="problem" class="section">
+      <section id="problem" class="page-section">
         <h2>The problem</h2>
-        <p class="section-lead">
+        <p class="section-intro">
           Manually building rosters is slow, and spreadsheets make the tradeoffs invisible.
         </p>
         <ul class="problem-list">
@@ -98,8 +98,7 @@
             <div>
               <strong>Rules can't be seen in cells</strong>
               <p>
-                The sheet holds only names and numbers. The real constraints live in your
-                head.
+                The spreadsheet can only hold names and numbers. The constraints live in your head.
               </p>
             </div>
           </li>
@@ -108,17 +107,16 @@
             <div>
               <strong>One change breaks three others</strong>
               <p>
-                Move one person and you redo half the grid. Fairness becomes
-                guesswork, and you never know what you traded off.
+                Move one person and you redo half the grid. Fairness becomes guesswork, and you never know what you traded off.
               </p>
             </div>
           </li>
         </ul>
       </section>
 
-      <section class="section">
-        <div class="section-split">
-          <div class="section-copy">
+      <section class="page-section">
+        <div class="split-layout">
+          <div class="split-content">
             <h2>Why RapidRoster</h2>
             <p>
               RapidRoster lets organizers state tradeoffs as an explicit
@@ -129,9 +127,8 @@
               Import people and slots, set priorities, generate assignments,
               review what was traded off, and export when it feels right.
             </p>
-            <div class="hero-actions">
-              <a class="button button-secondary" href="/docs/#explanations">Read the docs</a>
-              <a class="button button-tertiary" href="/about/">About the project</a>
+            <div class="site-buttons">
+              <a class="button button-secondary" href="/about/">About the project</a>
             </div>
           </div>
           <figure class="screenshot-frame">
@@ -147,9 +144,9 @@
         </div>
       </section>
 
-      <section class="section">
+      <section class="page-section">
         <h2>See it in the product</h2>
-        <p class="section-lead">
+        <p class="section-intro">
           Setup, rules, generate, and results — one workspace for every kind of roster.
         </p>
         <div class="screenshot-row">
@@ -162,7 +159,7 @@
               loading="lazy"
               decoding="async"
             />
-            <figcaption>Setup — entries &amp; fields</figcaption>
+            <figcaption>Setup — entries and slots</figcaption>
           </figure>
           <figure class="screenshot-frame">
             <img
@@ -189,9 +186,9 @@
         </div>
       </section>
 
-      <section class="section section-cta">
+      <section class="cta-section">
         <h2>Ready to stop wrestling the spreadsheet?</h2>
-        <p class="section-lead">
+        <p class="section-intro">
           Open a project and turn your lists into placements — everything runs in this browser.
         </p>
         <a class="button button-primary" href="/app/">Open App</a>
@@ -221,9 +218,7 @@
               href="mailto:joshuacheng.dev@gmail.com"
               title="Email"
             >
-              <svg viewBox="0 0 24 24">
-                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
-              </svg>
+              <span class="material-symbols-outlined">mail</span>
             </a>
             <a
               class="site-footer-social-btn"
@@ -244,15 +239,11 @@
             <h2>Product</h2>
             <ul>
               <li><a href="/app/">Open App</a></li>
-              <li><a href="/how-it-works/">How it works</a></li>
-              <li><a href="/examples/">Examples</a></li>
             </ul>
           </div>
           <div class="site-footer-col">
             <h2>Resources</h2>
             <ul>
-              <li><a href="/docs/">Docs</a></li>
-              <li><a href="/faq/">FAQ</a></li>
               <li><a href="/contact/">Contact</a></li>
             </ul>
           </div>
@@ -260,8 +251,6 @@
             <h2>Project</h2>
             <ul>
               <li><a href="/about/">About</a></li>
-              <li><a href="/privacy/">Privacy</a></li>
-              <li><a href="/license/">License</a></li>
             </ul>
           </div>
         </nav>
@@ -271,6 +260,5 @@
         <p>RapidRoster — open source under the MIT License.</p>
       </div>
     </footer>
-    <script type="module" src="/js/site-nav.js"></script>
   </body>
 </html>

@@ -1,5 +1,5 @@
 /* —— Hero (one composition: brand + pitch + CTA + shot) —— */
-.hero {
+.hero-section {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   gap: 2.75rem 3rem;
@@ -8,7 +8,7 @@
   border-bottom: 1px solid var(--line-color);
 }
 
-.hero-copy {
+.hero-content {
   display: grid;
   gap: 1.5rem;
   animation: fade-in 0.65s ease 0.06s both;
@@ -40,7 +40,7 @@
   line-height: 1.65;
 }
 
-.hero-actions {
+.site-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 0.85rem;
@@ -52,20 +52,20 @@
 }
 
 /* —— Sections —— */
-.section {
+.page-section {
   padding: 4.5rem 2rem;
   border-bottom: 1px solid var(--line-color);
 }
 
-.section:last-of-type {
+.page-section:last-of-type {
   border-bottom: none;
 }
 
-.section h2 {
+.page-section h2 {
   margin: 0 0 1.1rem;
 }
 
-.section-lead {
+.section-intro {
   margin: 0 0 2rem;
   max-width: 40rem;
   color: var(--text-color-muted);
@@ -73,31 +73,31 @@
   line-height: 1.65;
 }
 
-.section-split {
+.split-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 2.75rem 3rem;
   align-items: center;
 }
 
-.section-copy p {
+.split-content p {
   margin: 0 0 1.25rem;
   max-width: 38rem;
   font-size: 1.12rem;
   line-height: 1.7;
 }
 
-.section-copy p:last-child {
+.split-content p:last-child {
   margin-bottom: 0;
 }
 
-.section-cta {
+.cta-section {
   text-align: center;
   padding-top: 10rem;
   padding-bottom: 10rem;
 }
 
-.section-cta .section-lead {
+.cta-section .section-intro {
   margin-inline: auto;
   margin-bottom: 1.75rem;
 }
@@ -177,7 +177,7 @@
   object-position: top left;
 }
 
-.section-split .screenshot-frame > img {
+.split-layout .screenshot-frame > img {
   aspect-ratio: 5 / 4;
   object-position: top left;
 }
@@ -294,8 +294,8 @@
 
 /* —— Responsive —— */
 @media (max-width: 900px) {
-  .hero,
-  .section-split {
+  .hero-section,
+  .split-layout {
     grid-template-columns: 1fr;
   }
 
@@ -306,11 +306,11 @@
 }
 
 @media (max-width: 600px) {
-  .hero {
+  .hero-section {
     padding: 1rem 0 3rem;
   }
 
-  .section {
+  .page-section {
     padding: 3.25rem 0;
   }
 }

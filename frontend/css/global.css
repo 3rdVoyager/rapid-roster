@@ -116,7 +116,7 @@ em {
     direction: ltr;
     font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
     -webkit-font-smoothing: antialiased;
-    color: var(--color-blue-bright);
+    color: var(--color-white);
     user-select: none;
 }
 
