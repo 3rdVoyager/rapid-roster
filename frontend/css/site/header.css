@@ -29,7 +29,7 @@ html {
   animation: fade-in 0.55s ease both;
 }
 
-.site-brand {
+.site-header-brand {
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
@@ -41,11 +41,11 @@ html {
   text-decoration: none;
 }
 
-.site-brand:hover {
+.site-header-brand:hover {
   color: var(--text-color);
 }
 
-.site-brand img {
+.site-header-brand img {
   width: var(--header-brand-logo-size);
   height: var(--header-brand-logo-size);
   border-radius: 8px;
