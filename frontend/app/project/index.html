@@ -24,10 +24,10 @@
   </head>
   <body class="page-app page-project">
     <header class="app-header">
-      <a class="site-header-brand site-header-brand-icon" href="/app/">
+      <a class="site-header-brand site-header-brand-icon" href="/app/" title="Back to projects">
         <img
           src="/assets/rapid-roster-logo.png"
-          alt=""
+          alt="RapidRoster logo"
           width="36"
           height="36"
         />
@@ -54,15 +54,14 @@
         >
           Export
         </button>
-        <button
+        <label
           class="button button-ghost button-small"
-          type="button"
-          id="import-project-btn"
+          for="import-project-file"
           title="Replace this project with a RapidRoster JSON file from disk."
         >
-          <input type="file" id="import-project-file" accept=".json,.rapidroster.json,application/json" />
-          <label for="import-project-file">Import</label>
-        </button>
+          Import
+        </label>
+        <input type="file" id="import-project-file" accept=".json,.rapidroster.json,application/json" hidden />
         <button
           class="button button-ghost button-small"
           type="button"
@@ -228,15 +227,14 @@
 
             <div class="setup-pane" id="entries-csv-pane">
               <div class="app-toolbar">
-                <button
+                <label
                   class="button button-primary button-small"
-                  type="button"
-                  id="import-entries-btn"
+                  for="import-entries-file"
                   title="Replace the entries table with people or items from a CSV file."
                 >
-                  <input type="file" id="import-entries-file" accept=".csv,text/csv" />
-                  <label for="import-entries-file">Import CSV</label>
-                </button>
+                  Import CSV
+                </label>
+                <input type="file" id="import-entries-file" accept=".csv,text/csv" hidden />
                 <button
                   class="button button-ghost button-small"
                   type="button"
@@ -373,15 +371,14 @@
 
             <div class="setup-pane" id="slots-csv-pane">
               <div class="app-toolbar">
-                <button
+                <label
                   class="button button-primary button-small"
-                  type="button"
-                  id="import-slots-btn"
+                  for="import-slots-file"
                   title="Replace the slots table with teams, events, or shifts from a CSV file."
                 >
-                  <input type="file" id="import-slots-file" accept=".csv,text/csv" />
-                  <label for="import-slots-file">Import CSV</label>
-                </button>
+                  Import CSV
+                </label>
+                <input type="file" id="import-slots-file" accept=".csv,text/csv" hidden />
                 <button
                   class="button button-ghost button-small"
                   type="button"
@@ -497,12 +494,12 @@
                     <div class="rule-editor-row">
                       <span>Name</span>
                       <input
-                        class="app-input"
+                        class="app-input app-input-full"
                         id="rule-name"
                         type="text"
                         value=""
                         placeholder="e.g. Balance skill"
-                        style="max-width: none"
+                        title="Rule name"
                       />
                     </div>
                     <div class="rule-editor-row">
@@ -518,7 +515,7 @@
                     </div>
                     <div class="rule-editor-row">
                       <span>Data</span>
-                      <select class="app-select" id="rule-data" style="max-width: none">
+                      <select class="app-select app-select-full" id="rule-data" title="Data column">
                         <option>entries.skill</option>
                         <option>entries.school</option>
                         <option>entries.role</option>
@@ -537,6 +534,7 @@
                         min="1"
                         max="10"
                         value="5"
+                        title="Rule priority (1-10)"
                       />
                     </div>
                     <div class="rule-editor-row">
@@ -571,15 +569,14 @@
 
             <div class="setup-pane" id="rules-csv-pane">
               <div class="app-toolbar">
-                <button
+                <label
                   class="button button-primary button-small"
-                  type="button"
-                  id="import-rules-btn"
+                  for="import-rules-file"
                   title="Replace all rules with a rules.csv file (same format as presets)."
                 >
-                  <input type="file" id="import-rules-file" accept=".csv,text/csv" />
-                  <label for="import-rules-file">Import CSV</label>
-                </button>
+                  Import CSV
+                </label>
+                <input type="file" id="import-rules-file" accept=".csv,text/csv" hidden />
                 <button
                   class="button button-ghost button-small"
                   type="button"
@@ -657,7 +654,7 @@
                   <option value="3">3</option>
                   <option value="4">4</option>
                 </select>
-                <p class="app-empty-hint" style="margin: 0.45rem 0 0">
+                <p class="app-empty-hint app-hint-margin-top">
                   Most people get this many slots. Add overrides below for exceptions.
                 </p>
               </div>
@@ -665,19 +662,19 @@
 
             <div class="global-slots-overrides" id="slots-per-entry-overrides">
               <h3 class="app-section-title">Per-entry overrides</h3>
-              <p class="app-empty-hint" style="margin: 0.35rem 0 0.65rem">
+              <p class="app-empty-hint app-hint-margin-top-bottom">
                 Give a specific person a different max than the default.
               </p>
               <div class="slots-override-add">
-                <label class="app-field" style="margin: 0; flex: 1; min-width: 10rem">
+                <label class="app-field app-field-flex app-field-override-entry">
                   <span class="visually-hidden">Entry</span>
-                  <select class="app-select" id="slots-override-entry" style="max-width: none">
+                  <select class="app-select app-select-full" id="slots-override-entry" title="Entry to override">
                     <option value="">Select an entry…</option>
                   </select>
                 </label>
-                <label class="app-field" style="margin: 0">
+                <label class="app-field app-field-override-max">
                   <span class="visually-hidden">Max slots</span>
-                  <select class="app-select" id="slots-override-max">
+                  <select class="app-select" id="slots-override-max" title="Max slots">
                     <option value="0">0</option>
                     <option value="1" selected>1</option>
                     <option value="2">2</option>
@@ -705,7 +702,7 @@
               <div class="review-card-head">
                 <div>
                   <h3 class="app-section-title">Conflict groups</h3>
-                  <p class="app-empty-hint" style="margin: 0.35rem 0 0">
+                  <p class="app-empty-hint app-hint-margin-top">
                     Slots in the same group cannot be held by the same person
                     (for example two overlapping events).
                   </p>
@@ -1088,7 +1085,7 @@
           </button>
         </div>
 
-        <p class="app-empty-hint" style="margin-top: 0">
+        <p class="app-empty-hint app-hint-no-margin-top">
           Each group is a set of slots that the same person cannot hold together.
         </p>
 
@@ -1125,7 +1122,6 @@
       </div>
     </div>
 
-    <script type="module" src="/js/project.js"></script>
   </body>
 </html>
 

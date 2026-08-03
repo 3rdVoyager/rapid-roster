@@ -58,19 +58,19 @@
         >
           Export all
         </button>
-        <button
+        <label
           class="button button-ghost button-small"
-          type="button"
-          id="import-hub-btn"
+          for="import-hub-file"
           title="Import a single project file or a full library backup into this browser."
         >
-          <input
-            type="file"
-            id="import-hub-file"
-            accept=".json,.rapidroster.json,application/json"
-          />
-          <label for="import-hub-file">Import</label>
-        </button>
+          Import
+        </label>
+        <input
+          type="file"
+          id="import-hub-file"
+          accept=".json,.rapidroster.json,application/json"
+          hidden
+        />
       </div>
     </header>
 
@@ -169,6 +169,5 @@
       </div>
     </div>
 
-    <script type="module" src="/js/dashboard.js"></script>
   </body>
 </html>

@@ -23,8 +23,8 @@ html {
   padding: 1.15rem var(--page-inline);
   background: var(--header-bg-color);
   border-bottom: 1px solid var(--line-color);
-  backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
   animation: fade-in 0.55s ease both;
 }
@@ -76,15 +76,15 @@ html {
     opacity 0.18s ease;
 }
 
-.site-nav-toggle[aria-expanded="true"] .site-nav-burger span:nth-child(1) {
+.site-nav-toggle.is-open .site-nav-burger span:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
 
-.site-nav-toggle[aria-expanded="true"] .site-nav-burger span:nth-child(2) {
+.site-nav-toggle.is-open .site-nav-burger span:nth-child(2) {
   opacity: 0;
 }
 
-.site-nav-toggle[aria-expanded="true"] .site-nav-burger span:nth-child(3) {
+.site-nav-toggle.is-open .site-nav-burger span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
 
@@ -102,7 +102,7 @@ html {
 }
 
 /* Current page: same tertiary outline, slightly stronger fill */
-.site-nav a[aria-current="page"]:not(.button-primary) {
+.site-nav a.is-active:not(.button-primary) {
   border-color: var(--tertiary-button-border-hover);
   background: color-mix(in srgb, var(--color-white) 10%, transparent);
 }
