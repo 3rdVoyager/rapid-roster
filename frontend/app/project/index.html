@@ -47,7 +47,7 @@
 
       <div class="app-header-account">
         <button
-          class="button button-ghost button-small"
+          class="button button-tertiary button-small"
           type="button"
           id="export-project-btn"
           title="Download this project as a JSON file you can back up or share."
@@ -55,7 +55,7 @@
           Export
         </button>
         <label
-          class="button button-ghost button-small"
+          class="button button-tertiary button-small"
           for="import-project-file"
           title="Replace this project with a RapidRoster JSON file from disk."
         >
@@ -63,7 +63,7 @@
         </label>
         <input type="file" id="import-project-file" accept=".json,.rapidroster.json,application/json" hidden />
         <button
-          class="button button-ghost button-small"
+          class="button button-tertiary button-small"
           type="button"
           id="load-preset-btn"
           title="Replace entries, slots, and rules with a starter pack (sports, SciOly, and more)."
@@ -71,12 +71,12 @@
           Load preset…
         </button>
         <a
-          class="button button-ghost button-small"
+          class="button button-tertiary button-small"
           href="/app/"
           title="Return to your project list in this browser."
         >All projects</a>
         <a
-          class="button button-ghost button-small"
+          class="button button-tertiary button-small"
           href="/docs/#walkthroughs/project"
           title="Open the walkthrough docs for using the project workspace."
         >
@@ -89,7 +89,7 @@
       <nav class="app-sidebar">
         <p class="app-sidebar-label">Workflow</p>
         <a
-          class="button button-tertiary app-nav-item is-active"
+          class="button button-tertiary button-small app-nav-item is-active"
           href="#entries"
           title="People or items to place — edit in a form or CSV table."
         >
@@ -97,7 +97,7 @@
           Entries
         </a>
         <a
-          class="button button-tertiary app-nav-item"
+          class="button button-tertiary button-small app-nav-item"
           href="#slots"
           title="Teams, events, or shifts that entries can be assigned to."
         >
@@ -105,7 +105,7 @@
           Slots
         </a>
         <a
-          class="button button-tertiary app-nav-item"
+          class="button button-tertiary button-small app-nav-item"
           href="#rules"
           title="Scoring rules, slots-per-entry, and conflict groups."
         >
@@ -113,7 +113,7 @@
           Rules
         </a>
         <a
-          class="button button-tertiary app-nav-item"
+          class="button button-tertiary button-small app-nav-item"
           href="#review"
           title="Quick check of setup before you generate."
         >
@@ -121,7 +121,7 @@
           Review
         </a>
         <a
-          class="button button-tertiary app-nav-item"
+          class="button button-tertiary button-small app-nav-item"
           href="#generate"
           title="Choose search settings and run the roster search."
         >
@@ -129,7 +129,7 @@
           Generate
         </a>
         <a
-          class="button button-tertiary app-nav-item"
+          class="button button-tertiary button-small app-nav-item"
           href="#results"
           title="Inspect and export the ranked assignment options."
         >
@@ -213,7 +213,7 @@
                       Save entry
                     </button>
                     <button
-                      class="button button-ghost button-small"
+                      class="button button-tertiary button-small"
                       type="button"
                       id="delete-entry-btn"
                       title="Remove this entry from the project. Cannot be undone."
@@ -236,7 +236,7 @@
                 </label>
                 <input type="file" id="import-entries-file" accept=".csv,text/csv" hidden />
                 <button
-                  class="button button-ghost button-small"
+                  class="button button-tertiary button-small"
                   type="button"
                   id="clear-entries-btn"
                   title="Delete all entry rows but keep the column headers."
@@ -253,7 +253,7 @@
                   + Add row
                 </button>
                 <button
-                  class="button button-ghost button-small"
+                  class="button button-tertiary button-small"
                   type="button"
                   id="export-entries-csv-btn"
                   title="Download the current entries table as a CSV spreadsheet."
@@ -357,7 +357,7 @@
                       Save slot
                     </button>
                     <button
-                      class="button button-ghost button-small"
+                      class="button button-tertiary button-small"
                       type="button"
                       id="delete-slot-btn"
                       title="Remove this slot from the project. Cannot be undone."
@@ -380,7 +380,7 @@
                 </label>
                 <input type="file" id="import-slots-file" accept=".csv,text/csv" hidden />
                 <button
-                  class="button button-ghost button-small"
+                  class="button button-tertiary button-small"
                   type="button"
                   id="clear-slots-btn"
                   title="Delete all slot rows but keep the column headers."
@@ -397,7 +397,7 @@
                   + Add row
                 </button>
                 <button
-                  class="button button-ghost button-small"
+                  class="button button-tertiary button-small"
                   type="button"
                   id="export-slots-csv-btn"
                   title="Download the current slots table as a CSV spreadsheet."
@@ -554,7 +554,7 @@
                         Save rule
                       </button>
                       <button
-                        class="button button-ghost button-small"
+                        class="button button-tertiary button-small"
                         type="button"
                         id="delete-rule-btn"
                         title="Remove this rule from the project. Cannot be undone."
@@ -578,7 +578,7 @@
                 </label>
                 <input type="file" id="import-rules-file" accept=".csv,text/csv" hidden />
                 <button
-                  class="button button-ghost button-small"
+                  class="button button-tertiary button-small"
                   type="button"
                   id="clear-rules-btn"
                   title="Delete every rule in this project."
@@ -595,7 +595,7 @@
                   + Add row
                 </button>
                 <button
-                  class="button button-ghost button-small"
+                  class="button button-tertiary button-small"
                   type="button"
                   id="export-rules-csv-btn"
                   title="Download the current rules as a CSV spreadsheet."
@@ -683,7 +683,7 @@
                   </select>
                 </label>
                 <button
-                  class="button button-ghost button-small"
+                  class="button button-tertiary button-small"
                   type="button"
                   id="slots-override-add-btn"
                   title="Save this entry’s max slots override."
@@ -708,7 +708,7 @@
                   </p>
                 </div>
                 <button
-                  class="button button-ghost button-small"
+                  class="button button-tertiary button-small"
                   type="button"
                   id="manage-conflicts-btn"
                   title="Edit which slots cannot be held together by the same person."
@@ -894,7 +894,7 @@
 
           <div class="generate-actions">
             <button
-              class="button button-primary"
+              class="button button-primary button-large"
               type="button"
               id="generate-btn"
               title="Start searching for legal placements using the settings above. Options appear as they are found."
@@ -902,7 +902,7 @@
               Generate
             </button>
             <button
-              class="button button-ghost"
+              class="button button-tertiary button-small"
               type="button"
               id="cancel-generate-btn"
               disabled
@@ -1045,13 +1045,13 @@
 
         <div class="app-modal-actions">
           <button
-            class="button button-ghost"
+            class="button button-tertiary button-small"
             type="button"
             id="load-preset-cancel"
             title="Close without changing the current project."
           >Cancel</button>
           <button
-            class="button button-primary"
+            class="button button-primary button-large"
             type="button"
             id="load-preset-apply"
             title="Replace this project's entries, slots, rules, and setup with the selected pack."
@@ -1076,7 +1076,7 @@
             <h2 class="app-modal-title" id="conflict-groups-modal-title">Conflict groups</h2>
           </div>
           <button
-            class="button button-ghost button-small"
+            class="button button-tertiary button-small"
             type="button"
             data-close-conflict-modal
             title="Close without saving conflict group changes."
@@ -1093,7 +1093,7 @@
 
         <div class="app-modal-actions conflict-modal-actions">
           <button
-            class="button button-ghost"
+            class="button button-tertiary button-small"
             type="button"
             id="conflict-add-group-btn"
             title="Add another named group of slots that conflict with each other."
@@ -1102,7 +1102,7 @@
           </button>
           <div class="conflict-modal-actions-end">
             <button
-              class="button button-ghost"
+              class="button button-tertiary button-small"
               type="button"
               data-close-conflict-modal
               title="Close without saving conflict group changes."
@@ -1110,7 +1110,7 @@
               Cancel
             </button>
             <button
-              class="button button-primary"
+              class="button button-primary button-large"
               type="button"
               id="conflict-groups-save"
               title="Write these groups onto the Slots table and use them for Generate."

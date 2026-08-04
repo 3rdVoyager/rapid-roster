@@ -5,9 +5,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.7rem 1.15rem;
   font-weight: 600;
-  font-size: 1rem;
   line-height: 1.2;
   text-decoration: none;
   border-radius: 8px;
@@ -21,6 +19,16 @@
 
 .button:active {
   transform: scale(0.95);
+}
+
+.button-small {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.button-large {
+  padding: 0.7rem 1.15rem;
+  font-size: 1rem;
 }
 
 /* Primary button styles (CTAs, main actions) */
