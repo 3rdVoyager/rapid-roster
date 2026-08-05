@@ -1,23 +1,46 @@
-# Project Structure
-All site and app files are in the `frontend` folder.
-
-## HTML
-- `index.html` - The main HTML file
-- `/license/index.html` - The license page
-- `/privacy/index.html` - The privacy page
-- `/contact/index.html` - The contact page
-- `/about/index.html` - The about page
-- `/faq/index.html` - The FAQ page
-- `/how-it-works/index.html` - The how it works page
-- `/app/index.html` - The project dashboard page
-- `/app/roster/index.html` - The roster editor
-
-## CSS
-- `global.css` - The global CSS file for the entire site
-- `variables.css` - The global CSS file for storing CSS variables
-- `buttons.css` - The global CSS file for button styles
-- `/site/site.css` - The main CSS file for all site pages
-- `/app/app.css` - The main CSS file for all app pages
-- `/app/roster.css` - The CSS file for the roster editor
-
-## JavaScript
+rapid-roster/
+├── frontend/
+│   ├── index.html                     # Landing page
+│   ├── about/index.html
+│   ├── how-it-works/index.html
+│   ├── ...marketing pages...
+│   ├── app/
+│   │   ├── index.html                 # Dashboard (roster list)
+│   │   └── roster/index.html          # Main workspace (editor + generator)
+│   ├── css/
+│   │   ├── variables.css              # Design tokens (KEEP from existing)
+│   │   ├── base.css                   # Reset + defaults
+│   │   └── app/
+│   │       ├── editors.css                # Editor styling (shared)
+│   │       ├── app.css                # App shell
+│   │       ├── dashboard.css
+│   │       └── workspace.css          # Main workspace
+│   ├── js/
+│   │   ├── data/
+│   │   │   ├── storage.js             # localStorage wrapper
+│   │   │   ├── csv.js                 # CSV parse/serialize
+│   │   │   └── download.js            # File download utility
+│   │   ├── app/
+│   │   │   ├── dashboard.js           # Dashboard page logic
+│   │   │   └── workspace.js           # Workspace page (wires everything together)
+│   │   ├── editors/
+│   │   │   ├── editor.js              # Shared editor logic
+│   │   │   ├── entries-editor.js
+│   │   │   ├── slots-editor.js
+│   │   │   └── rules-editor.js
+│   │   ├── results-view.js
+│   │   └── generator/                 # ENTIRELY inside web worker
+│   │       ├── web-worker.js          # Worker bootstrap (postMessage handler)
+│   │       ├── selector.js            # Data filtering
+│   │       ├── rules.js               # Rule predicates + validation
+│   │       ├── scorer.js              # Score calculation
+│   │       ├── search.js              # Improvement exploration
+│   │       └── engine.js              # Run orchestration
+│   ├── presets/
+│   │   ├── blank/
+│   │   ├── sports/
+│   │   ├── science-olympiad/
+│   │   └── volunteers/
+│   └── testdata/
+│       └── sports-league-500/
+└── docs/
