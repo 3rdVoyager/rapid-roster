@@ -1,7 +1,7 @@
-id,name,type,data,filter,options,priority,hard
-R1,1st choice,Cluster,preferences.1 > slots.name,,exact,10,no
-R2,2nd choice,Cluster,preferences.2 > slots.name,,exact,8,no
-R3,3rd choice,Cluster,preferences.3 > slots.name,,exact,6,no
-R4,4th choice,Cluster,preferences.4 > slots.name,,exact,4,no
-R5,5th choice,Cluster,preferences.5 > slots.name,,exact,3,no
-R6,6th choice,Cluster,preferences.6 > slots.name,,exact,1,no
+id,label,priority,action,config
+R1,1st choice,10,Match,"'attribute1': preferences.1, 'attribute2': slots.name'"
+R2,2nd choice,8,Match,"'attribute1': preferences.2, 'attribute2': slots.name'"
+R3,3rd choice,6,Match,"'attribute1': preferences.3, 'attribute2': slots.name'"
+R4,4th choice,4,Match,"'attribute1': preferences.4, 'attribute2': slots.name'"
+R5,5th choice,3,Match,"'attribute1': preferences.5, 'attribute2': slots.name'"
+R6,6th choice,1,Match,"'attribute1': preferences.6, 'attribute2': slots.name'"

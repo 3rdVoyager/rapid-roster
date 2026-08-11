@@ -5,18 +5,12 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.7rem 1.15rem;
   font-weight: 600;
-  font-size: 1rem;
   line-height: 1.2;
   text-decoration: none;
   border-radius: 8px;
   border: 1px solid transparent;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease,
-    transform 0.12s ease;
+  transition: all 0.15s ease-in-out;
 }
 
 .button:hover {
@@ -24,9 +18,20 @@
 }
 
 .button:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
+.button-small {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.button-large {
+  padding: 0.7rem 1.15rem;
+  font-size: 1rem;
+}
+
+/* Primary button styles (CTAs, main actions) */
 .button-primary {
   color: var(--text-color);
   background: var(--primary-button-color);
@@ -36,41 +41,26 @@
   color: var(--text-color);
   background: var(--primary-button-color-hover);
 }
-
-.button-primary:active {
-  background: color-mix(in srgb, var(--primary-button-color) 75%, black);
-}
-
+/* Secondary button styles (Yellow outlined, supporting actions) */
 .button-secondary {
   color: var(--text-color);
-  background: transparent;
-  border-color: var(--secondary-button-color);
+  background: var(--secondary-button-color);
+  border-color: var(--secondary-button-border-color);
 }
 
 .button-secondary:hover {
   color: var(--text-color);
-  border-color: var(--secondary-button-color-hover);
-  background: color-mix(in srgb, var(--secondary-button-color) 24%, transparent);
+  background: var(--secondary-button-color-hover);
 }
 
-.button-secondary:active {
-  background: color-mix(in srgb, var(--secondary-button-color) 38%, transparent);
-  border-color: var(--secondary-button-color-hover);
-}
-
+/* Tertiary button styles (Grey outlined, minimal actions) */
 .button-tertiary {
   color: var(--text-color);
   background: var(--tertiary-button-color);
-  border-color: var(--tertiary-button-border);
+  border-color: var(--tertiary-button-border-color);
 }
 
 .button-tertiary:hover {
   color: var(--text-color);
-  border-color: var(--tertiary-button-border-hover);
-  background: color-mix(in srgb, var(--color-white) 10%, transparent);
-}
-
-.button-tertiary:active {
-  border-color: var(--tertiary-button-border-hover);
-  background: color-mix(in srgb, var(--color-white) 16%, transparent);
+  background: var(--tertiary-button-color-hover);
 }

@@ -21,11 +21,13 @@ function main() {
   function setOpen(open) {
     if (open === true) {
       nav.classList.add("is-open");
+      toggle.classList.add("is-open");
       toggle.setAttribute("aria-expanded", "true");
       toggle.setAttribute("aria-label", "Close menu");
       toggle.setAttribute("title", "Close the site navigation menu.");
     } else {
       nav.classList.remove("is-open");
+      toggle.classList.remove("is-open");
       toggle.setAttribute("aria-expanded", "false");
       toggle.setAttribute("aria-label", "Open menu");
       toggle.setAttribute(

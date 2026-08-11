@@ -1,4 +1,4 @@
-/* Interior marketing pages (About, How it works, Rules, …) */
+﻿/* Interior marketing pages (About, How it works, Rules, ΓÇª) */
 
 .page-intro {
   padding: 1.5rem 2rem 3rem 2rem;
@@ -235,7 +235,7 @@
 }
 
 .faq-list details[open] summary::after {
-  content: "–";
+  content: "ΓÇô";
 }
 
 .faq-list details p {

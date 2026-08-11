@@ -1,4 +1,4 @@
-/* Site footer — reusable on public pages */
+﻿/* Site footer — reusable on public pages */
 
 .site-footer {
   margin: 3rem calc(-1 * var(--page-inline)) calc(-1 * var(--page-inline));
@@ -144,3 +144,4 @@
     gap: 1.75rem;
   }
 }
+
