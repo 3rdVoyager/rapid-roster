@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="has-wip-banner">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Your RapidRoster projects — open an existing project or create a new one."
+      content="RapidRoster app — coming soon. The workspace for fair, rule-aware groupings is under development."
     />
-    <title>App — RapidRoster</title>
+    <title>Coming soon — RapidRoster</title>
     <link rel="icon" href="/assets/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
@@ -19,12 +19,13 @@
     <link rel="stylesheet" href="/css/variables.css" />
     <link rel="stylesheet" href="/css/global.css" />
     <link rel="stylesheet" href="/css/buttons.css" />
+    <link rel="stylesheet" href="/css/site/wip-banner.css" />
     <link rel="stylesheet" href="/css/app/app.css" />
-    <link rel="stylesheet" href="/css/app/dashboard.css" />
   </head>
-  <body class="page-app page-dashboard">
+  <body class="page-app">
+    <div class="site-top">
     <header class="app-header">
-      <a class="site-header-brand" href="/app/">
+      <a class="site-header-brand" href="/">
         <img
           src="/assets/rapid-roster-logo.png"
           alt=""
@@ -34,132 +35,37 @@
         <span>Rapid<span class="brand-accent">Roster</span></span>
       </a>
 
-      <nav class="app-header-nav">
-        <a class="app-header-nav-link" href="#projects" id="nav-projects" title="View and open projects saved in this browser.">
-          Projects
-        </a>
-        <a class="app-header-nav-link" href="#presets" id="nav-presets" title="Browse starter packs you can turn into a new project.">Presets</a>
+      <nav class="app-header-nav" aria-label="App">
+        <a class="app-header-nav-link" href="/">Home</a>
+        <a class="app-header-nav-link" href="/about/">About</a>
+        <a class="app-header-nav-link" href="/contact/">Contact</a>
       </nav>
-
-      <div class="app-header-account">
-        <button
-          class="button button-tertiary button-small"
-          type="button"
-          id="export-all-btn"
-          title="Download a backup JSON of every project saved in this browser."
-        >
-          Export all
-        </button>
-        <label
-          class="button button-tertiary button-small"
-          for="import-hub-file"
-          title="Import a single project file or a full library backup into this browser."
-        >
-          Import
-        </label>
-        <input
-          type="file"
-          id="import-hub-file"
-          accept=".json,.rapidroster.json,application/json"
-          hidden
-        />
-      </div>
     </header>
 
-    <main class="dashboard">
-      <section class="hub-view" id="view-projects" data-view="projects">
-        <div class="dashboard-top">
-          <div>
-            <p class="dashboard-kicker">Workspace</p>
-            <h1>Projects</h1>
-            <p class="dashboard-lead">
-              Open a saved project or start a new one. Everything stays in this browser.
-            </p>
-          </div>
-          <div class="dashboard-actions">
-            <button
-              class="button button-primary button-large"
-              type="button"
-              id="new-project-btn"
-              title="Create a blank project in this browser, then choose a preset if you want."
-            >
-              New project
-            </button>
-          </div>
-        </div>
-
-        <div class="hub-status" id="hub-status" hidden></div>
-
-        <div class="hub-empty" id="hub-empty" hidden>
-          <h2>Start your first roster</h2>
-          <p>Projects save in this browser. Create one to get started.</p>
-        </div>
-
-        <ul class="project-list" id="project-list" hidden></ul>
-
-        <p class="dashboard-note" id="projects-note">
-          Projects save in this browser on this device.
-        </p>
-      </section>
-
-      <section class="hub-view" id="view-presets" data-view="presets" hidden>
-        <div class="dashboard-top">
-          <div>
-            <p class="dashboard-kicker">Starters</p>
-            <h1>Presets</h1>
-            <p class="dashboard-lead">
-              Sample packs with entries, slots, and rules — or start blank and import your own CSVs.
-            </p>
-          </div>
-        </div>
-
-        <div class="preset-grid" id="preset-grid"></div>
-      </section>
-    </main>
-
-    <div
-      class="app-modal"
-      id="new-project-modal"
-    >
-      <div class="app-modal-backdrop" id="new-project-backdrop"></div>
-      <div class="app-modal-panel">
-        <h2 id="new-project-title">New project</h2>
-        <p class="app-modal-lead" id="new-project-lead">
-          Name your project to open the workspace. You’ll choose a blank start or a
-          sample preset next.
-        </p>
-
-        <div class="app-field">
-          <label for="new-project-name">Project name</label>
-          <input
-            class="app-input"
-            id="new-project-name"
-            type="text"
-            value="Untitled project"
-            autocomplete="off"
-          />
-        </div>
-
-        <p class="app-empty-hint" id="new-project-status"></p>
-
-        <div class="app-modal-actions">
-          <button
-            class="button button-tertiary button-small"
-            type="button"
-            id="new-project-cancel"
-            title="Close without creating a project."
-          >Cancel</button>
-          <button
-            class="button button-primary button-large"
-            type="button"
-            id="new-project-create"
-            title="Create the project and open the workspace editor."
-          >
-            Create project
-          </button>
-        </div>
-      </div>
+    <div class="wip-banner" role="status">
+      <p>
+        <strong>Work in progress</strong> — RapidRoster is under active development and the app is not ready yet.
+        <a href="/about/">Learn more</a> or <a href="/contact/">get in touch</a>.
+      </p>
+    </div>
     </div>
 
+    <main class="app-coming-soon">
+      <div class="app-coming-soon-panel">
+        <p class="app-coming-soon-kicker">App</p>
+        <h1>Coming soon</h1>
+        <p class="app-coming-soon-lead">
+          The RapidRoster workspace is not built yet. When it ships, you will import entries and slots,
+          set rules, generate placements, and export results — all in this browser.
+        </p>
+        <p class="app-coming-soon-note">
+          For now, read about the project or reach out if you want to follow along.
+        </p>
+        <div class="app-coming-soon-actions">
+          <a class="button button-primary button-large" href="/about/">About the project</a>
+          <a class="button button-secondary button-large" href="/">Back to home</a>
+        </div>
+      </div>
+    </main>
   </body>
 </html>

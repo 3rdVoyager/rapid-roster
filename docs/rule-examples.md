@@ -51,12 +51,12 @@ Review each scenario. If the rule does not match your expectation, refine the ru
   "priority": "hard",
   "config": {
     "data": {
-      "parameter1": "entries.role",
-      "parameter2": ["coach"]
+      "source": "entries.role",
+      "match": ["coach"]
     },
     "data2": {
-      "parameter1": "slots",
-      "parameter2": ""
+      "source": "slots",
+      "match": ""
     },
     "min": 0,
     "max": 2
@@ -76,8 +76,8 @@ Review each scenario. If the rule does not match your expectation, refine the ru
   "config": {
     "attribute": "skill",
     "data": {
-      "parameter1": "entries",
-      "parameter2": ""
+      "source": "entries",
+      "match": ""
     }
   }
 }
@@ -94,8 +94,8 @@ Review each scenario. If the rule does not match your expectation, refine the ru
   "priority": 8,
   "config": {
     "data": {
-      "parameter1": "entries.teammate_requests",
-      "parameter2": ["entries.id"]
+      "source": "entries.teammate_requests",
+      "match": ["entries.id"]
     }
   }
 }
@@ -148,8 +148,8 @@ Review each scenario. If the rule does not match your expectation, refine the ru
   "priority": 5,
   "config": {
     "data": {
-      "parameter1": "entries.id",
-      "parameter2": ["alice", "bob"]
+      "source": "entries.id",
+      "match": ["alice", "bob"]
     }
   }
 }
@@ -166,8 +166,8 @@ Review each scenario. If the rule does not match your expectation, refine the ru
   "priority": 5,
   "config": {
     "data": {
-      "parameter1": "entries.school",
-      "parameter2": ""
+      "source": "entries.school",
+      "match": ""
     }
   }
 }

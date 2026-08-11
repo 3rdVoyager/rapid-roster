@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="has-wip-banner">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,11 +20,13 @@
     <link rel="stylesheet" href="/css/global.css" />
     <link rel="stylesheet" href="/css/buttons.css" />
     <link rel="stylesheet" href="/css/site/header.css" />
+    <link rel="stylesheet" href="/css/site/wip-banner.css" />
     <link rel="stylesheet" href="/css/site/footer.css" />
     <link rel="stylesheet" href="/css/site/home.css" />
     <link rel="stylesheet" href="/css/site/content.css" />
   </head>
   <body class="page-about">
+    <div class="site-top">
     <header class="site-header">
       <a class="site-header-brand" href="/">
         <img
@@ -40,6 +42,9 @@
         type="button"
         id="site-nav-toggle"
         title="Toggle navigation menu"
+        aria-controls="site-nav"
+        aria-expanded="false"
+        aria-label="Open menu"
       >
         <span class="site-nav-burger">
           <span></span>
@@ -47,15 +52,20 @@
           <span></span>
         </span>
       </button>
-      <nav class="site-nav" id="site-nav">
+      <nav class="site-nav" id="site-nav" aria-label="Primary">
         <a class="button button-tertiary button-small" href="/about/">About</a>
-        <a class="button button-tertiary button-small" href="/how-it-works/">How it works</a>
-        <a class="button button-tertiary button-small" href="/examples/">Examples</a>
-        <a class="button button-tertiary button-small" href="/faq/">FAQ</a>
         <a class="button button-tertiary button-small" href="/contact/">Contact</a>
         <a class="button button-primary button-small" href="/app/">Open App</a>
       </nav>
     </header>
+
+    <div class="wip-banner" role="status">
+      <p>
+        <strong>Work in progress</strong> — RapidRoster is under active development and the app is not ready yet.
+        <a href="/about/">Learn more</a> or <a href="/contact/">get in touch</a>.
+      </p>
+    </div>
+    </div>
 
     <main>
       <header class="page-intro">
@@ -81,17 +91,17 @@
           <div class="split-content">
             <h2>Open source</h2>
             <p>
-              RapidRoster is released under the
-              <a href="/license/">MIT License</a>.
-              You can use it, fork it, and adapt it for your own events.
+              RapidRoster is released under the MIT License.
+              You can use it, fork it, and adapt it for your own events on
+              <a href="https://github.com/3rdVoyager/rapid-roster" target="_blank" rel="noopener noreferrer">GitHub</a>.
             </p>
             <p>
-              The product is still early. Feedback is always
-              welcome — especially where the rules model or the review step falls short.
+              The product is still early — the workspace and generator are not built yet.
+              Feedback is always welcome, especially where the rules model or review step should go.
             </p>
             <div class="page-actions">
-              <a class="button button-primary button-large" href="/app/">Open App</a>
-              <a class="button button-secondary button-large" href="/how-it-works/">How it works</a>
+              <a class="button button-primary button-large" href="/contact/">Contact</a>
+              <a class="button button-secondary button-large" href="/">Back to home</a>
             </div>
           </div>
         </div>
@@ -144,15 +154,11 @@
             <h2>Product</h2>
             <ul>
               <li><a href="/app/">Open App</a></li>
-              <li><a href="/how-it-works/">How it works</a></li>
-              <li><a href="/examples/">Examples</a></li>
             </ul>
           </div>
           <div class="site-footer-col">
             <h2>Resources</h2>
             <ul>
-              <li><a href="/docs/">Docs</a></li>
-              <li><a href="/faq/">FAQ</a></li>
               <li><a href="/contact/">Contact</a></li>
             </ul>
           </div>
@@ -160,8 +166,6 @@
             <h2>Project</h2>
             <ul>
               <li><a href="/about/">About</a></li>
-              <li><a href="/privacy/">Privacy</a></li>
-              <li><a href="/license/">License</a></li>
             </ul>
           </div>
         </nav>
@@ -171,5 +175,6 @@
         <p>RapidRoster — open source under the MIT License.</p>
       </div>
     </footer>
+    <script type="module" src="/js/site-nav.js"></script>
   </body>
 </html>

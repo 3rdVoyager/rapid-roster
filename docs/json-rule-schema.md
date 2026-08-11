@@ -18,12 +18,12 @@ All rules share a top-level shape.
 {
   // "entries" or "slots" with no dot after to select all/any
   // "entries.column" or "slots.column" for specific column selection
-  "parameter1": "",
+  "source": "",
 
   // "entries" or "slots" with no dot after to select all/any
   // Can be an array of values `["value1", "value2"]` or a single value to find specific matches.
   // Can be a column selector like "entries.column" or "slots.column" to compare the two columns to find all matching values
-  "parameter2": ""
+  "match": ""
   }
 ```
 
