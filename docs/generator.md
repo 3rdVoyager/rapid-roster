@@ -1,137 +1,146 @@
 # Generator
 
-The generator places **participants into slots** (teams, events, roles, shifts, etc.) using the rules you set.
+## Data selection:
+The point of RapidRoster is to assign:
+- Entries to slots or
+- Slots to entries
+In a way that fits certain rules.
 
-It does not have special modes for different events. A **preset** only fills in starter people/slot settings and rules.
+Assignments are just relationships. They can be expressed in two ways:
+- Entry to Slot: assign this entry to this slot
+- Slot to Entry: assign this slot to this entry
 
-You customize three things:
+**DataQuery:** finds a specific set of data to operate on. RelationshipQueries can often be accomplished with multiple repetitive DataQueries, but RelationshipQueries are more efficient.
+**RelationshipQuery:** uses a relationship query to repeatedly find sets of related data and perform a different action on each set. They are more difficult to understand and use, but they are much more powerful and flexible.
 
-1. **Setup** — participant data, slot data, sizes, slots-per-entry, conflict groups  
-2. **Rules** — Cluster, Separate, Limit, Balance (what “good” means)  
-3. **Generate** — find a placement that respects hard rules and scores best on soft ones  
 
----
+### DataQueries
+**DataQueries** are like an SQL Query: SELECT FROM Entries WHERE Availability EQUALS Mon OR Tue
 
-## The Idea
+Most DataQueries are searches, but when desired they can indicate custom selections as well. For example, a DataQuery can be used to search for all the ID's of a specific set of entries or slots that the user has chosen, even if they don't have an easy relationship that connects them. This custom selection is useful for things like "these 3 entries should be assigned to the same slot" or "these 4 slots should be assigned to the same entry" where there is no other relationship that can be used to find them.
 
-- Each **person** can be placed in one or more **slots**.
-- You set how many slots a person may hold (often exactly one for teams; several for event lists).
-- You set how many people each slot should hold (min and max).
-- **Hard rules** must never be broken. If they cannot all be met, generation fails with a clear error.
-- **Soft rules** have a priority from 1-10. The generator tries to satisfy higher-priority soft rules more, but can trade them off.
-- Soft rules are scored by how well they are met (not just yes/no). Partial success still counts.
+A standard [DataQuery] is [Table].[Column].[Value]
+- [Table] - Table (Entries or Slots).
+- [Column] - Column to be matched in the table.
+- [Value] - Value to be matched in the column. 
 
-When everyone is limited to one slot, you get normal “split into teams.” When people can hold several slots, you get things like “each person on a few events.” Same engine either way.
+Examples:
+- **Entries.Availability.Monday**: Selects all entries with availability on Monday.
+- **Entries.Name.john**: Selects all entries with the name "john".
+- **Slots.ID.12**: Selects the one slot with ID 12.
 
-**Spreadsheets hold facts. Rules hold policies.** Slot min/max size and conflict groups live in Setup. “Max 2 keepers” and “balance skill” live in Rules.
+Multiple queries can be combined with AND/OR to create more complex queries. 
 
----
+For example:
+- **Entries.Availability.Monday AND Entries.Skill.8**: Selects all entries with availability on Monday and a skill level of 8.
+- **Entries.Name.john OR Entries.Name.jane**: Selects all entries with the name "john" or the name "jane".
 
-## Setup
 
-**Participants** — a table with columns (name, skill, availability, preference ranks, and so on). A cell may list several values separated by semicolons. Assign a column type to each column (see below).
+### RelationshipQueries
+RelationshipQueries are more complex queries that save the user time by using a relationship to repeatedly find multiple sets of related data. Rather than grouping all the sets together like a DataQuery, it then performs a different action on each set. RelationshipQueries can often be accomplished with multiple repetitive DataQueries, but RelationshipQueries are more efficient.
 
-**Slots** — named places to assign participants (Team A, Optics, Friday shift, …), each with min/max size. Slots can also have their own info (needed strengths, time, tags). Assign a column type to each column.
+For example, if you want to select all entries that have a skill level that matches the skill level of another entry, you could use multiple Rules and DataQueries to find all entries with each skill level:
 
-**Global setup (not Cluster/Separate/Limit/Balance):**
+    - Rule 1: Find all entries with skill level 1. Perform action.
+    - Rule 2: Find all entries with skill level 2. Perform action.
+    - Rule 3: Find all entries with skill level 3. Perform action.
+    - ... and so on.
 
-- Number of slots each participant can be assigned to (single, multiple, or different per participant).
-- Groups of slots that the same person cannot hold at once (for example, two events in the same time block).
+RelationshipQueries allow you to do this in one Rule, by finding all entries with a skill level that matches the skill level of another entry, and performing the action on each set of related entries:
 
-Importers and presets read common spreadsheet shapes and turn them into this setup. The generator only sees cleaned-up people, slots, and rules.
+    - Rule: Find all entries with a skill level that matches the skill level of another entry. Perform dynamic action on each set.
 
-Examples: [docs/examples/](./examples/).
+A standard [RelationshipQuery] is [Table].[Column]
+Similar to a DataQuery, but instead of searching for a value it finds matches in the specified column. This allows you to find all entries that have a value that matches the value of another entry or slot.
 
----
+- **Entries.Availability**: Groups entries into sets based on their availability. All entries with the same availability will be grouped together.
 
-## Participant Attributes (Columns)
+Returns the sets:
+{
+    "Monday": ["Entry1", "Entry2"],
+    "Tuesday": ["Entry3", "Entry4"],
+    "Wednesday": ["Entry5", "Entry6"]
+}
 
-- ID - A unique identifier used to identify a participant. Either configured by the user or generated automatically.
-- Name - Optional display label for results and lists. When unset, the ID is shown instead.
-- Number - A number.
-- Time - A single date or time, or a range of dates and times.
-- Text - A text value. Can be a category, attribute, preference, etc.
-- Ignore - A value that is ignored by the generator.
+- **Entries.Name**: Groups entries into sets based on their name. All entries with the same name will be grouped together.
 
-## Slot Attributes (Columns)
+Returns the sets:
+{
+    "john": ["Entry1", "Entry2"],
+    "jane": ["Entry3", "Entry4"],
+    "bob": ["Entry5", "Entry6"]
+}
 
-- ID - A unique identifier used to identify a slot. Either configured by the user or generated automatically.
-- Name - Optional display label for results and lists. When unset, the ID is shown instead.
-- MinSize - The minimum number of participants that should be assigned to the slot. Default is none.
-- MaxSize - The maximum number of participants that should be assigned to the slot. Default is number of participants divided by the number of slots.
-- Text - A text value. Can be a category, attribute, preference, etc.
-- Ignore - A value that is ignored by the generator.
+The computer has a ton of sets of data, but now processing isn't as simple as a standard DataQuery. So the computer no longer operates on entries themselves. It now treats each group as it's own entry essentially. The computer will now perform target actions on each set of entries, rather than on each individual entry. This allows for more complex and dynamic actions to be performed on the data.
 
-## Rules
+Let's say the user wants all entries with the same availability to be assigned to the slot with the same meeting time. 
 
-Every rule uses the same short flow:
+[Assign] [Entries.Availability] to [Slots.MeetingTime]
 
-1. **Choose rule type**
-   - Cluster - Prefer that matched participants or slots remain together.
-   - Separate - Prefer that matched participants or slots remain apart.
-   - Limit - Cap or require how many of a chosen set of participants appear in each slot.
-   - Balance - Keep a number (skill, age, …) roughly even across slots.
-2. **Choose data** 
-   - *Cluster or Separate* - Give multiple columns, ranges, or cells to compare different attributes between participants and slots. Give a single column, range, or cell to compare the same attribute among participants. Show a preview list of participant and slot matches.
-   - *Limit or Balance* - Give a single column, range, or cell. Give a single column, range, or cell that contains numeric values.
-3. **Apply Filter** - Apply an optional filter (role=coach, skill=advanced, preference=1 etc.) to the data. Just specify a single value (like "1" if searching through a preference grid) to filter through the entire selected range without caring about column or row.
-3. **Adjust options**
-   - *Cluster or Separate* - exact vs partial match
-   - *Limit* - min/max counts
-   - *Balance* - None
-4. **Name the rule** (short label for the list / Review / satisfaction report)
-5. **Set priority (1-10) and hard vs soft**
+It finds sets of entries with the same availability, and then finds the slot with the same meeting time, and assigns all entries in that set to that slot.
 
----
+[Assign] [Entries.Availability] to [Slots.SameSlot]
 
-## What each rule type means
+## JSON Rule Format
+More detail can be found in the [JSON Rule Schema](json-rule-schema.md) document.
+{
+  queries: ["Entries.Availability.Monday", "Entries.Skill.8"]
+}
 
-| Type | What it does | Example |
-| --- | --- | --- |
-| **Cluster** | Keep matched things together: people who share a value in the same slot, **or** a person in a slot whose name/ID matches a preference cell | Same school together; teammate requests; pref column `1` > slot name |
-| **Separate** | Keep matched things apart | Spread schools; keep two people apart |
-| **Limit** | Min/max how many of a filtered set appear in each slot | Max 2 keepers; min 1 coach |
-| **Balance** | Keep a number roughly even across slots | Balance skill or age |
 
-### Cluster: two common data shapes
 
-1. **One participant column** — people with the same value prefer the same slot (school, tags with partial overlap, etc.).
-2. **Participant column(s) > slot column** — when values match, prefer that **person in that slot** (preference rank columns full of slot names; strengths > needed strengths; availability > practice night). Use `>` in the rule data cell. For times or multi-tags, list discrete tokens with `;` and use **partial** match — overlapping ranges are not supported yet.
+## Core templates
+1. Limit (Require)
+    - [Limit] the number of [DataQuery] per [DataQuery] to be between [Num] and [Num]
+        - [Limit] the number of [Entries where Type = Coach] per [All/Any Slots] to be between [1] and [1]
 
-Ranked slot picks (Science Olympiad / Google Form style) use shape 2: columns named `1`…`6` contain slot names; one soft Cluster rule per column with descending priority. See [examples/science-olympiad/](./examples/science-olympiad/).
+2. Assign (Place)
+    - [Assign] [DataQuery] to [DataQuery]
+        - [Assign] [Specific Entry] to [Specific Slot]
+        - [Assign] [Entries where Skill = High] to [Slots where Skill = High]
+        - [Assign] [Entries where Availability = Monday] to [the same slot]
+        - [Assign] [Entries where Availability = Monday] to [different slots]
+        - [Assign] [Entries where Teammate-Request = Name] to [the same slot]
+    - [Assign] [RelationshipQuery] to [RelationshipQuery]
+        - [Assign] [Entries with matching availability] to [the same slot]
 
-### How similarity works (simple version)
+3. Prevent (Remove)
+    - [Prevent] [DataQuery] from being assigned to [DataQuery]
+        - [Prevent] [Specific Entry] from being assigned to [Specific Slot]
+        - [Prevent] [Entries where Availability = Monday] from being assigned to [the same slot]
+        - [Prevent] [Entries where Availability = Monday] from being assigned to [different slots]
+        - [Prevent] [Entries where Opponents = Name] from being assigned to [the same slot]
 
-When a rule compares values:
+4. Cluster (Group)
+    - [Cluster] [DataQuery] together
+        - [Cluster] [Entries where Teammate-Request = Name] together in [the same slot]
+        - [Cluster] [Entries where Availability = Monday] together in [the same slot]
 
-- **Exact** — same value counts as a match; different does not.
-- **Partial** — closer values score better (shared tags, closer numbers, overlapping time ranges).
+5. Separate (Ungroup)
+    - [Separate] [DataQuery] from each other
+        - [Separate] [Entries where Opponents = Name] from each other in [different slots]
 
----
+6. Balance (Even Distribution)
+    - [Balance] [Attribute(s)] across [DataQuery]
 
-## How scoring works
+## Priority and Hard vs Soft
 
-- Only **soft** rules add to the score.
-- Each soft rule contributes roughly: **priority × how well it is met** (from not at all to fully).
-- The generator looks for a placement that is fully legal (setup limits + hard rules) and has the best total soft score it can find.
-- After a run, you see how well each soft rule did, so you can tell what was traded off.
+After writing a rule, you can set its priority (1-10) and whether it is hard or soft. Hard rules must be satisfied, while soft rules are preferred but not required. The generator will try to satisfy as many soft rules as possible without violating any hard rules.
 
----
+Total score is calculated based on how well each generated assignment satisfies each rule, with higher priority rules contributing more to the score. The generator will attempt to maximize the total score while respecting hard constraints. For example, if a rule has a priority of 5 and is fully satisfied, it contributes 5 points to the total score. If it is partially satisfied, it contributes a fraction of that score based on how well it is met.
+
+If a hard rule is violated, the total score is set to zero, and the generator will discard that assignment and try a different one. If it is impossible to satisfy all hard rules, the generator will report an error with a detailed message and allow you to adjust the rules or constraints.
 
 ## How generation works
 
-The generator tries small changes and keeps ones that improve the score without breaking hard rules:
+The generator tries small changes and keeps ones that improve the total calculated score without breaking any hard rules:
 
-- Put someone into a slot  
-- Remove someone from a slot  
-- Move someone from one slot to another  
+- Put someone into a slot
+- Remove someone from a slot
+- Move someone from one slot to another
 - Swap people (or swap which slots two people hold)  
 
-**Main run:** start from a legal placement → keep improving → if stuck, shake things up a bit and improve again → stop when nothing useful improves for a while.
-
-**Extra runs:** start from different legal beginnings to offer alternative layouts.
-
-Same steps for every project. Different results come from different setup and rules, not from a different algorithm.
+**Flow:** start from a random legal placement -> try to improve -> stop when nothing useful improves for a defined period -> repeat as needed for multiple runs.
 
 ---
 
@@ -143,35 +152,6 @@ A preset is a saved starter pack:
 - Slots template CSV  
 - Starter rules (and global setup defaults)  
 
-Applying a preset just writes those into the project. You can change or delete anything afterward. Domain packs (sports, Science Olympiad, volunteers) are presets only — not separate engines.
+Applying a preset just writes those into the project. You can change or delete anything afterward.
 
 ---
-
-## Errors and feedback
-
-**Before generating**
-
-- Bad or unreadable values in columns a rule needs  
-- Preferences or requests that point at unknown people or slots  
-- Empty rules or impossible min/max sizes  
-- Totals that cannot work (not enough seats for everyone, etc.)
-
-**If hard rules cannot all be met**
-
-- Fail clearly and explain what is fighting what, when that can be detected  
-
-**After a successful run**
-
-- Score / satisfaction per soft rule  
-- Simple breakdowns where helpful (e.g. who got weak preference matches)  
-
----
-
-## Principles
-
-1. One engine for every project.  
-2. Customize with setup + rules, not special modes.  
-3. Presets only fill in settings.  
-4. Hard = must never break; soft = try hard, allow tradeoffs.  
-5. Soft success can be partial, not only pass/fail.  
-6. UI shortcuts only help you fill in a rule; they do not change the engine.

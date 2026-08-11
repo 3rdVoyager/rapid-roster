@@ -1,6 +1,5 @@
-id,name,type,data,filter,options,priority,hard
-R1,Balance skill,Balance,entries.skill,,,9,no
-R2,Teammate requests,Cluster,entries.teammate_requests > entries.name,,exact,8,no
-R3,Availability match,Cluster,entries.availability > slots.practice_night,,partial,7,no
-R4,Limit keepers,Limit,entries.role,keeper,max=2,9,yes
-R5,Require a coach,Limit,entries.role,coach,min=1,10,yes
+id,name,priority,action,config
+R1,Balance skill,9,Balance,"{'attribute': 'skill', 'data': {'parameter1': 'entries', 'parameter2': ''}}"
+R2,Teammate requests,8,Cluster,"{'data': {'parameter1': 'entries.teammate_requests', 'parameter2': ['entries.id']}}"
+R3,Availability match,7,Match,"{'entryColumn': 'entries.availability', 'slotColumn': 'slots.practice_night'}"
+R4,Require 1 coach,9,Limit,"{'data': {'parameter1': 'entries.role', 'parameter2': ['coach']}, 'data2': {'parameter1': 'slots', 'parameter2': ''}, 'min': 1, 'max': 1}"

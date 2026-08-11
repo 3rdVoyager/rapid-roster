@@ -1,18 +1,12 @@
 :root {
-    /*
-      color-mix() in other CSS files blends two colors.
-      Example:
-        color-mix(in srgb, var(--color-blue) 18%, transparent)
-      means “18% blue, rest transparent” (a soft blue tint).
-      “in srgb” = normal screen color math.
-    */
-
     --font: "Inter", system-ui, sans-serif;
     --header-brand-font-size: 1.75rem;
     --header-brand-logo-size: 2.25rem;
+
     /* Side inset for site + dashboard (matches editor main padding) */
     --page-inline: 1.5rem;
     --page-inline-mobile: 1.25rem;
+
     /* Brand colors */
     /* DO NOT USE THESE DIRECTLY. USE THE COLOR-RELATED VARIABLES INSTEAD. */
     --brand-white: #ffffff;
@@ -42,10 +36,12 @@
     /* Button colors */
     --primary-button-color: var(--color-blue);
     --primary-button-color-hover: var(--color-blue-bright);
-    --secondary-button-color: var(--color-yellow);
-    --secondary-button-color-hover: var(--color-yellow-bright);
+    --primary-button-border-color: var(--color-blue);
+    --secondary-button-color: transparent;
+    --secondary-button-border-color: var(--color-yellow);
+    --secondary-button-color-hover: color-mix(in srgb, var(--color-yellow) 24%, transparent);
     --tertiary-button-color: transparent;
-    --tertiary-button-border: var(--line-color);
-    --tertiary-button-border-hover: rgb(255 255 255 / 0.35);
+    --tertiary-button-border-color: var(--color-grey);
+    --tertiary-button-color-hover: color-mix(in srgb, var(--color-white) 10%, transparent);
 }
 
