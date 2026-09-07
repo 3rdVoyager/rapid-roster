@@ -1,3 +1,0 @@
-id,name,priority,action,config
-R1,Match strengths,8,Match,"{'entryColumn': 'entries.strengths', 'slotColumn': 'slots.needed_strengths'}"
-R2,Availability match,6,Match,"{'entryColumn': 'entries.availability', 'slotColumn': 'slots.time_block'}"

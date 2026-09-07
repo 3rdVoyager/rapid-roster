@@ -1,5 +1,0 @@
-id,name,priority,action,config
-R1,Balance skill,9,Balance,"{'attribute': 'skill', 'data': {'parameter1': 'entries', 'parameter2': ''}}"
-R2,Teammate requests,8,Cluster,"{'data': {'parameter1': 'entries.teammate_requests', 'parameter2': ['entries.id']}}"
-R3,Availability match,7,Match,"{'entryColumn': 'entries.availability', 'slotColumn': 'slots.practice_night'}"
-R4,Require 1 coach,9,Limit,"{'data': {'parameter1': 'entries.role', 'parameter2': ['coach']}, 'data2': {'parameter1': 'slots', 'parameter2': ''}, 'min': 1, 'max': 1}"

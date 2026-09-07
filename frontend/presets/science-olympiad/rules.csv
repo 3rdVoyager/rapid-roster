@@ -1,7 +1,0 @@
-id,label,priority,action,config
-R1,1st choice,10,Match,"'attribute1': preferences.1, 'attribute2': slots.name'"
-R2,2nd choice,8,Match,"'attribute1': preferences.2, 'attribute2': slots.name'"
-R3,3rd choice,6,Match,"'attribute1': preferences.3, 'attribute2': slots.name'"
-R4,4th choice,4,Match,"'attribute1': preferences.4, 'attribute2': slots.name'"
-R5,5th choice,3,Match,"'attribute1': preferences.5, 'attribute2': slots.name'"
-R6,6th choice,1,Match,"'attribute1': preferences.6, 'attribute2': slots.name'"

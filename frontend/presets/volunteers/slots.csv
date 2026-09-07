@@ -1,9 +1,0 @@
-slot_id, name          , needed_strengths, time_block
-r1     , Front Gate    , check-in;crowd  , Sat AM
-r2     , Info Desk     , check-in        , Sat AM
-r3     , Tech Booth    , tech;stage      , Sat AM
-r4     , Parking Lot   , parking;crowd   , Sat AM
-r5     , First Aid Tent, first-aid       , Sat PM
-r6     , Food Line     , food;crowd      , Sat PM
-r7     , Stage Crew    , stage;setup     , Sat PM
-r8     , Merch Table   , merch;check-in  , Sat PM
