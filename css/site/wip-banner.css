@@ -1,0 +1,64 @@
+/* Site-wide work-in-progress notice */
+
+:root {
+  --site-chrome-height: 7.5rem;
+}
+
+html.has-wip-banner {
+  scroll-padding-top: var(--site-chrome-height);
+}
+
+/* Header + banner stick together as one unit */
+.site-top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin: calc(-1 * var(--page-inline)) calc(-1 * var(--page-inline)) var(--page-inline);
+  background: var(--header-bg-color);
+  border-bottom: 1px solid var(--line-color);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.site-top .site-header,
+.site-top .app-header {
+  position: static;
+  margin: 0;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.wip-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.55rem var(--page-inline);
+  background: var(--color-navy);
+  border-bottom: 2px solid var(--color-yellow);
+  color: var(--text-color-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.wip-banner p {
+  margin: 0;
+  max-width: 52rem;
+}
+
+.wip-banner strong {
+  color: var(--color-yellow-bright);
+  font-weight: 600;
+}
+
+.wip-banner a {
+  color: var(--color-blue-bright);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.wip-banner a:hover {
+  color: var(--color-yellow-bright);
+}
