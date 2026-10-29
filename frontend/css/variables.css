@@ -1,38 +1,47 @@
-:root {
-    --font: "Inter", system-ui, sans-serif;
-    --header-brand-font-size: 1.75rem;
-    --header-brand-logo-size: 2.25rem;
-    /* Brand colors */
-    /* DO NOT USE THESE DIRECTLY. USE THE COLOR-RELATED VARIABLES INSTEAD. */
-    --brand-white: #ffffff;
-    --brand-blue: #2f6bff;
-    --brand-yellow: #f5c518;
-
-    /* Page colors */
-    --color-grey: #ffffff38;
-    --color-navy: #171f31;
-    --color-dark-navy: #0c1220;
-    --color-black: #000000;
-    --color-white: var(--brand-white);
-    --color-light-grey: #9aa6b2;
-    --color-blue: var(--brand-blue);
-    --color-yellow: var(--brand-yellow);
-    --color-blue-bright: #4d8bff;
-    --color-yellow-bright: #ffe37d;
-
-    /* Element colors */
-    --line-color: var(--color-grey);
-    --text-color: var(--color-white);
-    --text-color-muted: var(--color-light-grey);
-    --bg-color: var(--color-black);
-    --header-bg-color: var(--color-dark-navy);
-    --card-bg-color: var(--color-dark-navy);
-
-    /* Button colors */
-    --primary-button-color: var(--color-blue);
-    --primary-button-color-hover: var(--color-blue-bright);
-    --secondary-button-color: var(--color-yellow);
-    --secondary-button-color-hover: var(--color-yellow-bright);
-    --tertiary-button-color: var(--header-bg-color);
-    --tertiary-button-color-hover: var(--color-navy);
-}
+:root {
+    /*
+      color-mix() in other CSS files blends two colors.
+      Example:
+        color-mix(in srgb, var(--color-blue) 18%, transparent)
+      means “18% blue, rest transparent” (a soft blue tint).
+      “in srgb” = normal screen color math.
+    */
+
+    --font: "Inter", system-ui, sans-serif;
+    --header-brand-font-size: 1.75rem;
+    --header-brand-logo-size: 2.25rem;
+    /* Brand colors */
+    /* DO NOT USE THESE DIRECTLY. USE THE COLOR-RELATED VARIABLES INSTEAD. */
+    --brand-white: #ffffff;
+    --brand-blue: #2f6bff;
+    --brand-yellow: #f5c518;
+
+    /* Page colors */
+    --color-grey: #ffffff38;
+    --color-navy: #171f31;
+    --color-dark-navy: #0c1220;
+    --color-black: #000000;
+    --color-white: var(--brand-white);
+    --color-light-grey: #9aa6b2;
+    --color-blue: var(--brand-blue);
+    --color-yellow: var(--brand-yellow);
+    --color-blue-bright: #4d8bff;
+    --color-yellow-bright: #ffe37d;
+
+    /* Element colors */
+    --line-color: var(--color-grey);
+    --text-color: var(--color-white);
+    --text-color-muted: var(--color-light-grey);
+    --bg-color: var(--color-black);
+    --header-bg-color: var(--color-dark-navy);
+    --card-bg-color: var(--color-dark-navy);
+
+    /* Button colors */
+    --primary-button-color: var(--color-blue);
+    --primary-button-color-hover: var(--color-blue-bright);
+    --secondary-button-color: var(--color-yellow);
+    --secondary-button-color-hover: var(--color-yellow-bright);
+    --tertiary-button-color: var(--header-bg-color);
+    --tertiary-button-color-hover: var(--color-navy);
+}
+

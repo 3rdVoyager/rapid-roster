@@ -1,0 +1,6 @@
+id,name,type,data,filter,options,priority,hard
+R1,Balance skill,Balance,entries.skill,,,9,no
+R2,Teammate requests,Cluster,entries.teammate_requests ↔ entries.name,,exact,8,no
+R3,Availability match,Cluster,entries.availability ↔ slots.practice_night,,partial,7,no
+R4,Limit keepers,Limit,entries.role,keeper,max=2,9,yes
+R5,Require a coach,Limit,entries.role,coach,min=1,10,yes

@@ -24,7 +24,7 @@
   </head>
   <body class="page-app page-dashboard">
     <header class="app-header">
-      <a class="site-brand" href="/app">
+      <a class="site-brand" href="/app/">
         <img
           src="/assets/rapid-roster-logo.png"
           alt=""
@@ -35,7 +35,7 @@
       </a>
 
       <div class="app-header-account">
-        <button class="button button-tertiary" type="button" disabled>
+        <button class="button button-tertiary button-small" type="button" id="account-menu-btn">
           Account ▾
         </button>
       </div>
@@ -44,47 +44,89 @@
     <main class="dashboard">
       <div class="dashboard-top">
         <div>
+          <p class="dashboard-kicker">Workspace</p>
           <h1>Projects</h1>
           <p class="dashboard-lead">
-            Open a saved project or start a new one.
+            Open your saved project or start a new one (blank or from a preset).
           </p>
         </div>
-        <a class="button button-primary" href="/app/project/">New project</a>
+        <div class="dashboard-actions">
+          <button class="button button-ghost button-small" type="button" id="import-project-btn">
+            Import…
+          </button>
+          <button class="button button-primary" type="button" id="new-project-btn">
+            New project
+          </button>
+        </div>
       </div>
 
-      <ul class="project-list">
+      <ul class="project-list" id="project-list">
         <li>
           <a class="project-row" href="/app/project/">
-            <span class="project-row-main">
-              <strong>Spring SciOly</strong>
-              <span class="project-row-meta">Updated recently · placeholder</span>
+            <span class="project-row-icon" aria-hidden="true">
+              <span class="material-symbols-outlined">folder_open</span>
             </span>
-            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-          </a>
-        </li>
-        <li>
-          <a class="project-row" href="/app/project/">
             <span class="project-row-main">
-              <strong>Volunteer weekend</strong>
-              <span class="project-row-meta">Updated recently · placeholder</span>
+              <strong>Open current project</strong>
+              <span class="project-row-meta">Loads whatever is saved in this browser</span>
             </span>
-            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-          </a>
-        </li>
-        <li>
-          <a class="project-row" href="/app/project/">
-            <span class="project-row-main">
-              <strong>Rec league teams</strong>
-              <span class="project-row-meta">Updated recently · placeholder</span>
+            <span class="project-row-aside">
+              <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
             </span>
-            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
           </a>
         </li>
       </ul>
 
       <p class="dashboard-note">
-        Placeholder projects for layout only — real list comes with accounts and save later.
+        Projects save in this browser for now. Use <strong>New project</strong> to start blank or from a preset
+        (with downloadable CSV templates).
       </p>
     </main>
+
+    <div
+      class="app-modal"
+      id="new-project-modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-project-title"
+    >
+      <div class="app-modal-backdrop" id="new-project-backdrop"></div>
+      <div class="app-modal-panel">
+        <h2 id="new-project-title">New project</h2>
+        <p class="app-modal-lead">
+          Start blank or load a preset pack (sample entries, slots, and rules). Presets expect matching CSV shapes —
+          download the templates below before replacing with your own data.
+        </p>
+
+        <div class="app-field">
+          <label for="new-project-name">Project name</label>
+          <input
+            class="app-input"
+            id="new-project-name"
+            type="text"
+            value="Untitled project"
+            autocomplete="off"
+          />
+        </div>
+
+        <p class="app-label" style="margin-top: 1rem">Start from</p>
+        <div class="preset-choice-list" id="new-project-preset-list"></div>
+
+        <p class="app-empty-hint" id="new-project-summary"></p>
+        <p class="app-empty-hint" id="new-project-overwrite-note"></p>
+
+        <p class="app-empty-hint" id="new-project-status" aria-live="polite"></p>
+
+        <div class="app-modal-actions">
+          <button class="button button-ghost" type="button" id="new-project-cancel">Cancel</button>
+          <button class="button button-primary" type="button" id="new-project-create">
+            Create project
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/js/dashboard.js"></script>
   </body>
 </html>

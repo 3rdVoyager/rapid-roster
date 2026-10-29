@@ -1,5 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
+/*
+  Shared base styles for every page.
+  color-mix(...) = blend two colors (see comment in variables.css).
+*/
+
 *,
 *::before,
 *::after {

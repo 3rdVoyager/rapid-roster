@@ -1,18 +1,34 @@
 /* /app/ — project dashboard */
 
+/* Same horizontal inset as the marketing site (body padding: 3.5rem) */
 .dashboard {
-  width: min(52rem, 100%);
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 3.5rem;
+  width: 100%;
+  margin: 0;
+  padding: 2.25rem 3.5rem 3.5rem;
+}
+
+@media (max-width: 600px) {
+  .dashboard {
+    padding-inline: 1.25rem;
+  }
 }
 
 .dashboard-top {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 1rem 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
+}
+
+.dashboard-kicker {
+  margin: 0 0 0.35rem;
+  color: var(--color-yellow);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .dashboard h1 {
@@ -22,40 +38,65 @@
 
 .dashboard-lead {
   margin: 0;
+  max-width: 28rem;
   color: var(--text-color-muted);
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
 }
 
 .project-list {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.7rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .project-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.1rem 1.15rem;
+  gap: 0.9rem 1rem;
+  padding: 1rem 1.1rem;
   color: var(--text-color);
   text-decoration: none;
-  background: var(--header-bg-color);
-  border: 1px solid var(--line-color);
+  background: color-mix(in srgb, var(--card-bg-color) 90%, black);
+  border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 12px;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .project-row:hover {
   color: var(--text-color);
-  border-color: rgb(255 255 255 / 0.18);
+  border-color: color-mix(in srgb, var(--color-blue) 45%, transparent);
   background: var(--color-navy);
+  transform: translateY(-1px);
+}
+
+.project-row-icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--color-yellow);
+  background: color-mix(in srgb, var(--color-yellow) 12%, transparent);
+  border-radius: 10px;
+}
+
+.project-row-icon .material-symbols-outlined {
+  font-size: 1.35rem;
 }
 
 .project-row-main {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.2rem;
   min-width: 0;
 }
 
@@ -68,13 +109,38 @@
   font-size: 0.9rem;
 }
 
-.project-row .material-symbols-outlined {
+.project-row-aside {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
   color: var(--text-color-muted);
-  font-size: 1.5rem;
+}
+
+.project-row-tag {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-blue-bright);
+  background: color-mix(in srgb, var(--color-blue) 16%, transparent);
+  border-radius: 6px;
+}
+
+.dashboard-empty {
+  padding: 2rem 1.25rem;
+  text-align: center;
+  background: color-mix(in srgb, var(--card-bg-color) 88%, black);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 12px;
+}
+
+.dashboard-empty p {
+  margin: 0 0 1rem;
 }
 
 .dashboard-note {
-  margin: 1.5rem 0 0;
+  margin: 1.35rem 0 0;
   color: var(--text-color-muted);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }

@@ -13,6 +13,14 @@
  * Soft rules do NOT belong here — those go in score.js.
  *
  * ---------------------------------------------------------------------------
+ * One JS habit used a lot in this file
+ * ---------------------------------------------------------------------------
+ *
+ * Object.keys(assignments)
+ *   Returns an array of the object's own property names.
+ *   For an assignments map, that list is every person id.
+ *
+ * ---------------------------------------------------------------------------
  * How to call this file
  * ---------------------------------------------------------------------------
  *
@@ -39,21 +47,22 @@
  *     slotIds: ["t1", "t2"],
  *
  *     // Optional: minimum people required in each slot
- *     // Missing slot id → no minimum (treated as 0)
- *     slotMinSizes: {
- *       "t1": 5,
- *       "t2": 5
- *     },
+ *     // - a number  → same minimum for EVERY slot (example: 5)
+ *     // - an object → per-slot minimums (missing slot id → 0)
+ *     slotMinSizes: 5,
+ *     // or: slotMinSizes: { "t1": 5, "t2": 4 },
  *
  *     // Optional: maximum people allowed in each slot
- *     // Missing slot id → no maximum
- *     slotMaxSizes: {
- *       "t1": 5,
- *       "t2": 5
- *     },
+ *     // - a number  → same maximum for EVERY slot
+ *     // - an object → per-slot maximums
+ *     // - missing / missing slot id → default:
+ *     //     ceil(number of people / number of slots)
+ *     //   (so total seats can still fit everyone)
+ *     slotMaxSizes: 5,
+ *     // or: slotMaxSizes: { "t1": 5, "t2": 6 },
  *
  *     // How many slots one person may hold (project default)
- *     defaultSlotsPerPerson: 1,
+ *     defaultSlotsPerEntry: 1,
  *
  *     // Groups of slot ids that the same person cannot hold together
  *     // Example: someone cannot be in both "optics" and "sounds" at once
@@ -64,8 +73,8 @@
  */
 
 import {
-  getSlotsForPerson,
-  getPeopleInSlot
+  getSlotsForEntry,
+  getEntriesInSlot
 } from "./placement.js";
 
 /**
@@ -74,7 +83,7 @@ import {
  * Runs every setup check. Collects ALL problems it finds
  * (not just the first one), so the UI can show a full list.
  *
- * @param {Object} assignments - personId → array of slotIds
+ * @param {Object} assignments - entryId → array of slotIds
  * @param {Object} config - see file header for shape
  * @returns {{ ok: boolean, reasons: string[] }}
  */
@@ -84,7 +93,7 @@ export function checkLegal(assignments, config) {
   // Run each family of checks. Each helper ADDS strings onto `reasons`.
   checkUnknownSlots(assignments, config, reasons);
   checkSlotSizes(assignments, config, reasons);
-  checkSlotsPerPerson(assignments, config, reasons);
+  checkSlotsPerEntry(assignments, config, reasons);
   checkConflictGroups(assignments, config, reasons);
 
   if (reasons.length === 0) {
@@ -116,18 +125,18 @@ function checkUnknownSlots(assignments, config, reasons) {
     return;
   }
 
-  const personIds = Object.keys(assignments);
+  const entryIds = Object.keys(assignments); // property names = person ids
 
-  for (let i = 0; i < personIds.length; i = i + 1) {
-    const personId = personIds[i];
-    const slotsForPerson = getSlotsForPerson(assignments, personId);
+  for (let i = 0; i < entryIds.length; i = i + 1) {
+    const entryId = entryIds[i];
+    const slotsForEntry = getSlotsForEntry(assignments, entryId);
 
-    for (let j = 0; j < slotsForPerson.length; j = j + 1) {
-      const slotId = slotsForPerson[j];
+    for (let j = 0; j < slotsForEntry.length; j = j + 1) {
+      const slotId = slotsForEntry[j];
 
       if (listContains(knownSlotIds, slotId) === false) {
         reasons.push(
-          'Person "' + personId + '" is assigned to unknown slot "' + slotId + '".'
+          'Entry "' + entryId + '" is assigned to unknown slot "' + slotId + '".'
         );
       }
     }
@@ -148,25 +157,27 @@ function checkSlotSizes(assignments, config, reasons) {
     return;
   }
 
-  // If these maps are missing, treat them as empty objects.
-  let minSizes = config.slotMinSizes;
-  let maxSizes = config.slotMaxSizes;
+  const minSizes = config.slotMinSizes;
+  const maxSizes = config.slotMaxSizes;
 
-  if (minSizes === undefined) {
-    minSizes = {};
-  }
+  // Default max when the user did not set one:
+  //   people ÷ slots, rounded UP so there are enough seats in total.
+  // Example: 10 people, 3 slots → default max 4 per slot.
+  const entryCount = Object.keys(assignments).length;
+  const slotCount = slotIds.length;
+  let defaultMaxSize = undefined;
 
-  if (maxSizes === undefined) {
-    maxSizes = {};
+  if (slotCount > 0) {
+    defaultMaxSize = Math.ceil(entryCount / slotCount);
   }
 
   for (let i = 0; i < slotIds.length; i = i + 1) {
     const slotId = slotIds[i];
-    const count = getPeopleInSlot(assignments, slotId).length;
+    const count = getEntriesInSlot(assignments, slotId).length;
 
     // ----- minimum -----
-    // If there is no min listed for this slot, we require nothing (min = 0).
-    let minSize = minSizes[slotId];
+    // If there is no min for this slot, we require nothing (min = 0).
+    let minSize = sizeForSlot(minSizes, slotId);
 
     if (minSize === undefined) {
       minSize = 0;
@@ -175,19 +186,23 @@ function checkSlotSizes(assignments, config, reasons) {
     if (count < minSize) {
       reasons.push(
         'Slot "' + slotId + '" has ' + count +
-          " people but needs at least " + minSize + "."
+          " entries but needs at least " + minSize + "."
       );
     }
 
     // ----- maximum -----
-    // If there is no max listed, there is no upper limit for this check.
-    const maxSize = maxSizes[slotId];
+    // Use the configured max when present; otherwise the people/slots default.
+    let maxSize = sizeForSlot(maxSizes, slotId);
+
+    if (maxSize === undefined) {
+      maxSize = defaultMaxSize;
+    }
 
     if (maxSize !== undefined) {
       if (count > maxSize) {
         reasons.push(
           'Slot "' + slotId + '" has ' + count +
-            " people but allows at most " + maxSize + "."
+            " entries but allows at most " + maxSize + "."
         );
       }
     }
@@ -195,32 +210,58 @@ function checkSlotSizes(assignments, config, reasons) {
 }
 
 /**
+ * Read a size for one slot from config.
+ *
+ * sizes can be:
+ *   - a number  → use that same value for every slot
+ *   - an object → use sizes[slotId] (may be undefined)
+ *   - undefined → no size configured
+ *
+ * @param {number|Object|undefined} sizes
+ * @param {string} slotId
+ * @returns {number|undefined}
+ */
+function sizeForSlot(sizes, slotId) {
+  if (sizes === undefined) {
+    return undefined;
+  }
+
+  // Same size for every slot: slotMinSizes: 5
+  if (typeof sizes === "number") {
+    return sizes;
+  }
+
+  // Per-slot map: slotMinSizes: { "t1": 5, "t2": 4 }
+  return sizes[slotId];
+}
+
+/**
  * Check that no person holds more slots than allowed.
  *
- * Minimum version: one project-wide number, config.defaultSlotsPerPerson.
+ * Minimum version: one project-wide number, config.defaultSlotsPerEntry.
  * (Per-person overrides can be added later.)
  *
  * @param {Object} assignments
  * @param {Object} config
  * @param {string[]} reasons
  */
-function checkSlotsPerPerson(assignments, config, reasons) {
-  let maxSlots = config.defaultSlotsPerPerson;
+function checkSlotsPerEntry(assignments, config, reasons) {
+  let maxSlots = config.defaultSlotsPerEntry;
 
   // If the caller forgot this field, assume 1 (most common case: teams).
   if (maxSlots === undefined) {
     maxSlots = 1;
   }
 
-  const personIds = Object.keys(assignments);
+  const entryIds = Object.keys(assignments); // property names = person ids
 
-  for (let i = 0; i < personIds.length; i = i + 1) {
-    const personId = personIds[i];
-    const held = getSlotsForPerson(assignments, personId).length;
+  for (let i = 0; i < entryIds.length; i = i + 1) {
+    const entryId = entryIds[i];
+    const held = getSlotsForEntry(assignments, entryId).length;
 
     if (held > maxSlots) {
       reasons.push(
-        'Person "' + personId + '" holds ' + held +
+        'Entry "' + entryId + '" holds ' + held +
           " slots but may hold at most " + maxSlots + "."
       );
     }
@@ -249,19 +290,19 @@ function checkConflictGroups(assignments, config, reasons) {
     return;
   }
 
-  const personIds = Object.keys(assignments);
+  const entryIds = Object.keys(assignments); // property names = person ids
 
-  for (let i = 0; i < personIds.length; i = i + 1) {
-    const personId = personIds[i];
-    const slotsForPerson = getSlotsForPerson(assignments, personId);
+  for (let i = 0; i < entryIds.length; i = i + 1) {
+    const entryId = entryIds[i];
+    const slotsForEntry = getSlotsForEntry(assignments, entryId);
 
     for (let g = 0; g < groups.length; g = g + 1) {
       const group = groups[g];
       const hits = [];
 
       // Which of this person's slots appear in this conflict group?
-      for (let s = 0; s < slotsForPerson.length; s = s + 1) {
-        const slotId = slotsForPerson[s];
+      for (let s = 0; s < slotsForEntry.length; s = s + 1) {
+        const slotId = slotsForEntry[s];
 
         if (listContains(group, slotId) === true) {
           hits.push(slotId);
@@ -270,7 +311,7 @@ function checkConflictGroups(assignments, config, reasons) {
 
       if (hits.length > 1) {
         reasons.push(
-          'Person "' + personId + '" holds conflicting slots: ' +
+          'Entry "' + entryId + '" holds conflicting slots: ' +
             hits.join(", ") + "."
         );
       }

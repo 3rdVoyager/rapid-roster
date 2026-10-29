@@ -40,15 +40,15 @@
  *   createEmptyAssignments(["a", "b"])
  *   → { "a": [], "b": [] }
  *
- * @param {string[]} personIds - list of person id strings
+ * @param {string[]} entryIds - list of person id strings
  * @returns {Object} assignments object with every person starting empty
  */
-export function createEmptyAssignments(personIds) {
+export function createEmptyAssignments(entryIds) {
   const assignments = {};
 
-  for (let i = 0; i < personIds.length; i = i + 1) {
-    const personId = personIds[i];
-    assignments[personId] = [];
+  for (let i = 0; i < entryIds.length; i = i + 1) {
+    const entryId = entryIds[i];
+    assignments[entryId] = [];
   }
 
   return assignments;
@@ -57,18 +57,43 @@ export function createEmptyAssignments(personIds) {
 /**
  * Make a full copy of an assignments object.
  *
- * Why not just write:  const copy = { ...assignments }  ?
- * That only copies the outer object. The arrays inside would still
- * be the SAME arrays. Changing copy["ava"] would also change the original.
+ * Why copy at all?
+ *   Helpers below return NEW maps instead of editing the one you pass in.
+ *   That way the search can try a move, and throw it away if it is illegal.
  *
- * structuredClone(...) is a built-in browser function that copies
- * the whole plain-data tree (object + nested arrays) in one step.
+ * Why not:  const copy = assignments  ?
+ *   That only copies the *reference*. Both names point at the same object.
+ *
+ * Why not:  const copy = { ...assignments }  (spread)?
+ *   That copies the outer object, but the arrays inside are still shared.
+ *   Changing copy["ava"] would also change the original.
+ *
+ * So we:
+ *   1. Create a new empty object
+ *   2. For each person id, copy their slot-id array with .slice()
+ *
+ * Object.keys(obj) → array of that object's own property names (the person ids).
  *
  * @param {Object} assignments
  * @returns {Object} a new assignments object with the same contents
  */
 export function copyAssignments(assignments) {
-  return structuredClone(assignments);
+  const copy = {};
+  const entryIds = Object.keys(assignments);
+
+  for (let i = 0; i < entryIds.length; i = i + 1) {
+    const entryId = entryIds[i];
+    const slots = assignments[entryId];
+
+    // .slice() with no args copies every item into a new array.
+    if (slots === undefined) {
+      copy[entryId] = [];
+    } else {
+      copy[entryId] = slots.slice();
+    }
+  }
+
+  return copy;
 }
 
 /**
@@ -78,11 +103,11 @@ export function copyAssignments(assignments) {
  * so callers do not have to special-case "undefined".
  *
  * @param {Object} assignments
- * @param {string} personId
+ * @param {string} entryId
  * @returns {string[]} slot ids (may be empty)
  */
-export function getSlotsForPerson(assignments, personId) {
-  const slots = assignments[personId];
+export function getSlotsForEntry(assignments, entryId) {
+  const slots = assignments[entryId];
 
   if (slots === undefined) {
     return [];
@@ -96,12 +121,12 @@ export function getSlotsForPerson(assignments, personId) {
  * True if this person currently holds this slot.
  *
  * @param {Object} assignments
- * @param {string} personId
+ * @param {string} entryId
  * @param {string} slotId
  * @returns {boolean}
  */
-export function personIsInSlot(assignments, personId, slotId) {
-  const slots = getSlotsForPerson(assignments, personId);
+export function entryIsInSlot(assignments, entryId, slotId) {
+  const slots = getSlotsForEntry(assignments, entryId);
 
   for (let i = 0; i < slots.length; i = i + 1) {
     if (slots[i] === slotId) {
@@ -122,19 +147,20 @@ export function personIsInSlot(assignments, personId, slotId) {
  * @param {string} slotId
  * @returns {string[]} person ids in that slot
  */
-export function getPeopleInSlot(assignments, slotId) {
-  const peopleInSlot = [];
-  const personIds = Object.keys(assignments);
+export function getEntriesInSlot(assignments, slotId) {
+  const entriesInSlot = [];
+  // Object.keys(obj) → array of property names (here: every person id).
+  const entryIds = Object.keys(assignments);
 
-  for (let i = 0; i < personIds.length; i = i + 1) {
-    const personId = personIds[i];
+  for (let i = 0; i < entryIds.length; i = i + 1) {
+    const entryId = entryIds[i];
 
-    if (personIsInSlot(assignments, personId, slotId) === true) {
-      peopleInSlot.push(personId);
+    if (entryIsInSlot(assignments, entryId, slotId) === true) {
+      entriesInSlot.push(entryId);
     }
   }
 
-  return peopleInSlot;
+  return entriesInSlot;
 }
 
 /**
@@ -148,24 +174,24 @@ export function getPeopleInSlot(assignments, slotId) {
  * legal.js will do that later.
  *
  * @param {Object} assignments
- * @param {string} personId
+ * @param {string} entryId
  * @param {string} slotId
  * @returns {Object} new assignments object
  */
-export function addPersonToSlot(assignments, personId, slotId) {
+export function addEntryToSlot(assignments, entryId, slotId) {
   const next = copyAssignments(assignments);
 
   // Make sure this person exists in the map.
-  if (next[personId] === undefined) {
-    next[personId] = [];
+  if (next[entryId] === undefined) {
+    next[entryId] = [];
   }
 
   // Already there? Nothing to add.
-  if (personIsInSlot(next, personId, slotId) === true) {
+  if (entryIsInSlot(next, entryId, slotId) === true) {
     return next;
   }
 
-  next[personId].push(slotId);
+  next[entryId].push(slotId);
   return next;
 }
 
@@ -175,20 +201,20 @@ export function addPersonToSlot(assignments, personId, slotId) {
  * If they were not in that slot, return a copy unchanged.
  *
  * @param {Object} assignments
- * @param {string} personId
+ * @param {string} entryId
  * @param {string} slotId
  * @returns {Object} new assignments object
  */
-export function removePersonFromSlot(assignments, personId, slotId) {
+export function removeEntryFromSlot(assignments, entryId, slotId) {
   const next = copyAssignments(assignments);
 
-  if (next[personId] === undefined) {
-    next[personId] = [];
+  if (next[entryId] === undefined) {
+    next[entryId] = [];
     return next;
   }
 
   const keptSlots = [];
-  const currentSlots = next[personId];
+  const currentSlots = next[entryId];
 
   for (let i = 0; i < currentSlots.length; i = i + 1) {
     const currentSlotId = currentSlots[i];
@@ -199,7 +225,7 @@ export function removePersonFromSlot(assignments, personId, slotId) {
     }
   }
 
-  next[personId] = keptSlots;
+  next[entryId] = keptSlots;
   return next;
 }
 
@@ -213,18 +239,18 @@ export function removePersonFromSlot(assignments, personId, slotId) {
  * If from and to are the same, just return a copy.
  *
  * @param {Object} assignments
- * @param {string} personId
+ * @param {string} entryId
  * @param {string} fromSlotId
  * @param {string} toSlotId
  * @returns {Object} new assignments object
  */
-export function movePerson(assignments, personId, fromSlotId, toSlotId) {
+export function moveEntry(assignments, entryId, fromSlotId, toSlotId) {
   if (fromSlotId === toSlotId) {
     return copyAssignments(assignments);
   }
 
-  let next = removePersonFromSlot(assignments, personId, fromSlotId);
-  next = addPersonToSlot(next, personId, toSlotId);
+  let next = removeEntryFromSlot(assignments, entryId, fromSlotId);
+  next = addEntryToSlot(next, entryId, toSlotId);
   return next;
 }
 
@@ -238,16 +264,16 @@ export function movePerson(assignments, personId, fromSlotId, toSlotId) {
  * This is one of the move types search.js will try later.
  *
  * @param {Object} assignments
- * @param {string} personIdA
- * @param {string} personIdB
+ * @param {string} entryIdA
+ * @param {string} entryIdB
  * @returns {Object} new assignments object
  */
-export function swapPeople(assignments, personIdA, personIdB) {
+export function swapEntries(assignments, entryIdA, entryIdB) {
   const next = copyAssignments(assignments);
 
   // If a person is missing, treat them as holding no slots.
-  let slotsA = next[personIdA];
-  let slotsB = next[personIdB];
+  let slotsA = next[entryIdA];
+  let slotsB = next[entryIdB];
 
   if (slotsA === undefined) {
     slotsA = [];
@@ -258,8 +284,8 @@ export function swapPeople(assignments, personIdA, personIdB) {
   }
 
   // Give each person a copy of the other's list.
-  next[personIdA] = slotsB.slice();
-  next[personIdB] = slotsA.slice();
+  next[entryIdA] = slotsB.slice();
+  next[entryIdB] = slotsA.slice();
 
   return next;
 }
