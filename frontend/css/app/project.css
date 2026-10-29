@@ -1,0 +1,118 @@
+/* /app/project/ — project workspace with sidebar */
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.app-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 0.75rem;
+  background: var(--header-bg-color);
+  border-right: 1px solid var(--line-color);
+}
+
+.app-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.85rem;
+  color: var(--text-color-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+}
+
+.app-nav-item:hover {
+  color: var(--text-color);
+  background: var(--color-navy);
+}
+
+.app-nav-item .material-symbols-outlined {
+  color: inherit;
+  font-size: 1.25rem;
+}
+
+.app-main {
+  min-width: 0;
+  padding: 1.75rem 1.5rem 2.5rem;
+  overflow: auto;
+}
+
+.app-panel {
+  display: none;
+  max-width: 72rem;
+  animation: fade-in 0.35s ease both;
+}
+
+.app-panel h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.5rem, 2.5vw, 1.85rem);
+}
+
+.app-panel-lead {
+  margin: 0 0 1.75rem;
+  max-width: 40rem;
+  color: var(--text-color-muted);
+}
+
+.app-placeholder {
+  margin: 0;
+  padding: 2rem 1.25rem;
+  color: var(--text-color-muted);
+  text-align: center;
+  background: var(--card-bg-color);
+  border: 1px dashed var(--line-color);
+  border-radius: 12px;
+}
+
+.app-main:not(:has(.app-panel:target)) #setup,
+.app-panel:target {
+  display: block;
+}
+
+body:not(:has(.app-panel:target)) .app-nav-item[href="#setup"],
+body:has(#setup:target) .app-nav-item[href="#setup"],
+body:has(#rules:target) .app-nav-item[href="#rules"],
+body:has(#generate:target) .app-nav-item[href="#generate"],
+body:has(#results:target) .app-nav-item[href="#results"] {
+  color: var(--text-color);
+  background: var(--color-navy);
+  border-left-color: var(--color-blue);
+}
+
+@media (max-width: 800px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .app-sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0.75rem;
+    border-right: none;
+    border-bottom: 1px solid var(--line-color);
+  }
+
+  .app-nav-item {
+    border-left: none;
+    border-bottom: 3px solid transparent;
+  }
+
+  body:not(:has(.app-panel:target)) .app-nav-item[href="#setup"],
+  body:has(#setup:target) .app-nav-item[href="#setup"],
+  body:has(#rules:target) .app-nav-item[href="#rules"],
+  body:has(#generate:target) .app-nav-item[href="#generate"],
+  body:has(#results:target) .app-nav-item[href="#results"] {
+    border-left-color: transparent;
+    border-bottom-color: var(--color-blue);
+  }
+}

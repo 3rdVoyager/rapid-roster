@@ -1,0 +1,85 @@
+/* Shared app chrome — dashboard + project workspace */
+
+.brand-accent {
+  color: var(--color-yellow);
+}
+
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--text-color);
+  font-size: var(--header-brand-font-size);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.site-brand:hover {
+  color: var(--text-color);
+}
+
+.site-brand img {
+  width: v;
+  height: 2rem;
+  border-radius: 8px;
+}
+
+.page-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0;
+  background-image: none;
+  background-color: var(--bg-color);
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem 1.25rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--header-bg-color);
+  border-bottom: 1px solid var(--line-color);
+}
+
+.app-header-project {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 0.75rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.app-project-name {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.app-save-state {
+  color: var(--text-color-muted);
+  font-size: 0.9rem;
+}
+
+.app-header-account {
+  margin-left: auto;
+}
+
+.app-header .button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 600px) {
+  .app-header-project {
+    width: 100%;
+    order: 3;
+  }
+}
