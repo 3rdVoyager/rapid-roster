@@ -4,7 +4,7 @@
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   gap: 2.75rem 3rem;
   align-items: center;
-  padding: 1.5rem 0 4rem;
+  padding: 1.5rem 2rem 4rem 2rem;
   border-bottom: 1px solid var(--line-color);
 }
 
@@ -53,7 +53,7 @@
 
 /* —— Sections —— */
 .section {
-  padding: 4.5rem 0;
+  padding: 4.5rem 2rem;
   border-bottom: 1px solid var(--line-color);
 }
 
@@ -69,7 +69,7 @@
   margin: 0 0 2rem;
   max-width: 40rem;
   color: var(--text-color-muted);
-  font-size: 1.05rem;
+  font-size: 1.12rem;
   line-height: 1.65;
 }
 
@@ -83,6 +83,7 @@
 .section-copy p {
   margin: 0 0 1.25rem;
   max-width: 38rem;
+  font-size: 1.12rem;
   line-height: 1.7;
 }
 
@@ -133,16 +134,19 @@
 .problem-list strong {
   display: block;
   margin-bottom: 0.5rem;
-  font-size: 1.05rem;
+  font-size: 1.12rem;
 }
 
 .problem-list p {
   margin: 0;
+  font-size: 1.12rem;
   line-height: 1.65;
 }
 
-/* —— Screenshot frames (swap placeholder for <img> later) —— */
+/* —— Screenshot frames —— */
 .screenshot-frame {
+  display: flex;
+  flex-direction: column;
   margin: 0;
   overflow: hidden;
   background: var(--header-bg-color);
@@ -157,56 +161,45 @@
   border-color: rgb(255 255 255 / 0.14);
 }
 
-.screenshot-frame img {
+/* Keep every shot on a shared frame so mixed source sizes don’t stretch oddly. */
+.screenshot-frame > img {
   display: block;
   width: 100%;
+  aspect-ratio: 16 / 10;
   height: auto;
+  object-fit: cover;
+  object-position: top left;
+  background: var(--card-bg-color);
 }
 
-.screenshot-placeholder {
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  gap: 0.4rem;
-  min-height: 16rem;
-  padding: 2rem 1.25rem;
-  color: var(--text-color-muted);
-  text-align: center;
-  background:
-    linear-gradient(160deg, color-mix(in srgb, var(--color-blue) 12%, transparent), transparent 55%),
-    var(--card-bg-color);
+.hero-shot > img {
+  aspect-ratio: 16 / 11;
+  object-position: top left;
 }
 
-.hero-shot .screenshot-placeholder {
-  min-height: 22rem;
+.section-split .screenshot-frame > img {
+  aspect-ratio: 5 / 4;
+  object-position: top left;
 }
 
-.screenshot-placeholder .material-symbols-outlined {
-  margin-bottom: 0.35rem;
-  font-size: 2rem;
-  color: var(--color-blue-bright);
-}
-
-.screenshot-placeholder p {
+.screenshot-frame figcaption {
   margin: 0;
-  color: var(--text-color);
-  font-weight: 600;
-}
-
-.screenshot-hint {
-  color: var(--text-color-muted) !important;
-  font-weight: 400 !important;
+  padding: 0.7rem 0.9rem 0.85rem;
+  border-top: 1px solid var(--line-color);
+  color: var(--text-color-muted);
   font-size: 0.9rem;
+  background: color-mix(in srgb, var(--card-bg-color) 92%, black);
 }
 
 .screenshot-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
+  align-items: stretch;
 }
 
-.screenshot-row .screenshot-placeholder {
-  min-height: 12.5rem;
+.screenshot-row .screenshot-frame > img {
+  aspect-ratio: 4 / 3;
 }
 
 /* —— Rules —— */
@@ -216,7 +209,7 @@
   margin: 0 0 1.75rem;
   padding: 0;
   list-style: none;
-  max-width: 48rem;
+  max-width: none;
   counter-reset: rule-step;
 }
 
@@ -243,7 +236,7 @@
 .rules-list strong {
   display: block;
   margin-bottom: 0.5rem;
-  font-size: 1.05rem;
+  font-size: 1.12rem;
 }
 
 .rules-list strong::before {
@@ -253,12 +246,14 @@
 
 .rules-list p {
   margin: 0;
+  font-size: 1.12rem;
   line-height: 1.65;
 }
 
 .rules-note {
   margin: 0;
   max-width: 48rem;
+  font-size: 1.12rem;
   line-height: 1.7;
 }
 
@@ -282,7 +277,7 @@
 .steps-list strong {
   display: block;
   margin-bottom: 0.6rem;
-  font-size: 1.05rem;
+  font-size: 1.12rem;
   line-height: 1.35;
 }
 
@@ -293,6 +288,7 @@
 
 .steps-list p {
   margin: 0;
+  font-size: 1.12rem;
   line-height: 1.6;
 }
 
@@ -301,10 +297,6 @@
   .hero,
   .section-split {
     grid-template-columns: 1fr;
-  }
-
-  .hero-shot .screenshot-placeholder {
-    min-height: 16rem;
   }
 
   .screenshot-row,

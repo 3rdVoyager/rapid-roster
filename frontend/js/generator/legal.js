@@ -64,6 +64,9 @@
  *     // How many slots one person may hold (project default)
  *     defaultSlotsPerEntry: 1,
  *
+ *     // Optional per-person overrides (entry id → max slots)
+ *     slotsPerEntryById: { "ava": 2 },
+ *
  *     // Groups of slot ids that the same person cannot hold together
  *     // Example: someone cannot be in both "optics" and "sounds" at once
  *     conflictGroups: [
@@ -238,19 +241,19 @@ function sizeForSlot(sizes, slotId) {
 /**
  * Check that no person holds more slots than allowed.
  *
- * Minimum version: one project-wide number, config.defaultSlotsPerEntry.
- * (Per-person overrides can be added later.)
+ * Uses config.slotsPerEntryById[entryId] when set, else
+ * config.defaultSlotsPerEntry (default 1).
  *
  * @param {Object} assignments
  * @param {Object} config
  * @param {string[]} reasons
  */
 function checkSlotsPerEntry(assignments, config, reasons) {
-  let maxSlots = config.defaultSlotsPerEntry;
+  let defaultMax = config.defaultSlotsPerEntry;
 
   // If the caller forgot this field, assume 1 (most common case: teams).
-  if (maxSlots === undefined) {
-    maxSlots = 1;
+  if (defaultMax === undefined) {
+    defaultMax = 1;
   }
 
   const entryIds = Object.keys(assignments); // property names = person ids
@@ -258,11 +261,24 @@ function checkSlotsPerEntry(assignments, config, reasons) {
   for (let i = 0; i < entryIds.length; i = i + 1) {
     const entryId = entryIds[i];
     const held = getSlotsForEntry(assignments, entryId).length;
+    let maxSlots = defaultMax;
+
+    if (
+      config.slotsPerEntryById !== undefined &&
+      config.slotsPerEntryById[entryId] !== undefined
+    ) {
+      maxSlots = config.slotsPerEntryById[entryId];
+    }
 
     if (held > maxSlots) {
       reasons.push(
-        'Entry "' + entryId + '" holds ' + held +
-          " slots but may hold at most " + maxSlots + "."
+        'Entry "' +
+          entryId +
+          '" holds ' +
+          held +
+          " slots but may hold at most " +
+          maxSlots +
+          "."
       );
     }
   }

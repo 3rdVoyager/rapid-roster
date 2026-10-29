@@ -79,7 +79,20 @@ export function guessEntriesColumnType(header) {
     return "id";
   }
 
+  if (lower === "name" || lower === "full_name" || lower === "fullname") {
+    return "name";
+  }
+
   if (lower === "skill") {
+    return "number";
+  }
+
+  if (
+    lower === "slots_per_entry" ||
+    lower === "slotsperentry" ||
+    lower === "num_slots" ||
+    lower === "max_slots"
+  ) {
     return "number";
   }
 
@@ -98,6 +111,10 @@ export function guessSlotsColumnType(header) {
 
   if (lower === "id" || lower === "slot_id") {
     return "id";
+  }
+
+  if (lower === "name" || lower === "slot" || lower === "slot_name") {
+    return "name";
   }
 
   if (lower === "min" || lower === "min_size" || lower === "minsize") {

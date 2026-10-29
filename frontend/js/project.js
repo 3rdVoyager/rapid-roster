@@ -59,24 +59,20 @@
 import {
   getProject,
   setProject,
-  getDirty,
   setDirty,
   saveProject,
   persistProject,
   loadProject,
+  loadLocalProjectById,
   createEmptyProject,
   serializeProjectFile,
-  parseProjectFile,
-  setCloudSynced,
-  getLastCloudSync
+  parseProjectFile
 } from "/js/state.js";
 
-import { fetchCloudProject } from "/js/api.js";
-import { wireAccountMenu } from "/js/account.js";
-
-import { buildLegalConfig, buildScoreConfig } from "/js/project-config.js";
-import { runSearch, mergeOptions } from "/js/generator/search.js";
+import { buildLegalConfig, buildScoreConfig, findColumnKeyByType } from "/js/project-config.js";
+import { buildSearchOptions, normalizeGenerateSettings } from "/js/generator/search.js";
 import { getEntriesInSlot, getSlotsForEntry } from "/js/generator/placement.js";
+import { maxPossibleSoftScore } from "/js/generator/score.js";
 import { parseCsvText, csvToTable, tableToCsv } from "/js/csv.js";
 import {
   PRESET_CATALOG,
@@ -86,7 +82,11 @@ import {
   serializeRulesCsv,
   ruleToCsvCells,
   ruleFromCsvCells,
-  RULES_CSV_HEADERS
+  RULES_CSV_HEADERS,
+  buildConflictGroupsFromSlots,
+  listNamedConflictGroupsFromSlots,
+  applyNamedConflictGroupsToSlots,
+  findConflictGroupColumnKey
 } from "/js/presets.js";
 
 /** Valid workflow panel ids (must match section id= and nav href="#..."). */
@@ -98,13 +98,29 @@ let resultsViewMode = "by-slot";
 /** Results layout: "list" or "grid". */
 let resultsLayoutMode = "list";
 
+/** Active Generate worker (null when idle). */
+let generateWorker = null;
+
+/** True while a generate run is in progress (for status copy / browse hint). */
+let generateBusy = false;
+
+/** Bumps when a new run starts or cancel fires, so stale worker messages are ignored. */
+let generateRunId = 0;
+
 /** Selected row ids for Entries / Slots form editors (null = none). */
 let selectedEntryId = null;
 let selectedSlotId = null;
 
 /** Column types the user can pick in Setup headers. */
-const ENTRIES_COLUMN_TYPES = ["id", "number", "time", "text", "ignore"];
-const SLOTS_COLUMN_TYPES = ["id", "minSize", "maxSize", "text", "ignore"];
+const ENTRIES_COLUMN_TYPES = ["id", "name", "number", "time", "text", "ignore"];
+const SLOTS_COLUMN_TYPES = [
+  "id",
+  "name",
+  "minSize",
+  "maxSize",
+  "text",
+  "ignore"
+];
 
 /**
  * Id of a pending autosave timer from window.setTimeout.
@@ -112,18 +128,26 @@ const SLOTS_COLUMN_TYPES = ["id", "minSize", "maxSize", "text", "ignore"];
  */
 let saveTimerId = null;
 
+/** True when the preset modal was opened because this is a brand-new project. */
+let presetModalForNewProject = false;
+
+/**
+ * Draft conflict groups while the Manage modal is open.
+ * Shape: { name: string, slotIds: string[] }[]
+ */
+let conflictEditorDraft = [];
+
 /**
  * Page startup.
  */
 async function main() {
-  await wireAccountMenu();
-
   const params = new URLSearchParams(window.location.search);
-  const cloudId = params.get("id");
+  const projectId = params.get("id");
+  const isNewProject = params.get("new") === "1";
   let project = null;
 
-  if (cloudId !== null && cloudId !== "") {
-    project = await openCloudProject(cloudId);
+  if (projectId !== null && projectId !== "") {
+    project = loadLocalProjectById(projectId);
   }
 
   if (project === null) {
@@ -133,7 +157,6 @@ async function main() {
   if (project === null) {
     project = createEmptyProject("Untitled project");
     setProject(project);
-    setCloudSynced(false);
     setDirty(false);
   } else {
     setProject(project);
@@ -144,42 +167,26 @@ async function main() {
   wireControls();
   wirePanelNavigation();
   wireLoadPresetModal();
+  wireConflictGroupsModal();
   showPanelFromHash();
+
+  if (isNewProject === true) {
+    clearNewProjectQueryParam();
+    openLoadPresetModal(true);
+  }
 }
 
 /**
- * Fetch a cloud project, cache it locally, and return it.
- * On failure (offline / 401 / 404), fall back to local cache if ids match.
- *
- * @param {string} cloudId
- * @returns {Promise<Object|null>}
+ * Drop ?new=1 from the URL so a refresh does not reopen the preset dialog.
  */
-async function openCloudProject(cloudId) {
-  try {
-    const data = await fetchCloudProject(cloudId);
-    const project = data.project || null;
-
-    if (project === null) {
-      return null;
-    }
-
-    project.id = data.id || cloudId;
-    if (typeof data.name === "string" && data.name !== "") {
-      project.name = data.name;
-    }
-    project.cloudSynced = true;
-    setProject(project);
-    setCloudSynced(true);
-    saveProject();
-    return project;
-  } catch (error) {
-    console.warn("Could not open cloud project; trying local cache.", error);
-    const local = loadProject();
-    if (local !== null && local.id === cloudId) {
-      return local;
-    }
-    return null;
+function clearNewProjectQueryParam() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.has("new") === false) {
+    return;
   }
+  url.searchParams.delete("new");
+  const next = url.pathname + url.search + url.hash;
+  window.history.replaceState({}, "", next);
 }
 
 /**
@@ -198,6 +205,7 @@ function renderAll() {
   renderEntriesList(project);
   renderSlotsList(project);
   renderGlobalSetup(project);
+  renderGenerateSettings(project);
   renderRuleList(project);
   renderRulesTable(project);
   renderReview(project);
@@ -207,42 +215,100 @@ function renderAll() {
 
 function renderHeader(project) {
   const nameEl = document.getElementById("project-name");
-  const saveStateEl = document.getElementById("save-state");
 
   // Do not overwrite the input while the user is typing in it.
   // document.activeElement = whatever currently has keyboard focus.
   if (nameEl !== null && document.activeElement !== nameEl) {
     nameEl.value = project.name;
   }
-
-  if (saveStateEl !== null) {
-    if (getDirty() === true) {
-      saveStateEl.textContent = "Unsaved";
-      saveStateEl.setAttribute("data-state", "unsaved");
-    } else {
-      const cloud = getLastCloudSync();
-      if (cloud === "failed") {
-        saveStateEl.textContent = "Saved locally · Cloud sync failed";
-        saveStateEl.setAttribute("data-state", "cloud-failed");
-      } else if (cloud === "ok") {
-        saveStateEl.textContent = "Saved";
-        saveStateEl.setAttribute("data-state", "saved");
-      } else {
-        saveStateEl.textContent = "Saved";
-        saveStateEl.setAttribute("data-state", "saved");
-      }
-    }
-  }
 }
 
 function renderGlobalSetup(project) {
   const select = document.getElementById("slots-per-entry");
 
-  if (select === null) {
+  if (select !== null) {
+    select.value = String(project.setup.defaultSlotsPerEntry);
+  }
+
+  ensureSlotsPerEntryById(project);
+
+  // Keep setup.conflictGroups aligned with any conflict_group column.
+  syncConflictGroupsFromSlots(project);
+  renderSlotsPerEntryOverrides(project);
+}
+
+/**
+ * Fill Generate-page search settings from project.setup.generate.
+ *
+ * @param {Object} project
+ */
+function renderGenerateSettings(project) {
+  ensureGenerateSettings(project);
+  const settings = normalizeGenerateSettings(project.setup.generate);
+
+  const modeRadios = document.querySelectorAll('input[name="generate-mode"]');
+  for (let i = 0; i < modeRadios.length; i = i + 1) {
+    modeRadios[i].checked = modeRadios[i].value === settings.mode;
+  }
+
+  updateGenerateSettingsSummary(project);
+}
+
+/**
+ * @param {Object} project
+ */
+function updateGenerateSettingsSummary(project) {
+  const el = document.getElementById("generate-settings-summary");
+  if (el === null) {
     return;
   }
 
-  select.value = String(project.setup.defaultSlotsPerEntry);
+  ensureGenerateSettings(project);
+  const settings = normalizeGenerateSettings(project.setup.generate);
+  const entryCount =
+    project.entries && project.entries.rows ? project.entries.rows.length : 0;
+  const opts = buildSearchOptions(entryCount, settings);
+
+  let modeLabel = "Balanced";
+  let idleLabel = "about half the people";
+  if (settings.mode === "quick") {
+    modeLabel = "Quick";
+    idleLabel = "a very short idle stretch";
+  } else if (settings.mode === "best") {
+    modeLabel = "Best";
+    idleLabel = "a full pass of people";
+  }
+
+  const idlePeople = Math.max(
+    1,
+    Math.ceil(entryCount * (opts.improveIdleFraction || 0.5))
+  );
+
+  el.textContent =
+    modeLabel +
+    " · improve pass ends after " +
+    idleLabel +
+    " with no gain" +
+    (entryCount > 0 ? " (~" + String(idlePeople) + " for this project)" : "") +
+    " · up to " +
+    String(opts.maxAttempts) +
+    " attempts · keeps top " +
+    String(opts.optionCount) +
+    " options";
+}
+
+/**
+ * @param {Object} project
+ */
+function ensureGenerateSettings(project) {
+  if (project.setup === undefined) {
+    project.setup = {};
+  }
+  if (project.setup.generate === undefined) {
+    project.setup.generate = normalizeGenerateSettings(null);
+  } else {
+    project.setup.generate = normalizeGenerateSettings(project.setup.generate);
+  }
 }
 
 function renderEntriesTable(project) {
@@ -304,6 +370,13 @@ function renderTableHeader(table, columns, tableKind) {
       '">' +
       buildTypeOptionsHtml(typeOptions, col.type) +
       "</select>" +
+      '<button class="button button-ghost button-small table-col-delete" type="button" data-table="' +
+      escapeHtml(tableKind) +
+      '" data-col-index="' +
+      i +
+      '" title="Remove this column from the table and from every row." aria-label="Delete column ' +
+      escapeHtml(col.label) +
+      '">×</button>' +
       "</div>" +
       "</th>";
   }
@@ -383,7 +456,7 @@ function renderTableBody(tbody, columns, rows, tableKind) {
       escapeHtml(tableKind) +
       '" data-row-index="' +
       r +
-      '" aria-label="Delete row">×</button>' +
+      '" title="Delete this row from the table." aria-label="Delete row">×</button>' +
       "</td>";
 
     html = html + "</tr>";
@@ -427,7 +500,7 @@ function renderEntriesList(project) {
 
   for (let i = 0; i < project.entries.rows.length; i = i + 1) {
     const row = project.entries.rows[i];
-    const label = rowDisplayName(row);
+    const label = rowDisplayLabel(row, project.entries.columns);
     let selectedClass = "";
 
     if (row.id === selectedEntryId) {
@@ -441,7 +514,7 @@ function renderEntriesList(project) {
       selectedClass +
       '" type="button" data-entry-id="' +
       escapeHtml(row.id) +
-      '">' +
+      '" title="Select this entry to edit its fields.">' +
       "<strong>" +
       escapeHtml(label) +
       "</strong>" +
@@ -485,7 +558,7 @@ function renderSlotsList(project) {
 
   for (let i = 0; i < project.slots.rows.length; i = i + 1) {
     const row = project.slots.rows[i];
-    const label = rowDisplayName(row);
+    const label = rowDisplayLabel(row, project.slots.columns);
     let selectedClass = "";
 
     if (row.id === selectedSlotId) {
@@ -499,7 +572,7 @@ function renderSlotsList(project) {
       selectedClass +
       '" type="button" data-slot-id="' +
       escapeHtml(row.id) +
-      '">' +
+      '" title="Select this slot to edit its fields.">' +
       "<strong>" +
       escapeHtml(label) +
       "</strong>" +
@@ -520,10 +593,24 @@ function renderSlotsList(project) {
  * @param {Object} row
  * @returns {string}
  */
-function rowDisplayName(row) {
-  if (row.cells.name !== undefined && String(row.cells.name) !== "") {
-    return String(row.cells.name);
+/**
+ * Label for lists/results: optional name column when set, else the row id.
+ *
+ * @param {Object} row
+ * @param {Object[]} columns
+ * @returns {string}
+ */
+function rowDisplayLabel(row, columns) {
+  const nameKey = findColumnKeyByType(columns, "name");
+
+  if (nameKey !== null) {
+    const value = row.cells[nameKey];
+
+    if (value !== undefined && String(value) !== "") {
+      return String(value);
+    }
   }
+
   return row.id;
 }
 
@@ -628,9 +715,11 @@ function buildRowEditorFieldsHtml(columns, row, prefix) {
       value = String(row.cells[col.key]);
     }
 
+    const tableKind = prefix === "slot" ? "slots" : "entries";
+
     html =
       html +
-      '<div class="rule-editor-row">' +
+      '<div class="rule-editor-row editor-field-row">' +
       "<span>" +
       escapeHtml(col.label) +
       "</span>" +
@@ -643,6 +732,13 @@ function buildRowEditorFieldsHtml(columns, row, prefix) {
       '" value="' +
       escapeHtml(value) +
       '" style="max-width: none" />' +
+      '<button class="button button-ghost button-small editor-field-delete" type="button" data-table="' +
+      escapeHtml(tableKind) +
+      '" data-col-index="' +
+      i +
+      '" title="Remove this column from the table and from every row." aria-label="Delete column ' +
+      escapeHtml(col.label) +
+      '">×</button>' +
       "</div>";
   }
 
@@ -677,7 +773,7 @@ function renderRuleList(project) {
       selectedClass +
       '" type="button" data-rule-id="' +
       escapeHtml(rule.id) +
-      '">' +
+      '" title="Select this rule to edit its type, data, priority, and hard/soft setting.">' +
       "<strong>" +
       escapeHtml(rule.name) +
       "</strong>" +
@@ -742,7 +838,7 @@ function renderRulesTable(project) {
       '<td class="table-actions-col">' +
       '<button class="button button-ghost button-small table-row-delete" type="button" data-table="rules" data-row-index="' +
       r +
-      '" aria-label="Delete row">×</button>' +
+      '" title="Delete this rule row." aria-label="Delete row">×</button>' +
       "</td>";
 
     html = html + "</tr>";
@@ -785,34 +881,49 @@ function fillRuleEditor(rule) {
 }
 
 function renderReview(project) {
-  setText(
-    "review-slots-per-entry",
-    String(project.setup.defaultSlotsPerEntry),
-  );
+  syncConflictGroupsFromSlots(project);
+  ensureSlotsPerEntryById(project);
 
+  let slotsPerLabel = String(project.setup.defaultSlotsPerEntry);
+  const overrideIds = Object.keys(project.setup.slotsPerEntryById);
+  if (overrideIds.length > 0) {
+    slotsPerLabel =
+      slotsPerLabel +
+      " (" +
+      overrideIds.length +
+      " override" +
+      (overrideIds.length === 1 ? "" : "s") +
+      ")";
+  }
+  setText("review-slots-per-entry", slotsPerLabel);
+
+  const namedGroups = listNamedConflictGroupsFromSlots(project.slots);
   let conflictText = "None";
   let conflictSummary = "No conflict groups yet.";
 
   if (project.setup.conflictGroups.length > 0) {
     conflictText = project.setup.conflictGroups.length + " group(s)";
+  }
+
+  if (namedGroups.length > 0) {
+    const parts = [];
+    for (let i = 0; i < namedGroups.length; i = i + 1) {
+      const g = namedGroups[i];
+      parts.push(g.name + " (" + g.slotIds.length + ")");
+    }
+    conflictSummary = parts.join(" · ");
+    if (project.setup.conflictGroups.length === 0) {
+      conflictSummary =
+        conflictSummary +
+        " — groups need at least 2 slots to apply.";
+    }
+  } else if (project.setup.conflictGroups.length > 0) {
     conflictSummary =
-      project.setup.conflictGroups.length +
-      " conflict group(s) configured.";
+      project.setup.conflictGroups.length + " conflict group(s)";
   }
 
   setText("review-conflicts", conflictText);
   setText("conflict-groups-summary", conflictSummary);
-
-  let presetLabel = "—";
-  if (project.presetId !== undefined && project.presetId !== null) {
-    const info = getPresetInfo(project.presetId);
-    if (info !== null) {
-      presetLabel = info.name;
-    } else {
-      presetLabel = String(project.presetId);
-    }
-  }
-  setText("review-preset", presetLabel);
 
   const entriesCount = document.getElementById("review-entries-count");
   if (entriesCount !== null) {
@@ -826,8 +937,11 @@ function renderReview(project) {
     const limit = Math.min(8, project.entries.rows.length);
 
     for (let i = 0; i < limit; i = i + 1) {
-      const name = project.entries.rows[i].cells.name;
-      html = html + "<li>" + escapeHtml(String(name)) + "</li>";
+      const label = rowDisplayLabel(
+        project.entries.rows[i],
+        project.entries.columns
+      );
+      html = html + "<li>" + escapeHtml(label) + "</li>";
     }
 
     if (project.entries.rows.length > limit) {
@@ -850,7 +964,7 @@ function renderReview(project) {
 
     for (let i = 0; i < project.slots.rows.length; i = i + 1) {
       const row = project.slots.rows[i];
-      const name = row.cells.name;
+      const label = rowDisplayLabel(row, project.slots.columns);
       const minSize = row.cells.min_size;
       const maxSize = row.cells.max_size;
       const practice = row.cells.practice_night;
@@ -858,7 +972,7 @@ function renderReview(project) {
       html =
         html +
         "<li><strong>" +
-        escapeHtml(String(name)) +
+        escapeHtml(label) +
         "</strong><span>min " +
         escapeHtml(String(minSize)) +
         " · max " +
@@ -956,12 +1070,20 @@ function renderGenerateOptions(project) {
 
   if (project.results === null || project.results.options === undefined) {
     list.innerHTML =
-      '<p class="app-empty-hint">No options yet. Click Generate options.</p>';
+      '<p class="app-empty-hint">No options yet. Click Generate to search.</p>';
     return;
   }
 
   const options = project.results.options;
   let html = "";
+
+  if (generateBusy === true && options.length > 0) {
+    html =
+      html +
+      '<p class="generate-options-live-note">' +
+      "Live preview — search is still looking for better scores. Open Results anytime." +
+      "</p>";
+  }
 
   for (let i = 0; i < options.length; i = i + 1) {
     const option = options[i];
@@ -977,7 +1099,7 @@ function renderGenerateOptions(project) {
       "</span>" +
       "</div>" +
       '<div class="option-card-actions">' +
-      '<a class="button button-ghost button-small" href="#results">View</a>' +
+      '<a class="button button-ghost button-small" href="#results" title="Open Results to inspect this option’s assignments.">View</a>' +
       "</div>" +
       "</div>";
   }
@@ -988,6 +1110,7 @@ function renderGenerateOptions(project) {
 function renderResults(project) {
   const main = document.getElementById("results-main");
   const picker = document.getElementById("result-set-picker");
+  const statsEl = document.getElementById("results-score-stats");
 
   if (main === null) {
     return;
@@ -1003,6 +1126,11 @@ function renderResults(project) {
       picker.innerHTML = "";
     }
 
+    if (statsEl !== null) {
+      statsEl.hidden = true;
+      statsEl.innerHTML = "";
+    }
+
     return;
   }
 
@@ -1012,6 +1140,8 @@ function renderResults(project) {
   if (selectedRank === undefined) {
     selectedRank = 1;
   }
+
+  renderResultsScoreStats(project, options, statsEl);
 
   if (picker !== null) {
     let pickerHtml = "";
@@ -1030,7 +1160,11 @@ function renderResults(project) {
         active +
         '" type="button" data-option="' +
         option.rank +
-        '">' +
+        '" title="Show option ' +
+        option.rank +
+        " (score " +
+        formatScore(option.totalScore) +
+        ').">' +
         '<span class="results-option-label">Option ' +
         option.rank +
         "</span>" +
@@ -1061,11 +1195,57 @@ function renderResults(project) {
 
   html =
     html +
-    '<p class="app-empty-hint">Total score: ' +
+    '<p class="app-empty-hint">Selected option score: ' +
     formatScore(selected.totalScore) +
     "</p>";
 
   main.innerHTML = html;
+}
+
+/**
+ * Best possible soft score (all soft rules fully met) vs best generated option.
+ *
+ * @param {Object} project
+ * @param {Object[]} options
+ * @param {HTMLElement|null} statsEl
+ */
+function renderResultsScoreStats(project, options, statsEl) {
+  if (statsEl === null) {
+    return;
+  }
+
+  const maxScore = maxPossibleSoftScore(project.rules);
+  let bestScore = 0;
+
+  for (let i = 0; i < options.length; i = i + 1) {
+    if (i === 0 || options[i].totalScore > bestScore) {
+      bestScore = options[i].totalScore;
+    }
+  }
+
+  let pctText = "";
+  if (maxScore > 0) {
+    const pct = Math.round((bestScore / maxScore) * 100);
+    pctText =
+      '<span class="results-stat-note">' + String(pct) + "% of ideal</span>";
+  }
+
+  statsEl.hidden = false;
+  statsEl.innerHTML =
+    '<div class="results-stat">' +
+    '<span class="results-stat-label">Best possible</span>' +
+    '<span class="results-stat-value">' +
+    formatScore(maxScore) +
+    "</span>" +
+    '<span class="results-stat-note">All soft rules fully met</span>' +
+    "</div>" +
+    '<div class="results-stat">' +
+    '<span class="results-stat-label">Best option</span>' +
+    '<span class="results-stat-value">' +
+    formatScore(bestScore) +
+    "</span>" +
+    pctText +
+    "</div>";
 }
 
 /**
@@ -1117,11 +1297,7 @@ function renderResultsBySlot(project, selected) {
   for (let s = 0; s < project.slots.rows.length; s = s + 1) {
     const slotRow = project.slots.rows[s];
     const slotId = slotRow.id;
-    let slotName = slotId;
-
-    if (slotRow.cells.name !== undefined) {
-      slotName = slotRow.cells.name;
-    }
+    const slotName = rowDisplayLabel(slotRow, project.slots.columns);
 
     const entryIds = getEntriesInSlot(selected.assignments, slotId);
 
@@ -1130,7 +1306,7 @@ function renderResultsBySlot(project, selected) {
       '<section class="results-group">' +
       '<header class="results-group-head">' +
       "<strong>" +
-      escapeHtml(String(slotName)) +
+      escapeHtml(slotName) +
       "</strong>" +
       '<span class="results-slot-count">' +
       entryIds.length +
@@ -1140,11 +1316,13 @@ function renderResultsBySlot(project, selected) {
 
     for (let p = 0; p < entryIds.length; p = p + 1) {
       const entryRow = findEntryRow(project, entryIds[p]);
-      html =
-        html +
-        "<li>" +
-        escapeHtml(entryDisplayName(entryIds[p], entryRow)) +
-        "</li>";
+      let label = entryIds[p];
+
+      if (entryRow !== null) {
+        label = rowDisplayLabel(entryRow, project.entries.columns);
+      }
+
+      html = html + "<li>" + escapeHtml(label) + "</li>";
     }
 
     if (entryIds.length === 0) {
@@ -1174,7 +1352,7 @@ function renderResultsByEntry(project, selected) {
   for (let i = 0; i < project.entries.rows.length; i = i + 1) {
     const entryRow = project.entries.rows[i];
     const entryId = entryRow.id;
-    const displayName = entryDisplayName(entryId, entryRow);
+    const displayName = rowDisplayLabel(entryRow, project.entries.columns);
     const slotIds = getSlotsForEntry(selected.assignments, entryId);
 
     let slotHtml = "";
@@ -1183,14 +1361,14 @@ function renderResultsByEntry(project, selected) {
       const slotRow = findSlotRow(project, slotIds[s]);
       let slotName = slotIds[s];
 
-      if (slotRow !== null && slotRow.cells.name !== undefined) {
-        slotName = slotRow.cells.name;
+      if (slotRow !== null) {
+        slotName = rowDisplayLabel(slotRow, project.slots.columns);
       }
 
       slotHtml =
         slotHtml +
         '<span class="results-assign-pill">' +
-        escapeHtml(String(slotName)) +
+        escapeHtml(slotName) +
         "</span>";
     }
 
@@ -1216,23 +1394,6 @@ function renderResultsByEntry(project, selected) {
 
   html = html + "</div>";
   return html;
-}
-
-/**
- * @param {string} entryId
- * @param {Object|null} entryRow
- * @returns {string}
- */
-function entryDisplayName(entryId, entryRow) {
-  if (
-    entryRow !== null &&
-    entryRow.cells.name !== undefined &&
-    String(entryRow.cells.name) !== ""
-  ) {
-    return String(entryRow.cells.name);
-  }
-
-  return entryId;
 }
 
 function findEntryRow(project, entryId) {
@@ -1347,6 +1508,16 @@ function wireControls() {
     slotList.addEventListener("click", onSlotListClick);
   }
 
+  const entryEditorFields = document.getElementById("entry-editor-fields");
+  if (entryEditorFields !== null) {
+    entryEditorFields.addEventListener("click", onEditorFieldsClick);
+  }
+
+  const slotEditorFields = document.getElementById("slot-editor-fields");
+  if (slotEditorFields !== null) {
+    slotEditorFields.addEventListener("click", onEditorFieldsClick);
+  }
+
   const exportEntriesCsvBtn = document.getElementById("export-entries-csv-btn");
   if (exportEntriesCsvBtn !== null) {
     exportEntriesCsvBtn.addEventListener("click", onExportEntriesCsvClick);
@@ -1409,15 +1580,32 @@ function wireControls() {
     slotsPerEntry.addEventListener("change", onSlotsPerEntryChange);
   }
 
+  const slotsOverrideAddBtn = document.getElementById("slots-override-add-btn");
+  if (slotsOverrideAddBtn !== null) {
+    slotsOverrideAddBtn.addEventListener("click", onSlotsOverrideAddClick);
+  }
+
+  const slotsOverrideList = document.getElementById("slots-override-list");
+  if (slotsOverrideList !== null) {
+    slotsOverrideList.addEventListener("click", onSlotsOverrideListClick);
+  }
+
+  const manageConflictsBtn = document.getElementById("manage-conflicts-btn");
+  if (manageConflictsBtn !== null) {
+    manageConflictsBtn.addEventListener("click", openConflictGroupsModal);
+  }
+
   const generateBtn = document.getElementById("generate-btn");
   if (generateBtn !== null) {
     generateBtn.addEventListener("click", onGenerateClick);
   }
 
-  const retryBtn = document.getElementById("retry-generate-btn");
-  if (retryBtn !== null) {
-    retryBtn.addEventListener("click", onRetryClick);
+  const cancelGenerateBtn = document.getElementById("cancel-generate-btn");
+  if (cancelGenerateBtn !== null) {
+    cancelGenerateBtn.addEventListener("click", onCancelGenerateClick);
   }
+
+  wireGenerateSettingsControls();
 
   // One listener on the whole list (event delegation):
   // clicks on child buttons bubble up to #rule-list.
@@ -1770,8 +1958,13 @@ async function onImportProjectFileChange(event) {
     selectedEntryId = null;
     selectedSlotId = null;
     setProject(parsed.project);
-    saveProject();
-    setDirty(false);
+    const saved = saveProject();
+    if (saved === false) {
+      window.alert(
+        "Could not save this import in this browser. Check storage space, or delete a project under Projects."
+      );
+    }
+    setDirty(saved === false);
     renderAll();
   } catch (error) {
     console.error("Could not import project:", error);
@@ -1965,6 +2158,7 @@ async function importCsvIntoTable(event, tableKind) {
     } else {
       project.slots.columns = table.columns;
       project.slots.rows = table.rows;
+      syncConflictGroupsFromSlots(project);
     }
 
     // Old results used previous ids — they are no longer valid.
@@ -2030,6 +2224,7 @@ function onClearSlotsClick() {
 
   project.slots.rows = [];
   selectedSlotId = null;
+  syncConflictGroupsFromSlots(project);
   project.results = null;
   markProjectChanged();
   renderSlotsTable(project);
@@ -2249,11 +2444,14 @@ function onDeleteEntryClick() {
   }
 
   project.entries.rows = nextRows;
+  ensureSlotsPerEntryById(project);
+  delete project.setup.slotsPerEntryById[selectedEntryId];
   selectedEntryId = null;
   project.results = null;
   markProjectChanged();
   renderEntriesTable(project);
   renderEntriesList(project);
+  renderGlobalSetup(project);
   renderReview(project);
   renderGenerateOptions(project);
   renderResults(project);
@@ -2300,7 +2498,7 @@ function ensureDefaultEntriesColumns(project) {
 
   project.entries.columns = [
     { key: "id", label: "id", type: "id" },
-    { key: "name", label: "name", type: "text" }
+    { key: "name", label: "name", type: "name" }
   ];
 }
 
@@ -2311,7 +2509,7 @@ function ensureDefaultSlotsColumns(project) {
 
   project.slots.columns = [
     { key: "id", label: "id", type: "id" },
-    { key: "name", label: "name", type: "text" },
+    { key: "name", label: "name", type: "name" },
     { key: "min_size", label: "min_size", type: "minSize" },
     { key: "max_size", label: "max_size", type: "maxSize" }
   ];
@@ -2419,6 +2617,7 @@ function onSetupTableChange(event) {
     if (tableKind === "entries") {
       renderEntriesList(project);
     } else if (tableKind === "slots") {
+      syncConflictGroupsFromSlots(project);
       renderSlotsList(project);
     }
 
@@ -2445,12 +2644,30 @@ function onSetupTableChange(event) {
   table.columns[colIndex].type = target.value;
   project.results = null;
   markProjectChanged();
+
+  // Name (and other typed columns) affect list/results labels.
+  if (tableKind === "entries") {
+    renderEntriesList(project);
+  } else if (tableKind === "slots") {
+    renderSlotsList(project);
+  }
+
+  renderReview(project);
+  renderResults(project);
 }
 
 /**
- * Click on a row delete button.
+ * Click on a row delete or column delete button in the CSV table.
  */
 function onSetupTableClick(event) {
+  const colDeleteBtn = findAncestor(event.target, ".table-col-delete");
+  if (colDeleteBtn !== null) {
+    const tableKind = colDeleteBtn.getAttribute("data-table");
+    const colIndex = Number(colDeleteBtn.getAttribute("data-col-index"));
+    deleteSetupColumn(tableKind, colIndex);
+    return;
+  }
+
   const button = findAncestor(event.target, ".table-row-delete");
 
   if (button === null) {
@@ -2479,6 +2696,7 @@ function onSetupTableClick(event) {
     renderEntriesTable(project);
     renderEntriesList(project);
   } else {
+    syncConflictGroupsFromSlots(project);
     renderSlotsTable(project);
     renderSlotsList(project);
   }
@@ -2486,6 +2704,85 @@ function onSetupTableClick(event) {
   renderReview(project);
   renderGenerateOptions(project);
   renderResults(project);
+}
+
+/**
+ * Remove a column from entries or slots (CSV + editor share this).
+ *
+ * @param {string} tableKind - "entries" or "slots"
+ * @param {number} colIndex
+ */
+function deleteSetupColumn(tableKind, colIndex) {
+  const project = getProject();
+  const table = getSetupTable(project, tableKind);
+
+  if (table === null) {
+    return;
+  }
+
+  if (colIndex < 0 || colIndex >= table.columns.length) {
+    return;
+  }
+
+  if (table.columns.length <= 1) {
+    window.alert("Keep at least one column.");
+    return;
+  }
+
+  const col = table.columns[colIndex];
+  let message = 'Delete column "' + col.label + '" from all rows?';
+
+  if (col.type === "id") {
+    message =
+      'This is the id column ("' +
+      col.label +
+      '"). Delete it anyway? Row ids will stay as they are.';
+  }
+
+  if (window.confirm(message) === false) {
+    return;
+  }
+
+  const key = col.key;
+  table.columns.splice(colIndex, 1);
+
+  for (let r = 0; r < table.rows.length; r = r + 1) {
+    delete table.rows[r].cells[key];
+  }
+
+  project.results = null;
+  markProjectChanged();
+
+  if (tableKind === "entries") {
+    renderEntriesTable(project);
+    renderEntriesList(project);
+    fillEntryEditor(project);
+  } else {
+    syncConflictGroupsFromSlots(project);
+    renderSlotsTable(project);
+    renderSlotsList(project);
+    fillSlotEditor(project);
+  }
+
+  renderReview(project);
+  renderGenerateOptions(project);
+  renderResults(project);
+}
+
+/**
+ * Column delete (×) inside the Entries/Slots form editor.
+ *
+ * @param {MouseEvent} event
+ */
+function onEditorFieldsClick(event) {
+  const button = findAncestor(event.target, ".editor-field-delete");
+  if (button === null) {
+    return;
+  }
+
+  const tableKind = button.getAttribute("data-table");
+  const colIndex = Number(button.getAttribute("data-col-index"));
+  deleteSetupColumn(tableKind, colIndex);
 }
 
 /**
@@ -2543,6 +2840,23 @@ function markProjectChanged() {
   }, 400);
 }
 
+/**
+ * Write the current project to localStorage without showing Unsaved.
+ * Cancels any pending debounced save so we do not double-write.
+ */
+function persistProjectQuietly() {
+  if (saveTimerId !== null) {
+    window.clearTimeout(saveTimerId);
+    saveTimerId = null;
+  }
+
+  persistProject().then(function (result) {
+    if (result.local === true) {
+      renderHeader(getProject());
+    }
+  });
+}
+
 function onProjectNameInput(event) {
   const project = getProject();
 
@@ -2570,6 +2884,181 @@ function onSlotsPerEntryChange(event) {
   // Number(...) turns the select's string value into a real number.
   project.setup.defaultSlotsPerEntry = Number(event.target.value);
   markProjectChanged();
+  renderReview(project);
+}
+
+/**
+ * Wire Generate search-settings controls.
+ */
+function wireGenerateSettingsControls() {
+  const modeRadios = document.querySelectorAll('input[name="generate-mode"]');
+  for (let i = 0; i < modeRadios.length; i = i + 1) {
+    modeRadios[i].addEventListener("change", onGenerateSettingsChange);
+  }
+}
+
+function onGenerateSettingsChange() {
+  const project = getProject();
+  ensureGenerateSettings(project);
+
+  const modeChecked = document.querySelector(
+    'input[name="generate-mode"]:checked'
+  );
+  if (modeChecked !== null) {
+    project.setup.generate.mode = modeChecked.value;
+  }
+
+  project.setup.generate = normalizeGenerateSettings(project.setup.generate);
+  markProjectChanged();
+  updateGenerateSettingsSummary(project);
+}
+
+/**
+ * Ensure setup.slotsPerEntryById is a plain object map.
+ *
+ * @param {Object} project
+ */
+function ensureSlotsPerEntryById(project) {
+  if (project.setup === undefined) {
+    project.setup = {};
+  }
+  if (
+    project.setup.slotsPerEntryById === undefined ||
+    project.setup.slotsPerEntryById === null ||
+    typeof project.setup.slotsPerEntryById !== "object"
+  ) {
+    project.setup.slotsPerEntryById = {};
+  }
+}
+
+/**
+ * Fill the Global per-entry override picker + list.
+ *
+ * @param {Object} project
+ */
+function renderSlotsPerEntryOverrides(project) {
+  ensureSlotsPerEntryById(project);
+
+  const select = document.getElementById("slots-override-entry");
+  const listEl = document.getElementById("slots-override-list");
+
+  if (select !== null) {
+    const previous = select.value;
+    let optionsHtml = '<option value="">Select an entry…</option>';
+
+    for (let i = 0; i < project.entries.rows.length; i = i + 1) {
+      const row = project.entries.rows[i];
+      const label = rowDisplayLabel(row, project.entries.columns);
+      optionsHtml =
+        optionsHtml +
+        '<option value="' +
+        escapeHtml(row.id) +
+        '">' +
+        escapeHtml(label) +
+        "</option>";
+    }
+
+    select.innerHTML = optionsHtml;
+    if (previous !== "" && findTableRowById(project.entries.rows, previous) !== null) {
+      select.value = previous;
+    }
+  }
+
+  if (listEl === null) {
+    return;
+  }
+
+  const ids = Object.keys(project.setup.slotsPerEntryById);
+  if (ids.length === 0) {
+    listEl.innerHTML =
+      '<li><p class="app-empty-hint">No overrides yet.</p></li>';
+    return;
+  }
+
+  let html = "";
+  for (let i = 0; i < ids.length; i = i + 1) {
+    const entryId = ids[i];
+    const row = findTableRowById(project.entries.rows, entryId);
+    const label =
+      row !== null
+        ? rowDisplayLabel(row, project.entries.columns)
+        : entryId;
+    const maxSlots = project.setup.slotsPerEntryById[entryId];
+
+    html =
+      html +
+      '<li class="slots-override-item">' +
+      "<span>" +
+      escapeHtml(label) +
+      " → " +
+      String(maxSlots) +
+      "</span>" +
+      '<button class="button button-ghost button-small" type="button" data-remove-slots-override="' +
+      escapeHtml(entryId) +
+      '" title="Remove this override.">Remove</button>' +
+      "</li>";
+  }
+
+  listEl.innerHTML = html;
+}
+
+function onSlotsOverrideAddClick() {
+  const project = getProject();
+  if (project === null) {
+    return;
+  }
+
+  ensureSlotsPerEntryById(project);
+
+  const entrySelect = document.getElementById("slots-override-entry");
+  const maxSelect = document.getElementById("slots-override-max");
+
+  if (entrySelect === null || maxSelect === null) {
+    return;
+  }
+
+  const entryId = entrySelect.value;
+  if (entryId === "") {
+    window.alert("Pick an entry first.");
+    return;
+  }
+
+  const maxSlots = Number(maxSelect.value);
+  if (Number.isNaN(maxSlots) === true || maxSlots < 0) {
+    return;
+  }
+
+  project.setup.slotsPerEntryById[entryId] = maxSlots;
+  project.results = null;
+  markProjectChanged();
+  renderSlotsPerEntryOverrides(project);
+  renderReview(project);
+}
+
+/**
+ * @param {MouseEvent} event
+ */
+function onSlotsOverrideListClick(event) {
+  const button = findAncestor(event.target, "[data-remove-slots-override]");
+  if (button === null) {
+    return;
+  }
+
+  const project = getProject();
+  if (project === null) {
+    return;
+  }
+
+  ensureSlotsPerEntryById(project);
+  const entryId = button.getAttribute("data-remove-slots-override");
+  if (entryId === null) {
+    return;
+  }
+
+  delete project.setup.slotsPerEntryById[entryId];
+  project.results = null;
+  markProjectChanged();
+  renderSlotsPerEntryOverrides(project);
   renderReview(project);
 }
 
@@ -2613,7 +3102,9 @@ function onResultPickerClick(event) {
   }
 
   project.results.selectedRank = Number(button.getAttribute("data-option"));
-  markProjectChanged();
+  // Persist which option is selected, but do not flash Unsaved — this is
+  // browsing generated results, not editing people/slots/rules.
+  persistProjectQuietly();
   renderResults(project);
 }
 
@@ -2652,104 +3143,622 @@ function onResultsLayoutClick(event) {
 }
 
 function onGenerateClick() {
-  runGeneration(false);
+  runGeneration();
 }
 
-function onRetryClick() {
-  runGeneration(true);
+function onCancelGenerateClick() {
+  cancelGeneration();
 }
 
 /**
- * @param {boolean} mergeWithExisting - Retry: keep old options and merge
+ * Ask the worker to stop. Keeps best-so-far if the search already found options.
+ * Hard-terminates if the worker does not answer quickly.
  */
-function runGeneration(mergeWithExisting) {
+function cancelGeneration() {
+  const statusTitle = document.getElementById("generate-status-title");
+  const statusDetail = document.getElementById("generate-status-detail");
+
+  if (generateWorker === null) {
+    setGenerateBusy(false);
+    setGenerateProgress(null);
+    return;
+  }
+
+  if (statusTitle !== null) {
+    statusTitle.textContent = "Cancelling…";
+  }
+
+  if (statusDetail !== null) {
+    statusDetail.textContent = "Stopping after the current step…";
+  }
+
+  try {
+    generateWorker.postMessage({ type: "cancel" });
+  } catch (error) {
+    // Worker may already be gone.
+  }
+
+  const runIdAtCancel = generateRunId;
+  const workerToStop = generateWorker;
+
+  window.setTimeout(function () {
+    if (generateRunId !== runIdAtCancel) {
+      return;
+    }
+
+    if (generateWorker !== workerToStop) {
+      return;
+    }
+
+    // Worker did not finish after soft cancel — force stop.
+    generateRunId = generateRunId + 1;
+    try {
+      workerToStop.terminate();
+    } catch (error) {
+      // Ignore.
+    }
+    generateWorker = null;
+    setGenerateBusy(false);
+    setGenerateProgress(null);
+
+    if (statusTitle !== null) {
+      statusTitle.textContent = "Cancelled";
+    }
+    if (statusDetail !== null) {
+      statusDetail.textContent =
+        "Search stopped. Start again when you are ready.";
+    }
+  }, 2500);
+}
+
+/**
+ * @param {boolean} busy
+ */
+function setGenerateBusy(busy) {
+  generateBusy = busy === true;
+
+  const generateBtn = document.getElementById("generate-btn");
+  const cancelBtn = document.getElementById("cancel-generate-btn");
+
+  if (generateBtn !== null) {
+    generateBtn.disabled = busy === true;
+  }
+
+  if (cancelBtn !== null) {
+    cancelBtn.disabled = busy !== true;
+  }
+
+  const settingsRoot = document.getElementById("generate-settings");
+  if (settingsRoot !== null) {
+    const controls = settingsRoot.querySelectorAll("input, select, button");
+    for (let i = 0; i < controls.length; i = i + 1) {
+      controls[i].disabled = busy === true;
+    }
+  }
+
+  if (busy !== true) {
+    setGenerateBrowseHint(false, 0, 0);
+  }
+}
+
+/**
+ * Show/hide the “you can browse while searching” notice.
+ *
+ * @param {boolean} show
+ * @param {number} optionCount
+ * @param {number} targetCount
+ */
+function setGenerateBrowseHint(show, optionCount, targetCount) {
+  const hint = document.getElementById("generate-browse-hint");
+  if (hint === null) {
+    return;
+  }
+
+  if (show !== true || optionCount < 1) {
+    hint.hidden = true;
+    return;
+  }
+
+  hint.hidden = false;
+
+  if (optionCount >= targetCount && targetCount > 0) {
+    hint.textContent =
+      "You already have " +
+      String(optionCount) +
+      " option(s) to review. Search is still running in the background to try to improve them — open Results anytime, or Cancel to stop and keep what you have.";
+  } else {
+    hint.textContent =
+      String(optionCount) +
+      " of up to " +
+      String(targetCount) +
+      " option(s) are ready. You can open Results and browse them while search keeps looking for more — or Cancel to stop early.";
+  }
+}
+
+/**
+ * @param {{ percent: number, label: string }|null} state
+ */
+function setGenerateProgress(state) {
+  const wrap = document.getElementById("generate-progress");
+  const fill = document.getElementById("generate-progress-fill");
+  const label = document.getElementById("generate-progress-label");
+
+  if (wrap === null) {
+    return;
+  }
+
+  if (state === null || state === undefined) {
+    wrap.hidden = true;
+    if (fill !== null) {
+      fill.style.width = "0%";
+    }
+    if (label !== null) {
+      label.textContent = "";
+    }
+    return;
+  }
+
+  wrap.hidden = false;
+
+  let percent = state.percent;
+  if (percent < 0) {
+    percent = 0;
+  }
+  if (percent > 100) {
+    percent = 100;
+  }
+
+  if (fill !== null) {
+    fill.style.width = String(percent) + "%";
+  }
+
+  if (label !== null) {
+    label.textContent = state.label || "";
+  }
+}
+
+/**
+ * Run search in a Web Worker so the page stays usable, with a progress bar.
+ */
+function runGeneration() {
   const project = getProject();
   const legalConfig = buildLegalConfig(project);
   const scoreConfig = buildScoreConfig(project);
+  const entryCount =
+    project.entries && project.entries.rows ? project.entries.rows.length : 0;
+  ensureGenerateSettings(project);
+  const searchOptions = buildSearchOptions(entryCount, project.setup.generate);
 
   const statusTitle = document.getElementById("generate-status-title");
   const statusDetail = document.getElementById("generate-status-detail");
 
+  if (generateWorker !== null) {
+    try {
+      generateWorker.terminate();
+    } catch (error) {
+      // Ignore.
+    }
+    generateWorker = null;
+  }
+
+  generateRunId = generateRunId + 1;
+  const runId = generateRunId;
+
+  setGenerateBusy(true);
+  setGenerateProgress({
+    percent: 2,
+    label: "Starting search…"
+  });
+
+  // Clear previous results so the UI shows "searching" until the first option lands.
+  project.results = null;
+  renderGenerateOptions(project);
+  renderResults(project);
+
   if (statusTitle !== null) {
-    statusTitle.textContent = "Working…";
+    statusTitle.textContent = "Searching…";
   }
 
   if (statusDetail !== null) {
-    statusDetail.textContent = "Searching for legal, high-scoring placements.";
+    let detail =
+      "Looking for legal placements in the background · up to " +
+      String(searchOptions.maxAttempts) +
+      " attempts · keeping the top " +
+      String(searchOptions.optionCount) +
+      " options. Options will appear here as soon as they are found.";
+    statusDetail.textContent = detail;
   }
 
-  // Let the browser paint "Working…" before the heavy search loop runs.
-  // setTimeout(fn, 20) means: run fn about 20 milliseconds from now.
-  window.setTimeout(function () {
-    const result = runSearch(legalConfig, scoreConfig, {
-      optionCount: 3,
-      attempts: 3,
-      maxShakes: 2,
-      maxImprovePasses: 20,
-      onProgress: function (info) {
-        if (statusDetail === null) {
-          return;
-        }
+  setGenerateBrowseHint(false, 0, 0);
 
-        if (info.phase === "attempt") {
-          statusDetail.textContent =
-            "Attempt " + info.attempt + " of " + info.attempts;
-        }
+  let worker = null;
 
-        if (info.phase === "improving" && info.entryIndex === 1) {
-          statusDetail.textContent =
-            "Attempt improve pass " +
-            info.pass +
-            " · best " +
-            formatScore(info.bestScore);
-        }
-
-        if (info.phase === "done") {
-          statusDetail.textContent =
-            "Finished. Best score " + formatScore(info.bestScore);
-        }
-      },
+  try {
+    worker = new Worker("/js/generator/search-worker.js", {
+      type: "module"
     });
+  } catch (error) {
+    console.error(error);
+    setGenerateBusy(false);
+    setGenerateProgress(null);
+    if (statusTitle !== null) {
+      statusTitle.textContent = "Failed";
+    }
+    if (statusDetail !== null) {
+      statusDetail.textContent =
+        "Could not start the background search worker in this browser.";
+    }
+    return;
+  }
 
-    if (result.ok === false) {
-      if (statusTitle !== null) {
-        statusTitle.textContent = "Failed";
-      }
+  generateWorker = worker;
 
-      if (statusDetail !== null) {
-        statusDetail.textContent = result.reasons.join(" ");
-      }
-
+  worker.onmessage = function (event) {
+    if (runId !== generateRunId) {
       return;
     }
 
-    let options = result.options;
+    const message = event.data;
 
-    if (mergeWithExisting === true && project.results !== null) {
-      options = mergeOptions(project.results.options, result.options, 6);
+    if (message.type === "progress") {
+      applyGenerateProgress(message.info, searchOptions);
+      return;
     }
 
-    project.results = {
-      options: options,
-      selectedRank: options[0].rank,
-    };
+    if (message.type === "options") {
+      applyStreamingOptions(project, message.options, runId, searchOptions);
+      return;
+    }
 
-    markProjectChanged();
+    if (message.type === "result") {
+      finishGeneration(message.result, project, runId);
+    }
+  };
+
+  worker.onerror = function (error) {
+    console.error(error);
+    if (runId !== generateRunId) {
+      return;
+    }
+
+    generateWorker = null;
+    setGenerateBusy(false);
+    setGenerateProgress(null);
 
     if (statusTitle !== null) {
-      statusTitle.textContent = "Done";
+      statusTitle.textContent = "Failed";
+    }
+    if (statusDetail !== null) {
+      statusDetail.textContent =
+        "Search worker error. Check the browser console for details.";
+    }
+  };
+
+  worker.postMessage({
+    type: "run",
+    legalConfig: legalConfig,
+    scoreConfig: scoreConfig,
+    options: searchOptions
+  });
+}
+
+/**
+ * Update status text + progress bar from worker progress events.
+ *
+ * @param {Object} info
+ * @param {Object} searchOptions
+ */
+function applyGenerateProgress(info, searchOptions) {
+  const statusTitle = document.getElementById("generate-status-title");
+  const statusDetail = document.getElementById("generate-status-detail");
+  const maxAttempts = searchOptions.maxAttempts || 1;
+  const budgetMs = searchOptions.timeBudgetMs;
+  const targetCount = searchOptions.optionCount || 5;
+
+  const project = getProject();
+  let readyCount = 0;
+  if (
+    project !== null &&
+    project.results !== null &&
+    project.results.options !== undefined
+  ) {
+    readyCount = project.results.options.length;
+  }
+
+  const refining = readyCount > 0;
+
+  if (statusTitle !== null) {
+    if (refining === true && readyCount >= targetCount) {
+      statusTitle.textContent = "Improving options…";
+    } else if (refining === true) {
+      statusTitle.textContent = "Collecting options…";
+    } else {
+      statusTitle.textContent = "Searching…";
+    }
+  }
+
+  let percent = 0;
+  let label = "";
+
+  if (info.phase === "attempt") {
+    percent = Math.round((info.attempt / maxAttempts) * 100);
+    label =
+      "Attempt " +
+      String(info.attempt) +
+      " of " +
+      String(maxAttempts);
+
+    if (info.stagnantAttempts > 0) {
+      label =
+        label + " · no improvement ×" + String(info.stagnantAttempts);
+    }
+    if (info.elapsedMs !== undefined && budgetMs !== null) {
+      label =
+        label +
+        " · " +
+        String(Math.round(info.elapsedMs / 1000)) +
+        "s / " +
+        String(Math.round(budgetMs / 1000)) +
+        "s";
     }
 
     if (statusDetail !== null) {
-      statusDetail.textContent =
-        options.length +
-        " option(s) ready · best score " +
-        formatScore(options[0].totalScore);
+      let detail = refining === true
+        ? String(readyCount) +
+          " of " +
+          String(targetCount) +
+          " options ready"
+        : "Searching…";
+
+      if (info.bestScore !== null && info.bestScore !== undefined) {
+        detail = detail + " · best " + formatScore(info.bestScore);
+      }
+
+      statusDetail.textContent = detail;
     }
 
-    renderGenerateOptions(project);
-    renderResults(project);
-  }, 20);
+    if (refining === true) {
+      setGenerateBrowseHint(true, readyCount, targetCount);
+    }
+  } else if (info.phase === "improving") {
+    percent = Math.min(
+      99,
+      Math.round(((info.entryIndex || 0) / Math.max(info.entryCount || 1, 1)) * 100)
+    );
+    label =
+      "Improve pass " +
+      String(info.pass) +
+      " · person " +
+      String(info.entryIndex) +
+      "/" +
+      String(info.entryCount) +
+      " · attempt " +
+      String(info.attempt || "") +
+      " of " +
+      String(maxAttempts);
+
+    if (statusDetail !== null) {
+      let detail =
+        refining === true
+          ? String(readyCount) + " option(s) ready"
+          : "Fine-tuning…";
+      if (info.bestScore !== null && info.bestScore !== undefined) {
+        detail = detail + " · best " + formatScore(info.bestScore);
+      }
+      statusDetail.textContent = detail;
+    }
+
+    if (refining === true) {
+      setGenerateBrowseHint(true, readyCount, targetCount);
+    }
+  } else if (info.phase === "shake") {
+    percent = Math.round(((info.attempt || 1) / maxAttempts) * 100);
+    label = "Trying a shuffled layout…";
+    if (statusDetail !== null) {
+      statusDetail.textContent =
+        refining === true
+          ? String(readyCount) + " option(s) ready"
+          : "Escaping a score plateau…";
+    }
+  } else if (info.phase === "done") {
+    percent = 100;
+    label = "Finishing…";
+  }
+
+  if (budgetMs !== null && info.elapsedMs !== undefined) {
+    const timePercent = Math.round((info.elapsedMs / budgetMs) * 100);
+    if (timePercent > percent) {
+      percent = timePercent;
+    }
+  }
+
+  setGenerateProgress({
+    percent: percent,
+    label: label
+  });
+}
+
+/**
+ * Apply a mid-search options list so the user can browse while search continues.
+ *
+ * @param {Object} project
+ * @param {Object[]} options
+ * @param {number} runId
+ * @param {Object} searchOptions
+ */
+function applyStreamingOptions(project, options, runId, searchOptions) {
+  if (runId !== generateRunId) {
+    return;
+  }
+
+  if (options === undefined || options.length === 0) {
+    return;
+  }
+
+  let selectedRank = 1;
+  if (
+    project.results !== null &&
+    project.results.selectedRank !== undefined
+  ) {
+    selectedRank = project.results.selectedRank;
+  }
+
+  // Keep the same option number if it still exists; otherwise fall back to #1.
+  if (selectedRank > options.length) {
+    selectedRank = 1;
+  }
+
+  project.results = {
+    options: options,
+    selectedRank: selectedRank
+  };
+
+  persistProjectQuietly();
+  renderGenerateOptions(project);
+  renderResults(project);
+
+  const statusTitle = document.getElementById("generate-status-title");
+  const statusDetail = document.getElementById("generate-status-detail");
+  const targetCount = searchOptions.optionCount || 5;
+  const readyCount = options.length;
+
+  if (statusTitle !== null) {
+    if (readyCount >= targetCount) {
+      statusTitle.textContent = "Improving options…";
+    } else {
+      statusTitle.textContent = "Collecting options…";
+    }
+  }
+
+  if (statusDetail !== null) {
+    if (readyCount >= targetCount) {
+      statusDetail.textContent =
+        "Top " +
+        String(readyCount) +
+        " options are ready (best " +
+        formatScore(options[0].totalScore) +
+        "). Still searching for better scores — open Results anytime, or Cancel to keep these.";
+    } else {
+      statusDetail.textContent =
+        String(readyCount) +
+        " of up to " +
+        String(targetCount) +
+        " option(s) ready (best " +
+        formatScore(options[0].totalScore) +
+        "). You can view them in Results while search continues.";
+    }
+  }
+
+  setGenerateBrowseHint(true, readyCount, targetCount);
+}
+
+/**
+ * Apply a finished search result to the project + UI.
+ *
+ * @param {Object} result
+ * @param {Object} project
+ * @param {number} runId
+ */
+function finishGeneration(result, project, runId) {
+  if (runId !== generateRunId) {
+    return;
+  }
+
+  if (generateWorker !== null) {
+    try {
+      generateWorker.terminate();
+    } catch (error) {
+      // Ignore.
+    }
+    generateWorker = null;
+  }
+
+  setGenerateBusy(false);
+
+  const statusTitle = document.getElementById("generate-status-title");
+  const statusDetail = document.getElementById("generate-status-detail");
+
+  if (result.ok === false) {
+    setGenerateProgress(null);
+
+    if (statusTitle !== null) {
+      statusTitle.textContent =
+        result.stopReason === "cancelled" ? "Cancelled" : "Failed";
+    }
+
+    if (statusDetail !== null) {
+      statusDetail.textContent = result.reasons.join(" ");
+    }
+
+    // Keep any options already streamed if cancel/fail happened after the first hit.
+    if (
+      project.results !== null &&
+      project.results.options !== undefined &&
+      project.results.options.length > 0 &&
+      result.stopReason === "cancelled"
+    ) {
+      if (statusDetail !== null) {
+        statusDetail.textContent =
+          "Stopped early · " +
+          String(project.results.options.length) +
+          " option(s) kept · best " +
+          formatScore(project.results.options[0].totalScore);
+      }
+    }
+
+    return;
+  }
+
+  const options = result.options;
+
+  let selectedRank = 1;
+  if (
+    project.results !== null &&
+    project.results.selectedRank !== undefined &&
+    project.results.selectedRank <= options.length
+  ) {
+    selectedRank = project.results.selectedRank;
+  }
+
+  project.results = {
+    options: options,
+    selectedRank: selectedRank
+  };
+
+  markProjectChanged();
+  setGenerateProgress({ percent: 100, label: "Done" });
+
+  if (statusTitle !== null) {
+    if (result.stopReason === "cancelled") {
+      statusTitle.textContent = "Cancelled";
+    } else {
+      statusTitle.textContent = "Done";
+    }
+  }
+
+  if (statusDetail !== null) {
+    let detail =
+      options.length +
+      " option(s) ready · best score " +
+      formatScore(options[0].totalScore);
+    if (result.stopReason === "stagnation") {
+      detail = detail + " · search plateaued";
+    } else if (result.stopReason === "time-budget") {
+      detail = detail + " · time budget reached";
+    } else if (result.stopReason === "cancelled") {
+      detail = detail + " · stopped early";
+    }
+    statusDetail.textContent = detail;
+  }
+
+  renderGenerateOptions(project);
+  renderResults(project);
+
+  window.setTimeout(function () {
+    if (runId === generateRunId) {
+      setGenerateProgress(null);
+    }
+  }, 1200);
 }
 
 function setText(id, text) {
@@ -2814,7 +3823,347 @@ function findAncestor(startEl, selector) {
 }
 
 /**
+ * Prefer conflict_group column when present; leave setup alone otherwise.
+ *
+ * @param {Object} project
+ */
+function syncConflictGroupsFromSlots(project) {
+  if (project === null || project.setup === undefined) {
+    return;
+  }
+
+  if (findConflictGroupColumnKey(project.slots) === null) {
+    return;
+  }
+
+  project.setup.conflictGroups = buildConflictGroupsFromSlots(project.slots);
+}
+
+/**
+ * Conflict groups Manage modal (Rules → Global).
+ */
+function wireConflictGroupsModal() {
+  const modal = document.getElementById("conflict-groups-modal");
+  if (modal === null) {
+    return;
+  }
+
+  const closeEls = modal.querySelectorAll("[data-close-conflict-modal]");
+  for (let i = 0; i < closeEls.length; i = i + 1) {
+    closeEls[i].addEventListener("click", closeConflictGroupsModal);
+  }
+
+  const addBtn = document.getElementById("conflict-add-group-btn");
+  if (addBtn !== null) {
+    addBtn.addEventListener("click", onConflictAddGroupClick);
+  }
+
+  const saveBtn = document.getElementById("conflict-groups-save");
+  if (saveBtn !== null) {
+    saveBtn.addEventListener("click", onConflictGroupsSave);
+  }
+
+  const editor = document.getElementById("conflict-groups-editor");
+  if (editor !== null) {
+    editor.addEventListener("input", onConflictEditorInput);
+    editor.addEventListener("change", onConflictEditorChange);
+    editor.addEventListener("click", onConflictEditorClick);
+  }
+}
+
+function openConflictGroupsModal() {
+  const modal = document.getElementById("conflict-groups-modal");
+  const project = getProject();
+
+  if (modal === null || project === null) {
+    return;
+  }
+
+  conflictEditorDraft = buildConflictEditorDraft(project);
+  renderConflictGroupsEditor(project);
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+function closeConflictGroupsModal() {
+  const modal = document.getElementById("conflict-groups-modal");
+  if (modal === null) {
+    return;
+  }
+
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden", "true");
+  conflictEditorDraft = [];
+}
+
+/**
+ * Prefer setup.conflictGroups when Manage has saved groups; otherwise
+ * fall back to a conflict_group column (presets / CSV import).
+ *
+ * @param {Object} project
+ * @returns {{ name: string, slotIds: string[] }[]}
+ */
+function buildConflictEditorDraft(project) {
+  const draft = [];
+
+  if (
+    project.setup !== undefined &&
+    project.setup.conflictGroups !== undefined &&
+    project.setup.conflictGroups.length > 0
+  ) {
+    const nameBySlotId = {};
+    const named = listNamedConflictGroupsFromSlots(project.slots);
+    for (let i = 0; i < named.length; i = i + 1) {
+      const g = named[i];
+      for (let s = 0; s < g.slotIds.length; s = s + 1) {
+        nameBySlotId[g.slotIds[s]] = g.name;
+      }
+    }
+
+    for (let i = 0; i < project.setup.conflictGroups.length; i = i + 1) {
+      const slotIds = project.setup.conflictGroups[i].slice();
+      let name = "group_" + String(i + 1);
+      for (let s = 0; s < slotIds.length; s = s + 1) {
+        if (nameBySlotId[slotIds[s]] !== undefined) {
+          name = nameBySlotId[slotIds[s]];
+          break;
+        }
+      }
+      draft.push({
+        name: name,
+        slotIds: slotIds
+      });
+    }
+
+    return draft;
+  }
+
+  const namedFromColumn = listNamedConflictGroupsFromSlots(project.slots);
+  if (namedFromColumn.length > 0) {
+    for (let i = 0; i < namedFromColumn.length; i = i + 1) {
+      draft.push({
+        name: namedFromColumn[i].name,
+        slotIds: namedFromColumn[i].slotIds.slice()
+      });
+    }
+    return draft;
+  }
+
+  draft.push({
+    name: "group_1",
+    slotIds: []
+  });
+
+  return draft;
+}
+
+/**
+ * @param {Object} project
+ */
+function renderConflictGroupsEditor(project) {
+  const editor = document.getElementById("conflict-groups-editor");
+  if (editor === null) {
+    return;
+  }
+
+  if (project.slots.rows.length === 0) {
+    editor.innerHTML =
+      '<p class="app-empty-hint">Add slots first, then assign them to conflict groups.</p>';
+    return;
+  }
+
+  let html = "";
+
+  for (let g = 0; g < conflictEditorDraft.length; g = g + 1) {
+    const group = conflictEditorDraft[g];
+    html = html + '<div class="conflict-editor-group" data-group-index="' + g + '">';
+    html = html + '<div class="conflict-editor-group-head">';
+    html =
+      html +
+      '<label class="app-field" style="flex: 1; margin: 0">' +
+      "<span>Group name</span>" +
+      '<input class="app-input conflict-group-name" type="text" data-group-index="' +
+      g +
+      '" value="' +
+      escapeHtml(group.name) +
+      '" />' +
+      "</label>";
+    html =
+      html +
+      '<button class="button button-ghost button-small" type="button" data-remove-group="' +
+      g +
+      '" title="Remove this conflict group from the editor.">Remove</button>';
+    html = html + "</div>";
+    html = html + '<div class="conflict-editor-slots">';
+
+    for (let s = 0; s < project.slots.rows.length; s = s + 1) {
+      const row = project.slots.rows[s];
+      const label = rowDisplayLabel(row, project.slots.columns);
+      let checked = "";
+      for (let i = 0; i < group.slotIds.length; i = i + 1) {
+        if (group.slotIds[i] === row.id) {
+          checked = " checked";
+        }
+      }
+
+      html =
+        html +
+        '<label class="conflict-slot-check">' +
+        '<input type="checkbox" data-group-index="' +
+        g +
+        '" data-slot-id="' +
+        escapeHtml(row.id) +
+        '"' +
+        checked +
+        " />" +
+        "<span>" +
+        escapeHtml(label) +
+        (label === row.id
+          ? ""
+          : ' <code class="conflict-slot-id">' + escapeHtml(row.id) + "</code>") +
+        "</span>" +
+        "</label>";
+    }
+
+    html = html + "</div></div>";
+  }
+
+  editor.innerHTML = html;
+}
+
+function onConflictAddGroupClick() {
+  const project = getProject();
+  const nextIndex = conflictEditorDraft.length + 1;
+  conflictEditorDraft.push({
+    name: "group_" + String(nextIndex),
+    slotIds: []
+  });
+  renderConflictGroupsEditor(project);
+}
+
+/**
+ * @param {Event} event
+ */
+function onConflictEditorInput(event) {
+  const target = event.target;
+  if (target.classList.contains("conflict-group-name") === false) {
+    return;
+  }
+
+  const index = Number(target.getAttribute("data-group-index"));
+  if (index < 0 || index >= conflictEditorDraft.length) {
+    return;
+  }
+
+  conflictEditorDraft[index].name = target.value;
+}
+
+/**
+ * @param {Event} event
+ */
+function onConflictEditorChange(event) {
+  const target = event.target;
+  if (target.type !== "checkbox") {
+    return;
+  }
+
+  const index = Number(target.getAttribute("data-group-index"));
+  const slotId = target.getAttribute("data-slot-id");
+
+  if (index < 0 || index >= conflictEditorDraft.length || slotId === null) {
+    return;
+  }
+
+  const group = conflictEditorDraft[index];
+  const nextIds = [];
+
+  for (let i = 0; i < group.slotIds.length; i = i + 1) {
+    if (group.slotIds[i] !== slotId) {
+      nextIds.push(group.slotIds[i]);
+    }
+  }
+
+  if (target.checked === true) {
+    // A slot can only be in one group — remove from others.
+    for (let g = 0; g < conflictEditorDraft.length; g = g + 1) {
+      if (g === index) {
+        continue;
+      }
+      const other = conflictEditorDraft[g];
+      const cleaned = [];
+      for (let i = 0; i < other.slotIds.length; i = i + 1) {
+        if (other.slotIds[i] !== slotId) {
+          cleaned.push(other.slotIds[i]);
+        }
+      }
+      other.slotIds = cleaned;
+    }
+    nextIds.push(slotId);
+  }
+
+  group.slotIds = nextIds;
+  renderConflictGroupsEditor(getProject());
+}
+
+/**
+ * @param {MouseEvent} event
+ */
+function onConflictEditorClick(event) {
+  const button = findAncestor(event.target, "[data-remove-group]");
+  if (button === null) {
+    return;
+  }
+
+  const index = Number(button.getAttribute("data-remove-group"));
+  if (index < 0 || index >= conflictEditorDraft.length) {
+    return;
+  }
+
+  conflictEditorDraft.splice(index, 1);
+  if (conflictEditorDraft.length === 0) {
+    conflictEditorDraft.push({
+      name: "group_1",
+      slotIds: []
+    });
+  }
+
+  renderConflictGroupsEditor(getProject());
+}
+
+function onConflictGroupsSave() {
+  const project = getProject();
+  if (project === null) {
+    return;
+  }
+
+  // Drop empty name-only drafts that have no slots selected.
+  const toApply = [];
+  for (let i = 0; i < conflictEditorDraft.length; i = i + 1) {
+    const g = conflictEditorDraft[i];
+    if (g.slotIds.length === 0) {
+      continue;
+    }
+    toApply.push({
+      name: String(g.name || "").trim() || "group_" + String(i + 1),
+      slotIds: g.slotIds.slice()
+    });
+  }
+
+  project.setup.conflictGroups = applyNamedConflictGroupsToSlots(
+    project.slots,
+    toApply,
+  );
+  project.results = null;
+  markProjectChanged();
+  renderSlotsTable(project);
+  renderSlotsList(project);
+  renderReview(project);
+  closeConflictGroupsModal();
+}
+
+/**
  * Load preset modal on the workspace (replaces current project data).
+ * Also auto-opens when arriving with ?new=1 after create / try-out.
  */
 function wireLoadPresetModal() {
   const openBtn = document.getElementById("load-preset-btn");
@@ -2824,17 +4173,18 @@ function wireLoadPresetModal() {
   const applyBtn = document.getElementById("load-preset-apply");
   const listEl = document.getElementById("load-preset-list");
 
-  if (openBtn === null || modal === null) {
+  if (modal === null) {
     return;
   }
 
   fillLoadPresetList(listEl, "sports");
   updateLoadPresetDetails("sports");
 
-  openBtn.addEventListener("click", function () {
-    modal.classList.add("is-open");
-    modal.setAttribute("aria-hidden", "false");
-  });
+  if (openBtn !== null) {
+    openBtn.addEventListener("click", function () {
+      openLoadPresetModal(false);
+    });
+  }
 
   if (cancelBtn !== null) {
     cancelBtn.addEventListener("click", function () {
@@ -2863,9 +4213,72 @@ function wireLoadPresetModal() {
   }
 }
 
+/**
+ * @param {boolean} forNewProject
+ */
+function openLoadPresetModal(forNewProject) {
+  const modal = document.getElementById("load-preset-modal");
+  if (modal === null) {
+    return;
+  }
+
+  presetModalForNewProject = forNewProject === true;
+  applyLoadPresetModalCopy(presetModalForNewProject);
+
+  const listEl = document.getElementById("load-preset-list");
+  fillLoadPresetList(listEl, "sports");
+  updateLoadPresetDetails("sports");
+
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+/**
+ * @param {boolean} forNewProject
+ */
+function applyLoadPresetModalCopy(forNewProject) {
+  const titleEl = document.getElementById("load-preset-title");
+  const leadEl = document.querySelector("#load-preset-modal .app-modal-lead");
+  const applyBtn = document.getElementById("load-preset-apply");
+  const cancelBtn = document.getElementById("load-preset-cancel");
+
+  if (forNewProject === true) {
+    if (titleEl !== null) {
+      titleEl.textContent = "Start from a preset";
+    }
+    if (leadEl !== null) {
+      leadEl.innerHTML =
+        "Choose a blank project or a sample pack (entries, slots, and rules). " +
+        "You can change this later with <strong>Load preset…</strong>.";
+    }
+    if (applyBtn !== null) {
+      applyBtn.textContent = "Start with this";
+    }
+    if (cancelBtn !== null) {
+      cancelBtn.textContent = "Keep blank";
+    }
+  } else {
+    if (titleEl !== null) {
+      titleEl.textContent = "Load preset";
+    }
+    if (leadEl !== null) {
+      leadEl.innerHTML =
+        "This <strong>replaces</strong> the current entries, slots, rules, and global setup " +
+        "with the chosen pack.";
+    }
+    if (applyBtn !== null) {
+      applyBtn.textContent = "Replace project data";
+    }
+    if (cancelBtn !== null) {
+      cancelBtn.textContent = "Cancel";
+    }
+  }
+}
+
 function closeLoadPresetModal(modal) {
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
+  presetModalForNewProject = false;
 }
 
 /**
@@ -2946,6 +4359,7 @@ async function onLoadPresetApply() {
   const statusEl = document.getElementById("load-preset-status");
   const applyBtn = document.getElementById("load-preset-apply");
   const modal = document.getElementById("load-preset-modal");
+  const applyingForNew = presetModalForNewProject === true;
 
   let presetId = "blank";
   if (selected !== null) {
@@ -2958,14 +4372,17 @@ async function onLoadPresetApply() {
     keepName = current.name;
   }
 
-  const confirmed = window.confirm(
-    "Replace entries, slots, rules, and setup with the \"" +
-      presetId +
-      "\" preset? This cannot be undone."
-  );
+  // Brand-new empty projects skip the replace warning.
+  if (applyingForNew === false) {
+    const confirmed = window.confirm(
+      "Replace entries, slots, rules, and setup with the \"" +
+        presetId +
+        "\" preset? This cannot be undone."
+    );
 
-  if (confirmed === false) {
-    return;
+    if (confirmed === false) {
+      return;
+    }
   }
 
   if (applyBtn !== null) {
@@ -2977,7 +4394,14 @@ async function onLoadPresetApply() {
   }
 
   try {
+    const keepId = current !== null ? current.id : null;
+
     const project = await buildProjectFromPreset(presetId, keepName);
+
+    if (keepId !== null) {
+      project.id = keepId;
+    }
+
     setProject(project);
     markProjectChanged();
     renderAll();

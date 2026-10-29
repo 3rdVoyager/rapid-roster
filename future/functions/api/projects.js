@@ -122,14 +122,14 @@ function emptyProjectShell(name) {
     entries: {
       columns: [
         { key: "id", label: "ID", type: "id" },
-        { key: "name", label: "Name", type: "text" }
+        { key: "name", label: "Name", type: "name" }
       ],
       rows: []
     },
     slots: {
       columns: [
         { key: "id", label: "ID", type: "id" },
-        { key: "name", label: "Name", type: "text" },
+        { key: "name", label: "Name", type: "name" },
         { key: "min_size", label: "Min", type: "minSize" },
         { key: "max_size", label: "Max", type: "maxSize" }
       ],

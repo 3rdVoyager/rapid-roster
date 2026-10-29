@@ -2,10 +2,24 @@ id,name,skill,role,availability,teammate_requests
 1,Ava Chen,8,player,Mon;Wed,Noah Patel
 2,Noah Patel,7,player,Mon;Wed,Ava Chen;Mia Brooks
 3,Mia Brooks,9,player,Tue;Thu,Noah Patel
-4,Jordan Lee,6,player,Mon;Tue,
+4,Jordan Lee,6,player,Mon;Tue,Taylor Kim
 5,Sam Okonkwo,8,keeper,Wed;Fri,Riley Quinn
 6,Riley Quinn,5,player,Wed;Fri,Sam Okonkwo
 7,Casey Nguyen,7,coach,Mon;Wed;Fri,
 8,Taylor Kim,4,player,Tue;Thu,Jordan Lee
-9,Jamie Ortiz,6,player,Mon;Wed,
-10,Drew Hassan,9,keeper,Tue;Thu,
+9,Jamie Ortiz,6,player,Mon;Wed,Drew Hassan
+10,Drew Hassan,9,keeper,Tue;Thu,Jamie Ortiz
+11,Alex Rivera,7,player,Mon;Thu,Morgan Blake
+12,Morgan Blake,5,player,Tue;Fri,Alex Rivera
+13,Quinn Hayes,8,coach,Wed;Fri,Sky Jordan
+14,Sky Jordan,6,keeper,Mon;Wed,Quinn Hayes
+15,Parker Diaz,9,coach,Tue;Thu;Fri,
+16,Reese Park,4,player,Mon;Tue,
+17,Cameron Wu,7,player,Wed;Thu,Avery Scott
+18,Avery Scott,8,coach,Wed;Thu,Cameron Wu
+19,Jordan Price,5,player,Tue;Fri,
+20,Taylor Ng,6,player,Mon;Fri,Alex Chen
+21,Alex Chen,9,keeper,Mon;Fri,Taylor Ng
+22,Sam Lee,3,player,Tue;Wed,
+23,Casey Brooks,7,player,Thu;Fri,Morgan Patel
+24,Morgan Patel,8,player,Thu;Fri,Casey Brooks

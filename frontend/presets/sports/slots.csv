@@ -1,3 +1,5 @@
 slot_id,name,min_size,max_size,practice_night
-t1,Team A,5,5,Mon
-t2,Team B,5,5,Wed
+t1,Team A,6,6,Mon
+t2,Team B,6,6,Wed
+t3,Team C,6,6,Tue
+t4,Team D,6,6,Thu

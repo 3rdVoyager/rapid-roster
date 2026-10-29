@@ -1,8 +1,16 @@
 slot_id,name,min_size,max_size,conflict_group,time_block
 e1,Astronomy,2,2,block_am,Sat 9:00-10:00
 e2,Optics,2,2,block_am,Sat 9:00-10:00
-e3,Forensics,2,2,block_mid,Sat 10:30-11:30
-e4,Robotics,2,2,block_mid,Sat 10:30-11:30
-e5,Chemistry Lab,2,2,block_pm,Sat 13:00-14:00
-e6,Codebusters,2,2,block_pm,Sat 13:00-14:00
-e7,Experimental Design,2,2,block_late,Sat 14:30-15:30
+e3,Anatomy & Physiology,2,2,block_am,Sat 9:00-10:00
+e4,Forensics,2,2,block_mid,Sat 10:30-11:30
+e5,Robot Tour,2,2,block_mid,Sat 10:30-11:30
+e6,Ecology,2,2,block_mid,Sat 10:30-11:30
+e7,Chemistry Lab,2,2,block_pm,Sat 13:00-14:00
+e8,Codebusters,2,2,block_pm,Sat 13:00-14:00
+e9,Fossils,2,2,block_pm,Sat 13:00-14:00
+e10,Experimental Design,2,2,block_late,Sat 14:30-15:30
+e11,Meteorology,2,2,block_late,Sat 14:30-15:30
+e12,Dynamic Planet,2,2,block_late,Sat 14:30-15:30
+e13,Bridge,2,2,block_eve,Sat 16:00-17:00
+e14,Flight,2,2,block_eve,Sat 16:00-17:00
+e15,Write It Do It,2,2,block_eve,Sat 16:00-17:00

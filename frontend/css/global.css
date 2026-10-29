@@ -17,7 +17,7 @@ html {
 
 body {
     margin: 0;
-    padding: 3.5rem;
+    padding: var(--page-inline);
     min-height: 100vh;
     color: var(--text-color);
     font-family: var(--font);
@@ -136,5 +136,15 @@ em {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+}
+
+@media (max-width: 720px) {
+    body {
+        padding: var(--page-inline-mobile);
+    }
+
+    .page-app {
+        padding: 0;
     }
 }

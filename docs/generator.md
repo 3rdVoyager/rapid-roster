@@ -18,7 +18,7 @@ You customize three things:
 - You set how many slots a person may hold (often exactly one for teams; several for event lists).
 - You set how many people each slot should hold (min and max).
 - **Hard rules** must never be broken. If they cannot all be met, generation fails with a clear error.
-- **Soft rules** have a priority from 1–10. The generator tries to satisfy higher-priority soft rules more, but can trade them off.
+- **Soft rules** have a priority from 1-10. The generator tries to satisfy higher-priority soft rules more, but can trade them off.
 - Soft rules are scored by how well they are met (not just yes/no). Partial success still counts.
 
 When everyone is limited to one slot, you get normal “split into teams.” When people can hold several slots, you get things like “each person on a few events.” Same engine either way.
@@ -47,6 +47,7 @@ Examples: [docs/examples/](./examples/).
 ## Participant Attributes (Columns)
 
 - ID - A unique identifier used to identify a participant. Either configured by the user or generated automatically.
+- Name - Optional display label for results and lists. When unset, the ID is shown instead.
 - Number - A number.
 - Time - A single date or time, or a range of dates and times.
 - Text - A text value. Can be a category, attribute, preference, etc.
@@ -55,6 +56,7 @@ Examples: [docs/examples/](./examples/).
 ## Slot Attributes (Columns)
 
 - ID - A unique identifier used to identify a slot. Either configured by the user or generated automatically.
+- Name - Optional display label for results and lists. When unset, the ID is shown instead.
 - MinSize - The minimum number of participants that should be assigned to the slot. Default is none.
 - MaxSize - The maximum number of participants that should be assigned to the slot. Default is number of participants divided by the number of slots.
 - Text - A text value. Can be a category, attribute, preference, etc.
@@ -78,7 +80,7 @@ Every rule uses the same short flow:
    - *Limit* - min/max counts
    - *Balance* - None
 4. **Name the rule** (short label for the list / Review / satisfaction report)
-5. **Set priority (1–10) and hard vs soft**
+5. **Set priority (1-10) and hard vs soft**
 
 ---
 
@@ -86,7 +88,7 @@ Every rule uses the same short flow:
 
 | Type | What it does | Example |
 | --- | --- | --- |
-| **Cluster** | Keep matched things together: people who share a value in the same slot, **or** a person in a slot whose name/ID matches a preference cell | Same school together; teammate requests; pref column `1` ↔ slot name |
+| **Cluster** | Keep matched things together: people who share a value in the same slot, **or** a person in a slot whose name/ID matches a preference cell | Same school together; teammate requests; pref column `1` > slot name |
 | **Separate** | Keep matched things apart | Spread schools; keep two people apart |
 | **Limit** | Min/max how many of a filtered set appear in each slot | Max 2 keepers; min 1 coach |
 | **Balance** | Keep a number roughly even across slots | Balance skill or age |
@@ -94,7 +96,7 @@ Every rule uses the same short flow:
 ### Cluster: two common data shapes
 
 1. **One participant column** — people with the same value prefer the same slot (school, tags with partial overlap, etc.).
-2. **Participant column(s) ↔ slot column** — when values match, prefer that **person in that slot** (preference rank columns full of slot names; strengths ↔ needed strengths; availability ↔ practice night).
+2. **Participant column(s) > slot column** — when values match, prefer that **person in that slot** (preference rank columns full of slot names; strengths > needed strengths; availability > practice night). Use `>` in the rule data cell. For times or multi-tags, list discrete tokens with `;` and use **partial** match — overlapping ranges are not supported yet.
 
 Ranked slot picks (Science Olympiad / Google Form style) use shape 2: columns named `1`…`6` contain slot names; one soft Cluster rule per column with descending priority. See [examples/science-olympiad/](./examples/science-olympiad/).
 

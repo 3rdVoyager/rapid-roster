@@ -49,3 +49,13 @@
   margin: 1.5rem 0 0;
   color: var(--text-color-muted);
 }
+
+.sign-in-cta {
+  margin: 1.5rem 0 0;
+}
+
+@media (max-width: 600px) {
+  .sign-in {
+    margin: 4rem auto 6rem;
+  }
+}

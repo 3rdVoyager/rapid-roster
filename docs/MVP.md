@@ -65,11 +65,11 @@ Shared flow (details in [generator.md](./generator.md)):
 1. Choose type — **Cluster**, **Separate**, **Limit**, or **Balance**
 2. Choose data (and optional filter)
 3. Adjust options (exact/partial, min/max, …)
-4. Set priority (1–10) and hard vs soft
+4. Set priority (1-10) and hard vs soft
 
 | Type | Intent |
 | --- | --- |
-| **Cluster** | Keep matched people together, or a person in a matching slot (including preference columns ↔ slot names) |
+| **Cluster** | Keep matched people together, or a person in a matching slot (including preference columns > slot names) |
 | **Separate** | Keep matched people apart / spread a value |
 | **Limit** | Min/max how many of a filtered set appear in each slot |
 | **Balance** | Keep a number roughly even across slots |

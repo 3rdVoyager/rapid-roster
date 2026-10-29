@@ -34,12 +34,27 @@
         />
         <span>Rapid<span class="brand-accent">Roster</span></span>
       </a>
-      <nav class="site-nav" aria-label="Primary">
-        <a class="button button-tertiary" href="/#problem">The problem</a>
-        <a class="button button-tertiary" href="/#why">Why RapidRoster</a>
-        <a class="button button-tertiary" href="/#rules">Rules</a>
-        <!-- Room for more public pages later, e.g. /about/, /docs/ -->
-        <a class="button button-primary" href="/sign-in/">Sign in</a>
+      <button
+        class="site-nav-toggle button button-tertiary button-small"
+        type="button"
+        id="site-nav-toggle"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        aria-label="Open menu"
+      >
+        <span class="site-nav-burger" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+      <nav class="site-nav" aria-label="Primary" id="site-nav">
+        <a class="button button-tertiary" href="/about/">About</a>
+        <a class="button button-tertiary" href="/how-it-works/">How it works</a>
+        <a class="button button-tertiary" href="/examples/">Examples</a>
+        <a class="button button-tertiary" href="/faq/">FAQ</a>
+        <a class="button button-tertiary" href="/contact/">Contact</a>
+        <a class="button button-primary" href="/app/">Open App</a>
       </nav>
     </header>
 
@@ -54,18 +69,20 @@
             teams, events, shifts, classrooms, and more.
           </p>
           <div class="hero-actions">
-            <a class="button button-primary" href="/sign-in/">Get started</a>
-            <a class="button button-secondary" href="/#problem">See the problem</a>
+            <a class="button button-primary" href="/app/">Open App</a>
+            <a class="button button-secondary" href="/how-it-works/">How it works</a>
           </div>
         </div>
-        <figure class="screenshot-frame hero-shot" aria-label="Product preview placeholder">
-          <div class="screenshot-placeholder">
-            <span class="material-symbols-outlined" aria-hidden="true">desktop_windows</span>
-            <p>App screenshot</p>
-            <p class="screenshot-hint">Workspace preview coming soon</p>
-          </div>
+        <figure class="screenshot-frame hero-shot">
+          <img
+            src="/assets/screenshots/workspace.png"
+            alt="RapidRoster workspace showing results with Team A and Team B assignments from a sports roster"
+            width="1600"
+            height="1000"
+            decoding="async"
+          />
           <figcaption class="visually-hidden">
-            Placeholder for a RapidRoster workspace screenshot.
+            Results workspace with generated team assignments and export.
           </figcaption>
         </figure>
       </section>
@@ -81,18 +98,17 @@
             <div>
               <strong>Everything fights everything</strong>
               <p>
-                Teammate requests, availability, role caps, skill balance, and
-                “keep these people apart” all pull in different directions.
+                Teammate requests, availability, roles, and skill balance all pull in different directions.
               </p>
             </div>
           </li>
           <li>
             <span class="material-symbols-outlined" aria-hidden="true">table</span>
             <div>
-              <strong>Policies hide in cells</strong>
+              <strong>Rules can't be seen in cells</strong>
               <p>
-                The sheet holds names and numbers. The real rules live in your
-                head — or in a note nobody updates.
+                The sheet holds only names and numbers. The real constraints live in your
+                head.
               </p>
             </div>
           </li>
@@ -109,140 +125,85 @@
         </ul>
       </section>
 
-      <section id="why" class="section">
+      <section class="section">
         <div class="section-split">
           <div class="section-copy">
             <h2>Why RapidRoster</h2>
             <p>
-              RapidRoster lets organizers state those tradeoffs as an explicit
+              RapidRoster lets organizers state tradeoffs as an explicit
               rule list — then finds placements that respect hard constraints
               and score best on the soft ones.
             </p>
             <p>
               Import people and slots, set priorities, generate assignments,
               review what was traded off, and export when it feels right.
-              Projects save so you can leave and come back.
             </p>
-          </div>
-          <figure class="screenshot-frame" aria-label="Rules screenshot placeholder">
-            <div class="screenshot-placeholder">
-              <span class="material-symbols-outlined" aria-hidden="true">tune</span>
-              <p>Rules screenshot</p>
-              <p class="screenshot-hint">Cluster, Separate, Limit, Balance</p>
+            <div class="hero-actions">
+              <a class="button button-secondary" href="/docs/#explanations">Read the docs</a>
+              <a class="button button-tertiary" href="/about/">About the project</a>
             </div>
+          </div>
+          <figure class="screenshot-frame">
+            <img
+              src="/assets/screenshots/rules.png"
+              alt="Rules editor with Balance skill, teammate requests, and hard limits"
+              width="1600"
+              height="1000"
+              loading="lazy"
+              decoding="async"
+            />
           </figure>
         </div>
       </section>
 
-      <section id="product" class="section">
+      <section class="section">
         <h2>See it in the product</h2>
         <p class="section-lead">
           Setup, rules, generate, and results — one workspace for every kind of roster.
         </p>
         <div class="screenshot-row">
           <figure class="screenshot-frame">
-            <div class="screenshot-placeholder">
-              <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
-              <p>Setup</p>
-              <p class="screenshot-hint">Entries &amp; slots</p>
-            </div>
+            <img
+              src="/assets/screenshots/entries.png"
+              alt="Entries setup with player list and editor fields"
+              width="1600"
+              height="1000"
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>Setup — entries &amp; fields</figcaption>
           </figure>
           <figure class="screenshot-frame">
-            <div class="screenshot-placeholder">
-              <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
-              <p>Generate</p>
-              <p class="screenshot-hint">Primary + alternatives</p>
-            </div>
+            <img
+              src="/assets/screenshots/generate.png"
+              alt="Generate panel with ranked roster options and scores"
+              width="1600"
+              height="1000"
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>Generate — primary + alternatives</figcaption>
           </figure>
           <figure class="screenshot-frame">
-            <div class="screenshot-placeholder">
-              <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
-              <p>Results</p>
-              <p class="screenshot-hint">Satisfaction report</p>
-            </div>
+            <img
+              src="/assets/screenshots/results.png"
+              alt="Results panel listing who landed in each team"
+              width="1600"
+              height="1000"
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>Results — assignments to export</figcaption>
           </figure>
         </div>
-      </section>
-
-      <section id="rules" class="section">
-        <h2>Four building-block rules</h2>
-        <p class="section-lead">
-          Compose groupings from a few fundamental rules — not dozens of one-off settings.
-        </p>
-        <ol class="rules-list">
-          <li>
-            <span class="material-symbols-outlined" aria-hidden="true">group_work</span>
-            <div>
-              <strong>Cluster</strong>
-              <p>
-                Keep matched people together, or place someone in a matching
-                slot — teammate requests, preference columns, overlapping availability.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="material-symbols-outlined" aria-hidden="true">call_split</span>
-            <div>
-              <strong>Separate</strong>
-              <p>
-                Spread similar participants apart — schools across teams,
-                experienced players, people who should not share a slot.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="material-symbols-outlined" aria-hidden="true">filter_alt</span>
-            <div>
-              <strong>Limit</strong>
-              <p>
-                Cap or require counts per slot — maximum 2 keepers, minimum 1 coach.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="material-symbols-outlined" aria-hidden="true">balance</span>
-            <div>
-              <strong>Balance</strong>
-              <p>
-                Even out a number across slots — skill, age, or any other score you track.
-              </p>
-            </div>
-          </li>
-        </ol>
-        <p class="rules-note">
-          Soft rules guide the search by score (partial success still counts).
-          Hard rules never allow illegal placements. Mark priority from 1–10.
-        </p>
-      </section>
-
-      <section id="how-it-works" class="section">
-        <h2>How it works</h2>
-        <ol class="steps-list">
-          <li>
-            <strong>Sign in and create a project</strong>
-            <p>Save people, slots, rules, and results — come back later.</p>
-          </li>
-          <li>
-            <strong>Import people and slots</strong>
-            <p>CSV in, column types set, sizes and conflict groups configured.</p>
-          </li>
-          <li>
-            <strong>Add rules</strong>
-            <p>Cluster, Separate, Limit, Balance — with priority and hard/soft.</p>
-          </li>
-          <li>
-            <strong>Generate, review, export</strong>
-            <p>Primary run plus alternatives, satisfaction report, download CSV.</p>
-          </li>
-        </ol>
       </section>
 
       <section class="section section-cta">
         <h2>Ready to stop wrestling the spreadsheet?</h2>
         <p class="section-lead">
-          Create an account, open a project, and turn your lists into placements.
+          Open a project and turn your lists into placements — everything runs in this browser.
         </p>
-        <a class="button button-primary" href="/sign-in/">Get started</a>
+        <a class="button button-primary" href="/app/">Open App</a>
       </section>
     </main>
 
@@ -262,30 +223,55 @@
             Place people into teams, events, shifts, and classrooms with clear
             rules — instead of fighting a spreadsheet.
           </p>
+
+          <div class="site-footer-social" aria-label="Contact and links">
+            <a
+              class="site-footer-social-btn"
+              href="mailto:joshuacheng.dev@gmail.com"
+              aria-label="Email Joshua"
+              title="Email"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
+              </svg>
+            </a>
+            <a
+              class="site-footer-social-btn"
+              href="https://github.com/3rdVoyager/rapid-roster"
+              aria-label="RapidRoster on GitHub"
+              title="GitHub"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 .3C5.37.3 0 5.67 0 12.3c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.4s2.04.13 3 .4c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.28 0 .32.21.7.82.58C20.56 22.1 24 17.6 24 12.3 24 5.67 18.63.3 12 .3z" />
+              </svg>
+            </a>
+          </div>
         </div>
 
         <nav class="site-footer-nav" aria-label="Footer">
           <div class="site-footer-col">
             <h2>Product</h2>
             <ul>
-              <li><a href="/sign-in/">Sign in</a></li>
-              <li><a href="/#how-it-works">How it works</a></li>
-              <li><a href="/#rules">Rules</a></li>
+              <li><a href="/app/">Open App</a></li>
+              <li><a href="/how-it-works/">How it works</a></li>
+              <li><a href="/examples/">Examples</a></li>
             </ul>
           </div>
           <div class="site-footer-col">
             <h2>Resources</h2>
             <ul>
               <li><a href="/docs/">Docs</a></li>
-              <li><a href="/examples/">Examples</a></li>
-              <li><a href="/presets/">Presets</a></li>
+              <li><a href="/faq/">FAQ</a></li>
+              <li><a href="/contact/">Contact</a></li>
             </ul>
           </div>
           <div class="site-footer-col">
             <h2>Project</h2>
             <ul>
               <li><a href="/about/">About</a></li>
-              <li><a href="/changelog/">Changelog</a></li>
+              <li><a href="/privacy/">Privacy</a></li>
               <li><a href="/license/">License</a></li>
             </ul>
           </div>
@@ -296,5 +282,6 @@
         <p>RapidRoster — open source under the MIT License.</p>
       </div>
     </footer>
+    <script type="module" src="/js/site-nav.js"></script>
   </body>
 </html>
