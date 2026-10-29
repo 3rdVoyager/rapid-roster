@@ -1,0 +1,11 @@
+id,name,skill,role,availability,teammate_requests
+1,Ava Chen,8,player,Mon;Wed,Noah Patel
+2,Noah Patel,7,player,Mon;Wed,Ava Chen;Mia Brooks
+3,Mia Brooks,9,player,Tue;Thu,Noah Patel
+4,Jordan Lee,6,player,Mon;Tue,
+5,Sam Okonkwo,8,keeper,Wed;Fri,Riley Quinn
+6,Riley Quinn,5,player,Wed;Fri,Sam Okonkwo
+7,Casey Nguyen,7,coach,Mon;Wed;Fri,
+8,Taylor Kim,4,player,Tue;Thu,Jordan Lee
+9,Jamie Ortiz,6,player,Mon;Wed,
+10,Drew Hassan,9,keeper,Tue;Thu,

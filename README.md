@@ -1,36 +1,42 @@
 # RapidRoster
 
-Web app for organizers who need to turn a participant list into fair, rule-aware groups — teams, cohorts, shifts, classrooms, and similar.
+Web app for organizers who place people into **slots** — teams, events, roles, shifts, classrooms, and more — using size limits and a small set of rules.
 
-Import a CSV, describe what “good” looks like with a few goals, and generate groupings you can review and export.
+Create an account, save **projects**, import data, set rules (or start from a preset), generate assignments, review tradeoffs, and export.
+
+## Why it exists
+
+Organizing people is hard: preferences, requests, balance, availability, role caps, and “keep these people apart” fight each other in a spreadsheet. RapidRoster turns those into an explicit rule list and finds placements that respect them.
 
 ## How it works
 
-1. **Import data** — Upload participants. Columns can be typed (text, numeric, dates/times, ranges, IDs). Cells may hold multiple values separated by `;`.
-2. **Configure goals** — Instead of dozens of one-off rules, pick from three fundamentals:
-   - **Cluster** — keep similar people together (siblings, departments, overlapping availability)
-   - **Separate** — spread similar people apart (schools, experienced players)
-   - **Limit** — cap or require counts per group (max 2 goalkeepers, min 1 coach)
-3. **Prioritize** — Each goal has a priority (1–100). Mark critical ones as **hard constraints**; those placements are never broken. Soft goals guide the search via score.
-4. **Generate** — A primary run seeds groups, then improves them with the best relocate or swap each step. Secondary runs start from random layouts to offer alternatives.
-5. **Review & export** — Inspect the result and download groupings as CSV.
+1. **Projects** — Sign in, create a project, come back later. People, slots, rules, and results are saved.
+2. **People & slots** — Import CSVs. Set slot min/max size, how many slots each person may hold, and optional conflict groups.
+3. **Rules** — Same four types for every project (presets only pre-fill them):
+   - **Cluster** — keep matched people together, or put a person in a matching slot (e.g. preference columns filled with slot names)
+   - **Separate** — keep matched people apart / spread a value
+   - **Limit** — min/max counts per slot for a filtered group (e.g. max 2 keepers)
+   - **Balance** — even out a number across slots (e.g. skill)
+4. **Prioritize** — Priority 1–100; mark rules **hard** (never break) or soft (best effort, partial credit OK).
+5. **Generate** — Same search every time: legal start, improve with small moves, offer alternatives.
+6. **Review & export** — See results by slot and by person, check how each rule scored, tweak, download CSV.
 
-Full generator design: [docs/generator.md](./docs/generator.md).
+Building a rule: pick the type → choose data → optional filter → options → priority and hard/soft.
+
+Sample CSVs: [docs/examples/](./docs/examples/). Full design: [docs/generator.md](./docs/generator.md).
 
 ## MVP scope
 
-The first version is a wizard-style flow focused only on high-quality grouping:
+Accounts and saved projects; people into slots; Cluster / Separate / Limit / Balance; generation with a satisfaction report; presets as starter settings; Cloudflare hosting.
 
-Configure data → Configure goals → Generate → Review & export
-
-See [docs/MVP.md](./docs/MVP.md) for in-scope features, out-of-scope items, and success criteria.
+See [docs/MVP.md](./docs/MVP.md) for details and success criteria.
 
 ## Project layout
 
 ```
 rapid-roster/
-├── docs/           # Product and generator specs
-├── frontend/       # Wizard UI
+├── docs/           # Product specs + example CSVs (docs/examples/)
+├── frontend/       # Web UI
 └── README.md
 ```
 

@@ -2,85 +2,117 @@
 
 ## Goal
 
-Build a web application that lets organizers import participant data, configure grouping goals, and generate high-quality groups.
+Build a web app where organizers create **projects**, import people and slots, configure **Cluster / Separate / Limit / Balance** rules, and generate assignments they can review, tweak, and export.
 
-The MVP solves one problem well: turning a participant CSV plus a small set of goals into usable groupings. Anything that does not serve that flow is out of scope.
+The same engine places people into slots for any use case. **Presets** only load starter CSVs and rules; they do not change how generation works.
+
+Focus for this MVP: **accounts → projects → configure → generate → review → export**.
 
 ---
 
-## Wizard
+## Product shape
 
-Single-page wizard with a progress indicator:
+A **project workspace** with a top header (brand, project switcher, account).
 
 ```
 RapidRoster
+  Account
+    - Sign up / sign in
+    - Own projects (create, rename, open, delete)
 
-    - Configure data          (import CSV, map columns / types, set group count)
-    - Configure goals         (Cluster / Separate / Limit, priority, hard vs soft)
-    - Generate groups         (primary run + optional alternatives)
-    - Review and export       (inspect groups, export CSV)
+  Project workspace
+    - People & slots   import/edit tables; column types; sizes; slots-per-person; conflicts
+    - Rules            Cluster, Separate, Limit, Balance
+    - Generate         main run + alternatives
+    - Results          view by slot and by person, satisfaction report, tweaks, export
 ```
+
+Projects save in the cloud so organizers can leave and come back.
+
+Optional **presets** fill starter settings (e.g. sports, Science Olympiad, volunteers). After that, the project is normal editable data on the same engine.
 
 ---
 
 ## In scope
 
-### Data
+### Accounts and projects
 
-- Import participants from a CSV file.
-- Support typed columns: ID, Numeric, Date, Time, DateTime, TimeRange, DateTimeRange, Text.
-- Allow multiple values in a cell, separated by semicolons.
-- Let the organizer set how many groups to create (and respect capacity when moving people).
+- Simple sign-in (e.g. email).
+- Create, rename, open, and delete projects.
+- Save people, slots, rules, and last results.
+- Host on Cloudflare. Generation can run in the browser for typical sizes.
 
-### Goals
+### People and slots (Setup)
 
-Organizers build rules with a fixed workflow:
+- Import people from CSV with typed columns: ID, Number, Time, Text, Ignore.
+- Multiple values in a cell with semicolons.
+- Slots with ID, MinSize, MaxSize, Text, Ignore; optional conflict groups.
+- How many slots each person may hold (project default and/or per person).
+- Common shapes such as ranked preference columns (slot names under headers `1`…`n`) — see [examples/](./examples/).
+- Re-import and light editing; help mapping messy column names.
 
-1. Select column(s)
-2. Filter participants (everyone, or a condition)
-3. Choose a goal: **Cluster**, **Separate**, or **Limit**
-4. Configure the goal (exact/partial match, or min/max)
-5. Set priority (1–100) and whether it is a **hard constraint**
+### Rules
 
-Hard constraints use a legal-move filter: illegal placements are never considered. If a hard constraint cannot be satisfied, generation fails with a clear error.
+Shared flow (details in [generator.md](./generator.md)):
 
-**Balance** (numeric spread across groups) is deferred; organizers can approximate it with Separate for MVP.
+1. Choose type — **Cluster**, **Separate**, **Limit**, or **Balance**
+2. Choose data (and optional filter)
+3. Adjust options (exact/partial, min/max, …)
+4. Set priority (1–100) and hard vs soft
+
+| Type | Intent |
+| --- | --- |
+| **Cluster** | Keep matched people together, or a person in a matching slot (including preference columns ↔ slot names) |
+| **Separate** | Keep matched people apart / spread a value |
+| **Limit** | Min/max how many of a filtered set appear in each slot |
+| **Balance** | Keep a number roughly even across slots |
+
+Conflict groups and slot sizes are Setup, not rule types.
+
+Hard rules must never break. Soft rules guide the score; partial success still counts.
 
 ### Generator
 
-- **Primary process:** seed from the highest-priority goal or hard constraint, then improve with best-scoring relocate/swap moves until no improving move is found for 20+ iterations.
-- **Secondary process:** random restarts to surface alternative groupings.
-- Moves: **relocate** into a group with capacity, or **swap** with the best partner when the target is full.
-- Scoring: apply the candidate with the best positive score delta across all soft goals. Ties break randomly.
+- One people-into-slots search for all projects.
+- Start legal → improve with small moves → shake up if stuck → offer alternatives from other starts.
+- Show how well each soft rule did; clear errors when hard rules cannot be met.
 
-Details: [generator.md](./generator.md).
+### Results and export
 
-### Review and export
+- View by slot and by person.
+- Satisfaction summary per rule.
+- Light manual moves with hard-rule checks when practical.
+- Export CSV.
 
-- Show the primary grouping and any alternatives from secondary runs.
-- Export final groupings as CSV.
+### Presets
+
+Starter packs that only write settings (CSVs + rules + global defaults). Users can change everything after. Blank projects work with no preset.
 
 ---
 
-## Out of scope (post-MVP)
+## Out of scope (later)
 
-- Balance goal type
-- Accounts, auth, or multi-user collaboration
-- Saving/loading projects to a backend
-- Real-time collaboration or history
-- Mobile-native apps
+- Live multi-user editing
+- Team/org accounts and rich sharing
+- Mobile apps
+- Separate generators per domain
+- AI-assisted CSV cleanup
+- Heavier solvers unless this one is not enough
+- ML assignment
+- Billing
 
 ---
 
 ## Success criteria
 
-The MVP is complete when an organizer can:
+Done when an organizer can:
 
-1. Import a CSV of participants and map columns to data types.
-2. Configure group count and at least one Cluster, Separate, or Limit goal (including a hard constraint).
-3. Generate a primary grouping via relocate/swap local search.
-4. Optionally see alternative groupings from secondary runs.
-5. Review groups and export them as CSV.
-6. Receive a clear error when hard constraints make generation impossible.
+1. Create an account and a saved project.
+2. Import people and slots, set sizes / load / conflicts, and add Cluster, Separate, Limit, and Balance rules (including hard rules).
+3. Run a Science Olympiad-style preference sheet (rank columns with slot names) via Cluster rules with descending priorities.
+4. Generate results, see alternatives, and see how each soft rule scored.
+5. Apply a preset, then edit or remove its rules, and still use the **same** generator.
+6. Export and reopen later with everything intact.
+7. Get clear errors for bad imports and impossible hard rules.
 
-If that path works end to end, the MVP has met its goal.
+If custom rules work end to end — with presets only as optional starters — the MVP is met.
