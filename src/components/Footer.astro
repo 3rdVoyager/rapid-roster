@@ -1,0 +1,52 @@
+---
+const navigation = [
+  { label: "Contact", href: "/contact/" },
+  { label: "Privacy", href: "/privacy/" },
+];
+---
+
+<footer class="site-footer">
+  <nav aria-label="Footer navigation">
+    <ul>
+      {
+        navigation.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <small>&copy; {new Date().getFullYear()} Rapid Roster</small>
+</footer>
+
+<style>
+  .site-footer {
+    align-items: center;
+    border-top: 1px solid #e5e7eb;
+    color: #64748b;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+  }
+
+  ul {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover,
+  a:focus-visible {
+    text-decoration: underline;
+  }
+</style>

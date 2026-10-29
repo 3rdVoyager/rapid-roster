@@ -1,0 +1,58 @@
+---
+const navigation = [
+  { label: "Home", href: "/" },
+  { label: "Generator", href: "/generator/" },
+  { label: "About", href: "/about/" },
+];
+---
+
+<header class="site-header">
+  <a class="site-logo" href="/" aria-label="Rapid Roster home">Rapid Roster</a>
+
+  <nav aria-label="Primary navigation">
+    <ul>
+      {
+        navigation.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+  }
+
+  .site-logo {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  ul {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover,
+  a:focus-visible {
+    text-decoration: underline;
+  }
+</style>

@@ -1,0 +1,82 @@
+---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import "../styles/variables.css";
+import "../styles/global.css";
+import "../styles/buttons.css";
+import "../styles/site/header.css";
+import "../styles/site/footer.css";
+import "../styles/site/home.css";
+import "../styles/site/wip-banner.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title,
+  description,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon/favicon-16x16.png" type="image/png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Header />
+
+    <main>
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(body) {
+    margin: 0;
+    color: #172033;
+    background: #fff;
+    font-family: system-ui, sans-serif;
+  }
+
+  .site-header,
+  .site-footer {
+    padding: 1rem 1.5rem;
+  }
+
+  .site-header {
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .site-header a {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  main {
+    min-height: calc(100vh - 8rem);
+  }
+
+  .site-footer {
+    border-top: 1px solid #e5e7eb;
+    color: #64748b;
+  }
+</style>
