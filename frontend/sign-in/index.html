@@ -42,11 +42,7 @@
           We'll email you a private sign-in link. No password.
         </p>
 
-        <form
-          class="sign-in-form"
-          action="/api/auth/request-link"
-          method="post"
-        >
+        <form class="sign-in-form" action="/api/auth/request-link" method="post">
           <label for="email">Email</label>
           <input
             id="email"
@@ -61,10 +57,7 @@
           </button>
         </form>
 
-        <!-- Shown after a successful request (wire up with JS later) -->
-        <p class="sign-in-status" hidden>
-          Check your email for a sign-in link. It may take a minute to arrive.
-        </p>
+        <p class="sign-in-status" hidden aria-live="polite"></p>
       </section>
     </main>
 
@@ -118,5 +111,7 @@
         <p>RapidRoster — open source under the MIT License.</p>
       </div>
     </footer>
+
+    <script type="module" src="/js/sign-in.js"></script>
   </body>
 </html>
