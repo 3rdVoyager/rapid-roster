@@ -25,7 +25,7 @@ test("returns all slots", () => {
 test("finds an item by ID", () => {
   const model = createTestModel();
 
-  assert.deepEqual(model.getItemById(1), items[0]);
+  assert.deepEqual(model.getItemById("P1"), items[0]);
 });
 
 test("returns undefined for an unknown item ID", () => {
@@ -37,7 +37,7 @@ test("returns undefined for an unknown item ID", () => {
 test("finds a slot by ID", () => {
   const model = createTestModel();
 
-  assert.deepEqual(model.getSlotById("A"), slots[0]);
+  assert.deepEqual(model.getSlotById("T1"), slots[0]);
 });
 
 test("returns undefined for an unknown slot ID", () => {
@@ -49,16 +49,16 @@ test("returns undefined for an unknown slot ID", () => {
 test("finds items by attribute", () => {
   const model = createTestModel();
 
-  const maleItems = model.getItemsByAttribute("gender", "Male");
+  const maleItems = model.getItemsByAttribute("gender", "M");
 
   assert.ok(maleItems.length > 0);
-  assert.ok(maleItems.every((item) => item.gender === "Male"));
+  assert.ok(maleItems.every((item) => item.gender === "M"));
 });
 
 test("finds slots by attribute", () => {
   const model = createTestModel();
 
-  const teamCSlots = model.getSlotsByAttribute("team", "C");
+  const teamCSlots = model.getSlotsByAttribute("id", "T3");
 
   assert.deepEqual(teamCSlots, [slots[2]]);
 });

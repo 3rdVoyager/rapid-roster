@@ -28,14 +28,15 @@ values may use strings and gain normalization later if needed. Calendar and
 schedule data can initially use strings such as `Mon`, `Tue`, and `Wed`, or
 numbers when ordering and arithmetic are needed.
 
-
 ## Rule Schema
 
 Special attributes:
+
 - `slots.assignedItems()`: returns the items assigned to the slot.
 - `items.assignedSlots()`: returns the slots assigned to the item.
 
 `attributeOperator`:
+
 - `.count()`: returns the number of values in the column.
 - `.sum()`: returns the sum of the values in the column.
 - `.average()`: returns the average of the values in the column.
@@ -45,6 +46,7 @@ Special attributes:
 - `.lookup()`: returns the item or slot that matches an ID.
 
 `attributeSelector`:
+
 - `items.*`: returns the item attribute to evaluate.
 - `slots.*`: returns the slot attribute to evaluate.
 

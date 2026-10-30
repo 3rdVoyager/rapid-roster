@@ -26,14 +26,8 @@ test("contains detects overlap between arrays", () => {
 });
 
 test("contains rejects unsupported values", () => {
-  assert.throws(
-    () => contains("Mon", "Mon"),
-    /Contains requires an array/,
-  );
-  assert.throws(
-    () => contains(["Mon"], true),
-    /Contains requires an array/,
-  );
+  assert.throws(() => contains("Mon", "Mon"), /Contains requires an array/);
+  assert.throws(() => contains(["Mon"], true), /Contains requires an array/);
 });
 
 test("compares numbers with greaterThan", () => {
@@ -51,10 +45,7 @@ test("numeric comparison operators reject non-numbers", () => {
     () => greaterThan("10", 5),
     /Greater than requires a finite number/,
   );
-  assert.throws(
-    () => lessThan(5, "10"),
-    /Less than requires a finite number/,
-  );
+  assert.throws(() => lessThan(5, "10"), /Less than requires a finite number/);
 });
 
 test("approximates returns a full score for equal values", () => {

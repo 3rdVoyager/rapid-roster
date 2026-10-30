@@ -1,4 +1,3 @@
-
 export function validateData(items, slots) {
   validateShape(items, slots);
   validateIds(items, slots);

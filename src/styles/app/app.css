@@ -12,7 +12,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem 1.5rem;
-  margin: calc(-1 * var(--page-inline)) calc(-1 * var(--page-inline)) var(--page-inline);
+  margin: calc(-1 * var(--page-inline)) calc(-1 * var(--page-inline))
+    var(--page-inline);
   padding: 1.15rem var(--page-inline);
   background: var(--header-bg-color);
   border-bottom: 1px solid var(--line-color);

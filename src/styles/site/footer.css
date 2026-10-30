@@ -57,7 +57,11 @@
 .site-footer-social-btn:hover {
   color: var(--text-color);
   border-color: var(--secondary-button-color-hover);
-  background: color-mix(in srgb, var(--secondary-button-color) 24%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--secondary-button-color) 24%,
+    transparent
+  );
   transform: scale(1.04);
 }
 
@@ -144,4 +148,3 @@
     gap: 1.75rem;
   }
 }
-

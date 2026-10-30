@@ -53,17 +53,11 @@ test("finds the maximum value", () => {
 });
 
 test("rejects an empty minimum", () => {
-  assert.throws(
-    () => min([]),
-    /Cannot find the minimum of an empty array/,
-  );
+  assert.throws(() => min([]), /Cannot find the minimum of an empty array/);
 });
 
 test("rejects an empty maximum", () => {
-  assert.throws(
-    () => max([]),
-    /Cannot find the maximum of an empty array/,
-  );
+  assert.throws(() => max([]), /Cannot find the maximum of an empty array/);
 });
 
 test("numeric functions reject non-numeric values", () => {

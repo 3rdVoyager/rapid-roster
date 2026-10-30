@@ -8,4 +8,3 @@ test("gets an attribute from records", () => {
 
   assert.deepEqual(getAttribute(records, "height"), [60, 70, 80]);
 });
-

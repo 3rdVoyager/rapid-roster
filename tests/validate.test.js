@@ -59,17 +59,11 @@ test("item and slot ID collisions fail validation", () => {
 });
 
 test("items must be an array", () => {
-  assert.throws(
-    () => validateData({}, freshSlots()),
-    /Items must be an array/,
-  );
+  assert.throws(() => validateData({}, freshSlots()), /Items must be an array/);
 });
 
 test("slots must be an array", () => {
-  assert.throws(
-    () => validateData(freshItems(), {}),
-    /Slots must be an array/,
-  );
+  assert.throws(() => validateData(freshItems(), {}), /Slots must be an array/);
 });
 
 test("items must not be empty", () => {
