@@ -1,0 +1,37 @@
+[
+  {
+    "id": "A",
+    "team": "A",
+    "practiceNight": ["Mon", "Tue", "Wed"],
+    "minItems": 4,
+    "maxItems": 4
+  },
+  {
+    "id": "B",
+    "team": "B",
+    "practiceNight": ["Tue", "Wed", "Thu"],
+    "minItems": 4,
+    "maxItems": 4
+  },
+  {
+    "id": "C",
+    "team": "C",
+    "practiceNight": ["Wed", "Thu", "Fri"],
+    "minItems": 4,
+    "maxItems": 4
+  },
+  {
+    "id": "D",
+    "team": "D",
+    "practiceNight": ["Thu", "Fri", "Sat"],
+    "minItems": 4,
+    "maxItems": 4
+  },
+  {
+    "id": "E",
+    "team": "E",
+    "practiceNight": ["Fri", "Sat", "Sun"],
+    "minItems": 4,
+    "maxItems": 4
+  }
+]
