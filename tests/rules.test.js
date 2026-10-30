@@ -6,6 +6,7 @@ import slots from "./fixtures/slots.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
 import {
+  evaluateRule,
   evaluateOperator,
   evaluateRecursiveRule,
   resolvePath,
@@ -14,6 +15,51 @@ import {
 function createTestModel() {
   return createModel(structuredClone(items), structuredClone(slots));
 }
+
+test("evaluateRule aggregates a soft rule with an average score", () => {
+  const model = createTestModel();
+  const rule = {
+    source: "items.height",
+    operator: "greaterThan",
+    target: 50,
+    enforcement: "soft",
+  };
+
+  const result = evaluateRule(rule, model);
+
+  assert.equal(result.enforcement, "soft");
+  assert.equal(result.score, 8 / 12);
+});
+
+test("evaluateRule requires every score to pass for a hard rule", () => {
+  const model = createTestModel();
+  const rule = {
+    source: "items.height",
+    operator: "greaterThan",
+    target: 0,
+    enforcement: "hard",
+  };
+
+  assert.deepEqual(evaluateRule(rule, model), {
+    score: 1,
+    enforcement: "hard",
+  });
+});
+
+test("evaluateRule fails a hard rule when one score fails", () => {
+  const model = createTestModel();
+  const rule = {
+    source: "items.height",
+    operator: "greaterThan",
+    target: 50,
+    enforcement: "hard",
+  };
+
+  assert.deepEqual(evaluateRule(rule, model), {
+    score: 0,
+    enforcement: "hard",
+  });
+});
 
 test("evaluateOperator runs the requested operator", () => {
   assert.equal(evaluateOperator("equals", "M", "M"), 1);
