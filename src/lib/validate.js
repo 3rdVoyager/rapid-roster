@@ -1,11 +1,9 @@
 
 export function validateData(items, slots) {
-  try {
-    validateShape(items, slots);
-    validateIds(items, slots);
-  } catch (error) {
-    // TODO: Handle error (Show toast message)
-  }
+  validateShape(items, slots);
+  validateIds(items, slots);
+
+  // TODO: Handle error (Show toast message)
 }
 
 export function validateShape(items, slots) {

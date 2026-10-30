@@ -1,5 +1,5 @@
-import testItems from '../../tests/fixtures/items.json';
-import testSlots from '../../tests/fixtures/slots.json';
+import testItems from '../../tests/fixtures/items.json' with { type: 'json' };
+import testSlots from '../../tests/fixtures/slots.json' with { type: 'json' };
 
 const items = testItems; // TODO: replace with actual data later
 const slots = testSlots; // TODO: replace with actual data later
