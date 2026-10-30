@@ -1,0 +1,93 @@
+[
+  {
+    "name": "Match Gender",
+    "source": "items.gender",
+    "operator": "equals",
+    "target": "slots.divisionGender",
+    "enforcement": "hard"
+  },
+  {
+    "name": "Match Division",
+    "source": "items.division",
+    "operator": "equals",
+    "target": "slots.division",
+    "enforcement": "hard"
+  },
+  {
+    "name": "Match Available Practice Nights",
+    "source": "items.practiceNights",
+    "operator": "contains",
+    "target": "slots.practiceNight",
+    "enforcement": "hard"
+  },
+  {
+    "name": "Honor Coach's Child Request",
+    "source": "items.coachChildRequest",
+    "operator": "equals",
+    "target": "slots.id",
+    "enforcement": "hard"
+  },
+  {
+    "name": "Balance Team Sizes",
+    "source": "slots.assignedItems().count().max().subtract(slots.assignedItems().count().min())",
+    "operator": "lessThan",
+    "target": 2,
+    "enforcement": "hard"
+  },
+  {
+    "name": "Balance Average Heights",
+    "source": "slots.assignedItems().height.average()",
+    "operator": "approximates",
+    "target": "items.height.average()",
+    "enforcement": "soft",
+    "priority": 80
+  },
+  {
+    "name": "Distribute Tallest Players",
+    "source": "slots.assignedItems().height.max()",
+    "operator": "approximates",
+    "target": "items.height.custom(select the top 10 heights).average()",
+    "enforcement": "soft",
+    "priority": 80
+  },
+  {
+    "name": "Honor Teammate Requests",
+    "source": "items.teammateRequest",
+    "operator": "contains",
+    "target": "slots.assignedItems().id",
+    "enforcement": "soft",
+    "priority": 75
+  },
+  {
+    "name": "Honor Coach Requests",
+    "source": "items.coachRequest",
+    "operator": "equals",
+    "target": "slots.id",
+    "enforcement": "soft",
+    "priority": 60
+  },
+  {
+    "name": "Match Sibling Practice Nights",
+    "source": "items.sibling.lookup().assignedSlots().practiceNight",
+    "operator": "equals",
+    "target": "items.assignedSlots().practiceNight",
+    "enforcement": "soft",
+    "priority": 65
+  },
+  {
+    "name": "Match Sibling Gym",
+    "source": "items.sibling.lookup().assignedSlots().gymLocation",
+    "operator": "equals",
+    "target": "items.assignedSlots().gymLocation",
+    "enforcement": "soft",
+    "priority": 65
+  },
+  {
+    "name": "Balance Evaluation Scores",
+    "source": "slots.assignedItems().evaluationScore.average()",
+    "operator": "approximates",
+    "target": "items.evaluationScore.average()",
+    "enforcement": "soft",
+    "priority": 100
+  }
+]
