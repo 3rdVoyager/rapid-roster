@@ -5,11 +5,49 @@ import items from "./fixtures/items.json" with { type: "json" };
 import slots from "./fixtures/slots.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
-import { resolvePath } from "../src/lib/rules.js";
+import {
+  evaluateOperator,
+  evaluateRecursiveRule,
+  resolvePath,
+} from "../src/lib/rules.js";
 
 function createTestModel() {
   return createModel(structuredClone(items), structuredClone(slots));
 }
+
+test("evaluateOperator runs the requested operator", () => {
+  assert.equal(evaluateOperator("equals", "M", "M"), 1);
+  assert.equal(evaluateOperator("equals", "M", "F"), 0);
+  assert.equal(evaluateOperator("approximates", 50, 100), 0.5);
+});
+
+test("evaluateOperator rejects unknown operators", () => {
+  assert.throws(
+    () => evaluateOperator("unknown", "M", "M"),
+    /Unknown operator: unknown/,
+  );
+});
+
+test("evaluateRecursiveRule evaluates every source value against one target", () => {
+  assert.deepEqual(
+    evaluateRecursiveRule("equals", ["M", "F", "M"], "M"),
+    [1, 0, 1],
+  );
+});
+
+test("evaluateRecursiveRule evaluates one source against every target", () => {
+  assert.deepEqual(
+    evaluateRecursiveRule("equals", "M", ["M", "F", "M"]),
+    [1, 0, 1],
+  );
+});
+
+test("evaluateRecursiveRule evaluates every source-target combination", () => {
+  assert.deepEqual(
+    evaluateRecursiveRule("equals", ["M", "F"], ["M", "F"]),
+    [1, 0, 0, 1],
+  );
+});
 
 test("resolves an item attribute", () => {
   const model = createTestModel();

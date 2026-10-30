@@ -10,19 +10,19 @@ import {
 } from "../src/lib/operators.js";
 
 test("equals compares values", () => {
-  assert.equal(equals("Male", "Male"), true);
-  assert.equal(equals("Male", "Female"), false);
-  assert.equal(equals(10, 10), true);
+  assert.equal(equals("Male", "Male"), 1);
+  assert.equal(equals("Male", "Female"), 0);
+  assert.equal(equals(10, 10), 1);
 });
 
 test("contains finds a scalar in an array", () => {
-  assert.equal(contains(["Mon", "Wed"], "Mon"), true);
-  assert.equal(contains(["Mon", "Wed"], "Tue"), false);
+  assert.equal(contains(["Mon", "Wed"], "Mon"), 1);
+  assert.equal(contains(["Mon", "Wed"], "Tue"), 0);
 });
 
 test("contains detects overlap between arrays", () => {
-  assert.equal(contains(["P1", "P2"], ["P2", "P3"]), true);
-  assert.equal(contains(["P1", "P2"], ["P3", "P4"]), false);
+  assert.equal(contains(["P1", "P2"], ["P2", "P3"]), 1);
+  assert.equal(contains(["P1", "P2"], ["P3", "P4"]), 0);
 });
 
 test("contains rejects unsupported values", () => {
@@ -31,13 +31,13 @@ test("contains rejects unsupported values", () => {
 });
 
 test("compares numbers with greaterThan", () => {
-  assert.equal(greaterThan(10, 5), true);
-  assert.equal(greaterThan(5, 10), false);
+  assert.equal(greaterThan(10, 5), 1);
+  assert.equal(greaterThan(5, 10), 0);
 });
 
 test("compares numbers with lessThan", () => {
-  assert.equal(lessThan(5, 10), true);
-  assert.equal(lessThan(10, 5), false);
+  assert.equal(lessThan(5, 10), 1);
+  assert.equal(lessThan(10, 5), 0);
 });
 
 test("numeric comparison operators reject non-numbers", () => {
