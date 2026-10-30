@@ -61,3 +61,46 @@ export function max(values) {
   }
   return max;
 }
+
+export function add(value1, value2) {
+  if (typeof value1 !== "number" || !Number.isFinite(value1)) {
+    throw new Error("Add requires finite numbers");
+  }
+  if (typeof value2 !== "number" || !Number.isFinite(value2)) {
+    throw new Error("Add requires finite numbers");
+  }
+  return value1 + value2;
+}
+
+export function subtract(value1, value2) {
+  if (typeof value1 !== "number" || !Number.isFinite(value1)) {
+    throw new Error("Subtract requires finite numbers");
+  }
+  if (typeof value2 !== "number" || !Number.isFinite(value2)) {
+    throw new Error("Subtract requires finite numbers");
+  }
+  return value1 - value2;
+}
+
+export function multiplyBy(value1, value2) {
+  if (typeof value1 !== "number" || !Number.isFinite(value1)) {
+    throw new Error("Multiply requires finite numbers");
+  }
+  if (typeof value2 !== "number" || !Number.isFinite(value2)) {
+    throw new Error("Multiply requires finite numbers");
+  }
+  return value1 * value2;
+}
+
+export function divideBy(value1, value2) {
+  if (typeof value1 !== "number" || !Number.isFinite(value1)) {
+    throw new Error("Divide requires finite numbers");
+  }
+  if (typeof value2 !== "number" || !Number.isFinite(value2)) {
+    throw new Error("Divide requires finite numbers");
+  }
+  if (value2 === 0) {
+    throw new Error("Cannot divide by zero");
+  }
+  return value1 / value2;
+}

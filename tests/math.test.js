@@ -1,7 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { average, count, sum, min, max } from "../src/lib/math.js";
+import {
+  average,
+  count,
+  sum,
+  min,
+  max,
+  add,
+  subtract,
+  multiplyBy,
+  divideBy,
+} from "../src/lib/math.js";
 
 test("calculates an average", () => {
   assert.equal(average([60, 70, 80]), 70);
@@ -60,4 +70,31 @@ test("numeric functions reject non-numeric values", () => {
   assert.throws(() => sum([60, "70", 80]), /Sum requires finite numbers/);
   assert.throws(() => min([60, "70", 80]), /Min requires finite numbers/);
   assert.throws(() => max([60, "70", 80]), /Max requires finite numbers/);
+});
+
+test("adds two numbers", () => {
+  assert.equal(add(10, 5), 15);
+});
+
+test("subtracts two numbers", () => {
+  assert.equal(subtract(10, 5), 5);
+});
+
+test("multiplies two numbers", () => {
+  assert.equal(multiplyBy(10, 5), 50);
+});
+
+test("divides two numbers", () => {
+  assert.equal(divideBy(10, 5), 2);
+});
+
+test("arithmetic functions reject non-numeric values", () => {
+  assert.throws(() => add(10, "5"), /Add requires finite numbers/);
+  assert.throws(() => subtract(10, "5"), /Subtract requires finite numbers/);
+  assert.throws(() => multiplyBy(10, "5"), /Multiply requires finite numbers/);
+  assert.throws(() => divideBy(10, "5"), /Divide requires finite numbers/);
+});
+
+test("rejects division by zero", () => {
+  assert.throws(() => divideBy(10, 0), /Cannot divide by zero/);
 });
