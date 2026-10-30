@@ -57,3 +57,59 @@ test("item and slot ID collisions fail validation", () => {
     validateData(testItems, testSlots);
   });
 });
+
+test("items must be an array", () => {
+  assert.throws(
+    () => validateData({}, freshSlots()),
+    /Items must be an array/,
+  );
+});
+
+test("slots must be an array", () => {
+  assert.throws(
+    () => validateData(freshItems(), {}),
+    /Slots must be an array/,
+  );
+});
+
+test("items must not be empty", () => {
+  assert.throws(
+    () => validateData([], freshSlots()),
+    /Items must not be empty/,
+  );
+});
+
+test("slots must not be empty", () => {
+  assert.throws(
+    () => validateData(freshItems(), []),
+    /Slots must not be empty/,
+  );
+});
+
+test("items must contain objects", () => {
+  assert.throws(
+    () => validateData([null], freshSlots()),
+    /Items must be an object/,
+  );
+});
+
+test("arrays cannot be item records", () => {
+  assert.throws(
+    () => validateData([[]], freshSlots()),
+    /Items must be an object/,
+  );
+});
+
+test("invalid ID values fail validation", () => {
+  const invalidIds = [true, {}, [], Number.NaN];
+
+  for (const invalidId of invalidIds) {
+    const testItems = freshItems();
+    testItems[0].id = invalidId;
+
+    assert.throws(
+      () => validateData(testItems, freshSlots()),
+      /Item has invalid id/,
+    );
+  }
+});
