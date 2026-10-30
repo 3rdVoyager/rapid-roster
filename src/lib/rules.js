@@ -29,8 +29,7 @@ export function evaluateRule(rule, model) {
   }
 
   return {
-    satisfied: false,
-    score: 0,
+    score: rule.enforcement === "hard" ? min(scores) : average(scores),
     enforcement: rule.enforcement,
   };
 }

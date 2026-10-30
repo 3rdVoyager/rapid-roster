@@ -25,6 +25,7 @@ export function createModel(items, slots) {
     },
 
     getItemAttributes() {
+      const attributes = [];
       for (const item of items) {
         for (const attribute in item) {
           attributes.push(attribute);
@@ -34,6 +35,7 @@ export function createModel(items, slots) {
     },
 
     getSlotAttributes() {
+      const attributes = [];
       for (const slot of slots) {
         for (const attribute in slot) {
           attributes.push(attribute);
