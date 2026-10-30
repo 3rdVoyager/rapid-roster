@@ -6,7 +6,6 @@ import {
   approximates,
 } from "./operators.js";
 import { min, max, sum, average } from "./math.js";
-import { getAttribute } from "./selectors.js";
 
 export function evaluateRule(rule, model) {
   let result = {
