@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import items from "./fixtures/items.json" with { type: "json" };
 import slots from "./fixtures/slots.json" with { type: "json" };
+import assignments from "./fixtures/assignments.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
 import {
@@ -10,10 +11,19 @@ import {
   getSlotById,
   getItemsWithAttribute,
   getSlotsWithAttribute,
+  getItemAttribute,
+  getSlotAttribute,
+  getAssignedItemIds,
+  getAssignedSlotIds,
 } from "../src/lib/selectors.js";
 
 function createTestModel() {
-  return createModel(structuredClone(items), structuredClone(slots));
+  return createModel(
+    structuredClone(items),
+    structuredClone(slots),
+    [],
+    structuredClone(assignments),
+  );
 }
 
 test("returns all items", () => {
@@ -67,4 +77,47 @@ test("finds slots by attribute", () => {
   const teamCSlots = getSlotsWithAttribute(model, "id", "T3");
 
   assert.deepEqual(teamCSlots, [slots[2]]);
+});
+
+test("gets item attribute values", () => {
+  const model = createTestModel();
+
+  assert.deepEqual(getItemAttribute(model, "gender"), [
+    "M",
+    "M",
+    "F",
+    "M",
+    "F",
+    "F",
+    "M",
+    "F",
+    "M",
+    "F",
+    "M",
+    "F",
+  ]);
+});
+
+test("gets slot attribute values", () => {
+  const model = createTestModel();
+
+  assert.deepEqual(getSlotAttribute(model, "division"), [
+    "4/5",
+    "6/7/8",
+    "2/3",
+    "K/1",
+    "4/5",
+  ]);
+});
+
+test("gets item IDs assigned to a slot", () => {
+  const model = createTestModel();
+
+  assert.deepEqual(getAssignedItemIds(model, "T1"), ["P1", "P4", "P12"]);
+});
+
+test("gets slot IDs assigned to an item", () => {
+  const model = createTestModel();
+
+  assert.deepEqual(getAssignedSlotIds(model, "P1"), ["T1"]);
 });
