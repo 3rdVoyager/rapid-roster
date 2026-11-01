@@ -5,7 +5,7 @@ import {
   lessThan,
   approximates,
 } from "./operators.js";
-import { min, max, sum, average } from "./math.js";
+import { min, average } from "./math.js";
 import { getItemAttribute, getSlotAttribute } from "./selectors.js";
 
 const operators = {
