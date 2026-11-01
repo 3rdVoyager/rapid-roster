@@ -1,6 +1,6 @@
 export function createRandomAssignments(model, random = Math.random) {
   const assignments = {};
-  const slots = model.getSlots();
+  const slots = model.slots;
 
   if (slots.length === 0) {
     throw new Error("Cannot create an assignment without slots");
@@ -10,7 +10,7 @@ export function createRandomAssignments(model, random = Math.random) {
     assignments[slot.id] = [];
   }
 
-  const shuffledItems = shuffle([...model.getItems()], random);
+  const shuffledItems = shuffle([...model.items], random);
 
   for (let index = 0; index < shuffledItems.length; index++) {
     const slot = slots[index % slots.length];

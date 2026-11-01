@@ -6,6 +6,7 @@ import {
   approximates,
 } from "./operators.js";
 import { min, max, sum, average } from "./math.js";
+import { getItemAttribute, getSlotAttribute } from "./selectors.js";
 
 const operators = {
   equals,
@@ -68,10 +69,10 @@ export function resolvePath(path, model) {
     throw new Error(`Unsupported path: ${path}`);
   }
   if (collection === "items") {
-    return model.getItemAttribute(attribute);
+    return getItemAttribute(model, attribute);
   }
   if (collection === "slots") {
-    return model.getSlotAttribute(attribute);
+    return getSlotAttribute(model, attribute);
   }
   throw new Error(`Unknown collection: ${collection}`);
 }

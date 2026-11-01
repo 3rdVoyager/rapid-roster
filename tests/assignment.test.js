@@ -41,11 +41,11 @@ test("keeps slot sizes balanced", () => {
 
 test("does not mutate the model items while shuffling", () => {
   const model = createTestModel();
-  const originalItems = structuredClone(model.getItems());
+  const originalItems = structuredClone(model.items);
 
   createRandomAssignments(model, () => 0);
 
-  assert.deepEqual(model.getItems(), originalItems);
+  assert.deepEqual(model.items, originalItems);
 });
 
 test("uses injected randomness consistently", () => {

@@ -5,6 +5,12 @@ import items from "./fixtures/items.json" with { type: "json" };
 import slots from "./fixtures/slots.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
+import {
+  getItemById,
+  getSlotById,
+  getItemsWithAttribute,
+  getSlotsWithAttribute,
+} from "../src/lib/selectors.js";
 
 function createTestModel() {
   return createModel(structuredClone(items), structuredClone(slots));
@@ -13,43 +19,43 @@ function createTestModel() {
 test("returns all items", () => {
   const model = createTestModel();
 
-  assert.deepEqual(model.getItems(), items);
+  assert.deepEqual(model.items, items);
 });
 
 test("returns all slots", () => {
   const model = createTestModel();
 
-  assert.deepEqual(model.getSlots(), slots);
+  assert.deepEqual(model.slots, slots);
 });
 
 test("finds an item by ID", () => {
   const model = createTestModel();
 
-  assert.deepEqual(model.getItemById("P1"), items[0]);
+  assert.deepEqual(getItemById(model, "P1"), items[0]);
 });
 
 test("returns undefined for an unknown item ID", () => {
   const model = createTestModel();
 
-  assert.equal(model.getItemById("missing"), undefined);
+  assert.equal(getItemById(model, "missing"), undefined);
 });
 
 test("finds a slot by ID", () => {
   const model = createTestModel();
 
-  assert.deepEqual(model.getSlotById("T1"), slots[0]);
+  assert.deepEqual(getSlotById(model, "T1"), slots[0]);
 });
 
 test("returns undefined for an unknown slot ID", () => {
   const model = createTestModel();
 
-  assert.equal(model.getSlotById("missing"), undefined);
+  assert.equal(getSlotById(model, "missing"), undefined);
 });
 
 test("finds items by attribute", () => {
   const model = createTestModel();
 
-  const maleItems = model.getItemsByAttribute("gender", "M");
+  const maleItems = getItemsWithAttribute(model, "gender", "M");
 
   assert.ok(maleItems.length > 0);
   assert.ok(maleItems.every((item) => item.gender === "M"));
@@ -58,7 +64,7 @@ test("finds items by attribute", () => {
 test("finds slots by attribute", () => {
   const model = createTestModel();
 
-  const teamCSlots = model.getSlotsByAttribute("id", "T3");
+  const teamCSlots = getSlotsWithAttribute(model, "id", "T3");
 
   assert.deepEqual(teamCSlots, [slots[2]]);
 });
