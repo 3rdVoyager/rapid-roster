@@ -1,4 +1,4 @@
-export function createModel(items, slots, rules = {}, assignments = {byItemId: {}, bySlotId: {}}) {
+export function createModel(items, slots, rules = [], assignments = {byItemId: {}, bySlotId: {}}) {
   return {
     items,
     slots,

@@ -1,5 +1,6 @@
 [
   {
+    "id": "R1",
     "name": "Match Gender",
     "source": "items.gender",
     "operator": "equals",
@@ -7,6 +8,7 @@
     "enforcement": "hard"
   },
   {
+    "id": "R2",
     "name": "Match Division",
     "source": "items.division",
     "operator": "equals",
@@ -14,6 +16,7 @@
     "enforcement": "hard"
   },
   {
+    "id": "R3",
     "name": "Match Available Practice Nights",
     "source": "items.practiceNights",
     "operator": "contains",
@@ -21,6 +24,7 @@
     "enforcement": "hard"
   },
   {
+    "id": "R4",
     "name": "Honor Coach's Child Request",
     "source": "items.coachChildRequest",
     "operator": "equals",
@@ -28,6 +32,7 @@
     "enforcement": "hard"
   },
   {
+    "id": "R5",
     "name": "Balance Team Sizes",
     "source": "slots.assignedItems().count().max().subtract(slots.assignedItems().count().min())",
     "operator": "lessThan",
@@ -35,6 +40,7 @@
     "enforcement": "hard"
   },
   {
+    "id": "R6",
     "name": "Balance Average Heights",
     "source": "slots.assignedItems().height.average()",
     "operator": "approximates",
@@ -43,6 +49,7 @@
     "priority": 80
   },
   {
+    "id": "R7",
     "name": "Distribute Tallest Players",
     "source": "slots.assignedItems().height.max()",
     "operator": "approximates",
@@ -51,6 +58,7 @@
     "priority": 80
   },
   {
+    "id": "R8",
     "name": "Honor Teammate Requests",
     "source": "items.teammateRequest",
     "operator": "contains",
@@ -59,6 +67,7 @@
     "priority": 75
   },
   {
+    "id": "R9",
     "name": "Honor Coach Requests",
     "source": "items.coachRequest",
     "operator": "equals",
@@ -67,6 +76,7 @@
     "priority": 60
   },
   {
+    "id": "R10",
     "name": "Match Sibling Practice Nights",
     "source": "items.sibling.lookup().assignedSlots().practiceNight",
     "operator": "equals",
@@ -75,6 +85,7 @@
     "priority": 65
   },
   {
+    "id": "R11",
     "name": "Match Sibling Gym",
     "source": "items.sibling.lookup().assignedSlots().gymLocation",
     "operator": "equals",
@@ -83,6 +94,7 @@
     "priority": 65
   },
   {
+    "id": "R12",
     "name": "Balance Evaluation Scores",
     "source": "slots.assignedItems().evaluationScore.average()",
     "operator": "approximates",
