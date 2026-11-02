@@ -15,6 +15,8 @@ import {
   getSlotAttribute,
   getAssignedItemIds,
   getAssignedSlotIds,
+  getAssignedItems,
+  getAssignedSlots,
 } from "../src/lib/selectors.js";
 
 function createTestModel() {
@@ -120,4 +122,26 @@ test("gets slot IDs assigned to an item", () => {
   const model = createTestModel();
 
   assert.deepEqual(getAssignedSlotIds(model, "P1"), ["T1"]);
+});
+
+test("gets assigned item records for a slot", () => {
+  const model = createTestModel();
+
+  const assignedItems = getAssignedItems(model, "T1");
+
+  assert.deepEqual(
+    assignedItems.map((item) => item.id),
+    ["P1", "P4", "P12"],
+  );
+});
+
+test("gets assigned slot records for an item", () => {
+  const model = createTestModel();
+
+  const assignedSlots = getAssignedSlots(model, "P1");
+
+  assert.deepEqual(
+    assignedSlots.map((slot) => slot.id),
+    ["T1"],
+  );
 });

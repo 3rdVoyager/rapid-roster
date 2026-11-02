@@ -45,6 +45,19 @@ export function getSlotAttribute(model, attribute) {
 export function getAssignedItemIds(model, slotId) {
   return model.assignments.bySlotId[slotId] || [];
 }
+
 export function getAssignedSlotIds(model, itemId) {
   return model.assignments.byItemId[itemId] || [];
+}
+
+export function getAssignedItems(model, slotId) {
+  const itemIds = getAssignedItemIds(model, slotId);
+
+  return itemIds.map((itemId) => getItemById(model, itemId));
+}
+
+export function getAssignedSlots(model, itemId) {
+  const slotIds = getAssignedSlotIds(model, itemId);
+
+  return slotIds.map((slotId) => getSlotById(model, slotId));
 }
