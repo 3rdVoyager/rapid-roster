@@ -4,22 +4,21 @@
 
 - **Items** are assigned to **slots** and vice versa.
 - They are the two sides of a generic assignment graph.
-- Each item and slot may set minimum and maximum assignment counts.
 - This supports one-to-one, one-to-many, and many-to-many assignments.
 - The engine does not attach domain meanings such as player, event, or team.
+- Assignments are stored separately as slot IDs mapped to item ID arrays.
 
 ## Data Schema
 
-Items and slots may contain arbitrary named fields. Field definitions use a
-small set of types:
+Items and slots may contain arbitrary named fields. Values use a small set of
+types:
 
-- `string`: equality, membership, and pattern comparisons
+- `string`: equality and membership comparisons
 - `number`: totals, averages, ranges, and distribution
 
-Every record has a stable `id`. Rules define the dataset and scope in which an
-string or other value is evaluated. Types only validate data and determine which
-operators are available. Field names provide the domain meaning, so `height`,
-`skill`, and `score` can all remain numbers.
+Every record has a stable ID that is unique across both items and slots. Types
+are inferred from JSON values rather than declared in the data. Field names
+provide the domain meaning, so `height`, `skill`, and `score` remain numbers.
 
 Every type natively supports one or more values. Importers may read delimited
 values, but normalized data stores multiple values as arrays. Ranges are an
@@ -28,71 +27,90 @@ values may use strings and gain normalization later if needed. Calendar and
 schedule data can initially use strings such as `Mon`, `Tue`, and `Wed`, or
 numbers when ordering and arithmetic are needed.
 
-## Rule Schema
+## Example Data
 
-Special attributes:
+These tables are illustrative only. The engine does not require sports-specific
+columns; any named fields can be used by a keyword.
 
-- `slots.assignedItems()`: returns the items assigned to the slot.
-- `items.assignedSlots()`: returns the slots assigned to the item.
+| ID  | Gender | Grade | Division | Height | Practice Nights | Teammate Request | Coach Request | Coach's Child Request | Sibling | Eval Score |
+| --- | ------ | ----- | -------- | -----: | --------------- | ---------------- | ------------- | --------------------- | ------- | ---------: |
+| P1  | M      | 4     | 4/5      |     54 | Mon, Wed        | P4               | None          | T1                    | P2      |         78 |
+| P2  | M      | 1     | K/1      |     42 | Mon, Wed        | None             | None          | None                  | P1      |         45 |
+| P3  | F      | 7     | 6/7/8    |     62 | Fri             | P6               | None          | T2                    | None    |         92 |
+| P4  | M      | 5     | 4/5      |     56 | Tue             | P1               | T1            | None                  | None    |        105 |
+| P5  | F      | K     | K/1      |     38 | Mon-Fri         | None             | None          | None                  | None    |         28 |
+| P6  | F      | 7     | 6/7/8    |     61 | Mon             | P3               | T2            | None                  | None    |         88 |
+| P7  | M      | 2     | 2/3      |     46 | Thu             | P8               | None          | None                  | None    |         64 |
+| P8  | F      | 3     | 2/3      |     49 | Thu             | P7               | None          | None                  | None    |         71 |
+| P9  | M      | 6     | 6/7/8    |     59 | Tue, Thu        | None             | None          | None                  | None    |         84 |
+| P10 | F      | 8     | 6/7/8    |     64 | Wed             | P11              | None          | None                  | None    |         97 |
+| P11 | M      | 8     | 6/7/8    |     67 | Wed             | P10              | None          | None                  | None    |         90 |
+| P12 | F      | 5     | 4/5      |     55 | Mon, Fri        | None             | None          | None                  | None    |         73 |
 
-`attributeOperator`:
+| ID  | Division Gender | Division | Practice Night | Gym Location       | Time Slot |
+| --- | --------------- | -------- | -------------- | ------------------ | --------- |
+| T1  | M               | 4/5      | Tue            | Main Gym - Court A | 6:00 PM   |
+| T2  | F               | 6/7/8    | Thu            | North Elementary   | 7:30 PM   |
+| T3  | M               | 2/3      | Thu            | Main Gym - Court B | 6:00 PM   |
+| T4  | F               | K/1      | Mon            | South Elementary   | 5:30 PM   |
+| T5  | F               | 4/5      | Wed            | North Elementary   | 6:00 PM   |
 
-- `.count()`: returns the number of values in the column.
-- `.sum()`: returns the sum of the values in the column.
-- `.average()`: returns the average of the values in the column.
-- `.max()`: returns the maximum value in the column.
-- `.min()`: returns the minimum value in the column.
-- `.custom()`: returns a custom selection of values from the column.
-- `.lookup()`: returns the item or slot that matches an ID.
+Assignments remain separate from records and are persisted in compact slot-keyed
+form:
 
-`attributeSelector`:
-
-- `items.*`: returns the item attribute to evaluate.
-- `slots.*`: returns the slot attribute to evaluate.
-
-Arithmetic methods operate on numeric selector results and return a numeric
-result:
-
-- `add(value)`: add a number or numeric selector.
-- `subtract(value)`: subtract a number or numeric selector.
-- `multiplyBy(value)`: multiply by a number or numeric selector.
-- `divideBy(value)`: divide by a number or numeric selector.
-
-Arithmetic methods may be chained. Division by zero is invalid, and methods
-are only available after a numeric value or numeric aggregate:
-
-```text
-items.count().divideBy(slots.count()).add(1)
+```json
+{
+  "T1": ["P1", "P4"],
+  "T2": ["P3"]
+}
 ```
 
-Every rule has a common envelope:
+## Current Rule Model
 
-- `source`: the source field to evaluate. Accepts an `attributeSelector`.
-- `operator`: any can be negated by adding "not" to the operand. Accepts:
-  - `contains (any)`: awards priority points if the first field contains a value in the second field.
-  - `equals (any)`: awards priority points if the first field equals the second field entirely.
-  - `approximates (any)`: awards priority points if based on how close the first field is to the second field.
-  - `lessThan (numeric)`: awards priority points if the first field is less than the second field.
-  - `greaterThan (numeric)`: awards priority points if the first field is greater than the second field.
-- `target`: the target field to evaluate. Accepts an `attributeSelector`.
-- `enforcement`: `hard` or `soft`
-- `priority`: 1 to 100 for soft rules.
+Rules use one specific keyword rather than a general-purpose expression
+language. The keyword performs the traversal, assignment lookup, comparison,
+aggregation, and scoring required by that rule.
 
-## Example
+```json
+{
+  "id": "R1",
+  "name": "Match Gender",
+  "description": "An item's gender must match its assigned slot.",
+  "enforcement": "hard",
+  "keyword": "itemFieldEqualsAssignedSlotField",
+  "inputs": {
+    "itemField": "gender",
+    "slotField": "divisionGender"
+  }
+}
+```
 
-See [example-setup.md](example-setup.md) for the example data tables and league
-rules.
+Soft rules add `priority` from 1 to 100. Keywords currently cover assignment
+field comparisons, requested assignments, count balancing, average balancing,
+selected-item distribution, teammate relationships, and sibling relationships.
+See [keyword-rule-schema.md](keyword-rule-schema.md) for the current catalog
+and input definitions.
+
+The keyword registry gives every rule a common validation and evaluation
+interface. Adding a new supported behavior means adding a keyword, its input
+validator, evaluator, tests, and rule-builder form.
+
+## Rule Evaluation
 
 ### Hard Rules
 
-Hard rules define legality. Each evaluator returns a non-negative violation
-measure; zero means satisfied. All hard rules must reach zero before soft-rule
+Each applicable leaf comparison returns satisfaction from 0 to 1. A rule
+reports `comparisonCount`, `satisfactionTotal`, `violationTotal`, `applicable`,
+and its normalized average score. Empty or non-applicable values are skipped.
+
+Hard rules define legality. A result is legal only when
+`violationTotal === 0`. All hard rules must be legal before soft-rule
 optimization begins.
 
 ### Soft Rules
 
-Soft rules return satisfaction from 0 to 1. Binary rules may return only 0 or 1,
-while rules such as balancing can report partial improvement.
+Binary comparisons return 0 or 1, while rules such as balancing may return
+partial satisfaction.
 
 ```text
 soft score = sum(priority × satisfaction)
