@@ -1,98 +1,77 @@
 import {
-  equals,
-  contains,
-  greaterThan,
-  lessThan,
-  approximates,
-} from "./operators.js";
-import { min, average } from "./math.js";
-import { getItemAttribute, getSlotAttribute } from "./selectors.js";
+  getAssignedItems,
+  getAssignedSlots,
+  getCoAssignedItems,
+  getCoAssignedSlots,
+} from "./selectors.js";
 
-const operators = {
-  equals,
-  contains,
-  greaterThan,
-  lessThan,
-  approximates,
+const evaluators = {
+  match: evaluateMatch,
+  limit: evaluateLimit,
+  balance: evaluateBalance,
+  distribute: evaluateDistribute,
 };
 
 export function evaluateRule(rule, model) {
-  const sourceValue = resolvePath(rule.source, model);
-  const targetValue = resolveValue(rule.target, model);
-
-  const scores = [];
-  if (Array.isArray(sourceValue) || Array.isArray(targetValue)) {
-    scores.push(
-      ...evaluateRecursiveRule(rule.operator, sourceValue, targetValue),
-    );
-  } else {
-    scores.push(evaluateOperator(rule.operator, sourceValue, targetValue));
+  try {
+    isValidRule(rule);
+  } catch (error) {
+    return error;
   }
+  const evaluator = evaluators[rule.keyword];
+  const result = evaluator(rule.inputs, model);
 
   return {
-    score: rule.enforcement === "hard" ? min(scores) : average(scores),
-    enforcement: rule.enforcement,
+    score: (result.score / repetitions) * rule.priority,
+    percentage: result.score / repetitions,
+    repetitions: result.repetitions,
+    violations: result.violations,
   };
-}
-
-export function evaluateOperator(operator, sourceValue, targetValue) {
-  const operation = operators[operator];
-  if (!operation) {
-    throw new Error(`Unknown operator: ${operator}`);
-  }
-  return operation(sourceValue, targetValue);
 }
 
 export function isValidRule(rule) {
   if (rule.enforcement !== "hard" && rule.enforcement !== "soft") {
-    return false;
+    throw new Error(`Unknown enforcement ${rule.enforcement}`);
   }
 
-  if (!rule.source || !rule.operator || !rule.target) {
-    return false;
+  if (!rule.inputs.source || rule.inputs.target || !rule.keyword) {
+    throw new Error(`Unknown rule setup`);
   }
 
-  return true;
+  if (!evaluators[rule.keyword]) {
+    throw new Error(`Unknown keyword: ${keyword}`);
+  }
 }
 
-export function resolveValue(value, model) {
-  if (typeof value === "string") {
-    return resolvePath(value, model);
-  }
-  return value;
-}
-
-export function resolvePath(path, model) {
-  const [collection, attribute, ...remainingPath] = path.split(".");
-
-  if (remainingPath.length > 0) {
-    throw new Error(`Unsupported path: ${path}`);
-  }
-  if (collection === "items") {
-    return getItemAttribute(model, attribute);
-  }
-  if (collection === "slots") {
-    return getSlotAttribute(model, attribute);
-  }
-  throw new Error(`Unknown collection: ${collection}`);
-}
-
-export function evaluateRecursiveRule(operator, sourceValue, targetValue) {
-  const results = [];
-  if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
-    for (const item of sourceValue) {
-      for (const target of targetValue) {
-        results.push(evaluateOperator(operator, item, target));
+export function evaluateMatch(inputs, model) {
+  let score = 0;
+  let repetitions = 0;
+  let violations = 0;
+  for (const i of model[inputs.source.collection]) {
+    let assignments = null;
+    if (inputs.source.collection === "items") {
+      if (inputs.target.collection === "slots") {
+        assignments = getAssignedSlots(model, i.id);
+      } else if (inputs.target.collection === "items") {
+        assignments = getCoAssignedItems(model, i.id);
+      }
+    } else if (inputs.source.collection === "slots") {
+      if (inputs.target.collection === "slots") {
+        assignments = getCoAssignedSlots(model, i.id);
+      } else if (inputs.target.collection === "items") {
+        assignments = getAssignedItems(model, i.id);
       }
     }
-  } else if (Array.isArray(sourceValue) && !Array.isArray(targetValue)) {
-    for (const item of sourceValue) {
-      results.push(evaluateOperator(operator, item, targetValue));
-    }
-  } else if (!Array.isArray(sourceValue) && Array.isArray(targetValue)) {
-    for (const target of targetValue) {
-      results.push(evaluateOperator(operator, sourceValue, target));
+
+    for (const j of assignments) {
+      if (j[inputs.target.attribute] === i[inputs.source.attribute]) {
+        score++;
+      } else {
+        violations++;
+      }
+      repetitions++;
     }
   }
-  return results;
+
+  return { score, repetitions, violations };
 }
