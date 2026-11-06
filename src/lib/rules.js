@@ -4,8 +4,6 @@ import {
   getCoAssignedItems,
   getCoAssignedSlots,
 } from "./selectors.js";
-import { average } from "./math.js";
-import { approximates } from "./operators.js";
 
 const evaluators = {
   match: evaluateMatch,
@@ -105,6 +103,34 @@ export function evaluateMatch(inputs, model) {
   }
 
   return { score, repetitions, violations };
+}
+
+function approximates(value1, value2) {
+  if (typeof value1 !== "number" || !Number.isFinite(value1)) {
+    throw new Error("Balance requires finite numeric values");
+  }
+  if (typeof value2 !== "number" || !Number.isFinite(value2)) {
+    throw new Error("Balance requires finite numeric values");
+  }
+
+  const difference = Math.abs(value1 - value2);
+  return Math.max(0, 1 - difference / 100);
+}
+
+function average(values) {
+  if (values.length === 0) {
+    throw new Error("Cannot average an empty array");
+  }
+
+  let sum = 0;
+  for (const value of values) {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      throw new Error("Balance requires finite numeric values");
+    }
+    sum += value;
+  }
+
+  return sum / values.length;
 }
 
 export function evaluateLimit(inputs, model) { }
