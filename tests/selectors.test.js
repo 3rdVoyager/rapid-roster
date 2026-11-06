@@ -17,6 +17,8 @@ import {
   getAssignedSlotIds,
   getAssignedItems,
   getAssignedSlots,
+  getCoAssignedItems,
+  getCoAssignedSlots,
 } from "../src/lib/selectors.js";
 
 function createTestModel() {
@@ -143,5 +145,75 @@ test("gets assigned slot records for an item", () => {
   assert.deepEqual(
     assignedSlots.map((slot) => slot.id),
     ["T1"],
+  );
+});
+
+test("finds every slot assigned to an item", () => {
+  const model = createModel(
+    structuredClone(items),
+    structuredClone(slots),
+    [],
+    {
+      T1: ["P1"],
+      T2: ["P1"],
+    },
+  );
+
+  assert.deepEqual(getAssignedSlotIds(model, "P1"), ["T1", "T2"]);
+});
+
+test("returns an empty list for an unassigned item", () => {
+  const model = createModel(
+    structuredClone(items),
+    structuredClone(slots),
+    [],
+    {
+      T1: ["P1"],
+    },
+  );
+
+  assert.deepEqual(getAssignedSlotIds(model, "P2"), []);
+  assert.deepEqual(getAssignedSlots(model, "P2"), []);
+});
+
+test("returns an empty list for a slot with no assigned items", () => {
+  const model = createModel(
+    structuredClone(items),
+    structuredClone(slots),
+    [],
+    {
+      T1: ["P1"],
+      T3: [],
+    },
+  );
+
+  assert.deepEqual(getAssignedItemIds(model, "T3"), []);
+  assert.deepEqual(getAssignedItems(model, "T3"), []);
+});
+
+test("gets other items assigned to the same slot", () => {
+  const model = createTestModel();
+
+  assert.deepEqual(
+    getCoAssignedItems(model, "P1").map((item) => item.id),
+    ["P4", "P12"],
+  );
+});
+
+test("gets other slots sharing an item without duplicates", () => {
+  const model = createModel(
+    structuredClone(items),
+    structuredClone(slots),
+    [],
+    {
+      T1: ["P1", "P4"],
+      T2: ["P1", "P4"],
+      T3: ["P7"],
+    },
+  );
+
+  assert.deepEqual(
+    getCoAssignedSlots(model, "T1").map((slot) => slot.id),
+    ["T2"],
   );
 });
