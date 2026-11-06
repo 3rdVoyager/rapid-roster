@@ -4,6 +4,8 @@ import {
   getCoAssignedItems,
   getCoAssignedSlots,
 } from "./selectors.js";
+import { average } from "./math.js";
+import { approximates } from "./operators.js";
 
 const evaluators = {
   match: evaluateMatch,
@@ -104,5 +106,57 @@ export function evaluateMatch(inputs, model) {
 }
 
 export function evaluateLimit(inputs, model) { }
-export function evaluateBalance(inputs, model) { }
+
+export function evaluateBalance(inputs, model) {
+  const sourceCollection = inputs.source.collection;
+  const targetCollection =
+    typeof inputs.target === "string"
+      ? inputs.target
+      : inputs.target.collection;
+
+  if (
+    !["items", "slots"].includes(sourceCollection) ||
+    !["items", "slots"].includes(targetCollection) ||
+    sourceCollection === targetCollection
+  ) {
+    throw new Error(
+      `Unsupported balance collections: ${sourceCollection} -> ${targetCollection}`,
+    );
+  }
+
+  const values = model[sourceCollection].map(
+    (record) => record[inputs.source.attribute],
+  );
+  const overallAverage = average(values);
+  let score = 0;
+  let repetitions = 0;
+  let violations = 0;
+
+  for (const target of model[targetCollection]) {
+    let assignedSourceRecords;
+    if (sourceCollection === "items" && targetCollection === "slots") {
+      assignedSourceRecords = getAssignedItems(model, target.id);
+    } else {
+      assignedSourceRecords = getAssignedSlots(model, target.id);
+    }
+
+    if (assignedSourceRecords.length === 0) {
+      continue;
+    }
+
+    const slotAverage = average(
+      assignedSourceRecords.map(
+        (record) => record[inputs.source.attribute],
+      ),
+    );
+    const slotScore = approximates(slotAverage, overallAverage);
+    score += slotScore;
+    repetitions++;
+    if (slotScore < 1) {
+      violations++;
+    }
+  }
+
+  return { score, repetitions, violations };
+}
 export function evaluateDistribute(inputs, model) { }

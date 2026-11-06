@@ -7,7 +7,7 @@ import rules from "./fixtures/rules.json" with { type: "json" };
 import assignments from "./fixtures/assignments.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
-import { evaluateMatch } from "../src/lib/rules.js";
+import { evaluateBalance, evaluateMatch } from "../src/lib/rules.js";
 
 function createTestModel() {
   return createModel(
@@ -78,4 +78,88 @@ test("match rejects unsupported collections", () => {
       ),
     /Unsupported match collections: teams -> slots/,
   );
+});
+
+test("balance scores slot averages against the overall average", () => {
+  const model = createModel(
+    [
+      { id: "I1", height: 10 },
+      { id: "I2", height: 20 },
+      { id: "I3", height: 30 },
+      { id: "I4", height: 40 },
+    ],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    { S1: ["I1", "I4"], S2: ["I2", "I3"] },
+  );
+
+  const result = evaluateBalance(
+    {
+      source: { collection: "items", attribute: "height" },
+      target: { collection: "slots" },
+    },
+    model,
+  );
+
+  assert.deepEqual(result, {
+    score: 2,
+    repetitions: 2,
+    violations: 0,
+  });
+});
+
+test("balance scores deviations from the overall average", () => {
+  const model = createModel(
+    [
+      { id: "I1", height: 10 },
+      { id: "I2", height: 20 },
+      { id: "I3", height: 30 },
+      { id: "I4", height: 40 },
+    ],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    { S1: ["I1", "I2"], S2: ["I3", "I4"] },
+  );
+
+  const result = evaluateBalance(
+    {
+      source: { collection: "items", attribute: "height" },
+      target: { collection: "slots" },
+    },
+    model,
+  );
+
+  assert.deepEqual(result, {
+    score: 1.8,
+    repetitions: 2,
+    violations: 2,
+  });
+});
+
+test("balance supports slots as the source and items as the target", () => {
+  const model = createModel(
+    [{ id: "I1" }, { id: "I2" }],
+    [
+      { id: "S1", height: 10 },
+      { id: "S2", height: 20 },
+      { id: "S3", height: 30 },
+      { id: "S4", height: 40 },
+    ],
+    [],
+    { S1: ["I1"], S4: ["I1"], S2: ["I2"], S3: ["I2"] },
+  );
+
+  const result = evaluateBalance(
+    {
+      source: { collection: "slots", attribute: "height" },
+      target: "items",
+    },
+    model,
+  );
+
+  assert.deepEqual(result, {
+    score: 2,
+    repetitions: 2,
+    violations: 0,
+  });
 });
