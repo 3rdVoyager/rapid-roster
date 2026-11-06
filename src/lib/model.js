@@ -1,4 +1,8 @@
+import { validateData } from "./validate.js";
+
 export function createModel(items, slots, rules = [], assignments = {}) {
+  validateData(items, slots);
+
   const itemAssignments = {};
 
   for (const [slotId, itemIds] of Object.entries(assignments)) {

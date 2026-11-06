@@ -61,11 +61,9 @@ test("uses injected randomness consistently", () => {
   assert.deepEqual(firstAssignment, secondAssignment);
 });
 
-test("rejects a model without slots", () => {
-  const model = createTestModel(items, []);
-
+test("rejects creating a model without slots", () => {
   assert.throws(
-    () => createRandomAssignments(model, () => 0),
-    /Cannot create an assignment without slots/,
+    () => createTestModel(items, []),
+    /Slots must not be empty/,
   );
 });
