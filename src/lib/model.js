@@ -1,7 +1,13 @@
-import { validateData } from "./validate.js";
+import {
+  validateAssignments,
+  validateData,
+  validateRules,
+} from "./validate.js";
 
 export function createModel(items, slots, rules = [], assignments = {}) {
   validateData(items, slots);
+  validateRules(rules);
+  validateAssignments(assignments, items, slots);
 
   const itemAssignments = {};
 

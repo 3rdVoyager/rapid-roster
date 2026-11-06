@@ -3,8 +3,14 @@ import assert from "node:assert/strict";
 
 import items from "./fixtures/items.json" with { type: "json" };
 import slots from "./fixtures/slots.json" with { type: "json" };
+import rules from "./fixtures/rules.json" with { type: "json" };
+import assignments from "./fixtures/assignments.json" with { type: "json" };
 
-import { validateData } from "../src/lib/validate.js";
+import {
+  validateAssignments,
+  validateData,
+  validateRules,
+} from "../src/lib/validate.js";
 
 function freshItems() {
   return structuredClone(items);
@@ -12,6 +18,10 @@ function freshItems() {
 
 function freshSlots() {
   return structuredClone(slots);
+}
+
+function freshRules() {
+  return structuredClone(rules);
 }
 
 test("valid fixtures pass validation", () => {
@@ -106,4 +116,68 @@ test("invalid ID values fail validation", () => {
       /Item has invalid id/,
     );
   }
+});
+
+test("valid rules pass validation", () => {
+  assert.doesNotThrow(() => validateRules(freshRules()));
+});
+
+test("unknown rule keywords fail validation", () => {
+  const testRules = freshRules();
+  testRules[0].keyword = "unknown";
+
+  assert.throws(
+    () => validateRules(testRules),
+    /Unknown keyword: unknown/,
+  );
+});
+
+test("soft rules require a priority from 1 to 100", () => {
+  const testRules = freshRules();
+  testRules[5].priority = 101;
+
+  assert.throws(
+    () => validateRules(testRules),
+    /Invalid priority for rule: R6/,
+  );
+});
+
+test("valid assignments pass validation", () => {
+  assert.doesNotThrow(() =>
+    validateAssignments(assignments, freshItems(), freshSlots()),
+  );
+});
+
+test("assignments must reference existing slots and items", () => {
+  assert.throws(
+    () =>
+      validateAssignments(
+        { missing: ["P1"] },
+        freshItems(),
+        freshSlots(),
+      ),
+    /Assignment references unknown slot: missing/,
+  );
+
+  assert.throws(
+    () =>
+      validateAssignments(
+        { T1: ["missing"] },
+        freshItems(),
+        freshSlots(),
+      ),
+    /Assignment references unknown item: missing/,
+  );
+});
+
+test("duplicate item IDs in one assignment fail validation", () => {
+  assert.throws(
+    () =>
+      validateAssignments(
+        { T1: ["P1", "P1"] },
+        freshItems(),
+        freshSlots(),
+      ),
+    /Duplicate item assignment in slot: T1, P1/,
+  );
 });

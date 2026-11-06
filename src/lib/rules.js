@@ -13,11 +13,6 @@ const evaluators = {
 };
 
 export function evaluateRule(rule, model) {
-  try {
-    isValidRule(rule);
-  } catch (error) {
-    return error;
-  }
   const evaluator = evaluators[rule.keyword];
   const result = evaluator(rule.inputs, model);
   const priority = rule.priority ?? 1;
@@ -28,20 +23,6 @@ export function evaluateRule(rule, model) {
     repetitions: result.repetitions,
     violations: result.violations,
   };
-}
-
-export function isValidRule(rule) {
-  if (rule.enforcement !== "hard" && rule.enforcement !== "soft") {
-    throw new Error(`Unknown enforcement ${rule.enforcement}`);
-  }
-
-  if (!rule.inputs.source || !rule.inputs.target || !rule.keyword) {
-    throw new Error(`Unknown rule setup`);
-  }
-
-  if (!evaluators[rule.keyword]) {
-    throw new Error(`Unknown keyword: ${rule.keyword}`);
-  }
 }
 
 export function evaluateMatch(inputs, model) {

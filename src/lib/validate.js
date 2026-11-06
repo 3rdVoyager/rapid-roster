@@ -1,8 +1,101 @@
 export function validateData(items, slots) {
   validateShape(items, slots);
   validateIds(items, slots);
+}
 
-  // TODO: Handle error (Show toast message)
+const supportedKeywords = new Set([
+  "match",
+  "limit",
+  "balance",
+  "distribute",
+]);
+
+export function validateRules(rules) {
+  if (!Array.isArray(rules)) {
+    throw new Error("Rules must be an array");
+  }
+
+  for (const rule of rules) {
+    validateRule(rule);
+  }
+}
+
+export function validateRule(rule) {
+  if (typeof rule !== "object" || rule === null || Array.isArray(rule)) {
+    throw new Error("Rule must be an object");
+  }
+
+  if (!isValidId(rule.id)) {
+    throw new Error("Rule has invalid id");
+  }
+
+  if (rule.enforcement !== "hard" && rule.enforcement !== "soft") {
+    throw new Error(`Unknown enforcement ${rule.enforcement}`);
+  }
+
+  if (!supportedKeywords.has(rule.keyword)) {
+    throw new Error(`Unknown keyword: ${rule.keyword}`);
+  }
+
+  if (
+    typeof rule.inputs !== "object" ||
+    rule.inputs === null ||
+    Array.isArray(rule.inputs) ||
+    !rule.inputs.source ||
+    !rule.inputs.target
+  ) {
+    throw new Error(`Invalid inputs for rule: ${rule.id}`);
+  }
+
+  if (rule.enforcement === "soft") {
+    if (
+      typeof rule.priority !== "number" ||
+      !Number.isFinite(rule.priority) ||
+      rule.priority < 1 ||
+      rule.priority > 100
+    ) {
+      throw new Error(`Invalid priority for rule: ${rule.id}`);
+    }
+  }
+}
+
+export function validateAssignments(assignments, items, slots) {
+  if (
+    typeof assignments !== "object" ||
+    assignments === null ||
+    Array.isArray(assignments)
+  ) {
+    throw new Error("Assignments must be an object");
+  }
+
+  const itemIds = new Set(items.map((item) => String(item.id)));
+  const slotIds = new Set(slots.map((slot) => String(slot.id)));
+
+  for (const [slotId, assignedItemIds] of Object.entries(assignments)) {
+    if (!slotIds.has(String(slotId))) {
+      throw new Error(`Assignment references unknown slot: ${slotId}`);
+    }
+
+    if (!Array.isArray(assignedItemIds)) {
+      throw new Error(`Assignments for slot must be an array: ${slotId}`);
+    }
+
+    const seenItemIds = new Set();
+    for (const itemId of assignedItemIds) {
+      if (!itemIds.has(String(itemId))) {
+        throw new Error(
+          `Assignment references unknown item: ${String(itemId)}`,
+        );
+      }
+
+      if (seenItemIds.has(String(itemId))) {
+        throw new Error(
+          `Duplicate item assignment in slot: ${slotId}, ${String(itemId)}`,
+        );
+      }
+      seenItemIds.add(String(itemId));
+    }
+  }
 }
 
 export function validateShape(items, slots) {
