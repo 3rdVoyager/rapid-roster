@@ -6,8 +6,12 @@ import slots from "./fixtures/slots.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
 import {
+  addAssignment,
   createLegalAssignments,
   createRandomAssignments,
+  moveAssignment,
+  removeAssignment,
+  swapAssignments,
 } from "../src/lib/assignment.js";
 
 function createTestModel(itemData = items, slotData = slots) {
@@ -112,5 +116,41 @@ test("stops after the legal assignment attempt limit", () => {
   assert.throws(
     () => createLegalAssignments(model, () => 0, 3),
     /Could not create legal assignments after 3 attempts/,
+  );
+});
+
+test("adds an assignment without mutating the original", () => {
+  const assignments = { S1: ["I1"], S2: [] };
+
+  const nextAssignments = addAssignment(assignments, "S2", "I1");
+
+  assert.deepEqual(nextAssignments, { S1: ["I1"], S2: ["I1"] });
+  assert.deepEqual(assignments, { S1: ["I1"], S2: [] });
+});
+
+test("removes an assignment without mutating the original", () => {
+  const assignments = { S1: ["I1", "I2"] };
+
+  const nextAssignments = removeAssignment(assignments, "S1", "I1");
+
+  assert.deepEqual(nextAssignments, { S1: ["I2"] });
+  assert.deepEqual(assignments, { S1: ["I1", "I2"] });
+});
+
+test("moves an assignment between slots", () => {
+  const assignments = { S1: ["I1"], S2: ["I2"] };
+
+  assert.deepEqual(
+    moveAssignment(assignments, "I1", "S1", "S2"),
+    { S1: [], S2: ["I2", "I1"] },
+  );
+});
+
+test("swaps assignments between slots", () => {
+  const assignments = { S1: ["I1"], S2: ["I2"] };
+
+  assert.deepEqual(
+    swapAssignments(assignments, "S1", "I1", "S2", "I2"),
+    { S1: ["I2"], S2: ["I1"] },
   );
 });
