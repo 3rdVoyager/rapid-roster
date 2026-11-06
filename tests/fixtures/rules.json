@@ -11,7 +11,7 @@
         "attribute": "gender"
       },
       "target": {
-        "collection": "assignedSlots",
+        "collection": "slots",
         "attribute": "divisionGender"
       }
     }
@@ -28,7 +28,7 @@
         "attribute": "division"
       },
       "target": {
-        "collection": "assignedSlots",
+        "collection": "slots",
         "attribute": "division"
       }
     }
@@ -45,7 +45,7 @@
         "attribute": "practiceNights"
       },
       "target": {
-        "collection": "assignedSlots",
+        "collection": "slots",
         "attribute": "practiceNight"
       }
     }
@@ -62,7 +62,7 @@
         "attribute": "coachChildRequest"
       },
       "target": {
-        "collection": "assignedSlots",
+        "collection": "slots",
         "attribute": "id"
       }
     }
@@ -121,7 +121,7 @@
         "attribute": "teammateRequest"
       },
       "target": {
-        "collection": "coAssignedItems",
+        "collection": "items",
         "attribute": "id"
       }
     }
@@ -139,7 +139,7 @@
         "attribute": "coachRequest"
       },
       "target": {
-        "collection": "assignedSlots",
+        "collection": "slots",
         "attribute": "id"
       }
     }
@@ -153,11 +153,15 @@
     "keyword": "match",
     "inputs": {
       "source": {
-        "collection": "siblingAssignedSlots",
-        "attribute": "practiceNight"
+        "collection": "items",
+        "attribute": "sibling",
+        "nested": {
+          "collection": "slots",
+          "attribute": "practiceNight"
+        }
       },
       "target": {
-        "collection": "assignedSlots",
+        "collection": "slots",
         "attribute": "practiceNight"
       }
     }
@@ -171,11 +175,15 @@
     "keyword": "match",
     "inputs": {
       "source": {
-        "collection": "siblingAssignedSlots",
-        "attribute": "gymLocation"
+        "collection": "items",
+        "attribute": "sibling",
+        "lookup": {
+          "collection": "slots",
+          "attribute": "gymLocation"
+        }
       },
       "target": {
-        "collection": "assignedSlots",
+        "collection": "slots",
         "attribute": "gymLocation"
       }
     }

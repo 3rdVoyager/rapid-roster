@@ -43,11 +43,11 @@ export function getSlotAttribute(model, attribute) {
 }
 
 export function getAssignedItemIds(model, slotId) {
-  return model.assignments.bySlotId[slotId] || [];
+  return model.assignments.slotAssignments[slotId] || [];
 }
 
 export function getAssignedSlotIds(model, itemId) {
-  return model.assignments.byItemId[itemId] || [];
+  return model.assignments.itemAssignments[itemId] || [];
 }
 
 export function getAssignedItems(model, slotId) {
