@@ -62,27 +62,29 @@ export function evaluateMatch(inputs, model) {
     );
   }
 
-  for (const i of model[sourceCollection]) {
-    let assignments = [];
+  for (const sourceRecord of model[sourceCollection]) {
+    let relatedRecords = [];
     if (sourceCollection === "items") {
       if (targetCollection === "slots") {
-        assignments = getAssignedSlots(model, i.id);
+        relatedRecords = getAssignedSlots(model, sourceRecord.id);
       } else if (targetCollection === "items") {
-        assignments = getCoAssignedItems(model, i.id);
+        relatedRecords = getCoAssignedItems(model, sourceRecord.id);
       }
     } else if (sourceCollection === "slots") {
       if (targetCollection === "slots") {
-        assignments = getCoAssignedSlots(model, i.id);
+        relatedRecords = getCoAssignedSlots(model, sourceRecord.id);
       } else if (targetCollection === "items") {
-        assignments = getAssignedItems(model, i.id);
+        relatedRecords = getAssignedItems(model, sourceRecord.id);
       }
     }
 
-    for (const j of assignments) {
-      const sourceValue = i[inputs.source.attribute];
-      const targetValue = j[inputs.target.attribute];
+    for (const targetRecord of relatedRecords) {
+      const sourceValue = sourceRecord[inputs.source.attribute];
+      const targetValue = targetRecord[inputs.target.attribute];
       let matches;
 
+      // TODO: Score each source-array value separately instead of
+      // reducing the whole array comparison to one boolean result.
       if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
         matches = sourceValue.some((value) => targetValue.includes(value));
       } else if (Array.isArray(sourceValue)) {
@@ -140,19 +142,18 @@ export function evaluateBalance(inputs, model) {
       assignedSourceRecords = getAssignedSlots(model, target.id);
     }
 
-    if (assignedSourceRecords.length === 0) {
-      continue;
-    }
-
-    const slotAverage = average(
-      assignedSourceRecords.map(
-        (record) => record[inputs.source.attribute],
-      ),
-    );
-    const slotScore = approximates(slotAverage, overallAverage);
-    score += slotScore;
+    const groupAverage =
+      assignedSourceRecords.length === 0
+        ? 0
+        : average(
+            assignedSourceRecords.map(
+              (record) => record[inputs.source.attribute],
+            ),
+          );
+    const groupScore = approximates(groupAverage, overallAverage);
+    score += groupScore;
     repetitions++;
-    if (slotScore < 1) {
+    if (groupScore < 1) {
       violations++;
     }
   }
