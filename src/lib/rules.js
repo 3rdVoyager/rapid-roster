@@ -105,35 +105,7 @@ export function evaluateMatch(inputs, model) {
   return { score, repetitions, violations };
 }
 
-function approximates(value1, value2) {
-  if (typeof value1 !== "number" || !Number.isFinite(value1)) {
-    throw new Error("Balance requires finite numeric values");
-  }
-  if (typeof value2 !== "number" || !Number.isFinite(value2)) {
-    throw new Error("Balance requires finite numeric values");
-  }
-
-  const difference = Math.abs(value1 - value2);
-  return Math.max(0, 1 - difference / 100);
-}
-
-function average(values) {
-  if (values.length === 0) {
-    throw new Error("Cannot average an empty array");
-  }
-
-  let sum = 0;
-  for (const value of values) {
-    if (typeof value !== "number" || !Number.isFinite(value)) {
-      throw new Error("Balance requires finite numeric values");
-    }
-    sum += value;
-  }
-
-  return sum / values.length;
-}
-
-export function evaluateLimit(inputs, model) { }
+export function evaluateLimit(inputs, model) {}
 
 export function evaluateBalance(inputs, model) {
   const sourceCollection = inputs.source.collection;
@@ -155,7 +127,19 @@ export function evaluateBalance(inputs, model) {
   const values = model[sourceCollection].map(
     (record) => record[inputs.source.attribute],
   );
-  const overallAverage = average(values);
+
+  if (values.length === 0) {
+    throw new Error("Cannot average an empty array");
+  }
+
+  let overallSum = 0;
+  for (const value of values) {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      throw new Error("Balance requires finite numeric values");
+    }
+    overallSum += value;
+  }
+  const overallAverage = overallSum / values.length;
   let score = 0;
   let repetitions = 0;
   let violations = 0;
@@ -168,15 +152,21 @@ export function evaluateBalance(inputs, model) {
       assignedSourceRecords = getAssignedSlots(model, target.id);
     }
 
-    const groupAverage =
-      assignedSourceRecords.length === 0
-        ? 0
-        : average(
-            assignedSourceRecords.map(
-              (record) => record[inputs.source.attribute],
-            ),
-          );
-    const groupScore = approximates(groupAverage, overallAverage);
+    let groupAverage = 0;
+    if (assignedSourceRecords.length > 0) {
+      let groupSum = 0;
+      for (const record of assignedSourceRecords) {
+        const value = record[inputs.source.attribute];
+        if (typeof value !== "number" || !Number.isFinite(value)) {
+          throw new Error("Balance requires finite numeric values");
+        }
+        groupSum += value;
+      }
+      groupAverage = groupSum / assignedSourceRecords.length;
+    }
+
+    const difference = Math.abs(groupAverage - overallAverage);
+    const groupScore = Math.max(0, 1 - difference / 100);
     score += groupScore;
     repetitions++;
     if (groupScore < 1) {
