@@ -5,9 +5,11 @@ export function validateData(items, slots) {
 
 const supportedKeywords = new Set([
   "match",
+  "equalize",
   "limit",
   "balance",
   "distribute",
+  "align",
 ]);
 
 export function validateRules(rules) {

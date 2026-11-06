@@ -157,4 +157,4 @@ export function evaluateBalance(inputs, model) {
 
   return { score, repetitions, violations };
 }
-export function evaluateDistribute(inputs, model) { }
+export function evaluateDistribute(inputs, model) {}

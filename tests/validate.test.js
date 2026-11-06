@@ -126,10 +126,7 @@ test("unknown rule keywords fail validation", () => {
   const testRules = freshRules();
   testRules[0].keyword = "unknown";
 
-  assert.throws(
-    () => validateRules(testRules),
-    /Unknown keyword: unknown/,
-  );
+  assert.throws(() => validateRules(testRules), /Unknown keyword: unknown/);
 });
 
 test("soft rules require a priority from 1 to 100", () => {
@@ -150,34 +147,19 @@ test("valid assignments pass validation", () => {
 
 test("assignments must reference existing slots and items", () => {
   assert.throws(
-    () =>
-      validateAssignments(
-        { missing: ["P1"] },
-        freshItems(),
-        freshSlots(),
-      ),
+    () => validateAssignments({ missing: ["P1"] }, freshItems(), freshSlots()),
     /Assignment references unknown slot: missing/,
   );
 
   assert.throws(
-    () =>
-      validateAssignments(
-        { T1: ["missing"] },
-        freshItems(),
-        freshSlots(),
-      ),
+    () => validateAssignments({ T1: ["missing"] }, freshItems(), freshSlots()),
     /Assignment references unknown item: missing/,
   );
 });
 
 test("duplicate item IDs in one assignment fail validation", () => {
   assert.throws(
-    () =>
-      validateAssignments(
-        { T1: ["P1", "P1"] },
-        freshItems(),
-        freshSlots(),
-      ),
+    () => validateAssignments({ T1: ["P1", "P1"] }, freshItems(), freshSlots()),
     /Duplicate item assignment in slot: T1, P1/,
   );
 });

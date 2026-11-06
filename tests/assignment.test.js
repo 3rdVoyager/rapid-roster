@@ -15,7 +15,10 @@ test("creates an array for every slot", () => {
   const model = createTestModel();
   const assignments = createRandomAssignments(model, () => 0);
 
-  assert.deepEqual(Object.keys(assignments), slots.map((slot) => slot.id));
+  assert.deepEqual(
+    Object.keys(assignments),
+    slots.map((slot) => slot.id),
+  );
 
   for (const slotId of Object.keys(assignments)) {
     assert.ok(Array.isArray(assignments[slotId]));
@@ -49,21 +52,12 @@ test("does not mutate the model items while shuffling", () => {
 });
 
 test("uses injected randomness consistently", () => {
-  const firstAssignment = createRandomAssignments(
-    createTestModel(),
-    () => 0,
-  );
-  const secondAssignment = createRandomAssignments(
-    createTestModel(),
-    () => 0,
-  );
+  const firstAssignment = createRandomAssignments(createTestModel(), () => 0);
+  const secondAssignment = createRandomAssignments(createTestModel(), () => 0);
 
   assert.deepEqual(firstAssignment, secondAssignment);
 });
 
 test("rejects creating a model without slots", () => {
-  assert.throws(
-    () => createTestModel(items, []),
-    /Slots must not be empty/,
-  );
+  assert.throws(() => createTestModel(items, []), /Slots must not be empty/);
 });
