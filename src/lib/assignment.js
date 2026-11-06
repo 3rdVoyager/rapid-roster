@@ -1,3 +1,6 @@
+import { createModel } from "./model.js";
+import { scoreModel } from "./scoring.js";
+
 export function createRandomAssignments(model, random = Math.random) {
   const assignments = {};
   const slots = model.slots;
@@ -17,6 +20,35 @@ export function createRandomAssignments(model, random = Math.random) {
     assignments[slot.id].push(shuffledItems[index].id);
   }
   return assignments;
+}
+
+export function createLegalAssignments(
+  model,
+  random = Math.random,
+  maxAttempts = 100,
+) {
+  if (!Number.isInteger(maxAttempts) || maxAttempts < 1) {
+    throw new Error("Max attempts must be a positive integer");
+  }
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const assignments = createRandomAssignments(model, random);
+    const candidateModel = createModel(
+      model.items,
+      model.slots,
+      model.rules,
+      assignments,
+    );
+    const score = scoreModel(candidateModel);
+
+    if (score.legal) {
+      return assignments;
+    }
+  }
+
+  throw new Error(
+    `Could not create legal assignments after ${maxAttempts} attempts`,
+  );
 }
 
 function shuffle(array, random) {

@@ -5,7 +5,10 @@ import items from "./fixtures/items.json" with { type: "json" };
 import slots from "./fixtures/slots.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
-import { createRandomAssignments } from "../src/lib/assignment.js";
+import {
+  createLegalAssignments,
+  createRandomAssignments,
+} from "../src/lib/assignment.js";
 
 function createTestModel(itemData = items, slotData = slots) {
   return createModel(structuredClone(itemData), structuredClone(slotData));
@@ -60,4 +63,54 @@ test("uses injected randomness consistently", () => {
 
 test("rejects creating a model without slots", () => {
   assert.throws(() => createTestModel(items, []), /Slots must not be empty/);
+});
+
+test("creates assignments that satisfy hard rules", () => {
+  const model = createModel(
+    [{ id: "I1" }, { id: "I2" }, { id: "I3" }, { id: "I4" }],
+    [{ id: "S1" }, { id: "S2" }],
+    [
+      {
+        id: "R1",
+        name: "Limit slot size",
+        enforcement: "hard",
+        keyword: "limit",
+        inputs: {
+          source: "slots",
+          target: 2,
+        },
+      },
+    ],
+  );
+
+  const assignments = createLegalAssignments(model, () => 0);
+
+  assert.deepEqual(
+    Object.values(assignments).map((itemIds) => itemIds.length),
+    [2, 2],
+  );
+});
+
+test("stops after the legal assignment attempt limit", () => {
+  const model = createModel(
+    [{ id: "I1" }, { id: "I2" }],
+    [{ id: "S1" }],
+    [
+      {
+        id: "R1",
+        name: "No assigned items",
+        enforcement: "hard",
+        keyword: "limit",
+        inputs: {
+          source: "slots",
+          target: 0,
+        },
+      },
+    ],
+  );
+
+  assert.throws(
+    () => createLegalAssignments(model, () => 0, 3),
+    /Could not create legal assignments after 3 attempts/,
+  );
 });
