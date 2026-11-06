@@ -20,9 +20,10 @@ export function evaluateRule(rule, model) {
   }
   const evaluator = evaluators[rule.keyword];
   const result = evaluator(rule.inputs, model);
+  const priority = rule.priority ?? 1;
 
   return {
-    score: (result.score / result.repetitions) * rule.priority,
+    score: (result.score / result.repetitions) * priority,
     percentage: result.score / result.repetitions,
     repetitions: result.repetitions,
     violations: result.violations,

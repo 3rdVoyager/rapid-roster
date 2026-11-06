@@ -14,14 +14,14 @@ export function scoreModel(model) {
       id: rule.id,
       name: rule.name,
       enforcement: rule.enforcement,
-      score: ruleResult.score,
+      ...ruleResult,
     });
 
-    if (rule.enforcement === "hard" && ruleResult.score !== 1) {
+    if (rule.enforcement === "hard" && ruleResult.percentage !== 1) {
       score.legal = false;
       score.hardViolations.push(rule.id);
     } else if (rule.enforcement === "soft") {
-      score.softScore += (rule.priority ?? 0) * ruleResult.score;
+      score.softScore += ruleResult.score;
     }
   }
 
