@@ -16,8 +16,14 @@ values that evaluator needs.
   "enforcement": "hard",
   "keyword": "match",
   "inputs": {
-    "source": "item.gender",
-    "target": "assignedSlot.divisionGender"
+    "source": {
+      "collection": "items",
+      "attribute": "gender"
+    },
+    "target": {
+      "collection": "slots",
+      "attribute": "divisionGender"
+    }
   }
 }
 ```
@@ -134,14 +140,7 @@ return the same result shape:
   "score": 40,
   "percentage": 0.8,
   "repetitions": 12,
-  "violations": 2,
-  "details": [
-    {
-      "ruleId": "R1",
-      "satisfaction": true,
-      "violation": false
-    }
-  ]
+  "violations": 2
 }
 ```
 
