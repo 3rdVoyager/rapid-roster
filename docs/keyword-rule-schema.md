@@ -32,16 +32,22 @@ Rule JSON does not contain selectors, nested loops, calculations, or generic
 operators. Soft rules also include `priority` from 1 to 100. A new supported
 behavior is added by registering a new action verb in the engine.
 
+The user-facing sentences include `item` and `slot` words wherever they make
+the relationship easier to understand. Those words do not necessarily
+represent separate JSON inputs. The source and target collections determine the
+relationship, and the engine can infer the opposite collection when only one
+relationship is possible.
+
 ## Keyword Catalog
 
-The current schema uses four action verbs. Their inputs identify the values
+The current schema uses six action verbs. Their inputs identify the values
 being operated on; the action verb supplies the traversal and comparison behavior.
 
 ### `match`
 
-Matches values across an assignment or relationship. It covers scalar equality,
-an array against a value, and each value in one array against another array.
-This supports R1-R4 and R8-R11.
+Matches values across a direct assignment. It covers scalar equality, an array
+against a value, and each value in one array against another array. This
+supports R1-R4, R8, and R9.
 
 ```json
 {
@@ -59,19 +65,46 @@ This supports R1-R4 and R8-R11.
 }
 ```
 
+### `equalize`
+
+Equalizes the number of items in each group so their difference does not exceed
+the supplied `number`. This supports R5.
+
+```json
+{
+  "keyword": "equalize",
+  "inputs": {
+    "source": "slots",
+    "target": 1
+  }
+}
+```
+
+For `equalize`, `target` is the maximum allowed difference between group
+counts. The source collection determines which records are being grouped; the
+opposite side of the assignment is implied. If no limit rules are
+provided, the generator assumes a one-to-one assignment by default.
+
 ### `limit`
 
-Limits the difference between grouped item counts. The MVP supports the
-assigned-item count limit used by R5.
+Restricts the number of assignments an item or slot may have. The MVP supports
+maximum assignment limits.
 
 ```json
 {
   "keyword": "limit",
   "inputs": {
-    "source": "items",
-    "target": "slots"
+    "source": "slots",
+    "target": 3
   }
 }
+```
+
+For `limit`, `target` is the maximum number of assigned records. For example,
+a slot can have up to three items:
+
+```text
+`Limit` each `slot` to 3 assigned `items`.
 ```
 
 ### `balance`
@@ -110,25 +143,50 @@ than concentrated together. This supports R7.
 }
 ```
 
+### `align`
+
+Follows an ID relationship from one record to another and compares a selected
+attribute on their assigned records. This supports R10 and R11.
+
+```json
+{
+  "keyword": "align",
+  "inputs": {
+    "source": {
+      "collection": "slots",
+      "attribute": "practiceNight"
+    },
+    "target": {
+      "collection": "sibling",
+      "attribute": "practiceNight"
+    }
+  }
+}
+```
+
+`siblingAssignedSlots` is inferred from each item's `sibling` attribute, so no
+separate link input is needed. The same structure can compare `gymLocation`
+instead of `practiceNight`.
+
 ## User-Facing Rule Sentences
 
 The rule builder should present these sentences instead of exposing keyword
 names or JSON directly.
 
-| Rule | User-facing sentence                                                                                            |
-| ---- | --------------------------------------------------------------------------------------------------------------- |
-| R1   | `Match` each `item`'s `Gender` to its assigned `slot`'s `Division Gender`.                                      |
-| R2   | `Match` each `item`'s `Division` to its assigned `slot`'s `Division`.                                           |
-| R3   | `Match` each `item`'s `Practice Nights` to its assigned `slot`'s `Practice Night`.                              |
-| R4   | `Match` each `item`'s `Coach Child Request` to its assigned `slot`'s `ID`.                                      |
-| R5   | `Limit` the difference in the count of `item`'s in each `slot` to be less than 1.                               |
-| R6   | `Balance` the average `item` `Height` across all `slot`'s.                                                      |
-| R7   | `Distribute` the values of each `item`'s `Height` evenly across all `slot`'s.                                   |
-| R8   | `Match` each `item`'s `Teammate Requests` to its co-assigned `item`'s `ID`.                                     |
-| R9   | `Match` each `item`'s `Coach Request` to its assigned `slot`'s `ID`.                                            |
-| R10  | `Match` each `item`'s `Sibling`'s assigned `slot`'s `Practice Night` to its assigned `slot`'s `Practice Night`. |
-| R11  | `Match` each `item`'s `Sibling`'s assigned `slot`'s `Gym Location` to its assigned `slot`'s `Gym Location`.     |
-| R12  | `Balance` the average `item` `Evaluation Score` across all `slot`'s.                                            |
+| Rule | User-facing sentence                                                                                              |
+| ---- | ----------------------------------------------------------------------------------------------------------------- |
+| R1   | `Match` each `item`'s `Gender` to its assigned `slot`'s `Division Gender`.                                        |
+| R2   | `Match` each `item`'s `Division` to its assigned `slot`'s `Division`.                                             |
+| R3   | `Match` each `item`'s `Practice Nights` to its assigned `slot`'s `Practice Night`.                                |
+| R4   | `Match` each `item`'s `Coach Child Request` to its assigned `slot`'s `ID`.                                        |
+| R5   | `Equalize` the number of assigned `item`'s in each `slot` so no `slot` has more than 1 additional `item`.         |
+| R6   | `Balance` the average `item` `Height` across all `slot`'s.                                                        |
+| R7   | `Distribute` the values of each `item`'s `Height` evenly across all `slot`'s.                                     |
+| R8   | `Match` each `item`'s `Teammate Requests` to its co-assigned `item`'s `ID`.                                       |
+| R9   | `Match` each `item`'s `Coach Request` to its assigned `slot`'s `ID`.                                              |
+| R10  | `Align` each `item`'s assigned `slot`'s `Practice Night` with its `Sibling`'s assigned `slot`'s `Practice Night`. |
+| R11  | `Align` each `item`'s assigned `slot`'s `Gym Location` with its `Sibling`'s assigned `slot`'s `Gym Location`.     |
+| R12  | `Balance` the average `item` `Evaluation Score` across all `slot`'s.                                              |
 
 ## Engine Contract
 

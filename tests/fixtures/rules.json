@@ -69,13 +69,13 @@
   },
   {
     "id": "R5",
-    "name": "Limit Team Size Difference",
-    "description": "Limit the difference in the count of items in each slot to less than 1.",
+    "name": "Equalize Team Sizes",
+    "description": "Equalize the number of items across slots to within 1 item.",
     "enforcement": "hard",
-    "keyword": "limit",
+    "keyword": "equalize",
     "inputs": {
-      "source": "items",
-      "target": "slots"
+      "source": "slots",
+      "target": 1
     }
   },
   {
