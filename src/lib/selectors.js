@@ -61,3 +61,27 @@ export function getAssignedSlots(model, itemId) {
 
   return slotIds.map((slotId) => getSlotById(model, slotId));
 }
+
+export function getCoAssignedItems(model, itemId) {
+  const slotIds = getAssignedSlotIds(model, itemId);
+
+  const itemIds = slotIds.flatMap((slotId) =>
+    getAssignedItemIds(model, slotId),
+  );
+
+  return [...new Set(itemIds)]
+    .filter((coAssignedItemId) => coAssignedItemId !== itemId)
+    .map((coAssignedItemId) => getItemById(model, coAssignedItemId));
+}
+
+export function getCoAssignedSlots(model, slotId) {
+  const itemIds = getAssignedItemIds(model, slotId);
+
+  const slotIds = itemIds.flatMap((itemId) =>
+    getAssignedSlotIds(model, itemId),
+  );
+
+  return [...new Set(slotIds)]
+    .filter((coAssignedSlotId) => coAssignedSlotId !== slotId)
+    .map((coAssignedSlotId) => getSlotById(model, coAssignedSlotId));
+}
