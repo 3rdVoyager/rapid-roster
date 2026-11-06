@@ -2,104 +2,197 @@
   {
     "id": "R1",
     "name": "Match Gender",
-    "source": "items.gender",
-    "operator": "equals",
-    "target": "slots.divisionGender",
-    "enforcement": "hard"
+    "description": "Match each item's Gender to its assigned slot's Division Gender.",
+    "enforcement": "hard",
+    "keyword": "match",
+    "inputs": {
+      "source": {
+        "collection": "items",
+        "attribute": "gender"
+      },
+      "target": {
+        "collection": "assignedSlots",
+        "attribute": "divisionGender"
+      }
+    }
   },
   {
     "id": "R2",
     "name": "Match Division",
-    "source": "items.division",
-    "operator": "equals",
-    "target": "slots.division",
-    "enforcement": "hard"
+    "description": "Match each item's Division to its assigned slot's Division.",
+    "enforcement": "hard",
+    "keyword": "match",
+    "inputs": {
+      "source": {
+        "collection": "items",
+        "attribute": "division"
+      },
+      "target": {
+        "collection": "assignedSlots",
+        "attribute": "division"
+      }
+    }
   },
   {
     "id": "R3",
     "name": "Match Available Practice Nights",
-    "source": "items.practiceNights",
-    "operator": "contains",
-    "target": "slots.practiceNight",
-    "enforcement": "hard"
+    "description": "Match each item's Practice Nights to its assigned slot's Practice Night.",
+    "enforcement": "hard",
+    "keyword": "match",
+    "inputs": {
+      "source": {
+        "collection": "items",
+        "attribute": "practiceNights"
+      },
+      "target": {
+        "collection": "assignedSlots",
+        "attribute": "practiceNight"
+      }
+    }
   },
   {
     "id": "R4",
     "name": "Honor Coach's Child Request",
-    "source": "items.coachChildRequest",
-    "operator": "equals",
-    "target": "slots.id",
-    "enforcement": "hard"
+    "description": "Match each item's Coach Child Request to its assigned slot's ID.",
+    "enforcement": "hard",
+    "keyword": "match",
+    "inputs": {
+      "source": {
+        "collection": "items",
+        "attribute": "coachChildRequest"
+      },
+      "target": {
+        "collection": "assignedSlots",
+        "attribute": "id"
+      }
+    }
   },
   {
     "id": "R5",
-    "name": "Balance Team Sizes",
-    "source": "slots.assignedItems().count().max().subtract(slots.assignedItems().count().min())",
-    "operator": "lessThan",
-    "target": 2,
-    "enforcement": "hard"
+    "name": "Limit Team Size Difference",
+    "description": "Limit the difference in the count of items in each slot to less than 1.",
+    "enforcement": "hard",
+    "keyword": "limit",
+    "inputs": {
+      "source": "items",
+      "target": "slots"
+    }
   },
   {
     "id": "R6",
     "name": "Balance Average Heights",
-    "source": "slots.assignedItems().height.average()",
-    "operator": "approximates",
-    "target": "items.height.average()",
+    "description": "Balance the average item's Height across all slots.",
     "enforcement": "soft",
-    "priority": 80
+    "priority": 80,
+    "keyword": "balance",
+    "inputs": {
+      "source": {
+        "collection": "items",
+        "attribute": "height"
+      },
+      "target": "slots"
+    }
   },
   {
     "id": "R7",
     "name": "Distribute Tallest Players",
-    "source": "slots.assignedItems().height.max()",
-    "operator": "approximates",
-    "target": "items.height.custom(select the top 10 heights).average()",
+    "description": "Distribute the values of each item's Height evenly across all slots.",
     "enforcement": "soft",
-    "priority": 80
+    "priority": 80,
+    "keyword": "distribute",
+    "inputs": {
+      "source": {
+        "collection": "items",
+        "attribute": "height"
+      },
+      "target": "slots"
+    }
   },
   {
     "id": "R8",
     "name": "Honor Teammate Requests",
-    "source": "items.teammateRequest",
-    "operator": "contains",
-    "target": "slots.assignedItems().id",
+    "description": "Match each item's Teammate Requests to its co-assigned item's ID.",
     "enforcement": "soft",
-    "priority": 75
+    "priority": 75,
+    "keyword": "match",
+    "inputs": {
+      "source": {
+        "collection": "items",
+        "attribute": "teammateRequest"
+      },
+      "target": {
+        "collection": "coAssignedItems",
+        "attribute": "id"
+      }
+    }
   },
   {
     "id": "R9",
     "name": "Honor Coach Requests",
-    "source": "items.coachRequest",
-    "operator": "equals",
-    "target": "slots.id",
+    "description": "Match each item's Coach Request to its assigned slot's ID.",
     "enforcement": "soft",
-    "priority": 60
+    "priority": 60,
+    "keyword": "match",
+    "inputs": {
+      "source": {
+        "collection": "items",
+        "attribute": "coachRequest"
+      },
+      "target": {
+        "collection": "assignedSlots",
+        "attribute": "id"
+      }
+    }
   },
   {
     "id": "R10",
     "name": "Match Sibling Practice Nights",
-    "source": "items.sibling.lookup().assignedSlots().practiceNight",
-    "operator": "equals",
-    "target": "items.assignedSlots().practiceNight",
+    "description": "Match each item's Sibling's assigned slot's Practice Night to its assigned slot's Practice Night.",
     "enforcement": "soft",
-    "priority": 65
+    "priority": 65,
+    "keyword": "match",
+    "inputs": {
+      "source": {
+        "collection": "siblingAssignedSlots",
+        "attribute": "practiceNight"
+      },
+      "target": {
+        "collection": "assignedSlots",
+        "attribute": "practiceNight"
+      }
+    }
   },
   {
     "id": "R11",
     "name": "Match Sibling Gym",
-    "source": "items.sibling.lookup().assignedSlots().gymLocation",
-    "operator": "equals",
-    "target": "items.assignedSlots().gymLocation",
+    "description": "Match each item's Sibling's assigned slot's Gym Location to its assigned slot's Gym Location.",
     "enforcement": "soft",
-    "priority": 65
+    "priority": 65,
+    "keyword": "match",
+    "inputs": {
+      "source": {
+        "collection": "siblingAssignedSlots",
+        "attribute": "gymLocation"
+      },
+      "target": {
+        "collection": "assignedSlots",
+        "attribute": "gymLocation"
+      }
+    }
   },
   {
     "id": "R12",
     "name": "Balance Evaluation Scores",
-    "source": "slots.assignedItems().evaluationScore.average()",
-    "operator": "approximates",
-    "target": "items.evaluationScore.average()",
+    "description": "Balance the average item's Evaluation Score across all slots.",
     "enforcement": "soft",
-    "priority": 100
+    "priority": 100,
+    "keyword": "balance",
+    "inputs": {
+      "source": {
+        "collection": "items",
+        "attribute": "evaluationScore"
+      },
+      "target": "slots"
+    }
   }
 ]
