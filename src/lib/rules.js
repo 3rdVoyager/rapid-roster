@@ -7,9 +7,11 @@ import {
 
 const evaluators = {
   match: evaluateMatch,
+  equalize: evaluateEqualize,
   limit: evaluateLimit,
   balance: evaluateBalance,
   distribute: evaluateDistribute,
+  align: evaluateAlign,
 };
 
 export function evaluateRule(rule, model) {
@@ -86,6 +88,8 @@ export function evaluateMatch(inputs, model) {
   return { score, repetitions, violations };
 }
 
+export function evaluateEqualize(inputs, model) {}
+
 export function evaluateLimit(inputs, model) {}
 
 export function evaluateBalance(inputs, model) {
@@ -158,3 +162,5 @@ export function evaluateBalance(inputs, model) {
   return { score, repetitions, violations };
 }
 export function evaluateDistribute(inputs, model) {}
+
+export function evaluateAlign(inputs, model) {}

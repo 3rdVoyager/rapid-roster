@@ -147,21 +147,17 @@
   {
     "id": "R10",
     "name": "Match Sibling Practice Nights",
-    "description": "Match each item's Sibling's assigned slot's Practice Night to its assigned slot's Practice Night.",
+    "description": "Align each item's assigned slot's Practice Night with its Sibling's assigned slot's Practice Night.",
     "enforcement": "soft",
     "priority": 65,
-    "keyword": "match",
+    "keyword": "align",
     "inputs": {
       "source": {
-        "collection": "items",
-        "attribute": "sibling",
-        "nested": {
-          "collection": "slots",
-          "attribute": "practiceNight"
-        }
+        "collection": "assignedSlots",
+        "attribute": "practiceNight"
       },
       "target": {
-        "collection": "slots",
+        "collection": "siblingAssignedSlots",
         "attribute": "practiceNight"
       }
     }
@@ -169,21 +165,17 @@
   {
     "id": "R11",
     "name": "Match Sibling Gym",
-    "description": "Match each item's Sibling's assigned slot's Gym Location to its assigned slot's Gym Location.",
+    "description": "Align each item's assigned slot's Gym Location with its Sibling's assigned slot's Gym Location.",
     "enforcement": "soft",
     "priority": 65,
-    "keyword": "match",
+    "keyword": "align",
     "inputs": {
       "source": {
-        "collection": "items",
-        "attribute": "sibling",
-        "lookup": {
-          "collection": "slots",
-          "attribute": "gymLocation"
-        }
+        "collection": "assignedSlots",
+        "attribute": "gymLocation"
       },
       "target": {
-        "collection": "slots",
+        "collection": "siblingAssignedSlots",
         "attribute": "gymLocation"
       }
     }
