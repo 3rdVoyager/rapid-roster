@@ -43,8 +43,8 @@ export function validateRule(rule) {
     typeof rule.inputs !== "object" ||
     rule.inputs === null ||
     Array.isArray(rule.inputs) ||
-    !rule.inputs.source ||
-    !rule.inputs.target
+    rule.inputs.source === undefined ||
+    rule.inputs.target === undefined
   ) {
     throw new Error(`Invalid inputs for rule: ${rule.id}`);
   }

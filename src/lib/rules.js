@@ -1,6 +1,8 @@
 import {
   getAssignedItems,
+  getAssignedItemIds,
   getAssignedSlots,
+  getAssignedSlotIds,
   getCoAssignedItems,
   getCoAssignedSlots,
 } from "./selectors.js";
@@ -90,7 +92,44 @@ export function evaluateMatch(inputs, model) {
 
 export function evaluateEqualize(inputs, model) {}
 
-export function evaluateLimit(inputs, model) {}
+export function evaluateLimit(inputs, model) {
+  const sourceCollection = inputs.source;
+  const limit = inputs.target;
+
+  if (!["items", "slots"].includes(sourceCollection)) {
+    throw new Error(`Unsupported limit collection: ${sourceCollection}`);
+  }
+
+  if (
+    typeof limit !== "number" ||
+    !Number.isInteger(limit) ||
+    limit < 0
+  ) {
+    throw new Error("Limit target must be a non-negative integer");
+  }
+
+  let score = 0;
+  let repetitions = 0;
+  let violations = 0;
+
+  for (const record of model[sourceCollection]) {
+    const assignmentCount =
+      sourceCollection === "items"
+        ? getAssignedSlotIds(model, record.id).length
+        : getAssignedItemIds(model, record.id).length;
+
+    const recordScore =
+      assignmentCount <= limit ? 1 : limit / assignmentCount;
+
+    score += recordScore;
+    repetitions++;
+    if (recordScore < 1) {
+      violations++;
+    }
+  }
+
+  return { score, repetitions, violations };
+}
 
 export function evaluateBalance(inputs, model) {
   const sourceCollection = inputs.source.collection;

@@ -7,7 +7,11 @@ import rules from "./fixtures/rules.json" with { type: "json" };
 import assignments from "./fixtures/assignments.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
-import { evaluateBalance, evaluateMatch } from "../src/lib/rules.js";
+import {
+  evaluateBalance,
+  evaluateLimit,
+  evaluateMatch,
+} from "../src/lib/rules.js";
 
 function createTestModel() {
   return createModel(
@@ -77,6 +81,66 @@ test("match rejects unsupported collections", () => {
         createTestModel(),
       ),
     /Unsupported match collections: teams -> slots/,
+  );
+});
+
+test("limit evaluates assignment counts for each slot", () => {
+  const model = createModel(
+    [{ id: "I1" }, { id: "I2" }],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    { S1: ["I1", "I2"], S2: [] },
+  );
+
+  const result = evaluateLimit(
+    {
+      source: "slots",
+      target: 1,
+    },
+    model,
+  );
+
+  assert.deepEqual(result, {
+    score: 1.5,
+    repetitions: 2,
+    violations: 1,
+  });
+});
+
+test("limit evaluates assignment counts for each item", () => {
+  const model = createModel(
+    [{ id: "I1" }, { id: "I2" }],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    { S1: ["I1"], S2: ["I1", "I2"] },
+  );
+
+  const result = evaluateLimit(
+    {
+      source: "items",
+      target: 1,
+    },
+    model,
+  );
+
+  assert.deepEqual(result, {
+    score: 1.5,
+    repetitions: 2,
+    violations: 1,
+  });
+});
+
+test("limit rejects invalid targets", () => {
+  assert.throws(
+    () =>
+      evaluateLimit(
+        {
+          source: "slots",
+          target: -1,
+        },
+        createTestModel(),
+      ),
+    /Limit target must be a non-negative integer/,
   );
 });
 
