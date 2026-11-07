@@ -25,13 +25,13 @@ export function createRandomAssignments(model, random = Math.random) {
 export function createLegalAssignments(
   model,
   random = Math.random,
-  maxAttempts = 100,
+  maxRestarts = 100,
 ) {
-  if (!Number.isInteger(maxAttempts) || maxAttempts < 1) {
-    throw new Error("Max attempts must be a positive integer");
+  if (!Number.isInteger(maxRestarts) || maxRestarts < 1) {
+    throw new Error("Max restarts must be a positive integer");
   }
 
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+  for (let restart = 0; restart < maxRestarts; restart++) {
     const assignments = createRandomAssignments(model, random);
     const candidateModel = createModel(
       model.items,
@@ -47,7 +47,7 @@ export function createLegalAssignments(
   }
 
   throw new Error(
-    `Could not create legal assignments after ${maxAttempts} attempts`,
+    `Could not create legal assignments after ${maxRestarts} random restarts`,
   );
 }
 

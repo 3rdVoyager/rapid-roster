@@ -95,7 +95,41 @@ test("creates assignments that satisfy hard rules", () => {
   );
 });
 
-test("stops after the legal assignment attempt limit", () => {
+test("restarts after an illegal candidate", () => {
+  const model = createModel(
+    [
+      { id: "I1", division: "B" },
+      { id: "I2", division: "A" },
+    ],
+    [
+      { id: "S1", division: "A" },
+      { id: "S2", division: "B" },
+    ],
+    [
+      {
+        id: "R1",
+        name: "Match divisions",
+        enforcement: "hard",
+        keyword: "match",
+        inputs: {
+          source: { collection: "items", attribute: "division" },
+          target: { collection: "slots", attribute: "division" },
+        },
+      },
+    ],
+  );
+
+  let randomCalls = 0;
+  const assignments = createLegalAssignments(model, () => {
+    randomCalls += 1;
+    return randomCalls === 1 ? 0.9 : 0;
+  }, 2);
+
+  assert.deepEqual(assignments, { S1: ["I2"], S2: ["I1"] });
+  assert.equal(randomCalls, 2);
+});
+
+test("stops after the random restart limit", () => {
   const model = createModel(
     [{ id: "I1" }, { id: "I2" }],
     [{ id: "S1" }],
@@ -115,7 +149,7 @@ test("stops after the legal assignment attempt limit", () => {
 
   assert.throws(
     () => createLegalAssignments(model, () => 0, 3),
-    /Could not create legal assignments after 3 attempts/,
+    /Could not create legal assignments after 3 random restarts/,
   );
 });
 
