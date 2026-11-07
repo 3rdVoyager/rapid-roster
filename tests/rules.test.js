@@ -11,6 +11,7 @@ import {
   evaluateAlign,
   evaluateBalance,
   evaluateDistribute,
+  evaluateEqualize,
   evaluateLimit,
   evaluateMatch,
 } from "../src/lib/rules.js";
@@ -262,6 +263,69 @@ test("distribute reports neighboring values concentrated in one slot", () => {
       sharedSlotIds: ["S2"],
     },
   ]);
+});
+
+test("equalize accepts counts within the requested difference", () => {
+  const model = createModel(
+    [{ id: "I1" }, { id: "I2" }, { id: "I3" }, { id: "I4" }],
+    [{ id: "S1" }, { id: "S2" }, { id: "S3" }],
+    [],
+    {
+      S1: ["I1", "I2"],
+      S2: ["I3"],
+      S3: ["I4"],
+    },
+  );
+
+  const result = evaluateEqualize(
+    {
+      source: "slots",
+      target: 1,
+    },
+    model,
+  );
+
+  assert.deepEqual(result, {
+    score: 3,
+    repetitions: 3,
+    violations: [],
+  });
+});
+
+test("equalize reports groups above the allowed difference", () => {
+  const model = createModel(
+    [{ id: "I1" }, { id: "I2" }, { id: "I3" }, { id: "I4" }],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    {
+      S1: ["I1", "I2", "I3"],
+      S2: ["I4"],
+    },
+  );
+
+  const result = evaluateEqualize(
+    {
+      source: "slots",
+      target: 1,
+    },
+    model,
+  );
+
+  assert.deepEqual(result, {
+    score: 1.5,
+    repetitions: 2,
+    violations: [
+      {
+        sourceId: "S1",
+        actual: 3,
+        minimum: 1,
+        maximum: 3,
+        difference: 2,
+        maximumDifference: 1,
+        excess: 1,
+      },
+    ],
+  });
 });
 
 test("limit evaluates assignment counts for each slot", () => {

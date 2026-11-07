@@ -111,7 +111,73 @@ function isEmptyMatchValue(value) {
   );
 }
 
-export function evaluateEqualize(inputs, model) {}
+export function evaluateEqualize(inputs, model) {
+  const sourceCollection =
+    typeof inputs.source === "string"
+      ? inputs.source
+      : inputs.source.collection;
+  const maximumDifference = inputs.target;
+
+  if (!["items", "slots"].includes(sourceCollection)) {
+    throw new Error(`Unsupported equalize collection: ${sourceCollection}`);
+  }
+
+  if (
+    typeof maximumDifference !== "number" ||
+    !Number.isInteger(maximumDifference) ||
+    maximumDifference < 0
+  ) {
+    throw new Error(
+      "Equalize target must be a non-negative integer",
+    );
+  }
+
+  const records = model[sourceCollection];
+  const counts = records.map((record) => ({
+    record,
+    count:
+      sourceCollection === "items"
+        ? getAssignedSlotIds(model, record.id).length
+        : getAssignedItemIds(model, record.id).length,
+  }));
+
+  if (counts.length === 0) {
+    return { score: 1, repetitions: 1, violations: [] };
+  }
+
+  const minimumCount = Math.min(...counts.map((entry) => entry.count));
+  const maximumCount = Math.max(...counts.map((entry) => entry.count));
+  const actualDifference = maximumCount - minimumCount;
+  let score = 0;
+  const violations = [];
+
+  for (const entry of counts) {
+    const excess = Math.max(
+      0,
+      entry.count - minimumCount - maximumDifference,
+    );
+    const recordScore = excess === 0 ? 1 : 1 / (1 + excess);
+    score += recordScore;
+
+    if (excess > 0) {
+      violations.push({
+        sourceId: entry.record.id,
+        actual: entry.count,
+        minimum: minimumCount,
+        maximum: maximumCount,
+        difference: actualDifference,
+        maximumDifference,
+        excess,
+      });
+    }
+  }
+
+  return {
+    score,
+    repetitions: counts.length,
+    violations,
+  };
+}
 
 export function evaluateLimit(inputs, model) {
   const sourceCollection = inputs.source;
