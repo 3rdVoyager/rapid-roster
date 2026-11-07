@@ -32,7 +32,7 @@ export function evaluateRule(rule, model) {
 export function evaluateMatch(inputs, model) {
   let score = 0;
   let repetitions = 0;
-  let violations = 0;
+  const violations = [];
   const sourceCollection = inputs.source.collection;
   const targetCollection = inputs.target.collection;
 
@@ -81,7 +81,12 @@ export function evaluateMatch(inputs, model) {
       if (matches) {
         score++;
       } else {
-        violations++;
+        violations.push({
+          sourceId: sourceRecord.id,
+          targetId: targetRecord.id,
+          sourceValue,
+          targetValue,
+        });
       }
       repetitions++;
     }
@@ -110,7 +115,7 @@ export function evaluateLimit(inputs, model) {
 
   let score = 0;
   let repetitions = 0;
-  let violations = 0;
+  const violations = [];
 
   for (const record of model[sourceCollection]) {
     const assignmentCount =
@@ -124,7 +129,12 @@ export function evaluateLimit(inputs, model) {
     score += recordScore;
     repetitions++;
     if (recordScore < 1) {
-      violations++;
+      violations.push({
+        sourceId: record.id,
+        actual: assignmentCount,
+        limit,
+        excess: assignmentCount - limit,
+      });
     }
   }
 
@@ -166,7 +176,7 @@ export function evaluateBalance(inputs, model) {
   const overallAverage = overallSum / values.length;
   let score = 0;
   let repetitions = 0;
-  let violations = 0;
+  const violations = [];
 
   for (const target of model[targetCollection]) {
     let assignedSourceRecords;
@@ -194,7 +204,12 @@ export function evaluateBalance(inputs, model) {
     score += groupScore;
     repetitions++;
     if (groupScore < 1) {
-      violations++;
+      violations.push({
+        targetId: target.id,
+        actual: groupAverage,
+        target: overallAverage,
+        difference,
+      });
     }
   }
 

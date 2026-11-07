@@ -64,7 +64,7 @@ test("scoreModel reports passing hard rules and weighted soft scores", () => {
       score: 1,
       percentage: 1,
       repetitions: 12,
-      violations: 0,
+      violations: result.rules[0].violations,
     },
     {
       id: "R2",
@@ -73,9 +73,12 @@ test("scoreModel reports passing hard rules and weighted soft scores", () => {
       score: (7 / 12) * 10,
       percentage: 7 / 12,
       repetitions: 12,
-      violations: 5,
+      violations: result.rules[1].violations,
     },
   ]);
+
+  assert.equal(result.rules[0].violations.length, 0);
+  assert.equal(result.rules[1].violations.length, 5);
 });
 
 test("scoreModel reports failed hard rule IDs", () => {

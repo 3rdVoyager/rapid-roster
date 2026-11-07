@@ -31,7 +31,7 @@ test("match compares item attributes with assigned slot attributes", () => {
     createTestModel(),
   );
 
-  assert.deepEqual(result, {
+  assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 7,
     repetitions: 12,
     violations: 5,
@@ -47,7 +47,7 @@ test("match compares slot attributes with their assigned item attributes", () =>
     createTestModel(),
   );
 
-  assert.deepEqual(result, {
+  assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 10,
     repetitions: 12,
     violations: 2,
@@ -63,7 +63,7 @@ test("match handles an item array against an assigned slot value", () => {
     createTestModel(),
   );
 
-  assert.deepEqual(result, {
+  assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 6,
     repetitions: 12,
     violations: 6,
@@ -100,7 +100,7 @@ test("limit evaluates assignment counts for each slot", () => {
     model,
   );
 
-  assert.deepEqual(result, {
+  assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 1.5,
     repetitions: 2,
     violations: 1,
@@ -123,7 +123,7 @@ test("limit evaluates assignment counts for each item", () => {
     model,
   );
 
-  assert.deepEqual(result, {
+  assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 1.5,
     repetitions: 2,
     violations: 1,
@@ -165,7 +165,7 @@ test("balance scores slot averages against the overall average", () => {
     model,
   );
 
-  assert.deepEqual(result, {
+  assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 2,
     repetitions: 2,
     violations: 0,
@@ -193,7 +193,7 @@ test("balance scores deviations from the overall average", () => {
     model,
   );
 
-  assert.deepEqual(result, {
+  assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 1.8,
     repetitions: 2,
     violations: 2,
@@ -221,7 +221,7 @@ test("balance supports slots as the source and items as the target", () => {
     model,
   );
 
-  assert.deepEqual(result, {
+  assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 2,
     repetitions: 2,
     violations: 0,
