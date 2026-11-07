@@ -231,7 +231,71 @@ export function evaluateBalance(inputs, model) {
 
   return { score, repetitions, violations };
 }
-export function evaluateDistribute(inputs, model) {}
+export function evaluateDistribute(inputs, model) {
+  const sourceCollection = inputs.source.collection;
+  const targetCollection =
+    typeof inputs.target === "string"
+      ? inputs.target
+      : inputs.target.collection;
+
+  if (sourceCollection !== "items" || targetCollection !== "slots") {
+    throw new Error(
+      `Unsupported distribute collections: ${sourceCollection} -> ${targetCollection}`,
+    );
+  }
+
+  const rankedRecords = [];
+
+  for (const record of model[sourceCollection]) {
+    const value = record[inputs.source.attribute];
+
+    // Missing numeric values cannot be ranked, so they do not participate.
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      continue;
+    }
+
+    const relatedIds = getAssignedSlotIds(model, record.id);
+    if (relatedIds.length > 0) {
+      rankedRecords.push({ record, value, relatedIds });
+    }
+  }
+
+  rankedRecords.sort((first, second) => second.value - first.value);
+
+  // With fewer than two ranked items there is nothing to distribute.
+  if (rankedRecords.length < 2) {
+    return { score: 1, repetitions: 1, violations: [] };
+  }
+
+  let score = 0;
+  const violations = [];
+
+  for (let index = 1; index < rankedRecords.length; index++) {
+    const previous = rankedRecords[index - 1];
+    const current = rankedRecords[index];
+    const sharedRelatedIds = previous.relatedIds.filter((relatedId) =>
+      current.relatedIds.includes(relatedId),
+    );
+
+    if (sharedRelatedIds.length === 0) {
+      score++;
+    } else {
+      violations.push({
+        sourceId: previous.record.id,
+        targetId: current.record.id,
+        sourceValue: previous.value,
+        targetValue: current.value,
+        sharedSlotIds: sharedRelatedIds,
+      });
+    }
+  }
+
+  return {
+    score,
+    repetitions: rankedRecords.length - 1,
+    violations,
+  };
+}
 
 export function evaluateAlign(inputs, model) {
   const sourceCollection = inputs.source.collection;
@@ -250,28 +314,28 @@ export function evaluateAlign(inputs, model) {
   let repetitions = 0;
   const violations = [];
 
-  for (const item of model.items) {
-    if (isEmptyMatchValue(item.sibling)) {
+  for (const record of model.items) {
+    if (isEmptyMatchValue(record.sibling)) {
       continue;
     }
 
-    const sibling = model.items.find(
-      (candidate) => candidate.id === item.sibling,
+    const relatedRecord = model.items.find(
+      (candidate) => candidate.id === record.sibling,
     );
 
-    if (!sibling) {
+    if (!relatedRecord) {
       continue;
     }
 
-    const assignedSlots = getAssignedSlots(model, item.id);
-    const siblingAssignedSlots = getAssignedSlots(model, sibling.id);
+    const sourceRelatedRecords = getAssignedSlots(model, record.id);
+    const targetRelatedRecords = getAssignedSlots(model, relatedRecord.id);
 
     // An unassigned item cannot be compared yet, so this relationship is
     // non-applicable until both sides have an assignment.
-    for (const sourceSlot of assignedSlots) {
-      for (const targetSlot of siblingAssignedSlots) {
-        const sourceValue = sourceSlot[inputs.source.attribute];
-        const targetValue = targetSlot[inputs.target.attribute];
+    for (const sourceRecord of sourceRelatedRecords) {
+      for (const targetRecord of targetRelatedRecords) {
+        const sourceValue = sourceRecord[inputs.source.attribute];
+        const targetValue = targetRecord[inputs.target.attribute];
 
         repetitions++;
 
@@ -279,8 +343,8 @@ export function evaluateAlign(inputs, model) {
           score++;
         } else {
           violations.push({
-            sourceId: sourceSlot.id,
-            targetId: targetSlot.id,
+            sourceId: sourceRecord.id,
+            targetId: targetRecord.id,
             sourceValue,
             targetValue,
           });

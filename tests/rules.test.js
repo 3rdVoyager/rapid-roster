@@ -10,6 +10,7 @@ import { createModel } from "../src/lib/model.js";
 import {
   evaluateAlign,
   evaluateBalance,
+  evaluateDistribute,
   evaluateLimit,
   evaluateMatch,
 } from "../src/lib/rules.js";
@@ -184,6 +185,81 @@ test("align reports mismatched sibling slot attributes", () => {
       targetId: "S1",
       sourceValue: "Sequoyah",
       targetValue: "ROC",
+    },
+  ]);
+});
+
+test("distribute separates neighboring ranked values across slots", () => {
+  const model = createModel(
+    [
+      { id: "I1", height: 40 },
+      { id: "I2", height: 30 },
+      { id: "I3", height: 20 },
+      { id: "I4", height: 10 },
+    ],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    {
+      S1: ["I1", "I3"],
+      S2: ["I2", "I4"],
+    },
+  );
+
+  const result = evaluateDistribute(
+    {
+      source: { collection: "items", attribute: "height" },
+      target: "slots",
+    },
+    model,
+  );
+
+  assert.deepEqual(result, {
+    score: 3,
+    repetitions: 3,
+    violations: [],
+  });
+});
+
+test("distribute reports neighboring values concentrated in one slot", () => {
+  const model = createModel(
+    [
+      { id: "I1", height: 40 },
+      { id: "I2", height: 30 },
+      { id: "I3", height: 20 },
+      { id: "I4", height: 10 },
+    ],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    {
+      S1: ["I1", "I2"],
+      S2: ["I3", "I4"],
+    },
+  );
+
+  const result = evaluateDistribute(
+    {
+      source: { collection: "items", attribute: "height" },
+      target: "slots",
+    },
+    model,
+  );
+
+  assert.equal(result.score, 1);
+  assert.equal(result.repetitions, 3);
+  assert.deepEqual(result.violations, [
+    {
+      sourceId: "I1",
+      targetId: "I2",
+      sourceValue: 40,
+      targetValue: 30,
+      sharedSlotIds: ["S1"],
+    },
+    {
+      sourceId: "I3",
+      targetId: "I4",
+      sourceValue: 20,
+      targetValue: 10,
+      sharedSlotIds: ["S2"],
     },
   ]);
 });
