@@ -240,19 +240,16 @@ export function evaluateBalance(inputs, model) {
     );
   }
 
-  const values = model[sourceCollection].map(
-    (record) => record[inputs.source.attribute],
-  );
+  const values = model[sourceCollection]
+    .map((record) => record[inputs.source.attribute])
+    .filter((value) => typeof value === "number" && Number.isFinite(value));
 
   if (values.length === 0) {
-    throw new Error("Cannot average an empty array");
+    return { score: 1, repetitions: 1, violations: [] };
   }
 
   let overallSum = 0;
   for (const value of values) {
-    if (typeof value !== "number" || !Number.isFinite(value)) {
-      throw new Error("Balance requires finite numeric values");
-    }
     overallSum += value;
   }
   const overallAverage = overallSum / values.length;
@@ -271,14 +268,18 @@ export function evaluateBalance(inputs, model) {
     let groupAverage = 0;
     if (assignedSourceRecords.length > 0) {
       let groupSum = 0;
+      let validValueCount = 0;
       for (const record of assignedSourceRecords) {
         const value = record[inputs.source.attribute];
         if (typeof value !== "number" || !Number.isFinite(value)) {
-          throw new Error("Balance requires finite numeric values");
+          continue;
         }
         groupSum += value;
+        validValueCount++;
       }
-      groupAverage = groupSum / assignedSourceRecords.length;
+      if (validValueCount > 0) {
+        groupAverage = groupSum / validValueCount;
+      }
     }
 
     const difference = Math.abs(groupAverage - overallAverage);

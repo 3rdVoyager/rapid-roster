@@ -1,6 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import fullItems from "./fixtures/items.json" with { type: "json" };
+import fullSlots from "./fixtures/slots.json" with { type: "json" };
+import fullRules from "./fixtures/rules.json" with { type: "json" };
+import fullAssignments from "./fixtures/assignments.json" with {
+  type: "json",
+};
+
 import { createModel } from "../src/lib/model.js";
 import { scoreModel } from "../src/lib/scoring.js";
 
@@ -109,4 +116,23 @@ test("scoreModel reports failed hard rule IDs", () => {
   assert.equal(result.legal, false);
   assert.deepEqual(result.hardViolations, ["R3"]);
   assert.equal(result.softScore, 0);
+});
+
+test("scoreModel scores the complete roster dataset", () => {
+  const model = createModel(
+    structuredClone(fullItems),
+    structuredClone(fullSlots),
+    structuredClone(fullRules),
+    structuredClone(fullAssignments),
+  );
+
+  const result = scoreModel(model);
+
+  assert.equal(result.rules.length, fullRules.length);
+  assert.equal(result.hardViolations.length > 0, true);
+  assert.equal(typeof result.softScore, "number");
+  assert.equal(
+    result.rules.every((rule) => Number.isFinite(rule.percentage)),
+    true,
+  );
 });
