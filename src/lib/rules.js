@@ -64,6 +64,13 @@ export function evaluateMatch(inputs, model) {
     for (const targetRecord of relatedRecords) {
       const sourceValue = sourceRecord[inputs.source.attribute];
       const targetValue = targetRecord[inputs.target.attribute];
+
+      // Empty request fields mean that this comparison does not apply to
+      // the source record. They should not become false violations.
+      if (isEmptyMatchValue(sourceValue)) {
+        continue;
+      }
+
       let matches;
 
       // TODO: Score each source-array value separately instead of
@@ -93,6 +100,15 @@ export function evaluateMatch(inputs, model) {
   }
 
   return { score, repetitions, violations };
+}
+
+function isEmptyMatchValue(value) {
+  return (
+    value === undefined ||
+    value === null ||
+    value === "" ||
+    (Array.isArray(value) && value.length === 0)
+  );
 }
 
 export function evaluateEqualize(inputs, model) {}

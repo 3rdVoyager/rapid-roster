@@ -70,6 +70,33 @@ test("match handles an item array against an assigned slot value", () => {
   );
 });
 
+test("match ignores empty optional source values", () => {
+  const model = createModel(
+    [
+      { id: "I1", teammateRequest: [] },
+      { id: "I2", teammateRequest: ["I1"] },
+      { id: "I3", teammateRequest: null },
+    ],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    { S1: ["I1", "I2"], S2: ["I3"] },
+  );
+
+  const result = evaluateMatch(
+    {
+      source: { collection: "items", attribute: "teammateRequest" },
+      target: { collection: "items", attribute: "id" },
+    },
+    model,
+  );
+
+  assert.deepEqual(result, {
+    score: 1,
+    repetitions: 1,
+    violations: [],
+  });
+});
+
 test("match rejects unsupported collections", () => {
   assert.throws(
     () =>
