@@ -147,19 +147,36 @@ test("valid assignments pass validation", () => {
 
 test("assignments must reference existing slots and items", () => {
   assert.throws(
-    () => validateAssignments({ missing: ["P1"] }, freshItems(), freshSlots()),
+    () =>
+      validateAssignments(
+        { missing: [items[0].id] },
+        freshItems(),
+        freshSlots(),
+      ),
     /Assignment references unknown slot: missing/,
   );
 
   assert.throws(
-    () => validateAssignments({ T1: ["missing"] }, freshItems(), freshSlots()),
+    () =>
+      validateAssignments(
+        { [slots[0].id]: ["missing"] },
+        freshItems(),
+        freshSlots(),
+      ),
     /Assignment references unknown item: missing/,
   );
 });
 
 test("duplicate item IDs in one assignment fail validation", () => {
   assert.throws(
-    () => validateAssignments({ T1: ["P1", "P1"] }, freshItems(), freshSlots()),
-    /Duplicate item assignment in slot: T1, P1/,
+    () =>
+      validateAssignments(
+        { [slots[0].id]: [items[0].id, items[0].id] },
+        freshItems(),
+        freshSlots(),
+      ),
+    new RegExp(
+      `Duplicate item assignment in slot: ${slots[0].id}, ${items[0].id}`,
+    ),
   );
 });

@@ -1,42 +1,442 @@
 [
   {
-    "id": "T1",
+    "id": "Coyotes",
     "divisionGender": "M",
-    "division": "4/5",
-    "practiceNight": "Tue",
-    "gymLocation": "Main Gym - Court A",
-    "timeSlot": "6:00 PM"
+    "division": "M K/1",
+    "practiceNight": "Monday",
+    "gymLocation": "Candlewood",
+    "timeSlot": "5:30 AM"
   },
   {
-    "id": "T2",
-    "divisionGender": "F",
-    "division": "6/7/8",
-    "practiceNight": "Thu",
-    "gymLocation": "North Elementary",
-    "timeSlot": "7:30 PM"
-  },
-  {
-    "id": "T3",
+    "id": "Tomato Frogs",
     "divisionGender": "M",
-    "division": "2/3",
-    "practiceNight": "Thu",
-    "gymLocation": "Main Gym - Court B",
-    "timeSlot": "6:00 PM"
+    "division": "M K/1",
+    "practiceNight": "Tuesday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:00 AM"
   },
   {
-    "id": "T4",
-    "divisionGender": "F",
-    "division": "K/1",
-    "practiceNight": "Mon",
-    "gymLocation": "South Elementary",
-    "timeSlot": "5:30 PM"
+    "id": "Lizards",
+    "divisionGender": "M",
+    "division": "M K/1",
+    "practiceNight": "Thursday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:00 AM"
   },
   {
-    "id": "T5",
+    "id": "Stallions",
+    "divisionGender": "M",
+    "division": "M K/1",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "6:30 AM"
+  },
+  {
+    "id": "Snapping Turtles",
+    "divisionGender": "M",
+    "division": "M 2/3",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Lions",
+    "divisionGender": "M",
+    "division": "M 2/3",
+    "practiceNight": "Monday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:00 AM"
+  },
+  {
+    "id": "Jackals",
+    "divisionGender": "M",
+    "division": "M 2/3",
+    "practiceNight": "Thursday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:00 AM"
+  },
+  {
+    "id": "Dragons",
+    "divisionGender": "M",
+    "division": "M 2/3",
+    "practiceNight": "Thursday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "6:30 AM"
+  },
+  {
+    "id": "Hawks",
+    "divisionGender": "M",
+    "division": "M 2/3",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Mill Creek",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Bengals",
+    "divisionGender": "M",
+    "division": "M 2/3",
+    "practiceNight": "Monday",
+    "gymLocation": "Candlewood",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Cheetahs",
+    "divisionGender": "M",
+    "division": "M 2/3",
+    "practiceNight": "Monday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:00 AM"
+  },
+  {
+    "id": "Tarantulas",
+    "divisionGender": "M",
+    "division": "M 2/3",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "6:30 AM"
+  },
+  {
+    "id": "Nittany Lions",
+    "divisionGender": "M",
+    "division": "M 4/5",
+    "practiceNight": "Monday",
+    "gymLocation": "ROC",
+    "timeSlot": "6:40 AM"
+  },
+  {
+    "id": "Wonder Boys",
+    "divisionGender": "M",
+    "division": "M 4/5",
+    "practiceNight": "Tuesday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:50 AM"
+  },
+  {
+    "id": "Buffaloes",
+    "divisionGender": "M",
+    "division": "M 4/5",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Mill Creek",
+    "timeSlot": "6:30 AM"
+  },
+  {
+    "id": "Banana Slugs",
+    "divisionGender": "M",
+    "division": "M 4/5",
+    "practiceNight": "Thursday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Spartans",
+    "divisionGender": "M",
+    "division": "M 4/5",
+    "practiceNight": "Thursday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:50 AM"
+  },
+  {
+    "id": "Midshipmen",
+    "divisionGender": "M",
+    "division": "M 4/5",
+    "practiceNight": "Thursday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "6:30 AM"
+  },
+  {
+    "id": "Huskies",
+    "divisionGender": "M",
+    "division": "M 4/5",
+    "practiceNight": "Monday",
+    "gymLocation": "Candlewood",
+    "timeSlot": "6:30 AM"
+  },
+  {
+    "id": "Titans",
+    "divisionGender": "M",
+    "division": "M 4/5",
+    "practiceNight": "Monday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:50 AM"
+  },
+  {
+    "id": "Knights",
+    "divisionGender": "M",
+    "division": "M 4/5",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Terrapins",
+    "divisionGender": "M",
+    "division": "M 4/5",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Mill Creek",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Thunder",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Thursday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:00 AM"
+  },
+  {
+    "id": "Celtics",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Tuesday",
+    "gymLocation": "ROC",
+    "timeSlot": "7:40 AM"
+  },
+  {
+    "id": "Wizards",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Monday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:00 AM"
+  },
+  {
+    "id": "Mavericks",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Tuesday",
+    "gymLocation": "ROC",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Timberwolves",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Monday",
+    "gymLocation": "ROC",
+    "timeSlot": "6:20 AM"
+  },
+  {
+    "id": "Raptors",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Mill Creek",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Nuggets",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Thursday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Lakers",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Thursday",
+    "gymLocation": "ROC",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Warriors",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Thursday",
+    "gymLocation": "ROC",
+    "timeSlot": "6:20 AM"
+  },
+  {
+    "id": "Cavaliers",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "6:30 AM"
+  },
+  {
+    "id": "Bucks",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Monday",
+    "gymLocation": "ROC",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Pistons",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Grizzlies",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Monday",
+    "gymLocation": "Candlewood",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Bulls",
+    "divisionGender": "M",
+    "division": "M 6/7/8",
+    "practiceNight": "Tuesday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:00 AM"
+  },
+  {
+    "id": "Starfish",
     "divisionGender": "F",
-    "division": "4/5",
-    "practiceNight": "Wed",
-    "gymLocation": "North Elementary",
-    "timeSlot": "6:00 PM"
+    "division": "F K/1",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Bobcats",
+    "divisionGender": "F",
+    "division": "F K/1",
+    "practiceNight": "Monday",
+    "gymLocation": "Candlewood",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Unicorns",
+    "divisionGender": "F",
+    "division": "F K/1",
+    "practiceNight": "Thursday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Flamingos",
+    "divisionGender": "F",
+    "division": "F K/1",
+    "practiceNight": "Thursday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Ladybugs",
+    "divisionGender": "F",
+    "division": "F 2/3",
+    "practiceNight": "Monday",
+    "gymLocation": "Candlewood",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Leopards",
+    "divisionGender": "F",
+    "division": "F 2/3",
+    "practiceNight": "Thursday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "6:30 AM"
+  },
+  {
+    "id": "Bunnies",
+    "divisionGender": "F",
+    "division": "F 2/3",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Mill Creek",
+    "timeSlot": "5:30 AM"
+  },
+  {
+    "id": "Wildcats",
+    "divisionGender": "F",
+    "division": "F 2/3",
+    "practiceNight": "Tuesday",
+    "gymLocation": "ROC",
+    "timeSlot": "5:00 AM"
+  },
+  {
+    "id": "Hawkeyes",
+    "divisionGender": "F",
+    "division": "F 4/5",
+    "practiceNight": "Monday",
+    "gymLocation": "Candlewood",
+    "timeSlot": "6:30 AM"
+  },
+  {
+    "id": "Golden Gophers",
+    "divisionGender": "F",
+    "division": "F 4/5",
+    "practiceNight": "Tuesday",
+    "gymLocation": "ROC",
+    "timeSlot": "6:40 AM"
+  },
+  {
+    "id": "Fighting Camels",
+    "divisionGender": "F",
+    "division": "F 4/5",
+    "practiceNight": "Thursday",
+    "gymLocation": "ROC",
+    "timeSlot": "6:40 AM"
+  },
+  {
+    "id": "Royals",
+    "divisionGender": "F",
+    "division": "F 4/5",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Mill Creek",
+    "timeSlot": "6:30 AM"
+  },
+  {
+    "id": "Storm",
+    "divisionGender": "F",
+    "division": "F 6/7/8",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Mill Creek",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Fever",
+    "divisionGender": "F",
+    "division": "F 6/7/8",
+    "practiceNight": "Monday",
+    "gymLocation": "Candlewood",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Lynx",
+    "divisionGender": "F",
+    "division": "F 6/7/8",
+    "practiceNight": "Tuesday",
+    "gymLocation": "ROC",
+    "timeSlot": "6:10 AM"
+  },
+  {
+    "id": "Mystics",
+    "divisionGender": "F",
+    "division": "F 6/7/8",
+    "practiceNight": "Monday",
+    "gymLocation": "ROC",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Liberty",
+    "divisionGender": "F",
+    "division": "F 6/7/8",
+    "practiceNight": "Thursday",
+    "gymLocation": "ROC",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Valkyries",
+    "divisionGender": "F",
+    "division": "F 6/7/8",
+    "practiceNight": "Thursday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "7:30 AM"
+  },
+  {
+    "id": "Aces",
+    "divisionGender": "F",
+    "division": "F 6/7/8",
+    "practiceNight": "Tuesday",
+    "gymLocation": "Sequoyah",
+    "timeSlot": "7:30 AM"
   }
 ]

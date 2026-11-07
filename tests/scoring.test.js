@@ -1,19 +1,30 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import items from "./fixtures/items.json" with { type: "json" };
-import slots from "./fixtures/slots.json" with { type: "json" };
-import assignments from "./fixtures/assignments.json" with { type: "json" };
-
 import { createModel } from "../src/lib/model.js";
 import { scoreModel } from "../src/lib/scoring.js";
 
-function createTestModel(rules, modelAssignments = assignments) {
+const items = [
+  { id: "I1", gender: "M", division: "M A" },
+  { id: "I2", gender: "F", division: "M A" },
+  { id: "I3", gender: "M", division: "F B" },
+  { id: "I4", gender: "F", division: "F B" },
+];
+
+const slots = [
+  { id: "S1", divisionGender: "M", division: "M A" },
+  { id: "S2", divisionGender: "F", division: "F B" },
+];
+
+function createTestModel(rules, modelAssignments) {
   return createModel(
     structuredClone(items),
     structuredClone(slots),
     rules,
-    structuredClone(modelAssignments),
+    structuredClone(modelAssignments ?? {
+      S1: ["I1", "I4"],
+      S2: ["I2", "I3"],
+    }),
   );
 }
 
@@ -44,17 +55,14 @@ test("scoreModel reports passing hard rules and weighted soft scores", () => {
   ];
 
   const passingAssignments = {
-    T1: ["P1", "P4", "P12"],
-    T2: ["P3", "P6", "P9", "P10", "P11"],
-    T3: ["P7", "P8"],
-    T4: ["P2", "P5"],
-    T5: [],
+    S1: ["I1", "I2"],
+    S2: ["I3", "I4"],
   };
   const result = scoreModel(createTestModel(rules, passingAssignments));
 
   assert.equal(result.legal, true);
   assert.deepEqual(result.hardViolations, []);
-  assert.equal(result.softScore, (7 / 12) * 10);
+  assert.equal(result.softScore, (2 / 4) * 10);
 
   assert.deepEqual(result.rules, [
     {
@@ -63,22 +71,22 @@ test("scoreModel reports passing hard rules and weighted soft scores", () => {
       enforcement: "hard",
       score: 1,
       percentage: 1,
-      repetitions: 12,
+      repetitions: 4,
       violations: result.rules[0].violations,
     },
     {
       id: "R2",
       name: "Assigned items match slot genders",
       enforcement: "soft",
-      score: (7 / 12) * 10,
-      percentage: 7 / 12,
-      repetitions: 12,
+      score: (2 / 4) * 10,
+      percentage: 2 / 4,
+      repetitions: 4,
       violations: result.rules[1].violations,
     },
   ]);
 
   assert.equal(result.rules[0].violations.length, 0);
-  assert.equal(result.rules[1].violations.length, 5);
+  assert.equal(result.rules[1].violations.length, 2);
 });
 
 test("scoreModel reports failed hard rule IDs", () => {

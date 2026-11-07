@@ -1,158 +1,9809 @@
 [
   {
-    "id": "P1",
+    "id": "P101",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 80.32833333333333
+  },
+  {
+    "id": "P103",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P156",
+      "P157",
+      "P510",
+      "P459"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 70.49666666666667
+  },
+  {
+    "id": "P104",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P208",
+      "P209"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P105",
+    "evaluationScore": 21.089999999999996
+  },
+  {
+    "id": "P105",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 47,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P209",
+      "P208"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P104",
+    "evaluationScore": 3
+  },
+  {
+    "id": "P106",
     "gender": "M",
     "grade": "4",
-    "division": "4/5",
-    "height": 54,
-    "practiceNights": ["Mon", "Wed"],
-    "teammateRequest": ["P4"],
+    "division": "M 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P632",
+      "P313"
+    ],
     "coachRequest": null,
-    "coachChildRequest": "T1",
-    "sibling": "P2",
-    "evaluationScore": 78
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 36.385000000000005
   },
   {
-    "id": "P2",
+    "id": "P107",
     "gender": "M",
-    "grade": "1",
-    "division": "K/1",
-    "height": 42,
-    "practiceNights": ["Mon", "Wed"],
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
     "teammateRequest": [],
     "coachRequest": null,
     "coachChildRequest": null,
-    "sibling": "P1",
-    "evaluationScore": 45
-  },
-  {
-    "id": "P3",
-    "gender": "F",
-    "grade": "7",
-    "division": "6/7/8",
-    "height": 62,
-    "practiceNights": ["Fri"],
-    "teammateRequest": ["P6"],
-    "coachRequest": null,
-    "coachChildRequest": "T2",
     "sibling": null,
-    "evaluationScore": 92
+    "evaluationScore": 36.82666666666667
   },
   {
-    "id": "P4",
+    "id": "P108",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 73,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P442"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 78.81
+  },
+  {
+    "id": "P109",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P422"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P110",
+    "evaluationScore": 58.99
+  },
+  {
+    "id": "P110",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P143"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P109",
+    "evaluationScore": 91.43166666666667
+  },
+  {
+    "id": "P111",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 46,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P705"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 1
+  },
+  {
+    "id": "P112",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P113",
+    "evaluationScore": 77.68166666666667
+  },
+  {
+    "id": "P113",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P112",
+    "evaluationScore": 66.13
+  },
+  {
+    "id": "P114",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P583"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 95.93833333333333
+  },
+  {
+    "id": "P115",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P116, P117",
+    "evaluationScore": 42.24333333333333
+  },
+  {
+    "id": "P116",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P115, P117",
+    "evaluationScore": 72.9
+  },
+  {
+    "id": "P117",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P115, P116",
+    "evaluationScore": null
+  },
+  {
+    "id": "P118",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 96.82333333333335
+  },
+  {
+    "id": "P119",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P120",
+    "evaluationScore": 35.43666666666667
+  },
+  {
+    "id": "P120",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P122"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P119",
+    "evaluationScore": 3.8399999999999963
+  },
+  {
+    "id": "P121",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P378",
+      "P101"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "bulls",
+    "sibling": "P122, P123",
+    "evaluationScore": 81.225
+  },
+  {
+    "id": "P122",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 49,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P120",
+      "P610"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P121, P123",
+    "evaluationScore": 20.160000000000004
+  },
+  {
+    "id": "P123",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P641",
+      "P261",
+      "P170",
+      "P410"
+    ],
+    "coachRequest": "Fighting Camels",
+    "coachChildRequest": null,
+    "sibling": "P121, P122",
+    "evaluationScore": 71.37333333333333
+  },
+  {
+    "id": "P124",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P338"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P125, P126",
+    "evaluationScore": 85.73166666666667
+  },
+  {
+    "id": "P125",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P309"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P124, P126",
+    "evaluationScore": 42.4
+  },
+  {
+    "id": "P126",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 44,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P105"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P124, P125",
+    "evaluationScore": 3
+  },
+  {
+    "id": "P127",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P196"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 81.66666666666667
+  },
+  {
+    "id": "P128",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P573",
+      "P636"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 97.52666666666667
+  },
+  {
+    "id": "P129",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P246",
+      "P387"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P130",
+    "evaluationScore": 67.26666666666667
+  },
+  {
+    "id": "P130",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P247"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P129",
+    "evaluationScore": 82.72166666666666
+  },
+  {
+    "id": "P131",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P292"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 83.09166666666667
+  },
+  {
+    "id": "P132",
     "gender": "M",
     "grade": "5",
-    "division": "4/5",
+    "division": "M 4/5",
     "height": 56,
-    "practiceNights": ["Tue"],
-    "teammateRequest": ["P1"],
-    "coachRequest": "T1",
-    "coachChildRequest": null,
-    "sibling": null,
-    "evaluationScore": 105
-  },
-  {
-    "id": "P5",
-    "gender": "F",
-    "grade": "K",
-    "division": "K/1",
-    "height": 38,
-    "practiceNights": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
     "teammateRequest": [],
     "coachRequest": null,
     "coachChildRequest": null,
     "sibling": null,
+    "evaluationScore": 72.935
+  },
+  {
+    "id": "P133",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P213",
+      "P214"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 74.25999999999999
+  },
+  {
+    "id": "P134",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P243",
+      "P145"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 38.266666666666666
+  },
+  {
+    "id": "P135",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P585"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 65.1
+  },
+  {
+    "id": "P136",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P556"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 82.64333333333335
+  },
+  {
+    "id": "P137",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P219"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Warriors",
+    "sibling": null,
+    "evaluationScore": 88.43
+  },
+  {
+    "id": "P138",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 46,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P307"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 30.43
+  },
+  {
+    "id": "P139",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": null,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 10
+  },
+  {
+    "id": "P140",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 71,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P637",
+      "P573"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Bulls",
+    "sibling": null,
+    "evaluationScore": 88.33833333333334
+  },
+  {
+    "id": "P141",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 21.339999999999996
+  },
+  {
+    "id": "P142",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 94.69833333333334
+  },
+  {
+    "id": "P143",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P110",
+      "P339"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 72.2
+  },
+  {
+    "id": "P144",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P645"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 68.03333333333333
+  },
+  {
+    "id": "P145",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P499",
+      "P274",
+      "P299"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 54.29666666666667
+  },
+  {
+    "id": "P146",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Wizards",
+    "sibling": null,
+    "evaluationScore": 89.635
+  },
+  {
+    "id": "P147",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P171"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P148",
+    "evaluationScore": 69.45
+  },
+  {
+    "id": "P148",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 46,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P412",
+      "P139"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P147",
+    "evaluationScore": 4.5
+  },
+  {
+    "id": "P149",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": null,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P105",
+      "P104"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 6
+  },
+  {
+    "id": "P150",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Buffaloes",
+    "sibling": "P151",
+    "evaluationScore": 21.5
+  },
+  {
+    "id": "P151",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P150",
+    "evaluationScore": 57.95333333333333
+  },
+  {
+    "id": "P152",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 78.33
+  },
+  {
+    "id": "P153",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P508"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P154, P155, P156, P157",
+    "evaluationScore": 25.79
+  },
+  {
+    "id": "P154",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P153, P155, P156, P157",
+    "evaluationScore": 72.92166666666667
+  },
+  {
+    "id": "P155",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P153, P154, P156, P157",
+    "evaluationScore": 31.086666666666666
+  },
+  {
+    "id": "P156",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P157"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P153, P154, P155, P157",
+    "evaluationScore": 39.6
+  },
+  {
+    "id": "P157",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P510",
+      "P103"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P153, P154, P155, P156",
+    "evaluationScore": 63.769999999999996
+  },
+  {
+    "id": "P158",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P400"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 13.200000000000001
+  },
+  {
+    "id": "P160",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P161",
+    "evaluationScore": 70.98166666666667
+  },
+  {
+    "id": "P161",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P160",
+    "evaluationScore": 82.92833333333333
+  },
+  {
+    "id": "P162",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P472",
+      "P612"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P163",
+    "evaluationScore": 4
+  },
+  {
+    "id": "P163",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P534",
+      "P259",
+      "P613"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P162",
+    "evaluationScore": 41.903333333333336
+  },
+  {
+    "id": "P164",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Buffaloes",
+    "sibling": null,
+    "evaluationScore": 58.156666666666666
+  },
+  {
+    "id": "P165",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 70,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [
+      "P622"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 96.05000000000001
+  },
+  {
+    "id": "P166",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P167, P168",
+    "evaluationScore": 26.9
+  },
+  {
+    "id": "P167",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Hawkeyes",
+    "sibling": "P166, P168",
+    "evaluationScore": 72.83666666666667
+  },
+  {
+    "id": "P168",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Hawkeyes",
+    "sibling": "P166, P167",
+    "evaluationScore": 49.08
+  },
+  {
+    "id": "P169",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P518"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 97.76166666666666
+  },
+  {
+    "id": "P170",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P123",
+      "P261",
+      "P397"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P171",
+    "evaluationScore": 71.53333333333333
+  },
+  {
+    "id": "P171",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P147",
+      "P337",
+      "P142"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P170",
+    "evaluationScore": 75.30166666666668
+  },
+  {
+    "id": "P172",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 64,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Fighting Camels",
+    "coachChildRequest": null,
+    "sibling": "P173",
+    "evaluationScore": 80.45333333333333
+  },
+  {
+    "id": "P173",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P172",
+    "evaluationScore": 75
+  },
+  {
+    "id": "P174",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Storm",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 76.2
+  },
+  {
+    "id": "P175",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 46,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P176, P177",
+    "evaluationScore": 28.5
+  },
+  {
+    "id": "P176",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 49,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P175, P177",
+    "evaluationScore": 12.410000000000002
+  },
+  {
+    "id": "P177",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P175, P176",
+    "evaluationScore": 5.179999999999998
+  },
+  {
+    "id": "P178",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P179",
+    "evaluationScore": 39.5
+  },
+  {
+    "id": "P179",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P670"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P178",
+    "evaluationScore": 62.54333333333334
+  },
+  {
+    "id": "P180",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P581",
+      "P593"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Timberwolves",
+    "sibling": null,
+    "evaluationScore": 97.505
+  },
+  {
+    "id": "P181",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 54.053333333333335
+  },
+  {
+    "id": "P182",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P295",
+      "P424",
+      "P546"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 48
+  },
+  {
+    "id": "P183",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Hawks",
+    "sibling": "P184, P185, P186",
+    "evaluationScore": 45.08333333333333
+  },
+  {
+    "id": "P184",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P183, P185, P186",
+    "evaluationScore": 64.38833333333334
+  },
+  {
+    "id": "P185",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P594"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P183, P184, P186",
+    "evaluationScore": 76.33166666666666
+  },
+  {
+    "id": "P186",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P597"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P183, P184, P185",
+    "evaluationScore": 1
+  },
+  {
+    "id": "P187",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P188",
+    "evaluationScore": 77.01166666666667
+  },
+  {
+    "id": "P188",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P187",
+    "evaluationScore": 96.33666666666667
+  },
+  {
+    "id": "P189",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P402",
+      "P658"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Dragons",
+    "sibling": "P190",
+    "evaluationScore": 46.156666666666666
+  },
+  {
+    "id": "P190",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 49,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P403"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Unicorns",
+    "sibling": "P189",
+    "evaluationScore": 1.5
+  },
+  {
+    "id": "P191",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P374"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 79.63833333333334
+  },
+  {
+    "id": "P192",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P559"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 72.63
+  },
+  {
+    "id": "P193",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 65.28333333333333
+  },
+  {
+    "id": "P194",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 46,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P231",
+      "P447"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 2.5
+  },
+  {
+    "id": "P195",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P571"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Cheetahs",
+    "sibling": "P196",
+    "evaluationScore": 41.83333333333333
+  },
+  {
+    "id": "P196",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Nittany Lions",
+    "sibling": "P195",
+    "evaluationScore": 89.77166666666666
+  },
+  {
+    "id": "P197",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 68.30666666666667
+  },
+  {
+    "id": "P198",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 28.330000000000002
+  },
+  {
+    "id": "P199",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Coyotes",
+    "sibling": "P200",
+    "evaluationScore": 33.11
+  },
+  {
+    "id": "P200",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Huskies",
+    "sibling": "P199",
+    "evaluationScore": 67.725
+  },
+  {
+    "id": "P201",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Buffaloes",
+    "sibling": null,
+    "evaluationScore": 87.83166666666666
+  },
+  {
+    "id": "P202",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 50,
+    "practiceNights": [
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 35
+  },
+  {
+    "id": "P205",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P292"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 96.94999999999999
+  },
+  {
+    "id": "P206",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Bengals",
+    "sibling": "P207, P208, P209",
+    "evaluationScore": 59.22666666666667
+  },
+  {
+    "id": "P207",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Huskies",
+    "sibling": "P206, P208, P209",
+    "evaluationScore": 70.03166666666667
+  },
+  {
+    "id": "P208",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P618"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Bobcats",
+    "sibling": "P206, P207, P209",
+    "evaluationScore": 31.27
+  },
+  {
+    "id": "P209",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 45,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Bobcats",
+    "sibling": "P206, P207, P208",
+    "evaluationScore": 2.200000000000003
+  },
+  {
+    "id": "P210",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P549",
+      "P275",
+      "P305"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 53.086666666666666
+  },
+  {
+    "id": "P211",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 54,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P225"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 29.200000000000003
+  },
+  {
+    "id": "P212",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P196",
+      "P124"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 77.53333333333333
+  },
+  {
+    "id": "P213",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P118",
+      "P133"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Bucks",
+    "sibling": "P214",
+    "evaluationScore": 92.53833333333333
+  },
+  {
+    "id": "P214",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P118",
+      "P133"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Bucks",
+    "sibling": "P213",
+    "evaluationScore": 70.58333333333333
+  },
+  {
+    "id": "P215",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P312",
+      "P195"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 45.06999999999999
+  },
+  {
+    "id": "P216",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 32.019999999999996
+  },
+  {
+    "id": "P217",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 52.665
+  },
+  {
+    "id": "P218",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 84.045
+  },
+  {
+    "id": "P219",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P137"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Warriors",
+    "sibling": null,
+    "evaluationScore": 72.78833333333333
+  },
+  {
+    "id": "P220",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P263",
+      "P108"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P221, P222",
+    "evaluationScore": 97.28666666666666
+  },
+  {
+    "id": "P221",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 51,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P438"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P220, P222",
+    "evaluationScore": 16.083333333333332
+  },
+  {
+    "id": "P222",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P555"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P220, P221",
+    "evaluationScore": 60.60666666666667
+  },
+  {
+    "id": "P223",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 70,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P224",
+    "evaluationScore": 83.89166666666667
+  },
+  {
+    "id": "P224",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P223",
+    "evaluationScore": 76.765
+  },
+  {
+    "id": "P225",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P211"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 29.25
+  },
+  {
+    "id": "P226",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P523"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 78.96833333333333
+  },
+  {
+    "id": "P227",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 62.89833333333333
+  },
+  {
+    "id": "P228",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P229",
+    "evaluationScore": 79.31666666666666
+  },
+  {
+    "id": "P229",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 51,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P126"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P228",
+    "evaluationScore": 12.099999999999998
+  },
+  {
+    "id": "P230",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P544"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P231",
+    "evaluationScore": 21.349999999999998
+  },
+  {
+    "id": "P231",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P493",
+      "P208"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Bobcats",
+    "sibling": "P230",
+    "evaluationScore": 27.23
+  },
+  {
+    "id": "P232",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P599"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 87.31333333333333
+  },
+  {
+    "id": "P234",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P235, P236",
+    "evaluationScore": 43.873333333333335
+  },
+  {
+    "id": "P235",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P234, P236",
+    "evaluationScore": 75.90166666666667
+  },
+  {
+    "id": "P236",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P319"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P234, P235",
+    "evaluationScore": 99.20666666666668
+  },
+  {
+    "id": "P237",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Banana Slugs",
+    "sibling": null,
+    "evaluationScore": 78.39833333333334
+  },
+  {
+    "id": "P238",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P529"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 75.77666666666667
+  },
+  {
+    "id": "P240",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P251"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 72.64500000000001
+  },
+  {
+    "id": "P241",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P242",
+    "evaluationScore": 56.15
+  },
+  {
+    "id": "P242",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P241",
+    "evaluationScore": 78.27
+  },
+  {
+    "id": "P243",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P195"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P244",
+    "evaluationScore": 29.14666666666666
+  },
+  {
+    "id": "P244",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P279"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P243",
+    "evaluationScore": 82.64833333333334
+  },
+  {
+    "id": "P245",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P246, P247, P248",
+    "evaluationScore": 60
+  },
+  {
+    "id": "P246",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P387",
+      "P129"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Terrapins",
+    "sibling": "P245, P247, P248",
+    "evaluationScore": 80.22333333333333
+  },
+  {
+    "id": "P247",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P130",
+      "P582"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P245, P246, P248",
+    "evaluationScore": 98.69666666666666
+  },
+  {
+    "id": "P248",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P245, P246, P247",
+    "evaluationScore": 26.369999999999997
+  },
+  {
+    "id": "P249",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P385",
+      "P349"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Midshipmen",
+    "sibling": "P250, P251",
+    "evaluationScore": 75.24933333333333
+  },
+  {
+    "id": "P250",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P231",
+      "P610"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Flamingos",
+    "sibling": "P249, P251",
+    "evaluationScore": 26.900000000000002
+  },
+  {
+    "id": "P251",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P240"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Valkyries",
+    "sibling": "P249, P250",
+    "evaluationScore": 85
+  },
+  {
+    "id": "P252",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P253",
+    "evaluationScore": 93.64166666666667
+  },
+  {
+    "id": "P253",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P192"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P252",
+    "evaluationScore": 80.73666666666666
+  },
+  {
+    "id": "P254",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P195"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P255",
+    "evaluationScore": 58.2
+  },
+  {
+    "id": "P255",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P338"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P254",
+    "evaluationScore": 79.045
+  },
+  {
+    "id": "P256",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P630"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Stallions",
+    "sibling": "P257, P258",
+    "evaluationScore": 46.25
+  },
+  {
+    "id": "P257",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 44,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Stallions",
+    "sibling": "P256, P258",
+    "evaluationScore": 16.5
+  },
+  {
+    "id": "P258",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P207",
+      "P237"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P256, P257",
+    "evaluationScore": 72.21833333333333
+  },
+  {
+    "id": "P259",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P163"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 24.869999999999997
+  },
+  {
+    "id": "P260",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 51.486666666666665
+  },
+  {
+    "id": "P261",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P123",
+      "P410",
+      "P170"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P262",
+    "evaluationScore": 59.653333333333336
+  },
+  {
+    "id": "P262",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P171"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P261",
+    "evaluationScore": 58.65166666666667
+  },
+  {
+    "id": "P263",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P284"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P264, P265, P266",
+    "evaluationScore": 94.79499999999999
+  },
+  {
+    "id": "P264",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P285"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Fighting Camels",
+    "sibling": "P263, P265, P266",
+    "evaluationScore": 88.91
+  },
+  {
+    "id": "P265",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P285"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Fighting Camels",
+    "sibling": "P263, P264, P266",
+    "evaluationScore": 80.46166666666667
+  },
+  {
+    "id": "P266",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Liberty",
+    "sibling": "P263, P264, P265",
+    "evaluationScore": 94.42666666666666
+  },
+  {
+    "id": "P267",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P268, P269",
+    "evaluationScore": 38.05
+  },
+  {
+    "id": "P268",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P267, P269",
+    "evaluationScore": 41.29666666666667
+  },
+  {
+    "id": "P269",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Lynx",
+    "coachChildRequest": null,
+    "sibling": "P267, P268",
+    "evaluationScore": 62.70833333333333
+  },
+  {
+    "id": "P270",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P333",
+      "P484"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 89.22666666666666
+  },
+  {
+    "id": "P271",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P292"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 81.575
+  },
+  {
+    "id": "P274",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 51,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P145"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 32.05666666666667
+  },
+  {
+    "id": "P275",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Spartans",
+    "sibling": null,
+    "evaluationScore": 52.961666666666666
+  },
+  {
+    "id": "P276",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P169"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 83.51166666666666
+  },
+  {
+    "id": "P277",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Jackals",
+    "sibling": "P278",
+    "evaluationScore": 53.42666666666667
+  },
+  {
+    "id": "P278",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Aces",
+    "sibling": "P277",
+    "evaluationScore": 78.21000000000001
+  },
+  {
+    "id": "P279",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P344 & P542"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 75.38333333333333
+  },
+  {
+    "id": "P280",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 91.62
+  },
+  {
+    "id": "P281",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 34.71666666666667
+  },
+  {
+    "id": "P284",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P263"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P285",
+    "evaluationScore": 99.86833333333334
+  },
+  {
+    "id": "P285",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P264",
+      "P265"
+    ],
+    "coachRequest": "Fighting Camels",
+    "coachChildRequest": null,
+    "sibling": "P284",
+    "evaluationScore": 76.56333333333333
+  },
+  {
+    "id": "P286",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P630"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P287",
     "evaluationScore": 28
   },
   {
-    "id": "P6",
-    "gender": "F",
-    "grade": "7",
-    "division": "6/7/8",
-    "height": 61,
-    "practiceNights": ["Mon"],
-    "teammateRequest": ["P3"],
-    "coachRequest": "T2",
+    "id": "P287",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 45,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
     "coachChildRequest": null,
-    "sibling": null,
-    "evaluationScore": 88
+    "sibling": "P286",
+    "evaluationScore": 5
   },
   {
-    "id": "P7",
+    "id": "P288",
     "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P255",
+      "P124."
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P289",
+    "evaluationScore": 59.305
+  },
+  {
+    "id": "P289",
+    "gender": "F",
     "grade": "2",
-    "division": "2/3",
-    "height": 46,
-    "practiceNights": ["Thu"],
-    "teammateRequest": ["P8"],
+    "division": "F 2/3",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P125",
+      "P309"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P288",
+    "evaluationScore": 58.46666666666667
+  },
+  {
+    "id": "P290",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P573",
+      "P636",
+      "P128"
+    ],
     "coachRequest": null,
     "coachChildRequest": null,
     "sibling": null,
-    "evaluationScore": 64
+    "evaluationScore": 91.63833333333334
   },
   {
-    "id": "P8",
+    "id": "P291",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 43.85
+  },
+  {
+    "id": "P292",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Thunder",
+    "sibling": null,
+    "evaluationScore": 90.115
+  },
+  {
+    "id": "P293",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P497",
+      "P623"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P294",
+    "evaluationScore": 99.315
+  },
+  {
+    "id": "P294",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 60,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P497",
+      "P623"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P293",
+    "evaluationScore": 87.30833333333334
+  },
+  {
+    "id": "P295",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P182",
+      "P424"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P296, P297",
+    "evaluationScore": 35
+  },
+  {
+    "id": "P296",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P395",
+      "P401",
+      "P436"
+    ],
+    "coachRequest": "Golden Gophers",
+    "coachChildRequest": null,
+    "sibling": "P295, P298",
+    "evaluationScore": 57.81333333333333
+  },
+  {
+    "id": "P297",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P396"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P295, P296",
+    "evaluationScore": 66.94666666666666
+  },
+  {
+    "id": "P298",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 49.26
+  },
+  {
+    "id": "P299",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P145"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P298, P300",
+    "evaluationScore": 42.89
+  },
+  {
+    "id": "P300",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P298, P299",
+    "evaluationScore": 72.065
+  },
+  {
+    "id": "P301",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 90.12333333333333
+  },
+  {
+    "id": "P302",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Pistons",
+    "sibling": null,
+    "evaluationScore": 100.88666666666666
+  },
+  {
+    "id": "P303",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P566"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 66.88333333333334
+  },
+  {
+    "id": "P304",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 82.53333333333333
+  },
+  {
+    "id": "P305",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P275",
+      "P210"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 66.67500000000001
+  },
+  {
+    "id": "P307",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 46,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P286",
+      "P287"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P308, P309",
+    "evaluationScore": 36.339999999999996
+  },
+  {
+    "id": "P308",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P124",
+      "P242",
+      "P310",
+      "P187"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P307, P309",
+    "evaluationScore": 71.25666666666666
+  },
+  {
+    "id": "P309",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P125"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P307, P308",
+    "evaluationScore": 32.17
+  },
+  {
+    "id": "P310",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P124",
+      "P308"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 68.24333333333334
+  },
+  {
+    "id": "P311",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 90.68166666666667
+  },
+  {
+    "id": "P312",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P313",
+    "evaluationScore": 65.71666666666667
+  },
+  {
+    "id": "P313",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P312",
+    "evaluationScore": 72.51
+  },
+  {
+    "id": "P314",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 59.77333333333334
+  },
+  {
+    "id": "P315",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 35.599999999999994
+  },
+  {
+    "id": "P317",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P138"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P318",
+    "evaluationScore": 1
+  },
+  {
+    "id": "P318",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Hawks",
+    "sibling": "P317",
+    "evaluationScore": 25.919999999999995
+  },
+  {
+    "id": "P319",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 60,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Grizzlies",
+    "sibling": null,
+    "evaluationScore": 105.98
+  },
+  {
+    "id": "P321",
     "gender": "F",
     "grade": "3",
-    "division": "2/3",
-    "height": 49,
-    "practiceNights": ["Thu"],
-    "teammateRequest": ["P7"],
+    "division": "F 2/3",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Wildcats",
+    "sibling": null,
+    "evaluationScore": 49.26
+  },
+  {
+    "id": "P322",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Tarantulas",
+    "sibling": null,
+    "evaluationScore": 77.80666666666667
+  },
+  {
+    "id": "P323",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Knights",
+    "sibling": "P336",
+    "evaluationScore": 86.97833333333334
+  },
+  {
+    "id": "P324",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 71,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Cavaliers",
+    "sibling": "P322, P323",
+    "evaluationScore": 76.625
+  },
+  {
+    "id": "P325",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P326",
+    "evaluationScore": 95.31
+  },
+  {
+    "id": "P326",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P325",
+    "evaluationScore": 78.24000000000001
+  },
+  {
+    "id": "P327",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 26.82
+  },
+  {
+    "id": "P329",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": null,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P206",
+      "P215"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 51.60666666666667
+  },
+  {
+    "id": "P330",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P382",
+      "P596"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 77.80666666666667
+  },
+  {
+    "id": "P331",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 70,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P417"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 93.52166666666666
+  },
+  {
+    "id": "P332",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 59.696666666666665
+  },
+  {
+    "id": "P333",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 88.25
+  },
+  {
+    "id": "P334",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P646"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 63.81166666666667
+  },
+  {
+    "id": "P335",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 62,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P517"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 72.5
+  },
+  {
+    "id": "P336",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P337",
+    "evaluationScore": 70.65299999999999
+  },
+  {
+    "id": "P337",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P336",
+    "evaluationScore": 86.97833333333334
+  },
+  {
+    "id": "P338",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P242",
+      "P255"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Nittany Lions",
+    "sibling": "P339",
+    "evaluationScore": 76.23666666666666
+  },
+  {
+    "id": "P339",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P146"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Wizards",
+    "sibling": "P338",
+    "evaluationScore": 86.60833333333333
+  },
+  {
+    "id": "P340",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P617",
+      "P621"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 62.24
+  },
+  {
+    "id": "P341",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 51,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 36.04
+  },
+  {
+    "id": "P342",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [
+      "P414",
+      "P652",
+      "P562"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 62.40833333333333
+  },
+  {
+    "id": "P343",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P535"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 75.67666666666666
+  },
+  {
+    "id": "P344",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P279",
+      "P542"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 62.038333333333334
+  },
+  {
+    "id": "P345",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 51,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P502",
+      "P483",
+      "P355"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Ladybugs",
+    "sibling": null,
+    "evaluationScore": 60.19
+  },
+  {
+    "id": "P346",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P347",
+    "evaluationScore": 25
+  },
+  {
+    "id": "P347",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P346",
+    "evaluationScore": 35.46666666666667
+  },
+  {
+    "id": "P348",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 68.72
+  },
+  {
+    "id": "P349",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P598",
+      "P249",
+      "P385"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P350, P351, P352",
+    "evaluationScore": 84.30166666666668
+  },
+  {
+    "id": "P350",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 51,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P221"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P349, P351, P352",
+    "evaluationScore": 36.18666666666667
+  },
+  {
+    "id": "P351",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 60,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P136",
+      "P352",
+      "P599",
+      "P556",
+      "P266",
+      "P468"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P349, P350, P352",
+    "evaluationScore": 71.925
+  },
+  {
+    "id": "P352",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P136",
+      "P351",
+      "P599",
+      "P556",
+      "P266",
+      "P468"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P349, P350, P351",
+    "evaluationScore": 88.69
+  },
+  {
+    "id": "P353",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 49.483333333333334
+  },
+  {
+    "id": "P354",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P517"
+    ],
     "coachRequest": null,
     "coachChildRequest": null,
     "sibling": null,
     "evaluationScore": 71
   },
   {
-    "id": "P9",
+    "id": "P355",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Leopards",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 33.35
+  },
+  {
+    "id": "P356",
     "gender": "M",
     "grade": "6",
-    "division": "6/7/8",
-    "height": 59,
-    "practiceNights": ["Tue", "Thu"],
-    "teammateRequest": [],
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P143"
+    ],
     "coachRequest": null,
     "coachChildRequest": null,
     "sibling": null,
-    "evaluationScore": 84
+    "evaluationScore": 80.905
   },
   {
-    "id": "P10",
+    "id": "P357",
     "gender": "F",
-    "grade": "8",
-    "division": "6/7/8",
-    "height": 64,
-    "practiceNights": ["Wed"],
-    "teammateRequest": ["P11"],
+    "grade": "0",
+    "division": "F K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P211"
+    ],
     "coachRequest": null,
     "coachChildRequest": null,
-    "sibling": null,
-    "evaluationScore": 97
+    "sibling": "P358",
+    "evaluationScore": 16.200000000000003
   },
   {
-    "id": "P11",
+    "id": "P358",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P613"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P357",
+    "evaluationScore": 38.266666666666666
+  },
+  {
+    "id": "P359",
     "gender": "M",
     "grade": "8",
-    "division": "6/7/8",
+    "division": "M 6/7/8",
     "height": 67,
-    "practiceNights": ["Wed"],
-    "teammateRequest": ["P10"],
-    "coachRequest": null,
-    "coachChildRequest": null,
-    "sibling": null,
-    "evaluationScore": 90
-  },
-  {
-    "id": "P12",
-    "gender": "F",
-    "grade": "5",
-    "division": "4/5",
-    "height": 55,
-    "practiceNights": ["Mon", "Fri"],
+    "practiceNights": [
+      "Thursday"
+    ],
     "teammateRequest": [],
     "coachRequest": null,
     "coachChildRequest": null,
     "sibling": null,
+    "evaluationScore": 82.70500000000001
+  },
+  {
+    "id": "P360",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 59,
+    "practiceNights": [
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 76.445
+  },
+  {
+    "id": "P361",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 47,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P362",
+    "evaluationScore": 13.339999999999998
+  },
+  {
+    "id": "P362",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Ladybugs",
+    "sibling": "P361",
+    "evaluationScore": 30.666666666666668
+  },
+  {
+    "id": "P363",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P584"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P364",
+    "evaluationScore": 39.47
+  },
+  {
+    "id": "P364",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P585"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P363",
+    "evaluationScore": 67.36
+  },
+  {
+    "id": "P365",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 85.59
+  },
+  {
+    "id": "P366",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Storm",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 70.33333333333333
+  },
+  {
+    "id": "P367",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P368, P369",
+    "evaluationScore": 55.50666666666667
+  },
+  {
+    "id": "P368",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P367, P369",
+    "evaluationScore": 86.69999999999999
+  },
+  {
+    "id": "P369",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P367, P368",
+    "evaluationScore": 76.71333333333334
+  },
+  {
+    "id": "P370",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P371",
+    "evaluationScore": 85.58166666666666
+  },
+  {
+    "id": "P371",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P370",
+    "evaluationScore": 25
+  },
+  {
+    "id": "P372",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 70,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P373",
+    "evaluationScore": 58.53
+  },
+  {
+    "id": "P373",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P372",
+    "evaluationScore": 55.379999999999995
+  },
+  {
+    "id": "P374",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Knights",
+    "sibling": "P375",
+    "evaluationScore": 91.795
+  },
+  {
+    "id": "P375",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P553"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Cavaliers",
+    "sibling": "P374",
+    "evaluationScore": 59.861666666666665
+  },
+  {
+    "id": "P376",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P551",
+      "P323"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 74.65166666666667
+  },
+  {
+    "id": "P377",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P368",
+      "P369"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 82.22
+  },
+  {
+    "id": "P378",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P581"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P379",
+    "evaluationScore": 77.69833333333334
+  },
+  {
+    "id": "P379",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P378",
+    "evaluationScore": 22
+  },
+  {
+    "id": "P380",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 47,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 30
+  },
+  {
+    "id": "P381",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 95.73333333333332
+  },
+  {
+    "id": "P382",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P596",
+      "P599"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 87.89500000000001
+  },
+  {
+    "id": "P383",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P457"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P384",
+    "evaluationScore": 81.82333333333332
+  },
+  {
+    "id": "P384",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P459"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P383",
+    "evaluationScore": 78.18666666666667
+  },
+  {
+    "id": "P385",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P349",
+      "P249"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 87.16333333333333
+  },
+  {
+    "id": "P387",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P246"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P388",
+    "evaluationScore": 73.725
+  },
+  {
+    "id": "P388",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": null,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P387",
+    "evaluationScore": 65
+  },
+  {
+    "id": "P389",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": null,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 65
+  },
+  {
+    "id": "P390",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Titans",
+    "sibling": null,
+    "evaluationScore": 56.004999999999995
+  },
+  {
+    "id": "P391",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P263",
+      "P284"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 81.34333333333333
+  },
+  {
+    "id": "P392",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P191"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 65.23666666666666
+  },
+  {
+    "id": "P393",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 71,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 93.83333333333333
+  },
+  {
+    "id": "P394",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P615"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 54.15
+  },
+  {
+    "id": "P395",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P296"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P396",
+    "evaluationScore": 45
+  },
+  {
+    "id": "P396",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P297"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P395",
+    "evaluationScore": 75.045
+  },
+  {
+    "id": "P397",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P123",
+      "P170",
+      "P261"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 59.18666666666667
+  },
+  {
+    "id": "P398",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 70,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P399",
+    "evaluationScore": 89.77833333333334
+  },
+  {
+    "id": "P399",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P625"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P398",
+    "evaluationScore": 77.03999999999999
+  },
+  {
+    "id": "P400",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P401",
+    "evaluationScore": 35.57
+  },
+  {
+    "id": "P401",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P436",
+      "P296"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P400",
+    "evaluationScore": 53.95666666666666
+  },
+  {
+    "id": "P402",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P189",
+      "P347"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Dragons",
+    "sibling": "P403",
+    "evaluationScore": 36.9
+  },
+  {
+    "id": "P403",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 45,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P190"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Unicorns",
+    "sibling": "P402",
+    "evaluationScore": 1.0999999999999979
+  },
+  {
+    "id": "P404",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 52,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 64.8
+  },
+  {
+    "id": "P405",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 45,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P406, P407",
+    "evaluationScore": 31
+  },
+  {
+    "id": "P406",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P405, P407",
+    "evaluationScore": 62
+  },
+  {
+    "id": "P407",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P405, P406",
+    "evaluationScore": 66.88499999999999
+  },
+  {
+    "id": "P410",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P123"
+    ],
+    "coachRequest": "Fighting Camels",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 76.01666666666667
+  },
+  {
+    "id": "P411",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 71
+  },
+  {
+    "id": "P412",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 44,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P139. P148"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 11.660000000000002
+  },
+  {
+    "id": "P413",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 84.01666666666667
+  },
+  {
+    "id": "P414",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P562",
+      "P652"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 73.73
+  },
+  {
+    "id": "P415",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 51,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P426, P427",
+    "evaluationScore": 73.81
+  },
+  {
+    "id": "P416",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P207"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P415",
+    "evaluationScore": 41.155
+  },
+  {
+    "id": "P417",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Mavericks",
+    "sibling": "P418",
+    "evaluationScore": 91.49333333333334
+  },
+  {
+    "id": "P418",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P417",
+    "evaluationScore": 28.89
+  },
+  {
+    "id": "P419",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 49,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P591",
+      "P432"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Jackals",
+    "sibling": null,
+    "evaluationScore": 48.53333333333333
+  },
+  {
+    "id": "P420",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P421",
+    "evaluationScore": 68.52666666666667
+  },
+  {
+    "id": "P421",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P420",
+    "evaluationScore": 63.49166666666667
+  },
+  {
+    "id": "P422",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P109",
+      "P215"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 45
+  },
+  {
+    "id": "P423",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 45,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Lizards",
+    "sibling": "P424, P425",
+    "evaluationScore": 27
+  },
+  {
+    "id": "P424",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 51,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P182"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Lions",
+    "sibling": "P423, P425",
+    "evaluationScore": 52.36666666666667
+  },
+  {
+    "id": "P425",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Spartans",
+    "sibling": "P423, P424",
+    "evaluationScore": 65.66
+  },
+  {
+    "id": "P426",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 46,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Tomato Frogs",
+    "sibling": "P427, P428",
+    "evaluationScore": 14.950000000000001
+  },
+  {
+    "id": "P427",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Wonder Boys",
+    "sibling": "P426, P428",
+    "evaluationScore": 80.11
+  },
+  {
+    "id": "P428",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P540"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P426, P427",
+    "evaluationScore": 73.81
+  },
+  {
+    "id": "P429",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P558",
+      "P559"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 86.80833333333334
+  },
+  {
+    "id": "P430",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 46.76333333333333
+  },
+  {
+    "id": "P431",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 47,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P493"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 14.599999999999998
+  },
+  {
+    "id": "P432",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P433",
+    "evaluationScore": 51.906666666666666
+  },
+  {
+    "id": "P433",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P432",
+    "evaluationScore": 56.89333333333333
+  },
+  {
+    "id": "P434",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P663"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 85.94833333333334
+  },
+  {
+    "id": "P435",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P637",
+      "P293"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P436, P437",
+    "evaluationScore": 80.07166666666666
+  },
+  {
+    "id": "P436",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P401"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Golden Gophers",
+    "sibling": "P435, P437",
+    "evaluationScore": 54.705
+  },
+  {
+    "id": "P437",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P435, P436",
+    "evaluationScore": 84.215
+  },
+  {
+    "id": "P438",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 51,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P221",
+      "P350"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 16.189999999999998
+  },
+  {
+    "id": "P439",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 74.365
+  },
+  {
+    "id": "P440",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P180"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Timberwolves",
+    "sibling": "P441",
+    "evaluationScore": 89.10666666666667
+  },
+  {
+    "id": "P441",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P654",
+      "P619",
+      "P510"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Mystics",
+    "sibling": "P440",
+    "evaluationScore": 74.59
+  },
+  {
+    "id": "P442",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P557",
+      "P532"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P443",
+    "evaluationScore": 86.08666666666667
+  },
+  {
+    "id": "P443",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P108",
+      "P532"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P442",
+    "evaluationScore": 74.17666666666666
+  },
+  {
+    "id": "P444",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 13.313333333333333
+  },
+  {
+    "id": "P445",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P220",
+      "P108"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 56.655
+  },
+  {
+    "id": "P446",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 78.13666666666667
+  },
+  {
+    "id": "P447",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 49,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P231"
+    ],
+    "coachRequest": "Bobcats",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 3
+  },
+  {
+    "id": "P448",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 26.599999999999998
+  },
+  {
+    "id": "P451",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 81.5
+  },
+  {
+    "id": "P452",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P453",
+    "evaluationScore": 77.35166666666666
+  },
+  {
+    "id": "P453",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P452",
+    "evaluationScore": 81.71833333333333
+  },
+  {
+    "id": "P454",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Lakers",
+    "sibling": null,
+    "evaluationScore": 93.95166666666665
+  },
+  {
+    "id": "P455",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 48,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P460"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P456, P457, P458, P459",
+    "evaluationScore": 44
+  },
+  {
+    "id": "P456",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 42,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P490"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Starfish",
+    "sibling": "P455, P457, P458, P459",
+    "evaluationScore": 14
+  },
+  {
+    "id": "P457",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P614"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Golden Gophers",
+    "sibling": "P455, P456, P458, P459",
+    "evaluationScore": 78.68166666666667
+  },
+  {
+    "id": "P458",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P264",
+      "P265",
+      "P285",
+      "P457"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Golden Gophers",
+    "sibling": "P455, P456, P457, P459",
     "evaluationScore": 73
+  },
+  {
+    "id": "P459",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P266"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P455, P456, P457, P458",
+    "evaluationScore": 75.26833333333333
+  },
+  {
+    "id": "P460",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P584"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P461, P462",
+    "evaluationScore": 58.16666666666667
+  },
+  {
+    "id": "P461",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P598"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P460, P462",
+    "evaluationScore": 81.74833333333333
+  },
+  {
+    "id": "P462",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P598"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P460, P461",
+    "evaluationScore": 94.5
+  },
+  {
+    "id": "P463",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 79.83666666666667
+  },
+  {
+    "id": "P464",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 77.04666666666667
+  },
+  {
+    "id": "P465",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 72,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 88.39833333333334
+  },
+  {
+    "id": "P466",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 46.86833333333334
+  },
+  {
+    "id": "P467",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 57.28333333333333
+  },
+  {
+    "id": "P468",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P599",
+      "P352",
+      "P136"
+    ],
+    "coachRequest": "Liberty",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 64.11
+  },
+  {
+    "id": "P469",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P571",
+      "P195"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 48
+  },
+  {
+    "id": "P470",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P471",
+    "evaluationScore": 94.43
+  },
+  {
+    "id": "P471",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P470",
+    "evaluationScore": 87.1
+  },
+  {
+    "id": "P472",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 42,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P473",
+    "evaluationScore": 27.700000000000003
+  },
+  {
+    "id": "P473",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P520",
+      "P195"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P472",
+    "evaluationScore": 48
+  },
+  {
+    "id": "P474",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P475, P476",
+    "evaluationScore": 48
+  },
+  {
+    "id": "P475",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P474, P476",
+    "evaluationScore": 78.75666666666666
+  },
+  {
+    "id": "P476",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 75,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P474, P475",
+    "evaluationScore": 81.99
+  },
+  {
+    "id": "P477",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 47,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P162"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 25.900000000000002
+  },
+  {
+    "id": "P478",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P479",
+    "evaluationScore": 82.71666666666667
+  },
+  {
+    "id": "P479",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P478",
+    "evaluationScore": 93.78
+  },
+  {
+    "id": "P480",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P669",
+      "P526"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 22.68
+  },
+  {
+    "id": "P481",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P482",
+    "evaluationScore": 43.3
+  },
+  {
+    "id": "P482",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 70,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P481",
+    "evaluationScore": 73.32
+  },
+  {
+    "id": "P483",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Leopards",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 59.54
+  },
+  {
+    "id": "P484",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P333",
+      "P270"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 85.29166666666666
+  },
+  {
+    "id": "P485",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 52.25
+  },
+  {
+    "id": "P486",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P217"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 59.05833333333334
+  },
+  {
+    "id": "P487",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P488",
+    "evaluationScore": 66.62666666666667
+  },
+  {
+    "id": "P488",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 85.09
+  },
+  {
+    "id": "P489",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P517"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 81.81166666666667
+  },
+  {
+    "id": "P490",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 46,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P491, P492",
+    "evaluationScore": 8.380000000000003
+  },
+  {
+    "id": "P491",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P556"
+    ],
+    "coachRequest": "Liberty",
+    "coachChildRequest": null,
+    "sibling": "P490, P492",
+    "evaluationScore": 83
+  },
+  {
+    "id": "P492",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P555"
+    ],
+    "coachRequest": "Fighting Camels",
+    "coachChildRequest": null,
+    "sibling": "P490, P491",
+    "evaluationScore": 57.1
+  },
+  {
+    "id": "P493",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 51,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Bobcats",
+    "sibling": null,
+    "evaluationScore": 17.400000000000002
+  },
+  {
+    "id": "P494",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [
+      "P639",
+      "P660"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 76.10333333333334
+  },
+  {
+    "id": "P495",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P310",
+      "P308",
+      "P124"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 89.62666666666667
+  },
+  {
+    "id": "P497",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P293",
+      "P294",
+      "P623"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 76.43
+  },
+  {
+    "id": "P498",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 52,
+    "practiceNights": [
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 68.815
+  },
+  {
+    "id": "P499",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P145"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P500",
+    "evaluationScore": 56.1
+  },
+  {
+    "id": "P500",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P498"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P499",
+    "evaluationScore": 75.93166666666667
+  },
+  {
+    "id": "P501",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 70,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 94.06333333333333
+  },
+  {
+    "id": "P502",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P355"
+    ],
+    "coachRequest": "Leopards",
+    "coachChildRequest": null,
+    "sibling": "P503",
+    "evaluationScore": 41.29
+  },
+  {
+    "id": "P503",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P581"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Raptors",
+    "sibling": "P502",
+    "evaluationScore": 90.33333333333333
+  },
+  {
+    "id": "P504",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 70,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P223"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 57.52666666666667
+  },
+  {
+    "id": "P506",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P507",
+    "evaluationScore": 22.25
+  },
+  {
+    "id": "P507",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P506",
+    "evaluationScore": 34.150000000000006
+  },
+  {
+    "id": "P508",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Lizards",
+    "sibling": "P509, P510",
+    "evaluationScore": 43
+  },
+  {
+    "id": "P509",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P670",
+      "P643"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P508, P510",
+    "evaluationScore": 72.69166666666666
+  },
+  {
+    "id": "P510",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Mystics",
+    "coachChildRequest": null,
+    "sibling": "P508, P509",
+    "evaluationScore": 79.69666666666666
+  },
+  {
+    "id": "P511",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P191"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 67.72833333333334
+  },
+  {
+    "id": "P512",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 76.03
+  },
+  {
+    "id": "P513",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P248"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P514",
+    "evaluationScore": 1.9000000000000021
+  },
+  {
+    "id": "P514",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P569",
+      "P577"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P513",
+    "evaluationScore": 74.63
+  },
+  {
+    "id": "P515",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P156",
+      "P157",
+      "P510",
+      "P459"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 71.90333333333334
+  },
+  {
+    "id": "P516",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P358",
+      "P613"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 36.166666666666664
+  },
+  {
+    "id": "P517",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P201"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Buffaloes",
+    "sibling": "P519",
+    "evaluationScore": 85.60833333333333
+  },
+  {
+    "id": "P518",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P169"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 92.43966666666667
+  },
+  {
+    "id": "P519",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P311"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Raptors",
+    "sibling": "P517",
+    "evaluationScore": 68.50333333333333
+  },
+  {
+    "id": "P520",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P195"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P521",
+    "evaluationScore": 31.686666666666667
+  },
+  {
+    "id": "P521",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P196"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P520",
+    "evaluationScore": 81.84
+  },
+  {
+    "id": "P522",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 88.67500000000001
+  },
+  {
+    "id": "P523",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 62,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [
+      "P226"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 81.44333333333333
+  },
+  {
+    "id": "P524",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Knights",
+    "sibling": "P525",
+    "evaluationScore": 64.55333333333333
+  },
+  {
+    "id": "P525",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P524",
+    "evaluationScore": 38.43
+  },
+  {
+    "id": "P526",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P669",
+      "P480"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 24.39333333333333
+  },
+  {
+    "id": "P527",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P135"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 66.72666666666666
+  },
+  {
+    "id": "P528",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P529",
+    "evaluationScore": 41.986666666666665
+  },
+  {
+    "id": "P529",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 70,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P292",
+      "P238"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Thunder",
+    "sibling": "P528",
+    "evaluationScore": 65.58333333333334
+  },
+  {
+    "id": "P531",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 89.695
+  },
+  {
+    "id": "P532",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P442"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P533",
+    "evaluationScore": 75.43333333333334
+  },
+  {
+    "id": "P533",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P532",
+    "evaluationScore": 38.7
+  },
+  {
+    "id": "P534",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P163"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 41.64666666666667
+  },
+  {
+    "id": "P535",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 70,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P343"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 77.405
+  },
+  {
+    "id": "P536",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 49,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P537, P538",
+    "evaluationScore": 35.61
+  },
+  {
+    "id": "P537",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P536, P538",
+    "evaluationScore": 59.47333333333333
+  },
+  {
+    "id": "P538",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P536, P537",
+    "evaluationScore": 58.943333333333335
+  },
+  {
+    "id": "P539",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 50,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P248"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 16
+  },
+  {
+    "id": "P540",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P428"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 74.68
+  },
+  {
+    "id": "P541",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 88.24000000000001
+  },
+  {
+    "id": "P542",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P279",
+      "P344"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 84.895
+  },
+  {
+    "id": "P543",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 49,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P627"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 8.5
+  },
+  {
+    "id": "P544",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 47,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 23
+  },
+  {
+    "id": "P545",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 44,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P178"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P546, P547",
+    "evaluationScore": 4
+  },
+  {
+    "id": "P546",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P545, P547",
+    "evaluationScore": 29.116666666666667
+  },
+  {
+    "id": "P547",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P545, P546",
+    "evaluationScore": 80.25666666666666
+  },
+  {
+    "id": "P548",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P473",
+      "P195"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 45.82333333333334
+  },
+  {
+    "id": "P549",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P305",
+      "P275"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 50.24166666666666
+  },
+  {
+    "id": "P550",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Tarantulas",
+    "sibling": "P551, P552, P553, P554",
+    "evaluationScore": 48.833333333333336
+  },
+  {
+    "id": "P551",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Knights",
+    "sibling": "P550, P552, P553, P554",
+    "evaluationScore": 78.40666666666667
+  },
+  {
+    "id": "P552",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Cavaliers",
+    "sibling": "P550, P551, P553, P554",
+    "evaluationScore": 90.09333333333333
+  },
+  {
+    "id": "P553",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Cavaliers",
+    "sibling": "P550, P551, P552, P554",
+    "evaluationScore": 94.01666666666667
+  },
+  {
+    "id": "P554",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P607"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P550, P551, P552, P553",
+    "evaluationScore": 24.39
+  },
+  {
+    "id": "P555",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Fighting Camels",
+    "sibling": "P556",
+    "evaluationScore": 62.78333333333333
+  },
+  {
+    "id": "P556",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P136"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Liberty",
+    "sibling": "P555",
+    "evaluationScore": 76.74833333333333
+  },
+  {
+    "id": "P557",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P130",
+      "P582"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 84.78833333333333
+  },
+  {
+    "id": "P558",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P429",
+      "P559"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P559",
+    "evaluationScore": 77.26333333333334
+  },
+  {
+    "id": "P559",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P429",
+      "P558"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P558",
+    "evaluationScore": 85.39333333333333
+  },
+  {
+    "id": "P560",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P561",
+    "evaluationScore": 23.273333333333333
+  },
+  {
+    "id": "P561",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P560",
+    "evaluationScore": 56.18333333333334
+  },
+  {
+    "id": "P562",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P414"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P563",
+    "evaluationScore": 84.59333333333333
+  },
+  {
+    "id": "P563",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P562",
+    "evaluationScore": 55
+  },
+  {
+    "id": "P564",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": null,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 60
+  },
+  {
+    "id": "P565",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 63.61833333333333
+  },
+  {
+    "id": "P566",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": null,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [
+      "P303"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 45
+  },
+  {
+    "id": "P567",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P616"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 50.79833333333333
+  },
+  {
+    "id": "P568",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 35.43666666666667
+  },
+  {
+    "id": "P569",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P514"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 77.14166666666667
+  },
+  {
+    "id": "P570",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 49,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 38
+  },
+  {
+    "id": "P571",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Cheetahs",
+    "sibling": "P572",
+    "evaluationScore": 55.52333333333333
+  },
+  {
+    "id": "P572",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P571",
+    "evaluationScore": 64.8
+  },
+  {
+    "id": "P573",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P128",
+      "P636",
+      "P290"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 101.32333333333332
+  },
+  {
+    "id": "P574",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Golden Gophers",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 57.839999999999996
+  },
+  {
+    "id": "P575",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 72,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P576",
+    "evaluationScore": 95.04666666666665
+  },
+  {
+    "id": "P576",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P575",
+    "evaluationScore": 68.54833333333333
+  },
+  {
+    "id": "P577",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Storm",
+    "sibling": null,
+    "evaluationScore": 85.06833333333333
+  },
+  {
+    "id": "P578",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 57.15
+  },
+  {
+    "id": "P579",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P580",
+    "evaluationScore": 46.17666666666666
+  },
+  {
+    "id": "P580",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Bunnies",
+    "sibling": "P579",
+    "evaluationScore": 24.599999999999998
+  },
+  {
+    "id": "P581",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 101.64833333333334
+  },
+  {
+    "id": "P582",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P247"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 80.55666666666667
+  },
+  {
+    "id": "P583",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 70,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [
+      "P440"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 88.19333333333333
+  },
+  {
+    "id": "P584",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P206"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Bengals",
+    "sibling": "P585, P586",
+    "evaluationScore": 57.8
+  },
+  {
+    "id": "P585",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P207",
+      "P364"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Huskies",
+    "sibling": "P584, P586",
+    "evaluationScore": 86.22666666666666
+  },
+  {
+    "id": "P586",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P326"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Fever",
+    "sibling": "P584, P585",
+    "evaluationScore": 88.83
+  },
+  {
+    "id": "P587",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P399"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P588",
+    "evaluationScore": 59.81333333333333
+  },
+  {
+    "id": "P588",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P399"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P587",
+    "evaluationScore": 64.07166666666666
+  },
+  {
+    "id": "P590",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 64,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P237"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Banana Slugs",
+    "sibling": null,
+    "evaluationScore": 68.11500000000001
+  },
+  {
+    "id": "P591",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Jackals",
+    "sibling": null,
+    "evaluationScore": 35.513333333333335
+  },
+  {
+    "id": "P592",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P200",
+      "P646"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P593",
+    "evaluationScore": 80.71
+  },
+  {
+    "id": "P593",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 72,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P592",
+    "evaluationScore": 94.52166666666668
+  },
+  {
+    "id": "P594",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P185"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P595, P596, P597",
+    "evaluationScore": 69.75166666666667
+  },
+  {
+    "id": "P595",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Golden Gophers",
+    "coachChildRequest": null,
+    "sibling": "P594, P596, P597",
+    "evaluationScore": 43.4
+  },
+  {
+    "id": "P596",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P382"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P594, P595, P597",
+    "evaluationScore": 83.37333333333333
+  },
+  {
+    "id": "P597",
+    "gender": "F",
+    "grade": "0",
+    "division": "F K/1",
+    "height": 44,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P594, P595, P596",
+    "evaluationScore": 2.25
+  },
+  {
+    "id": "P598",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 60,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P461"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Wonder Boys",
+    "sibling": "P599",
+    "evaluationScore": 80.10166666666666
+  },
+  {
+    "id": "P599",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Liberty",
+    "coachChildRequest": null,
+    "sibling": "P560",
+    "evaluationScore": 98.21000000000001
+  },
+  {
+    "id": "P600",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 39.66666666666667
+  },
+  {
+    "id": "P601",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [
+      "."
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 69.64333333333333
+  },
+  {
+    "id": "P602",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 83.515
+  },
+  {
+    "id": "P603",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P604",
+    "evaluationScore": 35.85
+  },
+  {
+    "id": "P604",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P182"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P603",
+    "evaluationScore": 52.233333333333334
+  },
+  {
+    "id": "P605",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P461"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P606, P607",
+    "evaluationScore": 73.62666666666667
+  },
+  {
+    "id": "P606",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P263",
+      "P284"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P605, P607",
+    "evaluationScore": 78.06166666666667
+  },
+  {
+    "id": "P607",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 49,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P490",
+      "P554"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Starfish",
+    "sibling": "P605, P606",
+    "evaluationScore": 25
+  },
+  {
+    "id": "P608",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 79.30666666666667
+  },
+  {
+    "id": "P609",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P300"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 88.70166666666667
+  },
+  {
+    "id": "P610",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 48,
+    "practiceNights": [
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P122"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 31.410000000000004
+  },
+  {
+    "id": "P611",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 89.13833333333334
+  },
+  {
+    "id": "P612",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 47,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P613",
+    "evaluationScore": 26.200000000000003
+  },
+  {
+    "id": "P613",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 49,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P358"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P612",
+    "evaluationScore": 34.8
+  },
+  {
+    "id": "P614",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P457",
+      "P467"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 75.66666666666667
+  },
+  {
+    "id": "P615",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Lions",
+    "sibling": null,
+    "evaluationScore": 42.160000000000004
+  },
+  {
+    "id": "P616",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 57,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P620"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P617",
+    "evaluationScore": 50.379999999999995
+  },
+  {
+    "id": "P617",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P621"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P616",
+    "evaluationScore": 91.68666666666667
+  },
+  {
+    "id": "P618",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P208",
+      "P209"
+    ],
+    "coachRequest": "Bobcats",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 28.57
+  },
+  {
+    "id": "P619",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 66,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P441",
+      "P510"
+    ],
+    "coachRequest": "Mystics",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 71.87333333333333
+  },
+  {
+    "id": "P620",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Royals",
+    "sibling": "P621",
+    "evaluationScore": 76.06
+  },
+  {
+    "id": "P621",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P617"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P620",
+    "evaluationScore": 86.43666666666667
+  },
+  {
+    "id": "P622",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 72,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P165"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 99.49833333333333
+  },
+  {
+    "id": "P623",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P293",
+      "P294",
+      "P497"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 61.04666666666667
+  },
+  {
+    "id": "P624",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P578"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P625",
+    "evaluationScore": 59.665333333333336
+  },
+  {
+    "id": "P625",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P624",
+    "evaluationScore": 69.37333333333333
+  },
+  {
+    "id": "P626",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 84.165
+  },
+  {
+    "id": "P627",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 45,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P250"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Flamingos",
+    "sibling": null,
+    "evaluationScore": 21.200000000000003
+  },
+  {
+    "id": "P628",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 67,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 75.14
+  },
+  {
+    "id": "P630",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P415"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P631",
+    "evaluationScore": 54.5
+  },
+  {
+    "id": "P631",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P630",
+    "evaluationScore": 83.19500000000001
+  },
+  {
+    "id": "P632",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P633",
+    "evaluationScore": 53.97833333333333
+  },
+  {
+    "id": "P633",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 48,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P632",
+    "evaluationScore": 34.1
+  },
+  {
+    "id": "P634",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P604"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P635",
+    "evaluationScore": 41.489999999999995
+  },
+  {
+    "id": "P635",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Liberty",
+    "coachChildRequest": null,
+    "sibling": "P634",
+    "evaluationScore": 67.87166666666667
+  },
+  {
+    "id": "P636",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 73,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P573",
+      "P128"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 92.18
+  },
+  {
+    "id": "P637",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 73,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": "Bulls",
+    "sibling": null,
+    "evaluationScore": 99.15666666666667
+  },
+  {
+    "id": "P638",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P639",
+    "evaluationScore": 75.66666666666666
+  },
+  {
+    "id": "P639",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [
+      "P660",
+      "P494"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P638",
+    "evaluationScore": 93.375
+  },
+  {
+    "id": "P640",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 33.43666666666667
+  },
+  {
+    "id": "P641",
+    "gender": "F",
+    "grade": "5",
+    "division": "F 4/5",
+    "height": 61,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [
+      "P264",
+      "P265"
+    ],
+    "coachRequest": "Fighting Camels",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 74.225
+  },
+  {
+    "id": "P642",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 34.3
+  },
+  {
+    "id": "P643",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 59,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P670"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 65.95333333333333
+  },
+  {
+    "id": "P644",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 61,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P319"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 88.79166666666666
+  },
+  {
+    "id": "P645",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P144"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 50.013333333333335
+  },
+  {
+    "id": "P646",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 49,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P200",
+      "P334"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 64.94
+  },
+  {
+    "id": "P647",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 49,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P299",
+      "P499",
+      "P145"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 33.3
+  },
+  {
+    "id": "P648",
+    "gender": "F",
+    "grade": "3",
+    "division": "F 2/3",
+    "height": 53,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 34
+  },
+  {
+    "id": "P649",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 56,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [
+      "P291"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Snapping Turtles",
+    "sibling": null,
+    "evaluationScore": 36.269999999999996
+  },
+  {
+    "id": "P650",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P208"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 5
+  },
+  {
+    "id": "P651",
+    "gender": "F",
+    "grade": "4",
+    "division": "F 4/5",
+    "height": 55,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 51.19166666666667
+  },
+  {
+    "id": "P652",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P562"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 91.64166666666667
+  },
+  {
+    "id": "P653",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 62.5
+  },
+  {
+    "id": "P654",
+    "gender": "F",
+    "grade": "6",
+    "division": "F 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": "Mystics",
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 68.43666666666667
+  },
+  {
+    "id": "P655",
+    "gender": "M",
+    "grade": "1",
+    "division": "M K/1",
+    "height": 54,
+    "practiceNights": [
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P656",
+    "evaluationScore": 40.45
+  },
+  {
+    "id": "P656",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": null,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P472",
+      "P162"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P655",
+    "evaluationScore": 25.45
+  },
+  {
+    "id": "P657",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 82.20833333333334
+  },
+  {
+    "id": "P658",
+    "gender": "M",
+    "grade": "3",
+    "division": "M 2/3",
+    "height": 60,
+    "practiceNights": [
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 34.78
+  },
+  {
+    "id": "P660",
+    "gender": "M",
+    "grade": "6",
+    "division": "M 6/7/8",
+    "height": 60,
+    "practiceNights": [
+      "Monday"
+    ],
+    "teammateRequest": [
+      "P639",
+      "P494"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 74.71000000000001
+  },
+  {
+    "id": "P662",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P473"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 36.54333333333334
+  },
+  {
+    "id": "P663",
+    "gender": "M",
+    "grade": "7",
+    "division": "M 6/7/8",
+    "height": 68,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P434"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": "Celtics",
+    "sibling": null,
+    "evaluationScore": 95.44833333333334
+  },
+  {
+    "id": "P664",
+    "gender": "M",
+    "grade": "0",
+    "division": "M K/1",
+    "height": 44,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P665",
+    "evaluationScore": 5.549999999999997
+  },
+  {
+    "id": "P665",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 54,
+    "practiceNights": [
+      "Monday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P362"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P664",
+    "evaluationScore": 24.333333333333336
+  },
+  {
+    "id": "P666",
+    "gender": "M",
+    "grade": "5",
+    "division": "M 4/5",
+    "height": 56,
+    "practiceNights": [
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P667",
+    "evaluationScore": 65.77333333333334
+  },
+  {
+    "id": "P667",
+    "gender": "M",
+    "grade": "8",
+    "division": "M 6/7/8",
+    "height": 69,
+    "practiceNights": [
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": "P666",
+    "evaluationScore": 82.69666666666667
+  },
+  {
+    "id": "P668",
+    "gender": "M",
+    "grade": "2",
+    "division": "M 2/3",
+    "height": 46,
+    "practiceNights": [
+      "Monday",
+      "Tuesday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 29
+  },
+  {
+    "id": "P669",
+    "gender": "F",
+    "grade": "2",
+    "division": "F 2/3",
+    "height": 52,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P526",
+      "P379",
+      "P480"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 26.61
+  },
+  {
+    "id": "P670",
+    "gender": "M",
+    "grade": "4",
+    "division": "M 4/5",
+    "height": 58,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P207",
+      "P509",
+      "P643"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 73.56
+  },
+  {
+    "id": "P701",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 64,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P702"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 75
+  },
+  {
+    "id": "P702",
+    "gender": "F",
+    "grade": "7",
+    "division": "F 6/7/8",
+    "height": 63,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P701"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 78
+  },
+  {
+    "id": "P703",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 65,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [
+      "P704"
+    ],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 80
+  },
+  {
+    "id": "P704",
+    "gender": "F",
+    "grade": "8",
+    "division": "F 6/7/8",
+    "height": 62,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 80
+  },
+  {
+    "id": "P705",
+    "gender": "F",
+    "grade": "1",
+    "division": "F K/1",
+    "height": 50,
+    "practiceNights": [
+      "Monday",
+      "Tuesday",
+      "Thursday"
+    ],
+    "teammateRequest": [],
+    "coachRequest": null,
+    "coachChildRequest": null,
+    "sibling": null,
+    "evaluationScore": 7.3
   }
 ]
