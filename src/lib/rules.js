@@ -233,4 +233,77 @@ export function evaluateBalance(inputs, model) {
 }
 export function evaluateDistribute(inputs, model) {}
 
-export function evaluateAlign(inputs, model) {}
+export function evaluateAlign(inputs, model) {
+  const sourceCollection = inputs.source.collection;
+  const targetCollection = inputs.target.collection;
+
+  if (
+    sourceCollection !== "assignedSlots" ||
+    targetCollection !== "siblingAssignedSlots"
+  ) {
+    throw new Error(
+      `Unsupported align collections: ${sourceCollection} -> ${targetCollection}`,
+    );
+  }
+
+  let score = 0;
+  let repetitions = 0;
+  const violations = [];
+
+  for (const item of model.items) {
+    if (isEmptyMatchValue(item.sibling)) {
+      continue;
+    }
+
+    const sibling = model.items.find(
+      (candidate) => candidate.id === item.sibling,
+    );
+
+    if (!sibling) {
+      continue;
+    }
+
+    const assignedSlots = getAssignedSlots(model, item.id);
+    const siblingAssignedSlots = getAssignedSlots(model, sibling.id);
+
+    // An unassigned item cannot be compared yet, so this relationship is
+    // non-applicable until both sides have an assignment.
+    for (const sourceSlot of assignedSlots) {
+      for (const targetSlot of siblingAssignedSlots) {
+        const sourceValue = sourceSlot[inputs.source.attribute];
+        const targetValue = targetSlot[inputs.target.attribute];
+
+        repetitions++;
+
+        if (valuesMatch(sourceValue, targetValue)) {
+          score++;
+        } else {
+          violations.push({
+            sourceId: sourceSlot.id,
+            targetId: targetSlot.id,
+            sourceValue,
+            targetValue,
+          });
+        }
+      }
+    }
+  }
+
+  return { score, repetitions, violations };
+}
+
+function valuesMatch(sourceValue, targetValue) {
+  if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
+    return sourceValue.some((value) => targetValue.includes(value));
+  }
+
+  if (Array.isArray(sourceValue)) {
+    return sourceValue.includes(targetValue);
+  }
+
+  if (Array.isArray(targetValue)) {
+    return targetValue.includes(sourceValue);
+  }
+
+  return sourceValue === targetValue;
+}

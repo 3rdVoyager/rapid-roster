@@ -8,6 +8,7 @@ import assignments from "./fixtures/assignments.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
 import {
+  evaluateAlign,
   evaluateBalance,
   evaluateLimit,
   evaluateMatch,
@@ -109,6 +110,82 @@ test("match rejects unsupported collections", () => {
       ),
     /Unsupported match collections: teams -> slots/,
   );
+});
+
+test("align compares assigned slot attributes with sibling assigned slots", () => {
+  const model = createModel(
+    [
+      { id: "I1", sibling: "I2" },
+      { id: "I2", sibling: "I1" },
+      { id: "I3", sibling: null },
+    ],
+    [
+      { id: "S1", practiceNight: "Monday", gymLocation: "ROC" },
+      { id: "S2", practiceNight: "Monday", gymLocation: "Sequoyah" },
+    ],
+    [],
+    { S1: ["I1"], S2: ["I2", "I3"] },
+  );
+
+  const result = evaluateAlign(
+    {
+      source: { collection: "assignedSlots", attribute: "practiceNight" },
+      target: {
+        collection: "siblingAssignedSlots",
+        attribute: "practiceNight",
+      },
+    },
+    model,
+  );
+
+  assert.deepEqual(result, {
+    score: 2,
+    repetitions: 2,
+    violations: [],
+  });
+});
+
+test("align reports mismatched sibling slot attributes", () => {
+  const model = createModel(
+    [
+      { id: "I1", sibling: "I2" },
+      { id: "I2", sibling: "I1" },
+    ],
+    [
+      { id: "S1", gymLocation: "ROC" },
+      { id: "S2", gymLocation: "Sequoyah" },
+    ],
+    [],
+    { S1: ["I1"], S2: ["I2"] },
+  );
+
+  const result = evaluateAlign(
+    {
+      source: { collection: "assignedSlots", attribute: "gymLocation" },
+      target: {
+        collection: "siblingAssignedSlots",
+        attribute: "gymLocation",
+      },
+    },
+    model,
+  );
+
+  assert.equal(result.score, 0);
+  assert.equal(result.repetitions, 2);
+  assert.deepEqual(result.violations, [
+    {
+      sourceId: "S1",
+      targetId: "S2",
+      sourceValue: "ROC",
+      targetValue: "Sequoyah",
+    },
+    {
+      sourceId: "S2",
+      targetId: "S1",
+      sourceValue: "Sequoyah",
+      targetValue: "ROC",
+    },
+  ]);
 });
 
 test("limit evaluates assignment counts for each slot", () => {
