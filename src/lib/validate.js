@@ -3,14 +3,15 @@ export function validateData(items, slots) {
   validateIds(items, slots);
 }
 
-const supportedKeywords = new Set([
-  "match",
-  "equalize",
-  "limit",
-  "balance",
-  "distribute",
-  "align",
-]);
+const keywordConfigs = [
+  { keyword: "match", inputs: 2 },
+  { keyword: "group", inputs: 2 },
+  { keyword: "equalize", inputs: 1 },
+  { keyword: "limit", inputs: 2 },
+  { keyword: "balance", inputs: 1 },
+  { keyword: "distribute", inputs: 1 },
+  { keyword: "align", inputs: 2 },
+];
 
 export function validateRules(rules) {
   if (!Array.isArray(rules)) {
@@ -35,19 +36,15 @@ export function validateRule(rule) {
     throw new Error(`Unknown enforcement ${rule.enforcement}`);
   }
 
-  if (!supportedKeywords.has(rule.keyword)) {
+  const keywordConfig = keywordConfigs.find(
+    (config) => config.keyword === rule.keyword,
+  );
+
+  if (!keywordConfig) {
     throw new Error(`Unknown keyword: ${rule.keyword}`);
   }
 
-  if (
-    typeof rule.inputs !== "object" ||
-    rule.inputs === null ||
-    Array.isArray(rule.inputs) ||
-    rule.inputs.source === undefined ||
-    rule.inputs.target === undefined
-  ) {
-    throw new Error(`Invalid inputs for rule: ${rule.id}`);
-  }
+  validateRuleInputs(rule, keywordConfig);
 
   if (rule.enforcement === "soft") {
     if (
@@ -58,6 +55,20 @@ export function validateRule(rule) {
     ) {
       throw new Error(`Invalid priority for rule: ${rule.id}`);
     }
+  }
+}
+
+function validateRuleInputs(rule, keywordConfig) {
+  if (!Array.isArray(rule.inputs)) {
+    throw new Error(`Invalid inputs for rule: ${rule.id}`);
+  }
+
+  const expectedCount = keywordConfig.inputs;
+  if (rule.inputs.length !== expectedCount) {
+    throw new Error(
+      `Invalid input count for rule: ${rule.id}. ` +
+        `Expected ${expectedCount}, received ${rule.inputs.length}`,
+    );
   }
 }
 
