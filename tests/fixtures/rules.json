@@ -5,16 +5,7 @@
     "description": "Match each item's Gender to its assigned slot's Division Gender.",
     "enforcement": "hard",
     "keyword": "match",
-    "inputs": {
-      "source": {
-        "collection": "items",
-        "attribute": "gender"
-      },
-      "target": {
-        "collection": "slots",
-        "attribute": "divisionGender"
-      }
-    }
+    "inputs": ["gender", "divisionGender"]
   },
   {
     "id": "R2",
@@ -22,16 +13,7 @@
     "description": "Match each item's Division to its assigned slot's Division.",
     "enforcement": "hard",
     "keyword": "match",
-    "inputs": {
-      "source": {
-        "collection": "items",
-        "attribute": "division"
-      },
-      "target": {
-        "collection": "slots",
-        "attribute": "division"
-      }
-    }
+    "inputs": ["division", "division"]
   },
   {
     "id": "R3",
@@ -39,16 +21,7 @@
     "description": "Match each item's Practice Nights to its assigned slot's Practice Night.",
     "enforcement": "hard",
     "keyword": "match",
-    "inputs": {
-      "source": {
-        "collection": "items",
-        "attribute": "practiceNights"
-      },
-      "target": {
-        "collection": "slots",
-        "attribute": "practiceNight"
-      }
-    }
+    "inputs": ["practiceNights", "practiceNight"]
   },
   {
     "id": "R4",
@@ -56,16 +29,7 @@
     "description": "Match each item's Coach Child Request to its assigned slot's ID.",
     "enforcement": "hard",
     "keyword": "match",
-    "inputs": {
-      "source": {
-        "collection": "items",
-        "attribute": "coachChildRequest"
-      },
-      "target": {
-        "collection": "slots",
-        "attribute": "id"
-      }
-    }
+    "inputs": ["coachChildRequest", "id"]
   },
   {
     "id": "R5",
@@ -73,10 +37,7 @@
     "description": "Equalize the number of items across slots to within 1 item.",
     "enforcement": "hard",
     "keyword": "equalize",
-    "inputs": {
-      "source": "slots",
-      "target": 1
-    }
+    "inputs": [1]
   },
   {
     "id": "R6",
@@ -85,13 +46,7 @@
     "enforcement": "soft",
     "priority": 80,
     "keyword": "balance",
-    "inputs": {
-      "source": {
-        "collection": "items",
-        "attribute": "height"
-      },
-      "target": "slots"
-    }
+    "inputs": ["height"]
   },
   {
     "id": "R7",
@@ -100,31 +55,16 @@
     "enforcement": "soft",
     "priority": 80,
     "keyword": "distribute",
-    "inputs": {
-      "source": {
-        "collection": "items",
-        "attribute": "height"
-      },
-      "target": "slots"
-    }
+    "inputs": ["height"]
   },
   {
     "id": "R8",
-    "name": "Honor Teammate Requests",
-    "description": "Match each item's Teammate Requests to its co-assigned item's ID.",
+    "name": "Group Teammate Requests",
+    "description": "Group each item with items whose IDs are in its Teammate Requests.",
     "enforcement": "soft",
     "priority": 75,
-    "keyword": "match",
-    "inputs": {
-      "source": {
-        "collection": "items",
-        "attribute": "teammateRequest"
-      },
-      "target": {
-        "collection": "items",
-        "attribute": "id"
-      }
-    }
+    "keyword": "group",
+    "inputs": ["id", "teammateRequest"]
   },
   {
     "id": "R9",
@@ -133,16 +73,7 @@
     "enforcement": "soft",
     "priority": 60,
     "keyword": "match",
-    "inputs": {
-      "source": {
-        "collection": "items",
-        "attribute": "coachRequest"
-      },
-      "target": {
-        "collection": "slots",
-        "attribute": "id"
-      }
-    }
+    "inputs": ["coachRequest", "id"]
   },
   {
     "id": "R10",
@@ -151,16 +82,7 @@
     "enforcement": "soft",
     "priority": 65,
     "keyword": "align",
-    "inputs": {
-      "source": {
-        "collection": "assignedSlots",
-        "attribute": "practiceNight"
-      },
-      "target": {
-        "collection": "siblingAssignedSlots",
-        "attribute": "practiceNight"
-      }
-    }
+    "inputs": ["practiceNight", "sibling"]
   },
   {
     "id": "R11",
@@ -169,16 +91,7 @@
     "enforcement": "soft",
     "priority": 65,
     "keyword": "align",
-    "inputs": {
-      "source": {
-        "collection": "assignedSlots",
-        "attribute": "gymLocation"
-      },
-      "target": {
-        "collection": "siblingAssignedSlots",
-        "attribute": "gymLocation"
-      }
-    }
+    "inputs": ["gymLocation", "sibling"]
   },
   {
     "id": "R12",
@@ -187,12 +100,6 @@
     "enforcement": "soft",
     "priority": 100,
     "keyword": "balance",
-    "inputs": {
-      "source": {
-        "collection": "items",
-        "attribute": "evaluationScore"
-      },
-      "target": "slots"
-    }
+    "inputs": ["evaluationScore"]
   }
 ]

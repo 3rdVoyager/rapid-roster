@@ -9,6 +9,7 @@ import {
 
 const evaluators = {
   match: evaluateMatch,
+  group: evaluateGroup,
   equalize: evaluateEqualize,
   limit: evaluateLimit,
   balance: evaluateBalance,
@@ -100,6 +101,15 @@ export function evaluateMatch(inputs, model) {
   }
 
   return { score, repetitions, violations };
+}
+
+export function evaluateGroup(inputs, model) {
+  // The input-array migration is complete before this evaluator is implemented.
+  return {
+    score: 0,
+    repetitions: 1,
+    violations: [{ reason: "Group evaluator not implemented" }],
+  };
 }
 
 function isEmptyMatchValue(value) {
