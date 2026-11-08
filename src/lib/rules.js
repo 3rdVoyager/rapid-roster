@@ -3,6 +3,7 @@ import {
   getAssignedItemIds,
   getAssignedSlots,
   getAssignedSlotIds,
+  getCoAssignedItems,
 } from "./selectors.js";
 
 const evaluators = {
@@ -79,11 +80,46 @@ export function evaluateMatch(inputs, model) {
 }
 
 export function evaluateGroup(inputs, model) {
-  // The input-array migration is complete before this evaluator is implemented.
+  const [itemAttribute1, itemAttribute2] = inputs;
+  let satisfaction = 0;
+  let repetitions = 0;
+  const violations = [];
+
+  for (const item of model.items) {
+    const requestedValues = normalizeValues(item[itemAttribute2]);
+
+    if (requestedValues.length === 0) {
+      continue;
+    }
+
+    const coAssignedItems = getCoAssignedItems(model, item.id);
+
+    for (const requestedValue of requestedValues) {
+      const matches = coAssignedItems.some((coAssignedItem) =>
+        valuesMatch(requestedValue, coAssignedItem[itemAttribute1]),
+      );
+
+      if (matches) {
+        satisfaction++;
+      } else {
+        violations.push({
+          sourceId: item.id,
+          targetId: requestedValue,
+          sourceValue: requestedValues,
+          targetValue: coAssignedItems.map(
+            (coAssignedItem) => coAssignedItem[itemAttribute1],
+          ),
+        });
+      }
+
+      repetitions++;
+    }
+  }
+
   return {
-    score: 0,
-    repetitions: 1,
-    violations: [{ reason: "Group evaluator not implemented" }],
+    score: satisfaction,
+    repetitions,
+    violations,
   };
 }
 
@@ -94,6 +130,15 @@ function isEmptyMatchValue(value) {
     value === "" ||
     (Array.isArray(value) && value.length === 0)
   );
+}
+
+function normalizeValues(value) {
+  if (isEmptyMatchValue(value)) {
+    return [];
+  }
+
+  const values = Array.isArray(value) ? value : [value];
+  return values.filter((entry) => !isEmptyMatchValue(entry));
 }
 
 export function evaluateEqualize(inputs, model) {
