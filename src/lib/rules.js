@@ -3,8 +3,6 @@ import {
   getAssignedItemIds,
   getAssignedSlots,
   getAssignedSlotIds,
-  getCoAssignedItems,
-  getCoAssignedSlots,
 } from "./selectors.js";
 
 const evaluators = {
@@ -31,69 +29,46 @@ export function evaluateRule(rule, model) {
 }
 
 export function evaluateMatch(inputs, model) {
+  const [itemAttribute, slotAttribute] = inputs;
   let score = 0;
   let repetitions = 0;
   const violations = [];
-  const sourceCollection = inputs.source.collection;
-  const targetCollection = inputs.target.collection;
 
-  if (
-    !["items", "slots"].includes(sourceCollection) ||
-    !["items", "slots"].includes(targetCollection)
-  ) {
-    throw new Error(
-      `Unsupported match collections: ${sourceCollection} -> ${targetCollection}`,
-    );
-  }
+  for (const item of model.items) {
+    const assignedSlots = getAssignedSlots(model, item.id);
 
-  for (const sourceRecord of model[sourceCollection]) {
-    let relatedRecords = [];
-    if (sourceCollection === "items") {
-      if (targetCollection === "slots") {
-        relatedRecords = getAssignedSlots(model, sourceRecord.id);
-      } else if (targetCollection === "items") {
-        relatedRecords = getCoAssignedItems(model, sourceRecord.id);
-      }
-    } else if (sourceCollection === "slots") {
-      if (targetCollection === "slots") {
-        relatedRecords = getCoAssignedSlots(model, sourceRecord.id);
-      } else if (targetCollection === "items") {
-        relatedRecords = getAssignedItems(model, sourceRecord.id);
-      }
-    }
-
-    for (const targetRecord of relatedRecords) {
-      const sourceValue = sourceRecord[inputs.source.attribute];
-      const targetValue = targetRecord[inputs.target.attribute];
+    for (const slot of assignedSlots) {
+      const itemValue = item[itemAttribute];
+      const slotValue = slot[slotAttribute];
 
       // Empty request fields mean that this comparison does not apply to
-      // the source record. They should not become false violations.
-      if (isEmptyMatchValue(sourceValue)) {
+      // the item. They should not become false violations.
+      if (isEmptyMatchValue(itemValue)) {
         continue;
       }
 
       let matches;
 
-      // TODO: Score each source-array value separately instead of
+      // TODO: Score each item-array value separately instead of
       // reducing the whole array comparison to one boolean result.
-      if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
-        matches = sourceValue.some((value) => targetValue.includes(value));
-      } else if (Array.isArray(sourceValue)) {
-        matches = sourceValue.includes(targetValue);
-      } else if (Array.isArray(targetValue)) {
-        matches = targetValue.includes(sourceValue);
+      if (Array.isArray(itemValue) && Array.isArray(slotValue)) {
+        matches = itemValue.some((value) => slotValue.includes(value));
+      } else if (Array.isArray(itemValue)) {
+        matches = itemValue.includes(slotValue);
+      } else if (Array.isArray(slotValue)) {
+        matches = slotValue.includes(itemValue);
       } else {
-        matches = sourceValue === targetValue;
+        matches = itemValue === slotValue;
       }
 
       if (matches) {
         score++;
       } else {
         violations.push({
-          sourceId: sourceRecord.id,
-          targetId: targetRecord.id,
-          sourceValue,
-          targetValue,
+          sourceId: item.id,
+          targetId: slot.id,
+          sourceValue: itemValue,
+          targetValue: slotValue,
         });
       }
       repetitions++;
