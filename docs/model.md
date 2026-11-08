@@ -77,17 +77,14 @@ aggregation, and scoring required by that rule.
   "name": "Match Gender",
   "description": "An item's gender must match its assigned slot.",
   "enforcement": "hard",
-  "keyword": "itemFieldEqualsAssignedSlotField",
-  "inputs": {
-    "itemField": "gender",
-    "slotField": "divisionGender"
-  }
+  "keyword": "match",
+  "inputs": ["gender", "divisionGender"]
 }
 ```
 
 Soft rules add `priority` from 1 to 100. Keywords currently cover assignment
-field comparisons, requested assignments, count balancing, average balancing,
-selected-item distribution, teammate relationships, and sibling relationships.
+field comparisons, grouping requests, count balancing, average balancing,
+selected-item distribution, and sibling alignment.
 See [keyword-rule-schema.md](keyword-rule-schema.md) for the current catalog
 and input definitions.
 
@@ -99,13 +96,12 @@ validator, evaluator, tests, and rule-builder form.
 
 ### Hard Rules
 
-Each applicable leaf comparison returns satisfaction from 0 to 1. A rule
-reports `comparisonCount`, `satisfactionTotal`, `violationTotal`, `applicable`,
-and its normalized average score. Empty or non-applicable values are skipped.
+`evaluateModel()` evaluates only hard rules and returns each rule's
+`score`, `percentage`, `repetitions`, and `violations`. A model is legal only
+when every hard rule has a percentage of `1`.
 
-Hard rules define legality. A result is legal only when
-`violationTotal === 0`. All hard rules must be legal before soft-rule
-optimization begins.
+The assignment repair loop uses moves for count rules such as `equalize` and
+`limit`, and swaps for the other hard rules.
 
 ### Soft Rules
 
@@ -119,10 +115,9 @@ soft score = sum(priority × satisfaction)
 ## Search Algorithm
 
 1. Validate and normalize the data and rules.
-2. Build a random assignment, preserving simple limits when practical.
+2. Build a random assignment.
 3. **Repair:** target violated hard rules with moves and swaps until every hard
-
-   violation is accounted for.
+   rule is satisfied.
 
 4. Restart from a new random assignment if the repair budget is exhausted.
 5. **Optimize:** propose legal moves and swaps and keep soft-score improvements.
@@ -142,15 +137,10 @@ maxOptimizationIterations, randomSeed
 
 ## User-Facing Rules
 
-Users should choose sentence-like templates rather than edit the raw schema:
-
-- Only assign items where `[division]` matches the slot's `[division]`.
-- Keep the average `[height]` difference between slots below `[10]`.
-- Assign an item with the IDs in `[requested teammates]`.
-- Assign items only when `[availability]` overlaps the slot's `[time]`.
-
-The rule builder should show only templates and operators compatible with the
-selected fields.
+Users should choose the fixed sentence templates in
+[keyword-rule-schema.md](keyword-rule-schema.md) rather than edit raw JSON.
+The rule builder supplies only the attributes and numbers allowed by each
+template.
 
 ## Important Limits
 
