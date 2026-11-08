@@ -142,15 +142,8 @@ function normalizeValues(value) {
 }
 
 export function evaluateEqualize(inputs, model) {
-  const sourceCollection =
-    typeof inputs.source === "string"
-      ? inputs.source
-      : inputs.source.collection;
-  const maximumDifference = inputs.target;
-
-  if (!["items", "slots"].includes(sourceCollection)) {
-    throw new Error(`Unsupported equalize collection: ${sourceCollection}`);
-  }
+  const maximumDifference = inputs[0];
+  const records = model.slots;
 
   if (
     typeof maximumDifference !== "number" ||
@@ -162,13 +155,9 @@ export function evaluateEqualize(inputs, model) {
     );
   }
 
-  const records = model[sourceCollection];
   const counts = records.map((record) => ({
     record,
-    count:
-      sourceCollection === "items"
-        ? getAssignedSlotIds(model, record.id).length
-        : getAssignedItemIds(model, record.id).length,
+    count: getAssignedItemIds(model, record.id).length,
   }));
 
   if (counts.length === 0) {
