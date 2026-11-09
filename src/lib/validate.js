@@ -4,13 +4,34 @@ export function validateData(items, slots) {
 }
 
 const keywordConfigs = [
-  { keyword: "match", inputs: 2 },
-  { keyword: "group", inputs: 2 },
-  { keyword: "equalize", inputs: 1 },
-  { keyword: "limit", inputs: 2 },
-  { keyword: "balance", inputs: 1 },
-  { keyword: "distribute", inputs: 1 },
-  { keyword: "align", inputs: 2 },
+  {
+    keyword: "match",
+    inputValidators: [isItemAttributeInput, isSlotAttributeInput],
+  },
+  {
+    keyword: "group",
+    inputValidators: [isItemAttributeInput, isItemAttributeInput],
+  },
+  {
+    keyword: "equalize",
+    inputValidators: [isNonNegativeInteger],
+  },
+  {
+    keyword: "limit",
+    inputValidators: [isLimitType, isNonNegativeInteger],
+  },
+  {
+    keyword: "balance",
+    inputValidators: [isItemAttributeInput],
+  },
+  {
+    keyword: "distribute",
+    inputValidators: [isItemAttributeInput],
+  },
+  {
+    keyword: "align",
+    inputValidators: [isSlotAttributeInput, isItemAttributeInput],
+  },
 ];
 
 export function validateRules(rules) {
@@ -63,13 +84,37 @@ function validateRuleInputs(rule, keywordConfig) {
     throw new Error(`Invalid inputs for rule: ${rule.id}`);
   }
 
-  const expectedCount = keywordConfig.inputs;
+  const expectedCount = keywordConfig.inputValidators.length;
   if (rule.inputs.length !== expectedCount) {
     throw new Error(
       `Invalid input count for rule: ${rule.id}. ` +
         `Expected ${expectedCount}, received ${rule.inputs.length}`,
     );
   }
+
+  for (let index = 0; index < expectedCount; index++) {
+    if (!keywordConfig.inputValidators[index](rule.inputs[index])) {
+      throw new Error(
+        `Invalid input ${index + 1} for rule: ${rule.id}`,
+      );
+    }
+  }
+}
+
+function isItemAttributeInput(value) {
+  return typeof value === "string" && value.trim() !== "";
+}
+
+function isSlotAttributeInput(value) {
+  return typeof value === "string" && value.trim() !== "";
+}
+
+function isLimitType(value) {
+  return value === "min" || value === "max";
+}
+
+function isNonNegativeInteger(value) {
+  return Number.isInteger(value) && value >= 0;
 }
 
 export function validateAssignments(assignments, items, slots) {

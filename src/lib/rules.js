@@ -135,16 +135,6 @@ export function evaluateEqualize(inputs, model) {
   const maximumDifference = inputs[0];
   const records = model.slots;
 
-  if (
-    typeof maximumDifference !== "number" ||
-    !Number.isInteger(maximumDifference) ||
-    maximumDifference < 0
-  ) {
-    throw new Error(
-      "Equalize target must be a non-negative integer",
-    );
-  }
-
   const counts = records.map((record) => ({
     record,
     count: getAssignedItemIds(model, record.id).length,
@@ -190,17 +180,6 @@ export function evaluateEqualize(inputs, model) {
 
 export function evaluateLimit(inputs, model) {
   const [limitType, limit] = inputs;
-
-  if (
-    !["min", "max"].includes(limitType) ||
-    typeof limit !== "number" ||
-    !Number.isInteger(limit) ||
-    limit < 0
-  ) {
-    throw new Error(
-      "Limit inputs must be [\"min\" or \"max\", non-negative integer]",
-    );
-  }
 
   let score = 0;
   let repetitions = 0;
