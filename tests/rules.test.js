@@ -12,6 +12,7 @@ import {
   evaluateBalance,
   evaluateDistribute,
   evaluateEqualize,
+  evaluateGroup,
   evaluateLimit,
   evaluateMatch,
 } from "../src/lib/rules.js";
@@ -27,10 +28,7 @@ function createTestModel() {
 
 test("match compares item attributes with assigned slot attributes", () => {
   const result = evaluateMatch(
-    {
-      source: { collection: "items", attribute: "gender" },
-      target: { collection: "slots", attribute: "divisionGender" },
-    },
+    ["gender", "divisionGender"],
     createTestModel(),
   );
 
@@ -43,10 +41,7 @@ test("match compares item attributes with assigned slot attributes", () => {
 
 test("match compares slot attributes with their assigned item attributes", () => {
   const result = evaluateMatch(
-    {
-      source: { collection: "slots", attribute: "division" },
-      target: { collection: "items", attribute: "division" },
-    },
+    ["division", "division"],
     createTestModel(),
   );
 
@@ -59,10 +54,7 @@ test("match compares slot attributes with their assigned item attributes", () =>
 
 test("match handles an item array against an assigned slot value", () => {
   const result = evaluateMatch(
-    {
-      source: { collection: "items", attribute: "practiceNights" },
-      target: { collection: "slots", attribute: "practiceNight" },
-    },
+    ["practiceNights", "practiceNight"],
     createTestModel(),
   );
 
@@ -76,22 +68,16 @@ test("match handles an item array against an assigned slot value", () => {
 test("match ignores empty optional source values", () => {
   const model = createModel(
     [
-      { id: "I1", teammateRequest: [] },
-      { id: "I2", teammateRequest: ["I1"] },
-      { id: "I3", teammateRequest: null },
+      { id: "I1", matchValue: [] },
+      { id: "I2", matchValue: "Monday" },
+      { id: "I3", matchValue: null },
     ],
-    [{ id: "S1" }, { id: "S2" }],
+    [{ id: "S1", slotValue: "Monday" }, { id: "S2" }],
     [],
     { S1: ["I1", "I2"], S2: ["I3"] },
   );
 
-  const result = evaluateMatch(
-    {
-      source: { collection: "items", attribute: "teammateRequest" },
-      target: { collection: "items", attribute: "id" },
-    },
-    model,
-  );
+  const result = evaluateMatch(["matchValue", "slotValue"], model);
 
   assert.deepEqual(result, {
     score: 1,
@@ -100,18 +86,53 @@ test("match ignores empty optional source values", () => {
   });
 });
 
-test("match rejects unsupported collections", () => {
-  assert.throws(
-    () =>
-      evaluateMatch(
-        {
-          source: { collection: "teams", attribute: "name" },
-          target: { collection: "slots", attribute: "id" },
-        },
-        createTestModel(),
-      ),
-    /Unsupported match collections: teams -> slots/,
+test("group checks requested item IDs against co-assigned items", () => {
+  const model = createModel(
+    [
+      { id: "I1", teammateRequest: ["I2"] },
+      { id: "I2", teammateRequest: [] },
+      { id: "I3", teammateRequest: [] },
+    ],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    { S1: ["I1", "I2"], S2: ["I3"] },
   );
+
+  const result = evaluateGroup(["id", "teammateRequest"], model);
+
+  assert.deepEqual(result, {
+    score: 1,
+    repetitions: 1,
+    violations: [],
+  });
+});
+
+test("group reports requested items that are not co-assigned", () => {
+  const model = createModel(
+    [
+      { id: "I1", teammateRequest: ["I2", "I3"] },
+      { id: "I2", teammateRequest: [] },
+      { id: "I3", teammateRequest: [] },
+    ],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    { S1: ["I1", "I2"], S2: ["I3"] },
+  );
+
+  const result = evaluateGroup(["id", "teammateRequest"], model);
+
+  assert.deepEqual(result, {
+    score: 1,
+    repetitions: 2,
+    violations: [
+      {
+        sourceId: "I1",
+        targetId: "I3",
+        sourceValue: ["I2", "I3"],
+        targetValue: ["I2"],
+      },
+    ],
+  });
 });
 
 test("align compares assigned slot attributes with sibling assigned slots", () => {
@@ -129,16 +150,7 @@ test("align compares assigned slot attributes with sibling assigned slots", () =
     { S1: ["I1"], S2: ["I2", "I3"] },
   );
 
-  const result = evaluateAlign(
-    {
-      source: { collection: "assignedSlots", attribute: "practiceNight" },
-      target: {
-        collection: "siblingAssignedSlots",
-        attribute: "practiceNight",
-      },
-    },
-    model,
-  );
+  const result = evaluateAlign(["practiceNight", "sibling"], model);
 
   assert.deepEqual(result, {
     score: 2,
@@ -161,16 +173,7 @@ test("align reports mismatched sibling slot attributes", () => {
     { S1: ["I1"], S2: ["I2"] },
   );
 
-  const result = evaluateAlign(
-    {
-      source: { collection: "assignedSlots", attribute: "gymLocation" },
-      target: {
-        collection: "siblingAssignedSlots",
-        attribute: "gymLocation",
-      },
-    },
-    model,
-  );
+  const result = evaluateAlign(["gymLocation", "sibling"], model);
 
   assert.equal(result.score, 0);
   assert.equal(result.repetitions, 2);
@@ -206,13 +209,7 @@ test("distribute separates neighboring ranked values across slots", () => {
     },
   );
 
-  const result = evaluateDistribute(
-    {
-      source: { collection: "items", attribute: "height" },
-      target: "slots",
-    },
-    model,
-  );
+  const result = evaluateDistribute(["height"], model);
 
   assert.deepEqual(result, {
     score: 3,
@@ -237,13 +234,7 @@ test("distribute reports neighboring values concentrated in one slot", () => {
     },
   );
 
-  const result = evaluateDistribute(
-    {
-      source: { collection: "items", attribute: "height" },
-      target: "slots",
-    },
-    model,
-  );
+  const result = evaluateDistribute(["height"], model);
 
   assert.equal(result.score, 1);
   assert.equal(result.repetitions, 3);
@@ -277,13 +268,7 @@ test("equalize accepts counts within the requested difference", () => {
     },
   );
 
-  const result = evaluateEqualize(
-    {
-      source: "slots",
-      target: 1,
-    },
-    model,
-  );
+  const result = evaluateEqualize([1], model);
 
   assert.deepEqual(result, {
     score: 3,
@@ -303,13 +288,7 @@ test("equalize reports groups above the allowed difference", () => {
     },
   );
 
-  const result = evaluateEqualize(
-    {
-      source: "slots",
-      target: 1,
-    },
-    model,
-  );
+  const result = evaluateEqualize([1], model);
 
   assert.deepEqual(result, {
     score: 1.5,
@@ -336,13 +315,7 @@ test("limit evaluates assignment counts for each slot", () => {
     { S1: ["I1", "I2"], S2: [] },
   );
 
-  const result = evaluateLimit(
-    {
-      source: "slots",
-      target: 1,
-    },
-    model,
-  );
+  const result = evaluateLimit(["max", 1], model);
 
   assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 1.5,
@@ -351,41 +324,21 @@ test("limit evaluates assignment counts for each slot", () => {
   });
 });
 
-test("limit evaluates assignment counts for each item", () => {
+test("limit supports minimum assignment counts", () => {
   const model = createModel(
-    [{ id: "I1" }, { id: "I2" }],
+    [{ id: "I1" }],
     [{ id: "S1" }, { id: "S2" }],
     [],
-    { S1: ["I1"], S2: ["I1", "I2"] },
+    { S1: ["I1"], S2: [] },
   );
 
-  const result = evaluateLimit(
-    {
-      source: "items",
-      target: 1,
-    },
-    model,
-  );
+  const result = evaluateLimit(["min", 1], model);
 
   assert.deepEqual({ ...result, violations: result.violations.length }, {
-    score: 1.5,
+    score: 1,
     repetitions: 2,
     violations: 1,
   });
-});
-
-test("limit rejects invalid targets", () => {
-  assert.throws(
-    () =>
-      evaluateLimit(
-        {
-          source: "slots",
-          target: -1,
-        },
-        createTestModel(),
-      ),
-    /Limit target must be a non-negative integer/,
-  );
 });
 
 test("balance scores slot averages against the overall average", () => {
@@ -401,13 +354,7 @@ test("balance scores slot averages against the overall average", () => {
     { S1: ["I1", "I4"], S2: ["I2", "I3"] },
   );
 
-  const result = evaluateBalance(
-    {
-      source: { collection: "items", attribute: "height" },
-      target: { collection: "slots" },
-    },
-    model,
-  );
+  const result = evaluateBalance(["height"], model);
 
   assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 2,
@@ -429,13 +376,7 @@ test("balance scores deviations from the overall average", () => {
     { S1: ["I1", "I2"], S2: ["I3", "I4"] },
   );
 
-  const result = evaluateBalance(
-    {
-      source: { collection: "items", attribute: "height" },
-      target: { collection: "slots" },
-    },
-    model,
-  );
+  const result = evaluateBalance(["height"], model);
 
   assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 1.8,
@@ -444,30 +385,3 @@ test("balance scores deviations from the overall average", () => {
   });
 });
 
-test("balance supports slots as the source and items as the target", () => {
-  const model = createModel(
-    [{ id: "I1" }, { id: "I2" }],
-    [
-      { id: "S1", height: 10 },
-      { id: "S2", height: 20 },
-      { id: "S3", height: 30 },
-      { id: "S4", height: 40 },
-    ],
-    [],
-    { S1: ["I1"], S4: ["I1"], S2: ["I2"], S3: ["I2"] },
-  );
-
-  const result = evaluateBalance(
-    {
-      source: { collection: "slots", attribute: "height" },
-      target: "items",
-    },
-    model,
-  );
-
-  assert.deepEqual({ ...result, violations: result.violations.length }, {
-    score: 2,
-    repetitions: 2,
-    violations: 0,
-  });
-});

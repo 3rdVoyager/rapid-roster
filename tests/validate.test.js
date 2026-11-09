@@ -139,6 +139,17 @@ test("soft rules require a priority from 1 to 100", () => {
   );
 });
 
+test("limit inputs must use a supported type and non-negative integer", () => {
+  const testRules = freshRules();
+  testRules[4].keyword = "limit";
+  testRules[4].inputs = ["max", -1];
+
+  assert.throws(
+    () => validateRules(testRules),
+    /Invalid input 2 for rule: R5/,
+  );
+});
+
 test("valid assignments pass validation", () => {
   assert.doesNotThrow(() =>
     validateAssignments(assignments, freshItems(), freshSlots()),
