@@ -20,10 +20,12 @@ export function evaluateRule(rule, model) {
   const evaluator = evaluators[rule.keyword];
   const result = evaluator(rule.inputs, model);
   const priority = rule.priority ?? 1;
+  const percentage =
+    result.repetitions === 0 ? 1 : result.score / result.repetitions;
 
   return {
-    score: (result.score / result.repetitions) * priority,
-    percentage: result.score / result.repetitions,
+    score: percentage * priority,
+    percentage,
     repetitions: result.repetitions,
     violations: result.violations,
   };
@@ -48,21 +50,9 @@ export function evaluateMatch(inputs, model) {
         continue;
       }
 
-      let matches;
-
       // TODO: Score each item-array value separately instead of
       // reducing the whole array comparison to one boolean result.
-      if (Array.isArray(itemValue) && Array.isArray(slotValue)) {
-        matches = itemValue.some((value) => slotValue.includes(value));
-      } else if (Array.isArray(itemValue)) {
-        matches = itemValue.includes(slotValue);
-      } else if (Array.isArray(slotValue)) {
-        matches = slotValue.includes(itemValue);
-      } else {
-        matches = itemValue === slotValue;
-      }
-
-      if (matches) {
+      if (valuesMatch(itemValue, slotValue)) {
         score++;
       } else {
         violations.push({
