@@ -1,38 +1,16 @@
+import keywordConfigs from "./config.js";
+
+const inputValidators = {
+  itemAttribute: isItemAttributeInput,
+  slotAttribute: isSlotAttributeInput,
+  limitType: isLimitType,
+  nonNegativeInteger: isNonNegativeInteger,
+};
+
 export function validateData(items, slots) {
   validateShape(items, slots);
   validateIds(items, slots);
 }
-
-const keywordConfigs = [
-  {
-    keyword: "match",
-    inputValidators: [isItemAttributeInput, isSlotAttributeInput],
-  },
-  {
-    keyword: "group",
-    inputValidators: [isItemAttributeInput, isItemAttributeInput],
-  },
-  {
-    keyword: "equalize",
-    inputValidators: [isNonNegativeInteger],
-  },
-  {
-    keyword: "limit",
-    inputValidators: [isLimitType, isNonNegativeInteger],
-  },
-  {
-    keyword: "balance",
-    inputValidators: [isItemAttributeInput],
-  },
-  {
-    keyword: "distribute",
-    inputValidators: [isItemAttributeInput],
-  },
-  {
-    keyword: "align",
-    inputValidators: [isSlotAttributeInput, isItemAttributeInput],
-  },
-];
 
 export function validateRules(rules) {
   if (!Array.isArray(rules)) {
@@ -93,7 +71,10 @@ function validateRuleInputs(rule, keywordConfig) {
   }
 
   for (let index = 0; index < expectedCount; index++) {
-    if (!keywordConfig.inputValidators[index](rule.inputs[index])) {
+    const validatorName = keywordConfig.inputValidators[index];
+    const validator = inputValidators[validatorName];
+
+    if (!validator || !validator(rule.inputs[index])) {
       throw new Error(
         `Invalid input ${index + 1} for rule: ${rule.id}`,
       );
