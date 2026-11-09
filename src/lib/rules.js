@@ -189,42 +189,49 @@ export function evaluateEqualize(inputs, model) {
 }
 
 export function evaluateLimit(inputs, model) {
-  const sourceCollection = inputs.source;
-  const limit = inputs.target;
-
-  if (!["items", "slots"].includes(sourceCollection)) {
-    throw new Error(`Unsupported limit collection: ${sourceCollection}`);
-  }
+  const [limitType, limit] = inputs;
 
   if (
+    !["min", "max"].includes(limitType) ||
     typeof limit !== "number" ||
     !Number.isInteger(limit) ||
     limit < 0
   ) {
-    throw new Error("Limit target must be a non-negative integer");
+    throw new Error(
+      "Limit inputs must be [\"min\" or \"max\", non-negative integer]",
+    );
   }
 
   let score = 0;
   let repetitions = 0;
   const violations = [];
 
-  for (const record of model[sourceCollection]) {
-    const assignmentCount =
-      sourceCollection === "items"
-        ? getAssignedSlotIds(model, record.id).length
-        : getAssignedItemIds(model, record.id).length;
+  for (const slot of model.slots) {
+    const assignmentCount = getAssignedItemIds(model, slot.id).length;
 
-    const recordScore =
-      assignmentCount <= limit ? 1 : limit / assignmentCount;
+    let recordScore;
+    if (limitType === "max") {
+      recordScore =
+        assignmentCount <= limit ? 1 : limit / assignmentCount;
+    } else {
+      recordScore =
+        assignmentCount >= limit || limit === 0
+          ? 1
+          : assignmentCount / limit;
+    }
 
     score += recordScore;
     repetitions++;
     if (recordScore < 1) {
       violations.push({
-        sourceId: record.id,
+        sourceId: slot.id,
         actual: assignmentCount,
+        type: limitType,
         limit,
-        excess: assignmentCount - limit,
+        difference:
+          limitType === "max"
+            ? assignmentCount - limit
+            : limit - assignmentCount,
       });
     }
   }
