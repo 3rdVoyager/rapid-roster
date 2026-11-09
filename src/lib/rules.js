@@ -127,43 +127,47 @@ function normalizeValues(value) {
     return [];
   }
 
-  const values = Array.isArray(value) ? value : [value];
-  return values.filter((entry) => !isEmptyMatchValue(entry));
+  const normalizedValues = Array.isArray(value) ? value : [value];
+  return normalizedValues.filter((entry) => !isEmptyMatchValue(entry));
 }
 
 export function evaluateEqualize(inputs, model) {
   const maximumDifference = inputs[0];
-  const records = model.slots;
+  const slots = model.slots;
 
-  const counts = records.map((record) => ({
-    record,
-    count: getAssignedItemIds(model, record.id).length,
+  const slotCounts = slots.map((slot) => ({
+    slot,
+    itemCount: getAssignedItemIds(model, slot.id).length,
   }));
 
-  if (counts.length === 0) {
+  if (slotCounts.length === 0) {
     return { score: 1, repetitions: 1, violations: [] };
   }
 
-  const minimumCount = Math.min(...counts.map((entry) => entry.count));
-  const maximumCount = Math.max(...counts.map((entry) => entry.count));
-  const actualDifference = maximumCount - minimumCount;
+  const minimumItemCount = Math.min(
+    ...slotCounts.map((slotCount) => slotCount.itemCount),
+  );
+  const maximumItemCount = Math.max(
+    ...slotCounts.map((slotCount) => slotCount.itemCount),
+  );
+  const actualDifference = maximumItemCount - minimumItemCount;
   let score = 0;
   const violations = [];
 
-  for (const entry of counts) {
+  for (const slotCount of slotCounts) {
     const excess = Math.max(
       0,
-      entry.count - minimumCount - maximumDifference,
+      slotCount.itemCount - minimumItemCount - maximumDifference,
     );
     const recordScore = excess === 0 ? 1 : 1 / (1 + excess);
     score += recordScore;
 
     if (excess > 0) {
       violations.push({
-        sourceId: entry.record.id,
-        actual: entry.count,
-        minimum: minimumCount,
-        maximum: maximumCount,
+        sourceId: slotCount.slot.id,
+        actual: slotCount.itemCount,
+        minimum: minimumItemCount,
+        maximum: maximumItemCount,
         difference: actualDifference,
         maximumDifference,
         excess,
@@ -173,7 +177,7 @@ export function evaluateEqualize(inputs, model) {
 
   return {
     score,
-    repetitions: counts.length,
+    repetitions: slotCounts.length,
     violations,
   };
 }
@@ -186,31 +190,24 @@ export function evaluateLimit(inputs, model) {
   const violations = [];
 
   for (const slot of model.slots) {
-    const assignmentCount = getAssignedItemIds(model, slot.id).length;
+    const itemCount = getAssignedItemIds(model, slot.id).length;
 
-    let recordScore;
+    let slotScore;
     if (limitType === "max") {
-      recordScore =
-        assignmentCount <= limit ? 1 : limit / assignmentCount;
+      slotScore = itemCount <= limit ? 1 : limit / itemCount;
     } else {
-      recordScore =
-        assignmentCount >= limit || limit === 0
-          ? 1
-          : assignmentCount / limit;
+      slotScore = itemCount >= limit || limit === 0 ? 1 : itemCount / limit;
     }
 
-    score += recordScore;
+    score += slotScore;
     repetitions++;
-    if (recordScore < 1) {
+    if (slotScore < 1) {
       violations.push({
         sourceId: slot.id,
-        actual: assignmentCount,
+        actual: itemCount,
         type: limitType,
         limit,
-        difference:
-          limitType === "max"
-            ? assignmentCount - limit
-            : limit - assignmentCount,
+        difference: limitType === "max" ? itemCount - limit : limit - itemCount,
       });
     }
   }
@@ -219,72 +216,56 @@ export function evaluateLimit(inputs, model) {
 }
 
 export function evaluateBalance(inputs, model) {
-  const sourceCollection = inputs.source.collection;
-  const targetCollection =
-    typeof inputs.target === "string"
-      ? inputs.target
-      : inputs.target.collection;
+  const itemAttribute = inputs[0];
 
-  if (
-    !["items", "slots"].includes(sourceCollection) ||
-    !["items", "slots"].includes(targetCollection) ||
-    sourceCollection === targetCollection
-  ) {
-    throw new Error(
-      `Unsupported balance collections: ${sourceCollection} -> ${targetCollection}`,
+  const itemValues = model.items
+    .map((item) => item[itemAttribute])
+    .filter(
+      (itemValue) =>
+        typeof itemValue === "number" && Number.isFinite(itemValue),
     );
-  }
 
-  const values = model[sourceCollection]
-    .map((record) => record[inputs.source.attribute])
-    .filter((value) => typeof value === "number" && Number.isFinite(value));
-
-  if (values.length === 0) {
+  if (itemValues.length === 0) {
     return { score: 1, repetitions: 1, violations: [] };
   }
 
-  let overallSum = 0;
-  for (const value of values) {
-    overallSum += value;
+  let totalItemValue = 0;
+  for (const itemValue of itemValues) {
+    totalItemValue += itemValue;
   }
-  const overallAverage = overallSum / values.length;
+  const overallAverage = totalItemValue / itemValues.length;
   let score = 0;
   let repetitions = 0;
   const violations = [];
 
-  for (const target of model[targetCollection]) {
-    let assignedSourceRecords;
-    if (sourceCollection === "items" && targetCollection === "slots") {
-      assignedSourceRecords = getAssignedItems(model, target.id);
-    } else {
-      assignedSourceRecords = getAssignedSlots(model, target.id);
-    }
+  for (const slot of model.slots) {
+    const assignedItems = getAssignedItems(model, slot.id);
 
-    let groupAverage = 0;
-    if (assignedSourceRecords.length > 0) {
-      let groupSum = 0;
-      let validValueCount = 0;
-      for (const record of assignedSourceRecords) {
-        const value = record[inputs.source.attribute];
-        if (typeof value !== "number" || !Number.isFinite(value)) {
+    let slotAverage = 0;
+    if (assignedItems.length > 0) {
+      let slotValueSum = 0;
+      let validItemValueCount = 0;
+      for (const item of assignedItems) {
+        const itemValue = item[itemAttribute];
+        if (typeof itemValue !== "number" || !Number.isFinite(itemValue)) {
           continue;
         }
-        groupSum += value;
-        validValueCount++;
+        slotValueSum += itemValue;
+        validItemValueCount++;
       }
-      if (validValueCount > 0) {
-        groupAverage = groupSum / validValueCount;
+      if (validItemValueCount > 0) {
+        slotAverage = slotValueSum / validItemValueCount;
       }
     }
 
-    const difference = Math.abs(groupAverage - overallAverage);
-    const groupScore = Math.max(0, 1 - difference / 100);
-    score += groupScore;
+    const difference = Math.abs(slotAverage - overallAverage);
+    const slotScore = Math.max(0, 1 - difference / 100);
+    score += slotScore;
     repetitions++;
-    if (groupScore < 1) {
+    if (slotScore < 1) {
       violations.push({
-        targetId: target.id,
-        actual: groupAverage,
+        targetId: slot.id,
+        actual: slotAverage,
         target: overallAverage,
         difference,
       });
@@ -293,6 +274,7 @@ export function evaluateBalance(inputs, model) {
 
   return { score, repetitions, violations };
 }
+
 export function evaluateDistribute(inputs, model) {
   const sourceCollection = inputs.source.collection;
   const targetCollection =
@@ -306,55 +288,55 @@ export function evaluateDistribute(inputs, model) {
     );
   }
 
-  const rankedRecords = [];
+  const rankedItems = [];
 
-  for (const record of model[sourceCollection]) {
-    const value = record[inputs.source.attribute];
+  for (const item of model[sourceCollection]) {
+    const itemValue = item[inputs.source.attribute];
 
     // Missing numeric values cannot be ranked, so they do not participate.
-    if (typeof value !== "number" || !Number.isFinite(value)) {
+    if (typeof itemValue !== "number" || !Number.isFinite(itemValue)) {
       continue;
     }
 
-    const relatedIds = getAssignedSlotIds(model, record.id);
-    if (relatedIds.length > 0) {
-      rankedRecords.push({ record, value, relatedIds });
+    const assignedSlotIds = getAssignedSlotIds(model, item.id);
+    if (assignedSlotIds.length > 0) {
+      rankedItems.push({ item, itemValue, assignedSlotIds });
     }
   }
 
-  rankedRecords.sort((first, second) => second.value - first.value);
+  rankedItems.sort((first, second) => second.itemValue - first.itemValue);
 
   // With fewer than two ranked items there is nothing to distribute.
-  if (rankedRecords.length < 2) {
+  if (rankedItems.length < 2) {
     return { score: 1, repetitions: 1, violations: [] };
   }
 
   let score = 0;
   const violations = [];
 
-  for (let index = 1; index < rankedRecords.length; index++) {
-    const previous = rankedRecords[index - 1];
-    const current = rankedRecords[index];
-    const sharedRelatedIds = previous.relatedIds.filter((relatedId) =>
-      current.relatedIds.includes(relatedId),
+  for (let index = 1; index < rankedItems.length; index++) {
+    const previousItem = rankedItems[index - 1];
+    const currentItem = rankedItems[index];
+    const sharedSlotIds = previousItem.assignedSlotIds.filter((slotId) =>
+      currentItem.assignedSlotIds.includes(slotId),
     );
 
-    if (sharedRelatedIds.length === 0) {
+    if (sharedSlotIds.length === 0) {
       score++;
     } else {
       violations.push({
-        sourceId: previous.record.id,
-        targetId: current.record.id,
-        sourceValue: previous.value,
-        targetValue: current.value,
-        sharedSlotIds: sharedRelatedIds,
+        sourceId: previousItem.item.id,
+        targetId: currentItem.item.id,
+        sourceValue: previousItem.itemValue,
+        targetValue: currentItem.itemValue,
+        sharedSlotIds,
       });
     }
   }
 
   return {
     score,
-    repetitions: rankedRecords.length - 1,
+    repetitions: rankedItems.length - 1,
     violations,
   };
 }
@@ -376,39 +358,39 @@ export function evaluateAlign(inputs, model) {
   let repetitions = 0;
   const violations = [];
 
-  for (const record of model.items) {
-    if (isEmptyMatchValue(record.sibling)) {
+  for (const item of model.items) {
+    if (isEmptyMatchValue(item.sibling)) {
       continue;
     }
 
-    const relatedRecord = model.items.find(
-      (candidate) => candidate.id === record.sibling,
+    const sibling = model.items.find(
+      (candidate) => candidate.id === item.sibling,
     );
 
-    if (!relatedRecord) {
+    if (!sibling) {
       continue;
     }
 
-    const sourceRelatedRecords = getAssignedSlots(model, record.id);
-    const targetRelatedRecords = getAssignedSlots(model, relatedRecord.id);
+    const itemAssignedSlots = getAssignedSlots(model, item.id);
+    const siblingAssignedSlots = getAssignedSlots(model, sibling.id);
 
     // An unassigned item cannot be compared yet, so this relationship is
     // non-applicable until both sides have an assignment.
-    for (const sourceRecord of sourceRelatedRecords) {
-      for (const targetRecord of targetRelatedRecords) {
-        const sourceValue = sourceRecord[inputs.source.attribute];
-        const targetValue = targetRecord[inputs.target.attribute];
+    for (const itemSlot of itemAssignedSlots) {
+      for (const siblingSlot of siblingAssignedSlots) {
+        const itemSlotValue = itemSlot[inputs.source.attribute];
+        const siblingSlotValue = siblingSlot[inputs.target.attribute];
 
         repetitions++;
 
-        if (valuesMatch(sourceValue, targetValue)) {
+        if (valuesMatch(itemSlotValue, siblingSlotValue)) {
           score++;
         } else {
           violations.push({
-            sourceId: sourceRecord.id,
-            targetId: targetRecord.id,
-            sourceValue,
-            targetValue,
+            sourceId: itemSlot.id,
+            targetId: siblingSlot.id,
+            sourceValue: itemSlotValue,
+            targetValue: siblingSlotValue,
           });
         }
       }
