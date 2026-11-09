@@ -79,10 +79,7 @@ test("creates assignments that satisfy hard rules", () => {
         name: "Limit slot size",
         enforcement: "hard",
         keyword: "limit",
-        inputs: {
-          source: "slots",
-          target: 2,
-        },
+        inputs: ["max", 2],
       },
     ],
   );
@@ -111,10 +108,7 @@ test("restarts after an illegal candidate", () => {
         name: "Match divisions",
         enforcement: "hard",
         keyword: "match",
-        inputs: {
-          source: { collection: "items", attribute: "division" },
-          target: { collection: "slots", attribute: "division" },
-        },
+        inputs: ["division", "division"],
       },
     ],
   );
@@ -139,10 +133,7 @@ test("stops after the random restart limit", () => {
         name: "No assigned items",
         enforcement: "hard",
         keyword: "limit",
-        inputs: {
-          source: "slots",
-          target: 0,
-        },
+        inputs: ["max", 0],
       },
     ],
   );

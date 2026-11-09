@@ -43,10 +43,7 @@ test("scoreModel reports passing hard rules and weighted soft scores", () => {
       enforcement: "hard",
       priority: 1,
       keyword: "match",
-      inputs: {
-        source: { collection: "items", attribute: "division" },
-        target: { collection: "slots", attribute: "division" },
-      },
+      inputs: ["division", "division"],
     },
     {
       id: "R2",
@@ -54,10 +51,7 @@ test("scoreModel reports passing hard rules and weighted soft scores", () => {
       enforcement: "soft",
       priority: 10,
       keyword: "match",
-      inputs: {
-        source: { collection: "items", attribute: "gender" },
-        target: { collection: "slots", attribute: "divisionGender" },
-      },
+      inputs: ["gender", "divisionGender"],
     },
   ];
 
@@ -104,10 +98,7 @@ test("scoreModel reports failed hard rule IDs", () => {
       enforcement: "hard",
       priority: 1,
       keyword: "match",
-      inputs: {
-        source: { collection: "items", attribute: "gender" },
-        target: { collection: "slots", attribute: "divisionGender" },
-      },
+      inputs: ["gender", "divisionGender"],
     },
   ];
 
