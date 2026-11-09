@@ -276,22 +276,12 @@ export function evaluateBalance(inputs, model) {
 }
 
 export function evaluateDistribute(inputs, model) {
-  const sourceCollection = inputs.source.collection;
-  const targetCollection =
-    typeof inputs.target === "string"
-      ? inputs.target
-      : inputs.target.collection;
-
-  if (sourceCollection !== "items" || targetCollection !== "slots") {
-    throw new Error(
-      `Unsupported distribute collections: ${sourceCollection} -> ${targetCollection}`,
-    );
-  }
+  const itemAttribute = inputs[0];
 
   const rankedItems = [];
 
-  for (const item of model[sourceCollection]) {
-    const itemValue = item[inputs.source.attribute];
+  for (const item of model.items) {
+    const itemValue = item[itemAttribute];
 
     // Missing numeric values cannot be ranked, so they do not participate.
     if (typeof itemValue !== "number" || !Number.isFinite(itemValue)) {
@@ -342,29 +332,20 @@ export function evaluateDistribute(inputs, model) {
 }
 
 export function evaluateAlign(inputs, model) {
-  const sourceCollection = inputs.source.collection;
-  const targetCollection = inputs.target.collection;
-
-  if (
-    sourceCollection !== "assignedSlots" ||
-    targetCollection !== "siblingAssignedSlots"
-  ) {
-    throw new Error(
-      `Unsupported align collections: ${sourceCollection} -> ${targetCollection}`,
-    );
-  }
+  const [slotAttribute, siblingAttribute] = inputs;
 
   let score = 0;
   let repetitions = 0;
   const violations = [];
 
   for (const item of model.items) {
-    if (isEmptyMatchValue(item.sibling)) {
+    const siblingId = item[siblingAttribute];
+    if (isEmptyMatchValue(siblingId)) {
       continue;
     }
 
     const sibling = model.items.find(
-      (candidate) => candidate.id === item.sibling,
+      (candidate) => candidate.id === siblingId,
     );
 
     if (!sibling) {
@@ -378,8 +359,8 @@ export function evaluateAlign(inputs, model) {
     // non-applicable until both sides have an assignment.
     for (const itemSlot of itemAssignedSlots) {
       for (const siblingSlot of siblingAssignedSlots) {
-        const itemSlotValue = itemSlot[inputs.source.attribute];
-        const siblingSlotValue = siblingSlot[inputs.target.attribute];
+        const itemSlotValue = itemSlot[slotAttribute];
+        const siblingSlotValue = siblingSlot[slotAttribute];
 
         repetitions++;
 
