@@ -29,6 +29,7 @@ export function createLegalAssignments(model, maxIterations = 100) {
   }
 
   let assignments = cloneAssignments(model.assignments.slotAssignments);
+  let lastEvaluation;
 
   for (let iteration = 0; iteration < maxIterations; iteration++) {
     const currentModel = createModel(
@@ -38,6 +39,7 @@ export function createLegalAssignments(model, maxIterations = 100) {
       assignments,
     );
     const currentEvaluation = evaluateModel(currentModel, true);
+    lastEvaluation = currentEvaluation;
 
     if (currentEvaluation.hardPenalty === 0) {
       return assignments;
@@ -52,9 +54,27 @@ export function createLegalAssignments(model, maxIterations = 100) {
     }
   }
 
-  throw new Error(
-    `Could not create legal assignments after ${maxIterations} iterations`,
+  const violationCounts = countViolationsByRule(lastEvaluation);
+  const error = new Error(
+    `Could not create legal assignments after ${maxIterations} iterations. ` +
+      `Hard penalty: ${lastEvaluation.hardPenalty}. ` +
+      `Remaining violations: ${violationCounts}`,
   );
+  error.hardPenalty = lastEvaluation.hardPenalty;
+  error.hardViolations = lastEvaluation.hardViolations;
+  throw error;
+}
+
+function countViolationsByRule(evaluation) {
+  const counts = {};
+
+  for (const violation of evaluation.hardViolations) {
+    counts[violation.ruleId] = (counts[violation.ruleId] ?? 0) + 1;
+  }
+
+  return Object.entries(counts)
+    .map(([ruleId, count]) => `${ruleId} (${count})`)
+    .join(", ");
 }
 
 function generateCandidate(model, evaluation) {
