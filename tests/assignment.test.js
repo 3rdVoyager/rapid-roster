@@ -7,8 +7,9 @@ import slots from "./fixtures/slots.json" with { type: "json" };
 import { createModel } from "../src/lib/model.js";
 import {
   addAssignment,
-  createLegalAssignments,
+  createCompatibleAssignments,
   createRandomAssignments,
+  improveAssignments,
   moveAssignment,
   removeAssignment,
   swapAssignments,
@@ -65,6 +66,33 @@ test("uses injected randomness consistently", () => {
   assert.deepEqual(firstAssignment, secondAssignment);
 });
 
+test("creates assignments compatible with hard match rules", () => {
+  const model = createModel(
+    [
+      { id: "I1", gender: "M" },
+      { id: "I2", gender: "F" },
+    ],
+    [
+      { id: "S1", divisionGender: "M" },
+      { id: "S2", divisionGender: "F" },
+    ],
+    [
+      {
+        id: "R1",
+        name: "Match gender",
+        enforcement: "hard",
+        keyword: "match",
+        inputs: ["gender", "divisionGender"],
+      },
+    ],
+  );
+
+  assert.deepEqual(createCompatibleAssignments(model), {
+    S1: ["I1"],
+    S2: ["I2"],
+  });
+});
+
 test("rejects creating a model without slots", () => {
   assert.throws(() => createTestModel(items, []), /Slots must not be empty/);
 });
@@ -91,7 +119,7 @@ test("creates assignments that satisfy hard rules", () => {
     model.rules,
     startingAssignments,
   );
-  const assignments = createLegalAssignments(assignedModel);
+  const assignments = improveAssignments(assignedModel);
 
   assert.deepEqual(
     Object.values(assignments).map((itemIds) => itemIds.length),
@@ -131,7 +159,7 @@ test("repairs an illegal candidate with a swap", () => {
     model.rules,
     startingAssignments,
   );
-  const assignments = createLegalAssignments(assignedModel, 2);
+  const assignments = improveAssignments(assignedModel, 2);
 
   assert.deepEqual(assignments, { S1: ["I2"], S2: ["I1"] });
   assert.equal(randomCalls, 1);
@@ -160,10 +188,21 @@ test("stops after the iteration limit", () => {
     startingAssignments,
   );
 
-  assert.throws(
-    () => createLegalAssignments(assignedModel, 3),
+  let error;
+  try {
+    improveAssignments(assignedModel, 3);
+  } catch (caughtError) {
+    error = caughtError;
+  }
+
+  assert.match(
+    error.message,
     /Could not create legal assignments after 3 iterations/,
   );
+  assert.equal(error.hardPenalty, 1);
+  assert.deepEqual(error.hardViolations.map((violation) => violation.ruleId), [
+    "R1",
+  ]);
 });
 
 test("adds an assignment without mutating the original", () => {

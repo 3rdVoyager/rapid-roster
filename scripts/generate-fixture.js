@@ -6,8 +6,8 @@ import rules from "../tests/fixtures/rules.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
 import {
-  createLegalAssignments,
-  createRandomAssignments,
+  createCompatibleAssignments,
+  improveAssignments,
 } from "../src/lib/assignment.js";
 import { evaluateModel } from "../src/lib/scoring.js";
 
@@ -18,7 +18,7 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
   process.exitCode = 1;
 } else {
   const baseModel = createModel(items, slots, rules);
-  const startingAssignments = createRandomAssignments(baseModel);
+  const startingAssignments = createCompatibleAssignments(baseModel);
   const startingModel = createModel(
     items,
     slots,
@@ -29,7 +29,7 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
   const startedAt = performance.now();
 
   try {
-    const assignments = createLegalAssignments(
+    const assignments = improveAssignments(
       startingModel,
       maxIterations,
     );

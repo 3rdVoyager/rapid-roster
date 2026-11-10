@@ -23,7 +23,50 @@ export function createRandomAssignments(model, random = Math.random) {
   return assignments;
 }
 
-export function createLegalAssignments(model, maxIterations = 100) {
+export function createCompatibleAssignments(model) {
+  const assignments = Object.fromEntries(
+    model.slots.map((slot) => [slot.id, []]),
+  );
+  const hardMatchRules = model.rules.filter(
+    (rule) => rule.enforcement === "hard" && rule.keyword === "match",
+  );
+  const itemOptions = model.items.map((item) => ({
+    item,
+    compatibleSlots: model.slots.filter((slot) =>
+      hardMatchRules.every((rule) => isItemCompatibleWithSlot(item, slot, rule)),
+    ),
+  }));
+  const incompatibleItems = itemOptions.filter(
+    ({ compatibleSlots }) => compatibleSlots.length === 0,
+  );
+
+  if (incompatibleItems.length > 0) {
+    const error = new Error(
+      "Could not create compatible assignments for items: " +
+        incompatibleItems.map(({ item }) => item.id).join(", "),
+    );
+    error.incompatibleItemIds = incompatibleItems.map(({ item }) => item.id);
+    throw error;
+  }
+
+  itemOptions.sort(
+    (first, second) =>
+      first.compatibleSlots.length - second.compatibleSlots.length,
+  );
+
+  for (const { item, compatibleSlots } of itemOptions) {
+    const targetSlot = compatibleSlots.reduce((leastLoaded, slot) => {
+      const leastLoadedCount = assignments[leastLoaded.id].length;
+      const slotCount = assignments[slot.id].length;
+      return slotCount < leastLoadedCount ? slot : leastLoaded;
+    });
+    assignments[targetSlot.id].push(item.id);
+  }
+
+  return assignments;
+}
+
+export function improveAssignments(model, maxIterations = 100) {
   if (!Number.isInteger(maxIterations) || maxIterations < 1) {
     throw new Error("Max iterations must be a positive integer");
   }
@@ -75,6 +118,27 @@ function countViolationsByRule(evaluation) {
   return Object.entries(counts)
     .map(([ruleId, count]) => `${ruleId} (${count})`)
     .join(", ");
+}
+
+function isItemCompatibleWithSlot(item, slot, rule) {
+  const itemValue = item[rule.inputs[0]];
+
+  // Empty item fields are optional for match rules and do not restrict
+  // the item's compatible slots.
+  if (isEmptyValue(itemValue)) {
+    return true;
+  }
+
+  return valuesMatch(itemValue, slot[rule.inputs[1]]);
+}
+
+function isEmptyValue(value) {
+  return (
+    value === undefined ||
+    value === null ||
+    value === "" ||
+    (Array.isArray(value) && value.length === 0)
+  );
 }
 
 function generateCandidate(model, evaluation) {
