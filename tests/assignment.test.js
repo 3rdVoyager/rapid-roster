@@ -84,7 +84,14 @@ test("creates assignments that satisfy hard rules", () => {
     ],
   );
 
-  const assignments = createLegalAssignments(model, () => 0);
+  const startingAssignments = createRandomAssignments(model, () => 0);
+  const assignedModel = createModel(
+    model.items,
+    model.slots,
+    model.rules,
+    startingAssignments,
+  );
+  const assignments = createLegalAssignments(assignedModel);
 
   assert.deepEqual(
     Object.values(assignments).map((itemIds) => itemIds.length),
@@ -92,7 +99,7 @@ test("creates assignments that satisfy hard rules", () => {
   );
 });
 
-test("restarts after an illegal candidate", () => {
+test("repairs an illegal candidate with a swap", () => {
   const model = createModel(
     [
       { id: "I1", division: "B" },
@@ -114,16 +121,23 @@ test("restarts after an illegal candidate", () => {
   );
 
   let randomCalls = 0;
-  const assignments = createLegalAssignments(model, () => {
+  const startingAssignments = createRandomAssignments(model, () => {
     randomCalls += 1;
     return randomCalls === 1 ? 0.9 : 0;
-  }, 2);
+  });
+  const assignedModel = createModel(
+    model.items,
+    model.slots,
+    model.rules,
+    startingAssignments,
+  );
+  const assignments = createLegalAssignments(assignedModel, 2);
 
   assert.deepEqual(assignments, { S1: ["I2"], S2: ["I1"] });
-  assert.equal(randomCalls, 2);
+  assert.equal(randomCalls, 1);
 });
 
-test("stops after the random restart limit", () => {
+test("stops after the iteration limit", () => {
   const model = createModel(
     [{ id: "I1" }, { id: "I2" }],
     [{ id: "S1" }],
@@ -138,9 +152,17 @@ test("stops after the random restart limit", () => {
     ],
   );
 
+  const startingAssignments = createRandomAssignments(model, () => 0);
+  const assignedModel = createModel(
+    model.items,
+    model.slots,
+    model.rules,
+    startingAssignments,
+  );
+
   assert.throws(
-    () => createLegalAssignments(model, () => 0, 3),
-    /Could not create legal assignments after 3 random restarts/,
+    () => createLegalAssignments(assignedModel, 3),
+    /Could not create legal assignments after 3 iterations/,
   );
 });
 

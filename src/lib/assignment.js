@@ -1,5 +1,6 @@
 import { createModel } from "./model.js";
-import { scoreModel } from "./scoring.js";
+import { evaluateModel } from "./scoring.js";
+import { getItemById } from "./selectors.js";
 
 export function createRandomAssignments(model, random = Math.random) {
   const assignments = {};
@@ -22,33 +23,134 @@ export function createRandomAssignments(model, random = Math.random) {
   return assignments;
 }
 
-export function createLegalAssignments(
-  model,
-  random = Math.random,
-  maxRestarts = 100,
-) {
-  if (!Number.isInteger(maxRestarts) || maxRestarts < 1) {
-    throw new Error("Max restarts must be a positive integer");
+export function createLegalAssignments(model, maxIterations = 100) {
+  if (!Number.isInteger(maxIterations) || maxIterations < 1) {
+    throw new Error("Max iterations must be a positive integer");
   }
 
-  for (let restart = 0; restart < maxRestarts; restart++) {
-    const assignments = createRandomAssignments(model, random);
-    const candidateModel = createModel(
+  let assignments = cloneAssignments(model.assignments.slotAssignments);
+
+  for (let iteration = 0; iteration < maxIterations; iteration++) {
+    const currentModel = createModel(
       model.items,
       model.slots,
       model.rules,
       assignments,
     );
-    const score = scoreModel(candidateModel);
+    const currentEvaluation = evaluateModel(currentModel, true);
 
-    if (score.legal) {
+    if (currentEvaluation.hardPenalty === 0) {
       return assignments;
+    }
+
+    const candidate = generateCandidate(currentModel, currentEvaluation);
+
+    if (candidate) {
+      assignments = candidate;
+    } else {
+      break;
     }
   }
 
   throw new Error(
-    `Could not create legal assignments after ${maxRestarts} random restarts`,
+    `Could not create legal assignments after ${maxIterations} iterations`,
   );
+}
+
+function generateCandidate(model, evaluation) {
+  for (const violation of evaluation.hardViolations) {
+    const rule = getRuleById(model, violation.ruleId);
+    if (rule?.keyword === "match") {
+      return generateMatchCandidate(model, rule, violation, evaluation);
+    }
+  }
+  return null;
+}
+
+function generateMatchCandidate(model, rule, violation, evaluation) {
+  const itemAttribute = rule.inputs[0];
+  const slotAttribute = rule.inputs[1];
+  const item = getItemById(model, violation.sourceId);
+  const itemAttributeValue = item[itemAttribute];
+  const assignments = model.assignments.slotAssignments;
+
+  const targetSlots = model.slots.filter((slot) =>
+    valuesMatch(itemAttributeValue, slot[slotAttribute]),
+  );
+
+  for (const targetSlot of targetSlots) {
+    if (targetSlot.id === violation.targetId) {
+      continue;
+    }
+
+    const targetItemIds = assignments[targetSlot.id] ?? [];
+    if (targetItemIds.length === 0) {
+      const candidate = moveAssignment(
+        assignments,
+        violation.sourceId,
+        violation.targetId,
+        targetSlot.id,
+      );
+      const candidateScore = evaluateModel(
+        createModel(model.items, model.slots, model.rules, candidate),
+        true,
+      );
+      if (isBetterScore(candidateScore, evaluation)) {
+        return candidate;
+      }
+    }
+
+    for (const targetItemId of targetItemIds) {
+      const candidate = swapAssignments(
+        assignments,
+        violation.targetId,
+        violation.sourceId,
+        targetSlot.id,
+        targetItemId,
+      );
+      const candidateScore = evaluateModel(
+        createModel(model.items, model.slots, model.rules, candidate),
+        true,
+      );
+      if (isBetterScore(candidateScore, evaluation)) {
+        return candidate;
+      }
+    }
+  }
+
+  return null;
+}
+
+function getRuleById(model, id) {
+  return model.rules.find((rule) => rule.id === id);
+}
+
+function isBetterScore(candidateScore, currentScore) {
+  if (
+    candidateScore.hardPenalty !== currentScore.hardPenalty
+  ) {
+    return (
+      candidateScore.hardPenalty < currentScore.hardPenalty
+    );
+  }
+
+  return false;
+}
+
+function valuesMatch(sourceValue, targetValue) {
+  if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
+    return sourceValue.some((value) => targetValue.includes(value));
+  }
+
+  if (Array.isArray(sourceValue)) {
+    return sourceValue.includes(targetValue);
+  }
+
+  if (Array.isArray(targetValue)) {
+    return targetValue.includes(sourceValue);
+  }
+
+  return sourceValue === targetValue;
 }
 
 export function addAssignment(assignments, slotId, itemId) {
@@ -74,12 +176,7 @@ export function removeAssignment(assignments, slotId, itemId) {
   return nextAssignments;
 }
 
-export function moveAssignment(
-  assignments,
-  itemId,
-  fromSlotId,
-  toSlotId,
-) {
+export function moveAssignment(assignments, itemId, fromSlotId, toSlotId) {
   if (fromSlotId === toSlotId) {
     throw new Error("Move requires different slots");
   }
@@ -114,11 +211,11 @@ export function swapAssignments(
   }
 
   const nextAssignments = cloneAssignments(assignments);
-  nextAssignments[firstSlotId] = nextAssignments[firstSlotId].map(
-    (itemId) => (itemId === firstItemId ? secondItemId : itemId),
+  nextAssignments[firstSlotId] = nextAssignments[firstSlotId].map((itemId) =>
+    itemId === firstItemId ? secondItemId : itemId,
   );
-  nextAssignments[secondSlotId] = nextAssignments[secondSlotId].map(
-    (itemId) => (itemId === secondItemId ? firstItemId : itemId),
+  nextAssignments[secondSlotId] = nextAssignments[secondSlotId].map((itemId) =>
+    itemId === secondItemId ? firstItemId : itemId,
   );
 
   return nextAssignments;
