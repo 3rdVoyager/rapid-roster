@@ -62,12 +62,14 @@ Restricts the number of items assigned to each slot.
 ```json
 {
   "keyword": "limit",
-  "inputs": ["min", 9]
+  "inputs": ["max", 10, ["Thunder", "Celtics"]]
 }
 ```
 
-The inputs are `[limitType, number]`, where `limitType` is either `"min"` or
-`"max"`.
+The inputs are `[limitType, number, slotTargets]`. `limitType` is either
+`"min"` or `"max"`. `slotTargets` is either `"all"` or an array of slot IDs.
+Use `"all"` when the limit applies to every slot; otherwise, it applies only
+to the listed slots.
 
 ### `balance`
 
@@ -121,15 +123,16 @@ names or JSON directly.
 | R2   | `Match` each item's `Division` to its assigned slot's `Division`.                                  |
 | R3   | `Match` each item's `Practice Night` to its assigned slot's `Practice Night`.                      |
 | R4   | `Match` each item's `Coach Child Request` to its assigned slot's `ID`.                             |
-| R5   | `Limit` each slot to at least `9` assigned items.                                                   |
-| R6   | `Limit` each slot to at most `10` assigned items.                                                   |
-| R7   | `Balance` the average item `Height` across all slots.                                               |
-| R8   | `Distribute` item `Height` values evenly across all slots.                                          |
-| R9   | `Group` each item with items whose `ID`s are in its `Teammate Requests`.                            |
-| R10  | `Match` each item's `Coach Request` to its assigned slot's `ID`.                                    |
-| R11  | `Align` each item's assigned slot's `Practice Night` with its `Sibling`'s.                          |
-| R12  | `Align` each item's assigned slot's `Gym Location` with its `Sibling`'s.                            |
-| R13  | `Balance` the average item `Evaluation Score` across all slots.                                     |
+| R5   | `Limit` `all` to at least `9` assigned items.                                                    |
+| R6   | `Limit` `(custom selection)` slots to at most `10` assigned items.                                               |
+| R7   | `Limit` `(custom selection)` slots to at most `11` assigned items.                                               |
+| R8   | `Balance` the average item `Height` across all slots.                                                |
+| R9   | `Distribute` item `Height` values evenly across all slots.                                           |
+| R10  | `Group` each item with items whose `ID`s are in its `Teammate Requests`.                             |
+| R11  | `Match` each item's `Coach Request` to its assigned slot's `ID`.                                     |
+| R12  | `Align` each item's assigned slot's `Practice Night` with its `Sibling`'s.                           |
+| R13  | `Align` each item's assigned slot's `Gym Location` with its `Sibling`'s.                             |
+| R14  | `Balance` the average item `Evaluation Score` across all slots.                                      |
 
 ## Engine Contract
 

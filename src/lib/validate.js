@@ -5,6 +5,7 @@ const inputValidators = {
   slotAttribute: isSlotAttributeInput,
   limitType: isLimitType,
   nonNegativeInteger: isNonNegativeInteger,
+  slotTargets: isSlotTargetsInput,
 };
 
 export function validateData(items, slots) {
@@ -96,6 +97,22 @@ function isLimitType(value) {
 
 function isNonNegativeInteger(value) {
   return Number.isInteger(value) && value >= 0;
+}
+
+function isSlotTargetsInput(value) {
+  if (value === "all") {
+    return true;
+  }
+
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(
+      (slotId) =>
+        (typeof slotId === "string" && slotId.trim() !== "") ||
+        (typeof slotId === "number" && Number.isFinite(slotId)),
+    )
+  );
 }
 
 export function validateAssignments(assignments, items, slots) {

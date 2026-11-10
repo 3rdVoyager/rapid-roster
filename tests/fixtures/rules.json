@@ -37,18 +37,47 @@
     "description": "Limit each slot to at least 9 assigned items.",
     "enforcement": "hard",
     "keyword": "limit",
-    "inputs": ["min", 9]
+    "inputs": ["min", 9, "all"]
   },
   {
     "id": "R6",
-    "name": "Maximum Team Size",
-    "description": "Limit each slot to at most 10 assigned items.",
+    "name": "Maximum Standard Team Size",
+    "description": "Limit standard division slots to at most 10 assigned items.",
     "enforcement": "hard",
     "keyword": "limit",
-    "inputs": ["max", 10]
+    "inputs": [
+      "max",
+      10,
+      [
+        "Thunder", "Celtics", "Wizards", "Mavericks", "Timberwolves",
+        "Raptors", "Nuggets", "Lakers", "Warriors", "Cavaliers", "Bucks",
+        "Pistons", "Grizzlies", "Bulls", "Storm", "Fever", "Lynx",
+        "Mystics", "Liberty", "Valkyries", "Aces", "Snapping Turtles",
+        "Lions", "Jackals", "Dragons", "Hawks", "Bengals", "Cheetahs",
+        "Tarantulas", "Ladybugs", "Leopards", "Bunnies", "Wildcats"
+      ]
+    ]
   },
   {
     "id": "R7",
+    "name": "Maximum Larger Team Size",
+    "description": "Limit larger division slots to at most 11 assigned items.",
+    "enforcement": "hard",
+    "keyword": "limit",
+    "inputs": [
+      "max",
+      11,
+      [
+        "Starfish", "Bobcats", "Unicorns", "Flamingos", "Nittany Lions",
+        "Wonder Boys", "Buffaloes", "Banana Slugs", "Spartans", "Midshipmen",
+        "Huskies", "Titans", "Knights", "Terrapins", "Hawkeyes",
+        "Golden Gophers", "Fighting Camels", "Royals", "Coyotes",
+        "Tomato Frogs", "Lizards", "Stallions"
+      ]
+    ]
+  },
+  {
+    "id": "R8",
     "name": "Balance Average Heights",
     "description": "Balance the average item's Height across all slots.",
     "enforcement": "soft",
@@ -57,7 +86,7 @@
     "inputs": ["height"]
   },
   {
-    "id": "R8",
+    "id": "R9",
     "name": "Distribute Tallest Players",
     "description": "Distribute the values of each item's Height evenly across all slots.",
     "enforcement": "soft",
@@ -66,7 +95,7 @@
     "inputs": ["height"]
   },
   {
-    "id": "R9",
+    "id": "R10",
     "name": "Group Teammate Requests",
     "description": "Group each item with items whose IDs are in its Teammate Requests.",
     "enforcement": "soft",
@@ -75,7 +104,7 @@
     "inputs": ["id", "teammateRequest"]
   },
   {
-    "id": "R10",
+    "id": "R11",
     "name": "Honor Coach Requests",
     "description": "Match each item's Coach Request to its assigned slot's ID.",
     "enforcement": "soft",
@@ -84,7 +113,7 @@
     "inputs": ["coachRequest", "id"]
   },
   {
-    "id": "R11",
+    "id": "R12",
     "name": "Match Sibling Practice Nights",
     "description": "Align each item's assigned slot's Practice Night with its Sibling's assigned slot's Practice Night.",
     "enforcement": "soft",
@@ -93,7 +122,7 @@
     "inputs": ["practiceNight", "sibling"]
   },
   {
-    "id": "R12",
+    "id": "R13",
     "name": "Match Sibling Gym",
     "description": "Align each item's assigned slot's Gym Location with its Sibling's assigned slot's Gym Location.",
     "enforcement": "soft",
@@ -102,7 +131,7 @@
     "inputs": ["gymLocation", "sibling"]
   },
   {
-    "id": "R13",
+    "id": "R14",
     "name": "Balance Evaluation Scores",
     "description": "Balance the average item's Evaluation Score across all slots.",
     "enforcement": "soft",

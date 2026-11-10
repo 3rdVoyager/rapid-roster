@@ -93,6 +93,55 @@ test("creates assignments compatible with hard match rules", () => {
   });
 });
 
+test("creates assignments within hard minimum and maximum slot limits", () => {
+  const model = createModel(
+    [{ id: "I1" }, { id: "I2" }, { id: "I3" }, { id: "I4" }, { id: "I5" }],
+    [{ id: "S1" }, { id: "S2" }],
+    [
+      {
+        id: "R1",
+        name: "Minimum slot size",
+        enforcement: "hard",
+        keyword: "limit",
+        inputs: ["min", 2, "all"],
+      },
+      {
+        id: "R2",
+        name: "Maximum slot size",
+        enforcement: "hard",
+        keyword: "limit",
+        inputs: ["max", 3, "all"],
+      },
+    ],
+  );
+
+  const assignments = createCompatibleAssignments(model);
+  const slotSizes = Object.values(assignments).map((itemIds) => itemIds.length);
+
+  assert.deepEqual(slotSizes, [3, 2]);
+});
+
+test("applies targeted hard slot limits", () => {
+  const model = createModel(
+    [{ id: "I1" }, { id: "I2" }, { id: "I3" }],
+    [{ id: "S1" }, { id: "S2" }],
+    [
+      {
+        id: "R1",
+        name: "Small first slot",
+        enforcement: "hard",
+        keyword: "limit",
+        inputs: ["max", 1, ["S1"]],
+      },
+    ],
+  );
+
+  const assignments = createCompatibleAssignments(model);
+
+  assert.equal(assignments.S1.length, 1);
+  assert.equal(assignments.S2.length, 2);
+});
+
 test("rejects creating a model without slots", () => {
   assert.throws(() => createTestModel(items, []), /Slots must not be empty/);
 });
@@ -107,7 +156,7 @@ test("creates assignments that satisfy hard rules", () => {
         name: "Limit slot size",
         enforcement: "hard",
         keyword: "limit",
-        inputs: ["max", 2],
+        inputs: ["max", 2, "all"],
       },
     ],
   );
@@ -175,7 +224,7 @@ test("stops after the iteration limit", () => {
         name: "No assigned items",
         enforcement: "hard",
         keyword: "limit",
-        inputs: ["max", 0],
+        inputs: ["max", 0, "all"],
       },
     ],
   );

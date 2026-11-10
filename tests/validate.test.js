@@ -131,18 +131,18 @@ test("unknown rule keywords fail validation", () => {
 
 test("soft rules require a priority from 1 to 100", () => {
   const testRules = freshRules();
-  testRules[6].priority = 101;
+  testRules[7].priority = 101;
 
   assert.throws(
     () => validateRules(testRules),
-    /Invalid priority for rule: R7/,
+    /Invalid priority for rule: R8/,
   );
 });
 
 test("limit inputs must use a supported type and non-negative integer", () => {
   const testRules = freshRules();
   testRules[4].keyword = "limit";
-  testRules[4].inputs = ["max", -1];
+  testRules[4].inputs = ["max", -1, "all"];
 
   assert.throws(
     () => validateRules(testRules),

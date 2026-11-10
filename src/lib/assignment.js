@@ -30,6 +30,27 @@ export function createCompatibleAssignments(model) {
   const hardMatchRules = model.rules.filter(
     (rule) => rule.enforcement === "hard" && rule.keyword === "match",
   );
+  const hardLimitRules = model.rules.filter(
+    (rule) => rule.enforcement === "hard" && rule.keyword === "limit",
+  );
+  const slotLimits = Object.fromEntries(
+    model.slots.map((slot) => [
+      slot.id,
+      getSlotLimits(hardLimitRules, slot.id),
+    ]),
+  );
+
+  const invalidLimitSlots = model.slots.filter(
+    (slot) => slotLimits[slot.id].minimum > slotLimits[slot.id].maximum,
+  );
+  if (invalidLimitSlots.length > 0) {
+    throw new Error(
+      "Cannot create compatible assignments: minimum slot size exceeds " +
+        "maximum for slots: " +
+        invalidLimitSlots.map((slot) => slot.id).join(", "),
+    );
+  }
+
   const itemOptions = model.items.map((item) => ({
     item,
     compatibleSlots: model.slots.filter((slot) =>
@@ -54,16 +75,155 @@ export function createCompatibleAssignments(model) {
       first.compatibleSlots.length - second.compatibleSlots.length,
   );
 
-  for (const { item, compatibleSlots } of itemOptions) {
-    const targetSlot = compatibleSlots.reduce((leastLoaded, slot) => {
-      const leastLoadedCount = assignments[leastLoaded.id].length;
-      const slotCount = assignments[slot.id].length;
-      return slotCount < leastLoadedCount ? slot : leastLoaded;
-    });
-    assignments[targetSlot.id].push(item.id);
+  const itemOptionsById = new Map(
+    itemOptions.map((itemOption) => [itemOption.item.id, itemOption]),
+  );
+
+  for (const { item } of itemOptions) {
+    const assigned = assignItemToSlot(
+      item.id,
+      itemOptionsById,
+      assignments,
+      slotLimits,
+    );
+
+    if (!assigned) {
+      const error = new Error(
+        `Could not create compatible assignments within slot limits for item: ${item.id}`,
+      );
+      error.incompatibleItemIds = [item.id];
+      throw error;
+    }
+
+  }
+
+  const underfilledSlotIds = model.slots
+    .filter(
+      (slot) =>
+        assignments[slot.id].length < slotLimits[slot.id].minimum,
+    )
+    .map((slot) => slot.id);
+
+  if (underfilledSlotIds.length > 0) {
+    const error = new Error(
+      "Could not satisfy minimum slot limits for slots: " +
+        underfilledSlotIds.join(", "),
+    );
+    error.underfilledSlotIds = underfilledSlotIds;
+    throw error;
   }
 
   return assignments;
+}
+
+function assignItemToSlot(
+  itemId,
+  itemOptionsById,
+  assignments,
+  slotLimits,
+  visitedItems = new Set(),
+  visitedSlots = new Set(),
+) {
+  if (visitedItems.has(itemId)) {
+    return false;
+  }
+  visitedItems.add(itemId);
+
+  const compatibleSlots = itemOptionsById.get(itemId).compatibleSlots
+    .slice()
+    .sort((first, second) =>
+      compareSlotCapacity(
+        first,
+        second,
+        assignments,
+        slotLimits,
+      ),
+    );
+
+  for (const slot of compatibleSlots) {
+    if (visitedSlots.has(slot.id)) {
+      continue;
+    }
+    visitedSlots.add(slot.id);
+
+    const assignedItemIds = assignments[slot.id];
+    if (assignedItemIds.length < slotLimits[slot.id].maximum) {
+      assignedItemIds.push(itemId);
+      return true;
+    }
+
+    for (const displacedItemId of [...assignedItemIds]) {
+      const displacedIndex = assignedItemIds.indexOf(displacedItemId);
+      assignedItemIds.splice(displacedIndex, 1);
+
+      const displacedItemAssigned = assignItemToSlot(
+        displacedItemId,
+        itemOptionsById,
+        assignments,
+        slotLimits,
+        visitedItems,
+        visitedSlots,
+      );
+
+      if (displacedItemAssigned) {
+        assignedItemIds.push(itemId);
+        return true;
+      }
+
+      assignedItemIds.splice(displacedIndex, 0, displacedItemId);
+    }
+  }
+
+  return false;
+}
+
+function compareSlotCapacity(
+  firstSlot,
+  secondSlot,
+  assignments,
+  slotLimits,
+) {
+  const firstCount = assignments[firstSlot.id].length;
+  const secondCount = assignments[secondSlot.id].length;
+  const firstBelowMinimum =
+    firstCount < slotLimits[firstSlot.id].minimum;
+  const secondBelowMinimum =
+    secondCount < slotLimits[secondSlot.id].minimum;
+
+  if (firstBelowMinimum !== secondBelowMinimum) {
+    return firstBelowMinimum ? -1 : 1;
+  }
+
+  return firstCount - secondCount;
+}
+
+function getSlotLimits(limitRules, slotId) {
+  return limitRules.reduce(
+    (limits, rule) => {
+      const [limitType, limit, targetSlotTargets] = rule.inputs;
+      const appliesToSlot =
+        targetSlotTargets === "all" ||
+        targetSlotTargets.some(
+          (targetSlotId) => String(targetSlotId) === String(slotId),
+        );
+
+      if (!appliesToSlot) {
+        return limits;
+      }
+
+      if (limitType === "min") {
+        limits.minimum = Math.max(limits.minimum, limit);
+      } else {
+        limits.maximum = Math.min(limits.maximum, limit);
+      }
+
+      return limits;
+    },
+    {
+      minimum: 0,
+      maximum: Number.POSITIVE_INFINITY,
+    },
+  );
 }
 
 export function improveAssignments(model, maxIterations = 100) {

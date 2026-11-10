@@ -11,7 +11,7 @@ const keywordConfigs = [
   },
   {
     keyword: "limit",
-    inputValidators: ["limitType", "nonNegativeInteger"],
+    inputValidators: ["limitType", "nonNegativeInteger", "slotTargets"],
     affectedBy: ["move", "remove", "add"],
   },
   {

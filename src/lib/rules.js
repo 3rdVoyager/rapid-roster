@@ -127,13 +127,16 @@ function normalizeValues(value) {
 }
 
 export function evaluateLimit(inputs, model) {
-  const [limitType, limit] = inputs;
+  const [limitType, limit, slotTargets] = inputs;
 
   let score = 0;
   let repetitions = 0;
   const violations = [];
+  const slots = slotTargets === "all"
+    ? model.slots
+    : model.slots.filter((slot) => hasSlotId(slotTargets, slot.id));
 
-  for (const slot of model.slots) {
+  for (const slot of slots) {
     const itemCount = getAssignedItemIds(model, slot.id).length;
 
     let slotScore;
@@ -157,6 +160,10 @@ export function evaluateLimit(inputs, model) {
   }
 
   return { score, repetitions, violations };
+}
+
+function hasSlotId(slotIds, slotId) {
+  return slotIds.some((targetSlotId) => String(targetSlotId) === String(slotId));
 }
 
 export function evaluateBalance(inputs, model) {

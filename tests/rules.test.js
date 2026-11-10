@@ -263,7 +263,7 @@ test("limit evaluates assignment counts for each slot", () => {
     { S1: ["I1", "I2"], S2: [] },
   );
 
-  const result = evaluateLimit(["max", 1], model);
+  const result = evaluateLimit(["max", 1, "all"], model);
 
   assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 1.5,
@@ -280,12 +280,29 @@ test("limit supports minimum assignment counts", () => {
     { S1: ["I1"], S2: [] },
   );
 
-  const result = evaluateLimit(["min", 1], model);
+  const result = evaluateLimit(["min", 1, "all"], model);
 
   assert.deepEqual({ ...result, violations: result.violations.length }, {
     score: 1,
     repetitions: 2,
     violations: 1,
+  });
+});
+
+test("limit can target selected slots", () => {
+  const model = createModel(
+    [{ id: "I1" }, { id: "I2" }],
+    [{ id: "S1" }, { id: "S2" }],
+    [],
+    { S1: ["I1", "I2"], S2: [] },
+  );
+
+  const result = evaluateLimit(["max", 1, ["S2"]], model);
+
+  assert.deepEqual(result, {
+    score: 1,
+    repetitions: 1,
+    violations: [],
   });
 });
 
