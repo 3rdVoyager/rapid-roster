@@ -41,25 +41,21 @@ export function evaluateMatch(inputs, model) {
     const assignedSlots = getAssignedSlots(model, item.id);
 
     for (const slot of assignedSlots) {
-      const itemValue = item[itemAttribute];
-      const slotValue = slot[slotAttribute];
+      const itemAttributeValue = item[itemAttribute];
+      const slotAttributeValue = slot[slotAttribute];
 
-      // Empty request fields mean that this comparison does not apply to
-      // the item. They should not become false violations.
-      if (isEmptyMatchValue(itemValue)) {
+      if (isEmptyMatchValue(itemAttributeValue)) {
         continue;
       }
 
-      // TODO: Score each item-array value separately instead of
-      // reducing the whole array comparison to one boolean result.
-      if (valuesMatch(itemValue, slotValue)) {
+      if (valuesMatch(itemAttributeValue, slotAttributeValue)) {
         score++;
       } else {
         violations.push({
           sourceId: item.id,
           targetId: slot.id,
-          sourceValue: itemValue,
-          targetValue: slotValue,
+          sourceValue: itemAttributeValue,
+          targetValue: slotAttributeValue,
         });
       }
       repetitions++;
@@ -344,9 +340,7 @@ export function evaluateAlign(inputs, model) {
       continue;
     }
 
-    const sibling = model.items.find(
-      (candidate) => candidate.id === siblingId,
-    );
+    const sibling = model.items.find((candidate) => candidate.id === siblingId);
 
     if (!sibling) {
       continue;
@@ -381,6 +375,8 @@ export function evaluateAlign(inputs, model) {
   return { score, repetitions, violations };
 }
 
+// TODO: Score each item-array value separately instead of
+// reducing the whole array comparison to one boolean result.
 function valuesMatch(sourceValue, targetValue) {
   if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
     return sourceValue.some((value) => targetValue.includes(value));

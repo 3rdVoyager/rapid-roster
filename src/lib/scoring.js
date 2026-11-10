@@ -3,8 +3,9 @@ import { evaluateRule } from "./rules.js";
 export function scoreModel(model, hardOnly = false) {
   const score = {
     legal: true,
-    hardViolations: [],
+    hardPenalty: 0,
     softScore: 0,
+    hardViolations: [],
     rules: [],
   };
   for (const rule of model.rules) {
@@ -21,9 +22,12 @@ export function scoreModel(model, hardOnly = false) {
       ...ruleEvaluation,
     });
 
-    if (rule.enforcement === "hard" && ruleEvaluation.percentage !== 1) {
-      score.legal = false;
-      score.hardViolations.push(rule.id);
+    if (rule.enforcement === "hard") {
+      score.hardPenalty += 1 - ruleEvaluation.percentage;
+      if (ruleEvaluation.percentage !== 1) {
+        score.legal = false;
+        score.hardViolations.push(rule.id);
+      }
     } else if (rule.enforcement === "soft") {
       score.softScore += ruleEvaluation.score;
     }
