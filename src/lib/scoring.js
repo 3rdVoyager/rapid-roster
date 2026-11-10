@@ -1,12 +1,11 @@
 import { evaluateRule } from "./rules.js";
 
-export function scoreModel(model, hardOnly = false) {
-  const score = {
-    legal: true,
+export function evaluateModel(model, hardOnly = false) {
+  const evaluation = {
     hardPenalty: 0,
-    softScore: 0,
     hardViolations: [],
-    rules: [],
+    softPenalty: 0,
+    softViolations: [],
   };
   for (const rule of model.rules) {
     if (hardOnly && rule.enforcement !== "hard") {
@@ -14,24 +13,22 @@ export function scoreModel(model, hardOnly = false) {
     }
 
     const ruleEvaluation = evaluateRule(rule, model);
-
-    score.rules.push({
-      id: rule.id,
-      name: rule.name,
-      enforcement: rule.enforcement,
-      ...ruleEvaluation,
-    });
+    const rulePenalty = 1 - ruleEvaluation.percentage;
+    const violations = ruleEvaluation.violations.map((violation) => ({
+      ruleId: rule.id,
+      ...violation,
+    }));
 
     if (rule.enforcement === "hard") {
-      score.hardPenalty += 1 - ruleEvaluation.percentage;
-      if (ruleEvaluation.percentage !== 1) {
-        score.legal = false;
-        score.hardViolations.push(rule.id);
-      }
+      evaluation.hardPenalty += rulePenalty;
+      evaluation.hardViolations.push(...violations);
     } else if (rule.enforcement === "soft") {
-      score.softScore += ruleEvaluation.score;
+      evaluation.softPenalty += rulePenalty * (rule.priority ?? 1);
+      evaluation.softViolations.push(...violations);
     }
   }
 
-  return score;
+  return evaluation;
 }
+
+export const scoreModel = evaluateModel;
