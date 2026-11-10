@@ -10,11 +10,6 @@ const keywordConfigs = [
     affectedBy: ["move", "remove", "add", "swap"],
   },
   {
-    keyword: "equalize",
-    inputValidators: ["nonNegativeInteger"],
-    affectedBy: ["move", "remove", "add"],
-  },
-  {
     keyword: "limit",
     inputValidators: ["limitType", "nonNegativeInteger"],
     affectedBy: ["move", "remove", "add"],

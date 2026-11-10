@@ -25,7 +25,7 @@ behavior is added by registering a new action verb in the engine.
 
 ## Keyword Catalog
 
-The current schema uses seven action verbs. Their inputs identify selected
+The current schema uses six action verbs. Their inputs identify selected
 attributes or numbers; the action verb supplies the traversal and comparison
 behavior.
 
@@ -55,32 +55,19 @@ Matches an item attribute to another item's attribute.
 
 The input order is `[itemAttribute, itemAttribute]`.
 
-### `equalize`
-
-Equalizes the number of items in each group so their difference does not exceed
-the supplied `number`.
-
-```json
-{
-  "keyword": "equalize",
-  "inputs": [1]
-}
-```
-
-The input is `[number]`.
-
 ### `limit`
 
-Restricts the number of assignments an item or slot may have.
+Restricts the number of items assigned to each slot.
 
 ```json
 {
   "keyword": "limit",
-  "inputs": ["max", 3]
+  "inputs": ["min", 9]
 }
 ```
 
-The input is `[limit, number]`.
+The inputs are `[limitType, number]`, where `limitType` is either `"min"` or
+`"max"`.
 
 ### `balance`
 
@@ -134,14 +121,15 @@ names or JSON directly.
 | R2   | `Match` each item's `Division` to its assigned slot's `Division`.                                  |
 | R3   | `Match` each item's `Practice Night` to its assigned slot's `Practice Night`.                      |
 | R4   | `Match` each item's `Coach Child Request` to its assigned slot's `ID`.                             |
-| R5   | `Equalize` the number of assigned items in each slot so no slot has more than `1` additional item. |
-| R6   | `Balance` the average item `Height` across all slots.                                              |
-| R7   | `Distribute` item `Height` values evenly across all slots.                                         |
-| R8   | `Group` each item with items whose `ID`s are in its `Teammate Requests`.                           |
-| R9   | `Match` each item's `Coach Request` to its assigned slot's `ID`.                                   |
-| R10  | `Align` each item's assigned slot's `Practice Night` with its `Sibling`'s.                         |
-| R11  | `Align` each item's assigned slot's `Gym Location` with its `Sibling`'s.                           |
-| R12  | `Balance` the average item `Evaluation Score` across all slots.                                    |
+| R5   | `Limit` each slot to at least `9` assigned items.                                                   |
+| R6   | `Limit` each slot to at most `10` assigned items.                                                   |
+| R7   | `Balance` the average item `Height` across all slots.                                               |
+| R8   | `Distribute` item `Height` values evenly across all slots.                                          |
+| R9   | `Group` each item with items whose `ID`s are in its `Teammate Requests`.                            |
+| R10  | `Match` each item's `Coach Request` to its assigned slot's `ID`.                                    |
+| R11  | `Align` each item's assigned slot's `Practice Night` with its `Sibling`'s.                          |
+| R12  | `Align` each item's assigned slot's `Gym Location` with its `Sibling`'s.                            |
+| R13  | `Balance` the average item `Evaluation Score` across all slots.                                     |
 
 ## Engine Contract
 

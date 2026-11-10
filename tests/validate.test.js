@@ -131,11 +131,11 @@ test("unknown rule keywords fail validation", () => {
 
 test("soft rules require a priority from 1 to 100", () => {
   const testRules = freshRules();
-  testRules[5].priority = 101;
+  testRules[6].priority = 101;
 
   assert.throws(
     () => validateRules(testRules),
-    /Invalid priority for rule: R6/,
+    /Invalid priority for rule: R7/,
   );
 });
 

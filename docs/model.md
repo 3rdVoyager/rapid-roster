@@ -100,8 +100,8 @@ validator, evaluator, tests, and rule-builder form.
 `score`, `percentage`, `repetitions`, and `violations`. A model is legal only
 when every hard rule has a percentage of `1`.
 
-The assignment repair loop uses moves for count rules such as `equalize` and
-`limit`, and swaps for the other hard rules.
+The assignment repair loop uses moves for count rules such as `limit`, and
+swaps for the other hard rules.
 
 ### Soft Rules
 

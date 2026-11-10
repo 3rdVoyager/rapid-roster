@@ -9,7 +9,6 @@ import {
 const evaluators = {
   match: evaluateMatch,
   group: evaluateGroup,
-  equalize: evaluateEqualize,
   limit: evaluateLimit,
   balance: evaluateBalance,
   distribute: evaluateDistribute,
@@ -125,57 +124,6 @@ function normalizeValues(value) {
 
   const normalizedValues = Array.isArray(value) ? value : [value];
   return normalizedValues.filter((entry) => !isEmptyMatchValue(entry));
-}
-
-export function evaluateEqualize(inputs, model) {
-  const maximumDifference = inputs[0];
-  const slots = model.slots;
-
-  const slotCounts = slots.map((slot) => ({
-    slot,
-    itemCount: getAssignedItemIds(model, slot.id).length,
-  }));
-
-  if (slotCounts.length === 0) {
-    return { score: 1, repetitions: 1, violations: [] };
-  }
-
-  const minimumItemCount = Math.min(
-    ...slotCounts.map((slotCount) => slotCount.itemCount),
-  );
-  const maximumItemCount = Math.max(
-    ...slotCounts.map((slotCount) => slotCount.itemCount),
-  );
-  const actualDifference = maximumItemCount - minimumItemCount;
-  let score = 0;
-  const violations = [];
-
-  for (const slotCount of slotCounts) {
-    const excess = Math.max(
-      0,
-      slotCount.itemCount - minimumItemCount - maximumDifference,
-    );
-    const recordScore = excess === 0 ? 1 : 1 / (1 + excess);
-    score += recordScore;
-
-    if (excess > 0) {
-      violations.push({
-        sourceId: slotCount.slot.id,
-        actual: slotCount.itemCount,
-        minimum: minimumItemCount,
-        maximum: maximumItemCount,
-        difference: actualDifference,
-        maximumDifference,
-        excess,
-      });
-    }
-  }
-
-  return {
-    score,
-    repetitions: slotCounts.length,
-    violations,
-  };
 }
 
 export function evaluateLimit(inputs, model) {

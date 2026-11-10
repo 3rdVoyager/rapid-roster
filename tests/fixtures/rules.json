@@ -33,14 +33,22 @@
   },
   {
     "id": "R5",
-    "name": "Equalize Team Sizes",
-    "description": "Equalize the number of items across slots to within 1 item.",
+    "name": "Minimum Team Size",
+    "description": "Limit each slot to at least 9 assigned items.",
     "enforcement": "hard",
-    "keyword": "equalize",
-    "inputs": [1]
+    "keyword": "limit",
+    "inputs": ["min", 9]
   },
   {
     "id": "R6",
+    "name": "Maximum Team Size",
+    "description": "Limit each slot to at most 10 assigned items.",
+    "enforcement": "hard",
+    "keyword": "limit",
+    "inputs": ["max", 10]
+  },
+  {
+    "id": "R7",
     "name": "Balance Average Heights",
     "description": "Balance the average item's Height across all slots.",
     "enforcement": "soft",
@@ -49,7 +57,7 @@
     "inputs": ["height"]
   },
   {
-    "id": "R7",
+    "id": "R8",
     "name": "Distribute Tallest Players",
     "description": "Distribute the values of each item's Height evenly across all slots.",
     "enforcement": "soft",
@@ -58,7 +66,7 @@
     "inputs": ["height"]
   },
   {
-    "id": "R8",
+    "id": "R9",
     "name": "Group Teammate Requests",
     "description": "Group each item with items whose IDs are in its Teammate Requests.",
     "enforcement": "soft",
@@ -67,7 +75,7 @@
     "inputs": ["id", "teammateRequest"]
   },
   {
-    "id": "R9",
+    "id": "R10",
     "name": "Honor Coach Requests",
     "description": "Match each item's Coach Request to its assigned slot's ID.",
     "enforcement": "soft",
@@ -76,7 +84,7 @@
     "inputs": ["coachRequest", "id"]
   },
   {
-    "id": "R10",
+    "id": "R11",
     "name": "Match Sibling Practice Nights",
     "description": "Align each item's assigned slot's Practice Night with its Sibling's assigned slot's Practice Night.",
     "enforcement": "soft",
@@ -85,7 +93,7 @@
     "inputs": ["practiceNight", "sibling"]
   },
   {
-    "id": "R11",
+    "id": "R12",
     "name": "Match Sibling Gym",
     "description": "Align each item's assigned slot's Gym Location with its Sibling's assigned slot's Gym Location.",
     "enforcement": "soft",
@@ -94,7 +102,7 @@
     "inputs": ["gymLocation", "sibling"]
   },
   {
-    "id": "R12",
+    "id": "R13",
     "name": "Balance Evaluation Scores",
     "description": "Balance the average item's Evaluation Score across all slots.",
     "enforcement": "soft",
