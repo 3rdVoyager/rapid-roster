@@ -9,7 +9,7 @@ import fullAssignments from "./fixtures/assignments.json" with {
 };
 
 import { createModel } from "../src/lib/model.js";
-import { scoreModel } from "../src/lib/scoring.js";
+import { evaluateModel } from "../src/lib/scoring.js";
 
 const items = [
   { id: "I1", gender: "M", division: "M A" },
@@ -35,7 +35,7 @@ function createTestModel(rules, modelAssignments) {
   );
 }
 
-test("scoreModel reports passing hard rules and weighted soft scores", () => {
+test("evaluateModel reports hard and weighted soft penalties", () => {
   const rules = [
     {
       id: "R1",
@@ -59,38 +59,16 @@ test("scoreModel reports passing hard rules and weighted soft scores", () => {
     S1: ["I1", "I2"],
     S2: ["I3", "I4"],
   };
-  const result = scoreModel(createTestModel(rules, passingAssignments));
+  const result = evaluateModel(createTestModel(rules, passingAssignments));
 
-  assert.equal(result.legal, true);
+  assert.equal(result.hardPenalty, 0);
   assert.deepEqual(result.hardViolations, []);
-  assert.equal(result.softScore, (2 / 4) * 10);
+  assert.equal(result.softPenalty, (1 - 2 / 4) * 10);
 
-  assert.deepEqual(result.rules, [
-    {
-      id: "R1",
-      name: "Assigned items match slot divisions",
-      enforcement: "hard",
-      score: 1,
-      percentage: 1,
-      repetitions: 4,
-      violations: result.rules[0].violations,
-    },
-    {
-      id: "R2",
-      name: "Assigned items match slot genders",
-      enforcement: "soft",
-      score: (2 / 4) * 10,
-      percentage: 2 / 4,
-      repetitions: 4,
-      violations: result.rules[1].violations,
-    },
-  ]);
-
-  assert.equal(result.rules[0].violations.length, 0);
-  assert.equal(result.rules[1].violations.length, 2);
+  assert.equal(result.softViolations.length, 2);
 });
 
-test("scoreModel reports failed hard rule IDs", () => {
+test("evaluateModel reports failed hard-rule violations", () => {
   const rules = [
     {
       id: "R3",
@@ -102,11 +80,15 @@ test("scoreModel reports failed hard rule IDs", () => {
     },
   ];
 
-  const result = scoreModel(createTestModel(rules));
+  const result = evaluateModel(createTestModel(rules));
 
-  assert.equal(result.legal, false);
-  assert.deepEqual(result.hardViolations, ["R3"]);
-  assert.equal(result.softScore, 0);
+  assert.equal(result.hardPenalty, 1 - 2 / 4);
+  assert.equal(result.hardViolations.length, 2);
+  assert.deepEqual(
+    result.hardViolations.map((violation) => violation.ruleId),
+    ["R3", "R3"],
+  );
+  assert.equal(result.softPenalty, 0);
 });
 
 test("scoreModel scores the complete roster dataset", () => {
@@ -117,13 +99,34 @@ test("scoreModel scores the complete roster dataset", () => {
     structuredClone(fullAssignments),
   );
 
-  const result = scoreModel(model);
+  const result = evaluateModel(model);
 
-  assert.equal(result.rules.length, fullRules.length);
   assert.equal(result.hardViolations.length > 0, true);
-  assert.equal(typeof result.softScore, "number");
-  assert.equal(
-    result.rules.every((rule) => Number.isFinite(rule.percentage)),
-    true,
-  );
+  assert.equal(typeof result.hardPenalty, "number");
+  assert.equal(typeof result.softPenalty, "number");
+});
+
+test("evaluateModel can skip soft rules", () => {
+  const model = createTestModel([
+    {
+      id: "R1",
+      name: "Assigned items match slot divisions",
+      enforcement: "hard",
+      keyword: "match",
+      inputs: ["division", "division"],
+    },
+    {
+      id: "R2",
+      name: "Assigned items match slot genders",
+      enforcement: "soft",
+      priority: 10,
+      keyword: "match",
+      inputs: ["gender", "divisionGender"],
+    },
+  ]);
+
+  const result = evaluateModel(model, true);
+
+  assert.equal(result.softPenalty, 0);
+  assert.deepEqual(result.softViolations, []);
 });
