@@ -6,6 +6,7 @@ export function evaluateModel(model, hardOnly = false) {
     hardViolations: [],
     softPenalty: 0,
     softViolations: [],
+    softRulePenalties: [],
   };
   for (const rule of model.rules) {
     if (hardOnly && rule.enforcement !== "hard") {
@@ -23,8 +24,19 @@ export function evaluateModel(model, hardOnly = false) {
       evaluation.hardPenalty += rulePenalty;
       evaluation.hardViolations.push(...violations);
     } else if (rule.enforcement === "soft") {
-      evaluation.softPenalty += rulePenalty * (rule.priority ?? 1);
+      const priority = rule.priority ?? 1;
+      const weightedPenalty = rulePenalty * priority;
+      evaluation.softPenalty += weightedPenalty;
       evaluation.softViolations.push(...violations);
+      evaluation.softRulePenalties.push({
+        ruleId: rule.id,
+        name: rule.name,
+        priority,
+        percentage: ruleEvaluation.percentage,
+        penalty: rulePenalty,
+        weightedPenalty,
+        violationCount: violations.length,
+      });
     }
   }
 

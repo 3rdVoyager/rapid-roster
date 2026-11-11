@@ -1,27 +1,9 @@
 import { createModel } from "./model.js";
 import { evaluateModel } from "./scoring.js";
-import { getItemById } from "./selectors.js";
+import { getAssignedSlotIds, getItemById } from "./selectors.js";
 
-export function createRandomAssignments(model, random = Math.random) {
-  const assignments = {};
-  const slots = model.slots;
-
-  if (slots.length === 0) {
-    throw new Error("Cannot create an assignment without slots");
-  }
-
-  for (const slot of slots) {
-    assignments[slot.id] = [];
-  }
-
-  const shuffledItems = shuffle([...model.items], random);
-
-  for (let index = 0; index < shuffledItems.length; index++) {
-    const slot = slots[index % slots.length];
-    assignments[slot.id].push(shuffledItems[index].id);
-  }
-  return assignments;
-}
+const MAX_SOFT_CANDIDATE_ATTEMPTS = 25;
+const MIN_SOFT_IMPROVEMENT = 0.05;
 
 export function createCompatibleAssignments(model) {
   const assignments = Object.fromEntries(
@@ -226,7 +208,7 @@ function getSlotLimits(limitRules, slotId) {
   );
 }
 
-export function improveAssignments(model, maxIterations = 100) {
+export function improveHardAssignments(model, maxIterations = 100) {
   if (!Number.isInteger(maxIterations) || maxIterations < 1) {
     throw new Error("Max iterations must be a positive integer");
   }
@@ -248,7 +230,13 @@ export function improveAssignments(model, maxIterations = 100) {
       return assignments;
     }
 
-    const candidate = generateCandidate(currentModel, currentEvaluation);
+    const candidate = generateCandidate(
+      currentModel,
+      currentEvaluation.hardViolations,
+      currentEvaluation,
+      isBetterHardCandidate,
+      Number.POSITIVE_INFINITY,
+    );
 
     if (candidate) {
       assignments = candidate;
@@ -266,6 +254,76 @@ export function improveAssignments(model, maxIterations = 100) {
   error.hardPenalty = lastEvaluation.hardPenalty;
   error.hardViolations = lastEvaluation.hardViolations;
   throw error;
+}
+
+export function improveSoftAssignments(
+  model,
+  maxIterations = 100,
+  onProgress,
+) {
+  if (!Number.isInteger(maxIterations) || maxIterations < 1) {
+    throw new Error("Max iterations must be a positive integer");
+  }
+
+  let assignments = cloneAssignments(model.assignments.slotAssignments);
+  let currentModel = createModel(
+    model.items,
+    model.slots,
+    model.rules,
+    assignments,
+  );
+  let currentEvaluation = evaluateModel(currentModel);
+
+  if (currentEvaluation.hardPenalty > 0) {
+    const error = new Error(
+      "Cannot improve soft assignments while hard rules are violated",
+    );
+    error.hardPenalty = currentEvaluation.hardPenalty;
+    error.hardViolations = currentEvaluation.hardViolations;
+    throw error;
+  }
+
+  for (let iteration = 0; iteration < maxIterations; iteration++) {
+    const candidate = generateCandidate(
+      currentModel,
+      currentEvaluation.softViolations,
+      currentEvaluation,
+      isBetterSoftCandidate,
+      MAX_SOFT_CANDIDATE_ATTEMPTS,
+    );
+
+    if (!candidate) {
+      onProgress?.({
+        iteration: iteration + 1,
+        softPenalty: currentEvaluation.softPenalty,
+        improvement: 0,
+        improved: false,
+        complete: true,
+        softRulePenalties: currentEvaluation.softRulePenalties,
+      });
+      break;
+    }
+
+    const previousSoftPenalty = currentEvaluation.softPenalty;
+    assignments = candidate;
+    currentModel = createModel(
+      model.items,
+      model.slots,
+      model.rules,
+      assignments,
+    );
+    currentEvaluation = evaluateModel(currentModel);
+    onProgress?.({
+      iteration: iteration + 1,
+      softPenalty: currentEvaluation.softPenalty,
+      improvement: previousSoftPenalty - currentEvaluation.softPenalty,
+      improved: true,
+      complete: false,
+      softRulePenalties: currentEvaluation.softRulePenalties,
+    });
+  }
+
+  return assignments;
 }
 
 function countViolationsByRule(evaluation) {
@@ -292,6 +350,28 @@ function isItemCompatibleWithSlot(item, slot, rule) {
   return valuesMatch(itemValue, slot[rule.inputs[1]]);
 }
 
+function canSwapWithoutBreakingHardMatches(
+  model,
+  firstItemId,
+  firstSlotId,
+  secondItemId,
+  secondSlotId,
+) {
+  const firstItem = getItemById(model, firstItemId);
+  const secondItem = getItemById(model, secondItemId);
+  const firstSlot = model.slots.find((slot) => slot.id === firstSlotId);
+  const secondSlot = model.slots.find((slot) => slot.id === secondSlotId);
+  const hardMatchRules = model.rules.filter(
+    (rule) => rule.enforcement === "hard" && rule.keyword === "match",
+  );
+
+  return hardMatchRules.every(
+    (rule) =>
+      isItemCompatibleWithSlot(firstItem, secondSlot, rule) &&
+      isItemCompatibleWithSlot(secondItem, firstSlot, rule),
+  );
+}
+
 function isEmptyValue(value) {
   return (
     value === undefined ||
@@ -301,17 +381,123 @@ function isEmptyValue(value) {
   );
 }
 
-function generateCandidate(model, evaluation) {
-  for (const violation of evaluation.hardViolations) {
-    const rule = getRuleById(model, violation.ruleId);
-    if (rule?.keyword === "match") {
-      return generateMatchCandidate(model, rule, violation, evaluation);
+function generateCandidate(
+  model,
+  violations,
+  evaluation,
+  isBetterCandidate,
+  maximumAttempts,
+) {
+  const prioritizedViolations = prioritizeViolations(
+    violations,
+    evaluation.softRulePenalties,
+  );
+
+  for (const violation of prioritizedViolations) {
+    let attempts = 0;
+    const limitedCandidateEvaluator = (candidateModel, candidate, score) => {
+      if (attempts >= maximumAttempts) {
+        return false;
+      }
+      attempts++;
+      return isBetterCandidate(candidateModel, candidate, score);
+    };
+    const candidate = generateCandidateForViolation(
+      model,
+      violation,
+      evaluation,
+      limitedCandidateEvaluator,
+    );
+
+    if (candidate) {
+      return candidate;
     }
   }
+
   return null;
 }
 
-function generateMatchCandidate(model, rule, violation, evaluation) {
+function prioritizeViolations(violations, softRulePenalties = []) {
+  if (softRulePenalties.length === 0) {
+    return violations;
+  }
+
+  const weightedPenaltyByRuleId = new Map(
+    softRulePenalties.map((rulePenalty) => [
+      rulePenalty.ruleId,
+      rulePenalty.weightedPenalty,
+    ]),
+  );
+
+  return [...violations].sort(
+    (first, second) =>
+      (weightedPenaltyByRuleId.get(second.ruleId) ?? 0) -
+      (weightedPenaltyByRuleId.get(first.ruleId) ?? 0),
+  );
+}
+
+function generateCandidateForViolation(
+  model,
+  violation,
+  evaluation,
+  isBetterCandidate,
+) {
+  const rule = getRuleById(model, violation.ruleId);
+
+  if (rule?.keyword === "match") {
+    return generateMatchCandidate(
+      model,
+      rule,
+      violation,
+      evaluation,
+      isBetterCandidate,
+    );
+  }
+  if (rule?.keyword === "group") {
+    return generateGroupCandidate(
+      model,
+      rule,
+      violation,
+      evaluation,
+      isBetterCandidate,
+    );
+  }
+  if (rule?.keyword === "balance") {
+    return generateBalanceCandidate(
+      model,
+      rule,
+      violation,
+      evaluation,
+      isBetterCandidate,
+    );
+  }
+  if (rule?.keyword === "distribute") {
+    return generateDistributeCandidate(
+      model,
+      violation,
+      evaluation,
+      isBetterCandidate,
+    );
+  }
+  if (rule?.keyword === "align") {
+    return generateAlignCandidate(
+      model,
+      violation,
+      evaluation,
+      isBetterCandidate,
+    );
+  }
+
+  return null;
+}
+
+function generateMatchCandidate(
+  model,
+  rule,
+  violation,
+  evaluation,
+  isBetterCandidate,
+) {
   const itemAttribute = rule.inputs[0];
   const slotAttribute = rule.inputs[1];
   const item = getItemById(model, violation.sourceId);
@@ -328,23 +514,18 @@ function generateMatchCandidate(model, rule, violation, evaluation) {
     }
 
     const targetItemIds = assignments[targetSlot.id] ?? [];
-    if (targetItemIds.length === 0) {
-      const candidate = moveAssignment(
-        assignments,
-        violation.sourceId,
-        violation.targetId,
-        targetSlot.id,
-      );
-      const candidateScore = evaluateModel(
-        createModel(model.items, model.slots, model.rules, candidate),
-        true,
-      );
-      if (isBetterScore(candidateScore, evaluation)) {
-        return candidate;
-      }
-    }
-
     for (const targetItemId of targetItemIds) {
+      if (
+        !canSwapWithoutBreakingHardMatches(
+          model,
+          violation.sourceId,
+          violation.targetId,
+          targetItemId,
+          targetSlot.id,
+        )
+      ) {
+        continue;
+      }
       const candidate = swapAssignments(
         assignments,
         violation.targetId,
@@ -352,17 +533,313 @@ function generateMatchCandidate(model, rule, violation, evaluation) {
         targetSlot.id,
         targetItemId,
       );
-      const candidateScore = evaluateModel(
-        createModel(model.items, model.slots, model.rules, candidate),
-        true,
-      );
-      if (isBetterScore(candidateScore, evaluation)) {
+      if (isBetterCandidate(model, candidate, evaluation)) {
         return candidate;
       }
     }
   }
 
   return null;
+}
+
+function generateGroupCandidate(
+  model,
+  rule,
+  violation,
+  evaluation,
+  isBetterCandidate,
+) {
+  const [itemAttribute] = rule.inputs;
+  const sourceItemId = violation.sourceId;
+  const requestedValue = violation.targetId;
+  const assignments = model.assignments.slotAssignments;
+  const sourceSlotIds = getAssignedSlotIds(model, sourceItemId);
+  const targetItems = model.items.filter(
+    (item) =>
+      item.id !== sourceItemId &&
+      valuesMatch(requestedValue, item[itemAttribute]),
+  );
+
+  for (const targetItem of targetItems) {
+    for (const sourceSlotId of sourceSlotIds) {
+      for (const targetSlotId of getAssignedSlotIds(model, targetItem.id)) {
+        if (targetSlotId === sourceSlotId) {
+          continue;
+        }
+        if (
+          !canSwapWithoutBreakingHardMatches(
+            model,
+            sourceItemId,
+            sourceSlotId,
+            targetItem.id,
+            targetSlotId,
+          )
+        ) {
+          continue;
+        }
+        const candidate = swapAssignments(
+          assignments,
+          sourceSlotId,
+          sourceItemId,
+          targetSlotId,
+          targetItem.id,
+        );
+        if (isBetterCandidate(model, candidate, evaluation)) {
+          return candidate;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+function generateBalanceCandidate(
+  model,
+  rule,
+  violation,
+  evaluation,
+  isBetterCandidate,
+) {
+  const itemAttribute = rule.inputs[0];
+  const slotId = violation.targetId;
+  const assignments = model.assignments.slotAssignments;
+  const sourceItems = getItemsInSlot(model, slotId)
+    .filter((item) => isNumericValue(item[itemAttribute]))
+    .sort((first, second) =>
+      violation.actual < violation.target
+        ? first[itemAttribute] - second[itemAttribute]
+        : second[itemAttribute] - first[itemAttribute],
+    );
+  const targetSlots = model.slots
+    .filter((slot) => slot.id !== slotId)
+    .sort((first, second) => {
+      const firstAverage = getNumericSlotAverage(
+        model,
+        first.id,
+        itemAttribute,
+      );
+      const secondAverage = getNumericSlotAverage(
+        model,
+        second.id,
+        itemAttribute,
+      );
+
+      return violation.actual < violation.target
+        ? secondAverage - firstAverage
+        : firstAverage - secondAverage;
+    });
+
+  for (const sourceItem of sourceItems) {
+    for (const targetSlot of targetSlots) {
+      const targetItems = getItemsInSlot(model, targetSlot.id)
+        .filter((item) => isNumericValue(item[itemAttribute]))
+        .sort((first, second) =>
+          violation.actual < violation.target
+            ? second[itemAttribute] - first[itemAttribute]
+            : first[itemAttribute] - second[itemAttribute],
+        );
+
+      for (const targetItem of targetItems) {
+        if (
+          !canSwapWithoutBreakingHardMatches(
+            model,
+            sourceItem.id,
+            slotId,
+            targetItem.id,
+            targetSlot.id,
+          )
+        ) {
+          continue;
+        }
+        const candidate = swapAssignments(
+          assignments,
+          slotId,
+          sourceItem.id,
+          targetSlot.id,
+          targetItem.id,
+        );
+        if (isBetterCandidate(model, candidate, evaluation)) {
+          return candidate;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+function generateDistributeCandidate(
+  model,
+  violation,
+  evaluation,
+  isBetterCandidate,
+) {
+  const sourceItemId = violation.sourceId;
+  const targetItemId = violation.targetId;
+  const sourceSlotIds = getAssignedSlotIds(model, sourceItemId);
+  const targetSlotIds = getAssignedSlotIds(model, targetItemId);
+  const assignments = model.assignments.slotAssignments;
+
+  for (const sourceSlotId of sourceSlotIds) {
+    for (const targetSlotId of targetSlotIds) {
+      if (sourceSlotId === targetSlotId) {
+        continue;
+      }
+      if (
+        !canSwapWithoutBreakingHardMatches(
+          model,
+          sourceItemId,
+          sourceSlotId,
+          targetItemId,
+          targetSlotId,
+        )
+      ) {
+        continue;
+      }
+
+      const candidate = swapAssignments(
+        assignments,
+        sourceSlotId,
+        sourceItemId,
+        targetSlotId,
+        targetItemId,
+      );
+      if (isBetterCandidate(model, candidate, evaluation)) {
+        return candidate;
+      }
+    }
+  }
+
+  for (const sharedSlotId of violation.sharedSlotIds ?? []) {
+    for (const targetSlot of model.slots) {
+      if (targetSlot.id === sharedSlotId) {
+        continue;
+      }
+
+      for (const targetItemIdInSlot of assignments[targetSlot.id] ?? []) {
+        if (
+          !canSwapWithoutBreakingHardMatches(
+            model,
+            sourceItemId,
+            sharedSlotId,
+            targetItemIdInSlot,
+            targetSlot.id,
+          )
+        ) {
+          continue;
+        }
+        const candidate = swapAssignments(
+          assignments,
+          sharedSlotId,
+          sourceItemId,
+          targetSlot.id,
+          targetItemIdInSlot,
+        );
+        if (isBetterCandidate(model, candidate, evaluation)) {
+          return candidate;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+function generateAlignCandidate(
+  model,
+  violation,
+  evaluation,
+  isBetterCandidate,
+) {
+  const firstSlotId = violation.sourceId;
+  const secondSlotId = violation.targetId;
+  if (firstSlotId === secondSlotId) {
+    return null;
+  }
+
+  const assignments = model.assignments.slotAssignments;
+  for (const firstItemId of assignments[firstSlotId] ?? []) {
+    for (const secondItemId of assignments[secondSlotId] ?? []) {
+      if (
+        !canSwapWithoutBreakingHardMatches(
+          model,
+          firstItemId,
+          firstSlotId,
+          secondItemId,
+          secondSlotId,
+        )
+      ) {
+        continue;
+      }
+      const candidate = swapAssignments(
+        assignments,
+        firstSlotId,
+        firstItemId,
+        secondSlotId,
+        secondItemId,
+      );
+      if (isBetterCandidate(model, candidate, evaluation)) {
+        return candidate;
+      }
+    }
+  }
+
+  return null;
+}
+
+function getItemsInSlot(model, slotId) {
+  const itemIds = model.assignments.slotAssignments[slotId] ?? [];
+  return itemIds
+    .map((itemId) => getItemById(model, itemId))
+    .filter(Boolean);
+}
+
+function getNumericSlotAverage(model, slotId, itemAttribute) {
+  const numericValues = getItemsInSlot(model, slotId)
+    .map((item) => item[itemAttribute])
+    .filter(isNumericValue);
+
+  if (numericValues.length === 0) {
+    return 0;
+  }
+
+  return (
+    numericValues.reduce((total, value) => total + value, 0) /
+    numericValues.length
+  );
+}
+
+function isNumericValue(value) {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function isBetterSoftCandidate(model, assignments, currentEvaluation) {
+  const candidateModel = createModel(
+    model.items,
+    model.slots,
+    model.rules,
+    assignments,
+  );
+  const candidateEvaluation = evaluateModel(candidateModel);
+
+  return (
+    candidateEvaluation.hardPenalty === 0 &&
+    currentEvaluation.softPenalty - candidateEvaluation.softPenalty >=
+      MIN_SOFT_IMPROVEMENT
+  );
+}
+
+function isBetterHardCandidate(model, assignments, currentEvaluation) {
+  const candidateModel = createModel(
+    model.items,
+    model.slots,
+    model.rules,
+    assignments,
+  );
+  const candidateEvaluation = evaluateModel(candidateModel, true);
+
+  return isBetterScore(candidateEvaluation, currentEvaluation);
 }
 
 function getRuleById(model, id) {
@@ -397,45 +874,6 @@ function valuesMatch(sourceValue, targetValue) {
   return sourceValue === targetValue;
 }
 
-export function addAssignment(assignments, slotId, itemId) {
-  const nextAssignments = cloneAssignments(assignments);
-  const itemIds = nextAssignments[slotId] ?? [];
-
-  if (!itemIds.includes(itemId)) {
-    itemIds.push(itemId);
-  }
-  nextAssignments[slotId] = itemIds;
-
-  return nextAssignments;
-}
-
-export function removeAssignment(assignments, slotId, itemId) {
-  const nextAssignments = cloneAssignments(assignments);
-  const itemIds = nextAssignments[slotId] ?? [];
-
-  nextAssignments[slotId] = itemIds.filter(
-    (assignedItemId) => assignedItemId !== itemId,
-  );
-
-  return nextAssignments;
-}
-
-export function moveAssignment(assignments, itemId, fromSlotId, toSlotId) {
-  if (fromSlotId === toSlotId) {
-    throw new Error("Move requires different slots");
-  }
-
-  if (!(assignments[fromSlotId] ?? []).includes(itemId)) {
-    throw new Error(`Item is not assigned to slot: ${itemId}, ${fromSlotId}`);
-  }
-
-  return addAssignment(
-    removeAssignment(assignments, fromSlotId, itemId),
-    toSlotId,
-    itemId,
-  );
-}
-
 export function swapAssignments(
   assignments,
   firstSlotId,
@@ -463,14 +901,6 @@ export function swapAssignments(
   );
 
   return nextAssignments;
-}
-
-function shuffle(array, random) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
 }
 
 function cloneAssignments(assignments) {

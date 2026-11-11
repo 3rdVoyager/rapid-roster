@@ -7,7 +7,8 @@ import rules from "../tests/fixtures/rules.json" with { type: "json" };
 import { createModel } from "../src/lib/model.js";
 import {
   createCompatibleAssignments,
-  improveAssignments,
+  improveHardAssignments,
+  improveSoftAssignments,
 } from "../src/lib/assignment.js";
 import { evaluateModel } from "../src/lib/scoring.js";
 
@@ -17,6 +18,7 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
   console.error("Usage: node scripts/generate-fixture.js [maxIterations]");
   process.exitCode = 1;
 } else {
+  console.log("Creating hard-rule-compatible assignments...");
   const baseModel = createModel(items, slots, rules);
   const startingAssignments = createCompatibleAssignments(baseModel);
   const startingModel = createModel(
@@ -26,39 +28,89 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
     startingAssignments,
   );
   const startingEvaluation = evaluateModel(startingModel, true);
-  const startedAt = performance.now();
+  const startingFullEvaluation = evaluateModel(startingModel);
+  console.log(
+    `Hard-rule creation complete. Hard penalty: ${startingEvaluation.hardPenalty}`,
+  );
+  console.log(
+    `Starting soft penalty: ${startingFullEvaluation.softPenalty}`,
+  );
+  console.log(
+    `Top soft penalties: ${formatTopSoftPenalties(
+      startingFullEvaluation.softRulePenalties,
+    )}`,
+  );
+
+  const hardStartedAt = performance.now();
 
   try {
-    const assignments = improveAssignments(
-      startingModel,
-      maxIterations,
+    const hardAssignments = improveHardAssignments(startingModel);
+    const hardModel = createModel(
+      items,
+      slots,
+      rules,
+      hardAssignments,
     );
-    const finalModel = createModel(items, slots, rules, assignments);
-    const finalEvaluation = evaluateModel(finalModel, true);
+    const hardEvaluation = evaluateModel(hardModel, true);
+    console.log(
+      `Hard-rule optimization complete in ${Math.round(
+        performance.now() - hardStartedAt,
+      )} ms. Hard penalty: ${hardEvaluation.hardPenalty}`,
+    );
 
-    console.log("Legal assignment found");
-    printSummary(startingEvaluation, finalEvaluation, startedAt);
-    console.log("Assignments:");
-    console.log(JSON.stringify(assignments, null, 2));
+    console.log("Optimizing soft rules...");
+    const softStartedAt = performance.now();
+    const softAssignments = improveSoftAssignments(
+      hardModel,
+      maxIterations,
+      (progress) => {
+        const status = progress.improved ? "improved" : "stopped";
+        console.log(
+          `Soft iteration ${progress.iteration}: ` +
+            `${status}; penalty ${progress.softPenalty}; ` +
+            `improvement ${progress.improvement}; ` +
+            `top rules ${formatTopSoftPenalties(
+              progress.softRulePenalties,
+            )}`,
+        );
+      },
+    );
+    const finalModel = createModel(items, slots, rules, softAssignments);
+    const finalEvaluation = evaluateModel(finalModel);
+
+    console.log(
+      `Soft-rule optimization complete in ${Math.round(
+        performance.now() - softStartedAt,
+      )} ms.`,
+    );
+    console.log(`Final hard penalty: ${finalEvaluation.hardPenalty}`);
+    console.log(
+      `Soft penalty: ${finalEvaluation.softPenalty}`,
+    );
+    console.log(
+      `Soft violations: ${finalEvaluation.softViolations.length}`,
+    );
+    console.log(
+      `Top soft penalties: ${formatTopSoftPenalties(
+        finalEvaluation.softRulePenalties,
+      )}`,
+    );
   } catch (error) {
-    console.log("Could not create a legal assignment");
+    console.log("Assignment generation failed");
     console.log(`Message: ${error.message}`);
-    console.log(`Elapsed: ${Math.round(performance.now() - startedAt)} ms`);
     console.log(`Starting hard penalty: ${startingEvaluation.hardPenalty}`);
-    console.log(
-      `Final hard penalty: ${error.hardPenalty ?? "unavailable"}`,
-    );
-    console.log(
-      `Remaining violations: ${error.hardViolations?.length ?? "unavailable"}`,
-    );
+    console.log(`Final hard penalty: ${error.hardPenalty ?? "unavailable"}`);
   }
 }
 
-function printSummary(startingEvaluation, finalEvaluation, startedAt) {
-  console.log(`Elapsed: ${Math.round(performance.now() - startedAt)} ms`);
-  console.log(`Starting hard penalty: ${startingEvaluation.hardPenalty}`);
-  console.log(`Final hard penalty: ${finalEvaluation.hardPenalty}`);
-  console.log(
-    `Remaining violations: ${finalEvaluation.hardViolations.length}`,
-  );
+function formatTopSoftPenalties(rulePenalties) {
+  return rulePenalties
+    .filter((rulePenalty) => rulePenalty.weightedPenalty > 0)
+    .sort((first, second) => second.weightedPenalty - first.weightedPenalty)
+    .slice(0, 3)
+    .map(
+      (rulePenalty) =>
+        `${rulePenalty.ruleId}=${rulePenalty.weightedPenalty.toFixed(2)}`,
+    )
+    .join(", ");
 }

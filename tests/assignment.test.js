@@ -3,68 +3,20 @@ import assert from "node:assert/strict";
 
 import items from "./fixtures/items.json" with { type: "json" };
 import slots from "./fixtures/slots.json" with { type: "json" };
+import rules from "./fixtures/rules.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
+import { evaluateModel } from "../src/lib/scoring.js";
 import {
-  addAssignment,
   createCompatibleAssignments,
-  createRandomAssignments,
-  improveAssignments,
-  moveAssignment,
-  removeAssignment,
+  improveHardAssignments,
+  improveSoftAssignments,
   swapAssignments,
 } from "../src/lib/assignment.js";
 
 function createTestModel(itemData = items, slotData = slots) {
   return createModel(structuredClone(itemData), structuredClone(slotData));
 }
-
-test("creates an array for every slot", () => {
-  const model = createTestModel();
-  const assignments = createRandomAssignments(model, () => 0);
-
-  assert.deepEqual(
-    Object.keys(assignments),
-    slots.map((slot) => slot.id),
-  );
-
-  for (const slotId of Object.keys(assignments)) {
-    assert.ok(Array.isArray(assignments[slotId]));
-  }
-});
-
-test("assigns every item exactly once", () => {
-  const model = createTestModel();
-  const assignments = createRandomAssignments(model, () => 0);
-  const assignedItemIds = Object.values(assignments).flat();
-
-  assert.equal(assignedItemIds.length, items.length);
-  assert.deepEqual(assignedItemIds.sort(), items.map((item) => item.id).sort());
-});
-
-test("keeps slot sizes balanced", () => {
-  const model = createTestModel();
-  const assignments = createRandomAssignments(model, () => 0);
-  const sizes = Object.values(assignments).map((itemIds) => itemIds.length);
-
-  assert.ok(Math.max(...sizes) - Math.min(...sizes) <= 1);
-});
-
-test("does not mutate the model items while shuffling", () => {
-  const model = createTestModel();
-  const originalItems = structuredClone(model.items);
-
-  createRandomAssignments(model, () => 0);
-
-  assert.deepEqual(model.items, originalItems);
-});
-
-test("uses injected randomness consistently", () => {
-  const firstAssignment = createRandomAssignments(createTestModel(), () => 0);
-  const secondAssignment = createRandomAssignments(createTestModel(), () => 0);
-
-  assert.deepEqual(firstAssignment, secondAssignment);
-});
 
 test("creates assignments compatible with hard match rules", () => {
   const model = createModel(
@@ -142,38 +94,75 @@ test("applies targeted hard slot limits", () => {
   assert.equal(assignments.S2.length, 2);
 });
 
-test("rejects creating a model without slots", () => {
-  assert.throws(() => createTestModel(items, []), /Slots must not be empty/);
-});
-
-test("creates assignments that satisfy hard rules", () => {
+test("improves soft scores without breaking hard rules", () => {
   const model = createModel(
-    [{ id: "I1" }, { id: "I2" }, { id: "I3" }, { id: "I4" }],
-    [{ id: "S1" }, { id: "S2" }],
+    [
+      { id: "I1", gender: "F", height: 0 },
+      { id: "I2", gender: "F", height: 0 },
+      { id: "I3", gender: "F", height: 0 },
+      { id: "I4", gender: "F", height: 100 },
+      { id: "I5", gender: "F", height: 100 },
+    ],
+    [
+      { id: "S1", divisionGender: "F" },
+      { id: "S2", divisionGender: "F" },
+    ],
     [
       {
         id: "R1",
-        name: "Limit slot size",
+        name: "Match gender",
         enforcement: "hard",
-        keyword: "limit",
-        inputs: ["max", 2, "all"],
+        keyword: "match",
+        inputs: ["gender", "divisionGender"],
+      },
+      {
+        id: "R2",
+        name: "Balance heights",
+        enforcement: "soft",
+        priority: 1,
+        keyword: "balance",
+        inputs: ["height"],
       },
     ],
+    { S1: ["I1", "I2", "I3"], S2: ["I4", "I5"] },
   );
-
-  const startingAssignments = createRandomAssignments(model, () => 0);
-  const assignedModel = createModel(
+  const startingEvaluation = evaluateModel(model);
+  const assignments = improveSoftAssignments(model, 1);
+  const finalModel = createModel(
     model.items,
     model.slots,
     model.rules,
-    startingAssignments,
+    assignments,
   );
-  const assignments = improveAssignments(assignedModel);
+  const finalEvaluation = evaluateModel(finalModel);
 
-  assert.deepEqual(
-    Object.values(assignments).map((itemIds) => itemIds.length),
-    [2, 2],
+  assert.equal(finalEvaluation.hardPenalty, 0);
+  assert.ok(finalEvaluation.softPenalty < startingEvaluation.softPenalty);
+});
+
+test("improves the complete fixture without creating hard violations", () => {
+  const model = createModel(
+    structuredClone(items),
+    structuredClone(slots),
+    structuredClone(rules),
+    createCompatibleAssignments(createModel(items, slots, rules)),
   );
+  const startingEvaluation = evaluateModel(model);
+  const assignments = improveSoftAssignments(model, 1);
+  const finalModel = createModel(
+    model.items,
+    model.slots,
+    model.rules,
+    assignments,
+  );
+  const finalEvaluation = evaluateModel(finalModel);
+
+  assert.equal(finalEvaluation.hardPenalty, 0);
+  assert.ok(finalEvaluation.softPenalty <= startingEvaluation.softPenalty);
+});
+
+test("rejects creating a model without slots", () => {
+  assert.throws(() => createTestModel(items, []), /Slots must not be empty/);
 });
 
 test("repairs an illegal candidate with a swap", () => {
@@ -197,21 +186,15 @@ test("repairs an illegal candidate with a swap", () => {
     ],
   );
 
-  let randomCalls = 0;
-  const startingAssignments = createRandomAssignments(model, () => {
-    randomCalls += 1;
-    return randomCalls === 1 ? 0.9 : 0;
-  });
   const assignedModel = createModel(
     model.items,
     model.slots,
     model.rules,
-    startingAssignments,
+    { S1: ["I1"], S2: ["I2"] },
   );
-  const assignments = improveAssignments(assignedModel, 2);
+  const assignments = improveHardAssignments(assignedModel);
 
   assert.deepEqual(assignments, { S1: ["I2"], S2: ["I1"] });
-  assert.equal(randomCalls, 1);
 });
 
 test("stops after the iteration limit", () => {
@@ -229,17 +212,16 @@ test("stops after the iteration limit", () => {
     ],
   );
 
-  const startingAssignments = createRandomAssignments(model, () => 0);
   const assignedModel = createModel(
     model.items,
     model.slots,
     model.rules,
-    startingAssignments,
+    { S1: ["I1", "I2"] },
   );
 
   let error;
   try {
-    improveAssignments(assignedModel, 3);
+    improveHardAssignments(assignedModel, 3);
   } catch (caughtError) {
     error = caughtError;
   }
@@ -252,33 +234,6 @@ test("stops after the iteration limit", () => {
   assert.deepEqual(error.hardViolations.map((violation) => violation.ruleId), [
     "R1",
   ]);
-});
-
-test("adds an assignment without mutating the original", () => {
-  const assignments = { S1: ["I1"], S2: [] };
-
-  const nextAssignments = addAssignment(assignments, "S2", "I1");
-
-  assert.deepEqual(nextAssignments, { S1: ["I1"], S2: ["I1"] });
-  assert.deepEqual(assignments, { S1: ["I1"], S2: [] });
-});
-
-test("removes an assignment without mutating the original", () => {
-  const assignments = { S1: ["I1", "I2"] };
-
-  const nextAssignments = removeAssignment(assignments, "S1", "I1");
-
-  assert.deepEqual(nextAssignments, { S1: ["I2"] });
-  assert.deepEqual(assignments, { S1: ["I1", "I2"] });
-});
-
-test("moves an assignment between slots", () => {
-  const assignments = { S1: ["I1"], S2: ["I2"] };
-
-  assert.deepEqual(
-    moveAssignment(assignments, "I1", "S1", "S2"),
-    { S1: [], S2: ["I2", "I1"] },
-  );
 });
 
 test("swaps assignments between slots", () => {
