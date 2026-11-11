@@ -71,6 +71,8 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
             `improvement ${progress.improvement}; ` +
             `top rules ${formatTopSoftPenalties(
               progress.softRulePenalties,
+            )}; candidates ${formatCandidateDiagnostics(
+              progress.candidateDiagnostics,
             )}`,
         );
       },
@@ -113,4 +115,33 @@ function formatTopSoftPenalties(rulePenalties) {
         `${rulePenalty.ruleId}=${rulePenalty.weightedPenalty.toFixed(2)}`,
     )
     .join(", ");
+}
+
+function formatCandidateDiagnostics(diagnostics) {
+  const totals = new Map();
+
+  for (const diagnostic of diagnostics) {
+    const current = totals.get(diagnostic.ruleId) ?? {
+      attempts: 0,
+      hardRejected: 0,
+      scored: 0,
+      accepted: 0,
+    };
+    current.attempts += diagnostic.attempts;
+    current.hardRejected += diagnostic.hardRejected;
+    current.scored += diagnostic.scored;
+    current.accepted += diagnostic.accepted;
+    totals.set(diagnostic.ruleId, current);
+  }
+
+  return [...totals.entries()]
+    .sort((first, second) => second[1].attempts - first[1].attempts)
+    .slice(0, 3)
+    .map(
+      ([ruleId, stats]) =>
+        `${ruleId}: attempted ${stats.attempts}, ` +
+        `hard-rejected ${stats.hardRejected}, ` +
+        `scored ${stats.scored}, accepted ${stats.accepted}`,
+    )
+    .join(" | ");
 }
