@@ -159,6 +159,14 @@ test("evaluateSwap matches full scoring for match and balance rules", () => {
       keyword: "balance",
       inputs: ["rating"],
     },
+    {
+      id: "R3",
+      name: "Slot capacity",
+      enforcement: "soft",
+      priority: 5,
+      keyword: "limit",
+      inputs: ["max", 2, "all"],
+    },
   ];
   const assignments = {
     S1: ["I1", "I4"],

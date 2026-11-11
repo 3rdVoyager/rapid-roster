@@ -288,11 +288,24 @@ export function improveSoftAssignments(
 
   for (let iteration = 0; iteration < maxIterations; iteration++) {
     const candidateDiagnostics = [];
+    const candidateModel = createModel(
+      model.items,
+      model.slots,
+      model.rules,
+      cloneAssignments(assignments),
+    );
     const candidate = generateCandidate(
       currentModel,
       currentEvaluation.softViolations,
       currentEvaluation,
-      isBetterSoftCandidate,
+      (candidateBaseModel, candidateAssignments, score, swap) =>
+        isBetterSoftCandidate(
+          candidateBaseModel,
+          candidateAssignments,
+          score,
+          swap,
+          candidateModel,
+        ),
       MAX_SOFT_CANDIDATE_ATTEMPTS,
       hardCompatibilityIndex,
       candidateDiagnostics,
@@ -424,6 +437,7 @@ function generateCandidate(
       hardRejected: 0,
       scored: 0,
       accepted: 0,
+      scoringMs: 0,
     };
     let attempts = 0;
     const limitedCandidateEvaluator = (candidateModel, candidate, score, swap) => {
@@ -433,7 +447,9 @@ function generateCandidate(
       attempts++;
       diagnostic.attempts++;
       diagnostic.scored++;
+      const scoringStartedAt = globalThis.performance.now();
       const improved = isBetterCandidate(candidateModel, candidate, score, swap);
+      diagnostic.scoringMs += globalThis.performance.now() - scoringStartedAt;
       if (improved) {
         diagnostic.accepted++;
       }
@@ -964,13 +980,9 @@ function isBetterSoftCandidate(
   assignments,
   currentEvaluation,
   swap,
+  candidateModel,
 ) {
-  const candidateModel = createModel(
-    model.items,
-    model.slots,
-    model.rules,
-    assignments,
-  );
+  const undoSwap = applySwapToModel(candidateModel, swap);
   const candidateEvaluation = evaluateSwap(
     model,
     currentEvaluation,
@@ -978,11 +990,70 @@ function isBetterSoftCandidate(
     swap,
   );
 
-  return (
+  const improved =
     candidateEvaluation.hardPenalty === 0 &&
     currentEvaluation.softPenalty - candidateEvaluation.softPenalty >=
       MIN_SOFT_IMPROVEMENT
+
+  if (!improved) {
+    undoSwap();
+  }
+
+  return improved;
+}
+
+function applySwapToModel(model, swap) {
+  const firstSlotItems =
+    model.assignments.slotAssignments[swap.firstSlotId] ?? [];
+  const secondSlotItems =
+    model.assignments.slotAssignments[swap.secondSlotId] ?? [];
+  const firstItemIndex = firstSlotItems.indexOf(swap.firstItemId);
+  const secondItemIndex = secondSlotItems.indexOf(swap.secondItemId);
+
+  if (firstItemIndex === -1 || secondItemIndex === -1) {
+    throw new Error(
+      `Cannot apply candidate swap to the model: ` +
+        `${swap.firstItemId}@${swap.firstSlotId} ` +
+        `${swap.secondItemId}@${swap.secondSlotId}`,
+    );
+  }
+
+  firstSlotItems[firstItemIndex] = swap.secondItemId;
+  secondSlotItems[secondItemIndex] = swap.firstItemId;
+
+  const firstItemAssignment = replaceAssignedSlot(
+    model,
+    swap.firstItemId,
+    swap.firstSlotId,
+    swap.secondSlotId,
   );
+  const secondItemAssignment = replaceAssignedSlot(
+    model,
+    swap.secondItemId,
+    swap.secondSlotId,
+    swap.firstSlotId,
+  );
+
+  return () => {
+    firstSlotItems[firstItemIndex] = swap.firstItemId;
+    secondSlotItems[secondItemIndex] = swap.secondItemId;
+    firstItemAssignment.undo();
+    secondItemAssignment.undo();
+  };
+}
+
+function replaceAssignedSlot(model, itemId, previousSlotId, nextSlotId) {
+  const assignedSlotIds = model.assignments.itemAssignments[itemId] ?? [];
+  const slotIndex = assignedSlotIds.indexOf(previousSlotId);
+  if (slotIndex === -1) {
+    throw new Error("Cannot update candidate item assignment");
+  }
+  assignedSlotIds[slotIndex] = nextSlotId;
+  return {
+    undo() {
+      assignedSlotIds[slotIndex] = previousSlotId;
+    },
+  };
 }
 
 function isBetterHardCandidate(model, assignments, currentEvaluation) {

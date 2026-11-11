@@ -18,9 +18,14 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
   console.error("Usage: node scripts/generate-fixture.js [maxIterations]");
   process.exitCode = 1;
 } else {
+  const generationStartedAt = performance.now();
   console.log("Creating hard-rule-compatible assignments...");
   const baseModel = createModel(items, slots, rules);
+  const compatibleStartedAt = performance.now();
   const startingAssignments = createCompatibleAssignments(baseModel);
+  const compatibleElapsed = Math.round(
+    performance.now() - compatibleStartedAt,
+  );
   const startingModel = createModel(
     items,
     slots,
@@ -29,6 +34,13 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
   );
   const startingEvaluation = evaluateModel(startingModel, true);
   const startingFullEvaluation = evaluateModel(startingModel);
+  const initialScoringElapsed = Math.round(
+    performance.now() - compatibleStartedAt - compatibleElapsed,
+  );
+  console.log(
+    `Compatible assignment creation complete in ${compatibleElapsed} ms.`,
+  );
+  console.log(`Initial scoring complete in ${initialScoringElapsed} ms.`);
   console.log(
     `Hard-rule creation complete. Hard penalty: ${startingEvaluation.hardPenalty}`,
   );
@@ -85,6 +97,11 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
         performance.now() - softStartedAt,
       )} ms.`,
     );
+    console.log(
+      `Total generation time: ${Math.round(
+        performance.now() - generationStartedAt,
+      )} ms.`,
+    );
     console.log(`Final hard penalty: ${finalEvaluation.hardPenalty}`);
     console.log(
       `Soft penalty: ${finalEvaluation.softPenalty}`,
@@ -126,11 +143,13 @@ function formatCandidateDiagnostics(diagnostics) {
       hardRejected: 0,
       scored: 0,
       accepted: 0,
+      scoringMs: 0,
     };
     current.attempts += diagnostic.attempts;
     current.hardRejected += diagnostic.hardRejected;
     current.scored += diagnostic.scored;
     current.accepted += diagnostic.accepted;
+    current.scoringMs += diagnostic.scoringMs;
     totals.set(diagnostic.ruleId, current);
   }
 
@@ -141,7 +160,8 @@ function formatCandidateDiagnostics(diagnostics) {
       ([ruleId, stats]) =>
         `${ruleId}: attempted ${stats.attempts}, ` +
         `hard-rejected ${stats.hardRejected}, ` +
-        `scored ${stats.scored}, accepted ${stats.accepted}`,
+        `scored ${stats.scored}, accepted ${stats.accepted}, ` +
+        `scoring ${Math.round(stats.scoringMs)} ms`,
     )
     .join(" | ");
 }

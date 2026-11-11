@@ -46,10 +46,11 @@ export function evaluateModel(model, hardOnly = false) {
 }
 
 export function evaluateSwap(model, currentEvaluation, candidateModel, swap) {
-  const hardEvaluation = evaluateModel(candidateModel, true);
   const evaluation = {
-    hardPenalty: hardEvaluation.hardPenalty,
-    hardViolations: hardEvaluation.hardViolations,
+    // Candidate generation has already checked hard match compatibility.
+    // Swaps also preserve slot counts, so hard limit rules cannot change.
+    hardPenalty: 0,
+    hardViolations: [],
     softPenalty: 0,
     softViolations: [],
     softRulePenalties: [],
@@ -67,42 +68,121 @@ export function evaluateSwap(model, currentEvaluation, candidateModel, swap) {
     }
 
     const currentRulePenalty = currentRulePenalties.get(rule.id);
-    const nextRulePenalty =
-      rule.keyword === "match"
-        ? evaluateMatchSwap(rule, model, currentRulePenalty, swap)
-        : rule.keyword === "balance"
-          ? evaluateBalanceSwap(
-              rule,
-              model,
-              candidateModel,
-              currentRulePenalty,
-              swap,
-            )
-          : rule.keyword === "group"
-            ? evaluateGroupSwap(rule, model, candidateModel, currentRulePenalty, swap)
-            : rule.keyword === "distribute"
-              ? evaluateDistributeSwap(
-                  rule,
-                  model,
-                  candidateModel,
-                  currentRulePenalty,
-                  swap,
-                )
-              : rule.keyword === "align"
-                ? evaluateAlignSwap(
-                    rule,
-                    model,
-                    candidateModel,
-                    currentRulePenalty,
-                    swap,
-                  )
-          : evaluateRulePenalty(rule, candidateModel);
+    const nextRulePenalty = isRuleAffectedBySwap(rule, model, swap)
+      ? evaluateAffectedRuleSwap(
+          rule,
+          model,
+          candidateModel,
+          currentRulePenalty,
+          swap,
+        )
+      : currentRulePenalty;
 
     evaluation.softPenalty += nextRulePenalty.weightedPenalty;
     evaluation.softRulePenalties.push(nextRulePenalty);
   }
 
   return evaluation;
+}
+
+function evaluateAffectedRuleSwap(
+  rule,
+  model,
+  candidateModel,
+  currentRulePenalty,
+  swap,
+) {
+  if (!currentRulePenalty) {
+    return evaluateRulePenalty(rule, candidateModel);
+  }
+
+  if (rule.keyword === "match") {
+    return evaluateMatchSwap(rule, model, currentRulePenalty, swap);
+  }
+  if (rule.keyword === "balance") {
+    return evaluateBalanceSwap(
+      rule,
+      model,
+      candidateModel,
+      currentRulePenalty,
+      swap,
+    );
+  }
+  if (rule.keyword === "group") {
+    return evaluateGroupSwap(
+      rule,
+      model,
+      candidateModel,
+      currentRulePenalty,
+      swap,
+    );
+  }
+  if (rule.keyword === "distribute") {
+    return evaluateDistributeSwap(
+      rule,
+      model,
+      candidateModel,
+      currentRulePenalty,
+      swap,
+    );
+  }
+  if (rule.keyword === "align") {
+    return evaluateAlignSwap(
+      rule,
+      model,
+      candidateModel,
+      currentRulePenalty,
+      swap,
+    );
+  }
+
+  return evaluateRulePenalty(rule, candidateModel);
+}
+
+function isRuleAffectedBySwap(rule, model, swap) {
+  if (rule.keyword === "limit") {
+    // Swapping preserves every slot's item count.
+    return false;
+  }
+  if (rule.keyword === "match" || rule.keyword === "balance") {
+    return true;
+  }
+  if (rule.keyword === "group") {
+    const requestAttribute = rule.inputs[1];
+    return [swap.firstItemId, swap.secondItemId].some((itemId) => {
+      const item = model.items.find((candidate) => candidate.id === itemId);
+      return normalizeValues(item?.[requestAttribute]).length > 0;
+    }) || getSlotItemIds(model, swap.firstSlotId, swap.secondSlotId).some(
+      (itemId) => {
+        const item = model.items.find((candidate) => candidate.id === itemId);
+        return normalizeValues(item?.[requestAttribute]).length > 0;
+      },
+    );
+  }
+  if (rule.keyword === "distribute") {
+    const itemAttribute = rule.inputs[0];
+    return [swap.firstItemId, swap.secondItemId].some((itemId) => {
+      const item = model.items.find((candidate) => candidate.id === itemId);
+      return isNumericValue(item?.[itemAttribute]);
+    });
+  }
+  if (rule.keyword === "align") {
+    const siblingAttribute = rule.inputs[1];
+    return model.items.some((item) =>
+      [swap.firstItemId, swap.secondItemId].includes(item.id) ||
+      [swap.firstItemId, swap.secondItemId].includes(item[siblingAttribute]),
+    );
+  }
+
+  // Unknown rule keywords must remain correct if they are added later.
+  return true;
+}
+
+function getSlotItemIds(model, firstSlotId, secondSlotId) {
+  return [
+    ...(model.assignments.slotAssignments[firstSlotId] ?? []),
+    ...(model.assignments.slotAssignments[secondSlotId] ?? []),
+  ];
 }
 
 function evaluateMatchSwap(rule, model, currentRulePenalty, swap) {
