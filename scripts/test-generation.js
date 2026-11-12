@@ -86,12 +86,11 @@ if (
       hardModel,
       softLimit,
       (progress) => {
-        const status = progress.improved ? "improved" : "stopped";
         writeLog(
           `Soft round ${progress.round}: ` +
             `rule ${progress.ruleId ?? "none"}; ` +
             `penalty ${progress.softPenalty}; ` +
-            `improvement ${progress.improvement}; ${status}`,
+            `improvement ${progress.improvement}`,
         );
       },
     );
@@ -115,6 +114,8 @@ if (
     writeLog(
       `Soft violations: ${finalEvaluation.softViolations.length}`,
     );
+    logLines.push("Final assignments:");
+    logLines.push(JSON.stringify(softAssignments, null, 2));
   } catch (error) {
     writeLog("Assignment generation failed");
     writeLog(`Message: ${error.message}`);
@@ -132,10 +133,13 @@ if (logLines.length > 0) {
   const logDirectory = join(process.cwd(), "logs");
   const logPath = join(logDirectory, `generation-${timestamp}.txt`);
   mkdirSync(logDirectory, { recursive: true });
-  writeFileSync(logPath, `${logLines.join("\n")}\n`, "utf8");
+  const logContent = `${logLines.join("\n")}\n`;
+  writeFileSync(logPath, logContent, "utf8");
   console.log(`Generation results written to ${logPath}`);
 }
 
 function writeLog(message) {
-  logLines.push(String(message));
+  const line = String(message);
+  logLines.push(line);
+  console.log(line);
 }
