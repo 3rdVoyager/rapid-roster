@@ -7,11 +7,9 @@ import rules from "./fixtures/rules.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
 import { evaluateModel } from "../src/lib/evaluation.js";
-import {
-  createCompatibleAssignments,
-  improveHardAssignments,
-  improveSoftAssignments,
-} from "../src/lib/generator.js";
+import { createCompatibleAssignments } from "../src/lib/assignment.js";
+import { improveHardAssignments } from "../src/lib/hard.js";
+import { improveSoftAssignments } from "../src/lib/soft.js";
 import { swapAssignments } from "../src/lib/assignment.js";
 
 function createTestModel(itemData = items, slotData = slots) {

@@ -5,11 +5,9 @@ import slots from "../tests/fixtures/slots.json" with { type: "json" };
 import rules from "../tests/fixtures/rules.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
-import {
-  createCompatibleAssignments,
-  improveHardAssignments,
-  improveSoftAssignments,
-} from "../src/lib/generator.js";
+import { createCompatibleAssignments } from "../src/lib/assignment.js";
+import { improveHardAssignments } from "../src/lib/hard.js";
+import { improveSoftAssignments } from "../src/lib/soft.js";
 import { evaluateModel } from "../src/lib/evaluation.js";
 
 const maxIterations = Number(process.argv[2] ?? 100);

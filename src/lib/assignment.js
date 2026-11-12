@@ -1,3 +1,5 @@
+import { isItemCompatibleWithSlot } from "./keywords/helpers.js";
+
 export function assignItemToSlot(
   itemId,
   itemOptionsById,
@@ -149,4 +151,111 @@ function replaceAssignedSlot(model, itemId, previousSlotId, nextSlotId) {
       assignedSlotIds[slotIndex] = previousSlotId;
     },
   };
+}
+
+export function createCompatibleAssignments(model) {
+  const assignments = Object.fromEntries(
+    model.slots.map((slot) => [slot.id, []]),
+  );
+  const hardMatchRules = model.rules.filter(
+    (rule) => rule.enforcement === "hard" && rule.keyword === "match",
+  );
+  const hardLimitRules = model.rules.filter(
+    (rule) => rule.enforcement === "hard" && rule.keyword === "limit",
+  );
+  const slotLimits = Object.fromEntries(
+    model.slots.map((slot) => [slot.id, getSlotLimits(hardLimitRules, slot.id)]),
+  );
+  const invalidLimitSlots = model.slots.filter(
+    (slot) => slotLimits[slot.id].minimum > slotLimits[slot.id].maximum,
+  );
+
+  if (invalidLimitSlots.length > 0) {
+    throw new Error(
+      "Cannot create compatible assignments: minimum slot size exceeds " +
+        "maximum for slots: " +
+        invalidLimitSlots.map((slot) => slot.id).join(", "),
+    );
+  }
+
+  const itemOptions = model.items.map((item) => ({
+    item,
+    compatibleSlots: model.slots.filter((slot) =>
+      hardMatchRules.every((rule) =>
+        isItemCompatibleWithSlot(item, slot, rule),
+      ),
+    ),
+  }));
+  const incompatibleItems = itemOptions.filter(
+    ({ compatibleSlots }) => compatibleSlots.length === 0,
+  );
+
+  if (incompatibleItems.length > 0) {
+    const error = new Error(
+      "Could not create compatible assignments for items: " +
+        incompatibleItems.map(({ item }) => item.id).join(", "),
+    );
+    error.incompatibleItemIds = incompatibleItems.map(({ item }) => item.id);
+    throw error;
+  }
+
+  itemOptions.sort(
+    (first, second) =>
+      first.compatibleSlots.length - second.compatibleSlots.length,
+  );
+  const itemOptionsById = new Map(
+    itemOptions.map((itemOption) => [itemOption.item.id, itemOption]),
+  );
+
+  for (const { item } of itemOptions) {
+    if (
+      !assignItemToSlot(item.id, itemOptionsById, assignments, slotLimits)
+    ) {
+      const error = new Error(
+        `Could not create compatible assignments within slot limits for item: ${item.id}`,
+      );
+      error.incompatibleItemIds = [item.id];
+      throw error;
+    }
+  }
+
+  const underfilledSlotIds = model.slots
+    .filter(
+      (slot) => assignments[slot.id].length < slotLimits[slot.id].minimum,
+    )
+    .map((slot) => slot.id);
+  if (underfilledSlotIds.length > 0) {
+    const error = new Error(
+      "Could not satisfy minimum slot limits for slots: " +
+        underfilledSlotIds.join(", "),
+    );
+    error.underfilledSlotIds = underfilledSlotIds;
+    throw error;
+  }
+
+  return assignments;
+}
+
+function getSlotLimits(limitRules, slotId) {
+  return limitRules.reduce(
+    (limits, rule) => {
+      const [limitType, limit, slotTargets] = rule.inputs;
+      const appliesToSlot =
+        slotTargets === "all" ||
+        slotTargets.some(
+          (targetSlotId) => String(targetSlotId) === String(slotId),
+        );
+      if (!appliesToSlot) {
+        return limits;
+      }
+
+      if (limitType === "min") {
+        limits.minimum = Math.max(limits.minimum, limit);
+      } else {
+        limits.maximum = Math.min(limits.maximum, limit);
+      }
+      return limits;
+    },
+    { minimum: 0, maximum: Number.POSITIVE_INFINITY },
+  );
 }
