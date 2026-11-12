@@ -10,10 +10,10 @@ import { improveHardAssignments } from "../src/lib/hard.js";
 import { improveSoftAssignments } from "../src/lib/soft.js";
 import { evaluateModel } from "../src/lib/evaluation.js";
 
-const maxIterations = Number(process.argv[2] ?? 100);
+const maxRounds = Number(process.argv[2] ?? 20);
 
-if (!Number.isInteger(maxIterations) || maxIterations < 1) {
-  console.error("Usage: node scripts/test-generation.js [maxIterations]");
+if (!Number.isInteger(maxRounds) || maxRounds < 1) {
+  console.error("Usage: node scripts/test-generation.js [maxRounds]");
   process.exitCode = 1;
 } else {
   const generationStartedAt = performance.now();
@@ -45,11 +45,6 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
   console.log(
     `Starting soft penalty: ${startingFullEvaluation.softPenalty}`,
   );
-  console.log(
-    `Top soft penalties: ${formatTopSoftPenalties(
-      startingFullEvaluation.softRulePenalties,
-    )}`,
-  );
 
   const hardStartedAt = performance.now();
 
@@ -72,18 +67,14 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
     const softStartedAt = performance.now();
     const softAssignments = improveSoftAssignments(
       hardModel,
-      maxIterations,
+      maxRounds,
       (progress) => {
         const status = progress.improved ? "improved" : "stopped";
         console.log(
-          `Soft iteration ${progress.iteration}: ` +
-            `${status}; penalty ${progress.softPenalty}; ` +
-            `improvement ${progress.improvement}; ` +
-            `top rules ${formatTopSoftPenalties(
-              progress.softRulePenalties,
-            )}; candidates ${formatCandidateDiagnostics(
-              progress.candidateDiagnostics,
-            )}`,
+          `Soft round ${progress.round}: ` +
+            `rule ${progress.ruleId ?? "none"}; ` +
+            `penalty ${progress.softPenalty}; ` +
+            `improvement ${progress.improvement}; ${status}`,
         );
       },
     );
@@ -107,59 +98,10 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
     console.log(
       `Soft violations: ${finalEvaluation.softViolations.length}`,
     );
-    console.log(
-      `Top soft penalties: ${formatTopSoftPenalties(
-        finalEvaluation.softRulePenalties,
-      )}`,
-    );
   } catch (error) {
     console.log("Assignment generation failed");
     console.log(`Message: ${error.message}`);
     console.log(`Starting hard penalty: ${startingEvaluation.hardPenalty}`);
     console.log(`Final hard penalty: ${error.hardPenalty ?? "unavailable"}`);
   }
-}
-
-function formatTopSoftPenalties(rulePenalties) {
-  return rulePenalties
-    .filter((rulePenalty) => rulePenalty.weightedPenalty > 0)
-    .sort((first, second) => second.weightedPenalty - first.weightedPenalty)
-    .slice(0, 3)
-    .map(
-      (rulePenalty) =>
-        `${rulePenalty.ruleId}=${rulePenalty.weightedPenalty.toFixed(2)}`,
-    )
-    .join(", ");
-}
-
-function formatCandidateDiagnostics(diagnostics) {
-  const totals = new Map();
-
-  for (const diagnostic of diagnostics) {
-    const current = totals.get(diagnostic.ruleId) ?? {
-      attempts: 0,
-      hardRejected: 0,
-      scored: 0,
-      accepted: 0,
-      scoringMs: 0,
-    };
-    current.attempts += diagnostic.attempts;
-    current.hardRejected += diagnostic.hardRejected;
-    current.scored += diagnostic.scored;
-    current.accepted += diagnostic.accepted;
-    current.scoringMs += diagnostic.scoringMs;
-    totals.set(diagnostic.ruleId, current);
-  }
-
-  return [...totals.entries()]
-    .sort((first, second) => second[1].attempts - first[1].attempts)
-    .slice(0, 3)
-    .map(
-      ([ruleId, stats]) =>
-        `${ruleId}: attempted ${stats.attempts}, ` +
-        `hard-rejected ${stats.hardRejected}, ` +
-        `scored ${stats.scored}, accepted ${stats.accepted}, ` +
-        `scoring ${Math.round(stats.scoringMs)} ms`,
-    )
-    .join(" | ");
 }

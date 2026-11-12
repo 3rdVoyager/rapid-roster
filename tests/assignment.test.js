@@ -195,7 +195,7 @@ test("repairs an illegal candidate with a swap", () => {
   assert.deepEqual(assignments, { S1: ["I2"], S2: ["I1"] });
 });
 
-test("stops after the iteration limit", () => {
+test("stops after the round limit", () => {
   const model = createModel(
     [{ id: "I1" }, { id: "I2" }],
     [{ id: "S1" }],
@@ -226,7 +226,7 @@ test("stops after the iteration limit", () => {
 
   assert.match(
     error.message,
-    /Could not create legal assignments after 3 iterations/,
+    /Could not create legal assignments after 3 rounds/,
   );
   assert.equal(error.hardPenalty, 1);
   assert.deepEqual(error.hardViolations.map((violation) => violation.ruleId), [

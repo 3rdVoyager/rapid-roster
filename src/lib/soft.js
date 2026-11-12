@@ -4,12 +4,11 @@ import { getKeywordConfig } from "./keywords/config.js";
 import { applySwapToModel, cloneAssignments } from "./assignment.js";
 import { isItemCompatibleWithSlot } from "./keywords/helpers.js";
 
-const MAX_SOFT_CANDIDATE_ATTEMPTS = 25;
-const MIN_SOFT_IMPROVEMENT = 0.05;
+const MIN_SOFT_IMPROVEMENT = 0.1;
 
-export function improveSoftAssignments(model, maxIterations = 100, onProgress) {
-  if (!Number.isInteger(maxIterations) || maxIterations < 1) {
-    throw new Error("Max iterations must be a positive integer");
+export function improveSoftAssignments(model, maxRounds = 100, onProgress) {
+  if (!Number.isInteger(maxRounds) || maxRounds < 1) {
+    throw new Error("Max rounds must be a positive integer");
   }
 
   let assignments = cloneAssignments(model.assignments.slotAssignments);
@@ -31,62 +30,82 @@ export function improveSoftAssignments(model, maxIterations = 100, onProgress) {
     throw error;
   }
 
-  for (let iteration = 0; iteration < maxIterations; iteration++) {
-    const candidateDiagnostics = [];
-    const candidateModel = createModel(
-      model.items,
-      model.slots,
+  for (let pass = 0; pass < maxRounds; pass++) {
+    const priorityRules = getPriorityRules(
       model.rules,
-      cloneAssignments(assignments),
+      currentEvaluation.softRulePenalties,
     );
-    const candidate = generateCandidate(
-      currentModel,
-      currentEvaluation.softViolations,
-      currentEvaluation,
-      (candidateAssignments, swap) =>
-        isBetterSoftCandidate(
-          currentModel,
-          candidateAssignments,
-          currentEvaluation,
-          swap,
-          candidateModel,
-        ),
-      MAX_SOFT_CANDIDATE_ATTEMPTS,
-      hardCompatibilityIndex,
-      candidateDiagnostics,
-    );
+    let passImproved = false;
 
-    if (!candidate) {
+    for (const rule of priorityRules) {
+      const ruleViolations = currentEvaluation.softViolations.filter(
+        (violation) => violation.ruleId === rule.id,
+      );
+      if (ruleViolations.length === 0) {
+        continue;
+      }
+
+      const candidateDiagnostics = [];
+      const candidateModel = createModel(
+        model.items,
+        model.slots,
+        model.rules,
+        cloneAssignments(assignments),
+      );
+      const previousSoftPenalty = currentEvaluation.softPenalty;
+      const candidate = generateCandidate(
+        currentModel,
+        ruleViolations,
+        currentEvaluation,
+        (candidateAssignments, swap) =>
+          isBetterSoftCandidate(
+            currentModel,
+            candidateAssignments,
+            currentEvaluation,
+            swap,
+            candidateModel,
+          ),
+        hardCompatibilityIndex,
+        candidateDiagnostics,
+      );
+
+      if (!candidate) {
+        continue;
+      }
+
+      passImproved = true;
+      assignments = candidate;
+      currentModel = createModel(
+        model.items,
+        model.slots,
+        model.rules,
+        assignments,
+      );
+      currentEvaluation = evaluateModel(currentModel);
       onProgress?.({
-        iteration: iteration + 1,
+        round: pass + 1,
+        ruleId: rule.id,
+        softPenalty: currentEvaluation.softPenalty,
+        improvement: previousSoftPenalty - currentEvaluation.softPenalty,
+        improved: true,
+        complete: false,
+        softRulePenalties: currentEvaluation.softRulePenalties,
+        candidateDiagnostics,
+      });
+    }
+
+    if (!passImproved) {
+      onProgress?.({
+        round: pass + 1,
         softPenalty: currentEvaluation.softPenalty,
         improvement: 0,
         improved: false,
         complete: true,
         softRulePenalties: currentEvaluation.softRulePenalties,
-        candidateDiagnostics,
+        candidateDiagnostics: [],
       });
       break;
     }
-
-    const previousSoftPenalty = currentEvaluation.softPenalty;
-    assignments = candidate;
-    currentModel = createModel(
-      model.items,
-      model.slots,
-      model.rules,
-      assignments,
-    );
-    currentEvaluation = evaluateModel(currentModel);
-    onProgress?.({
-      iteration: iteration + 1,
-      softPenalty: currentEvaluation.softPenalty,
-      improvement: previousSoftPenalty - currentEvaluation.softPenalty,
-      improved: true,
-      complete: false,
-      softRulePenalties: currentEvaluation.softRulePenalties,
-      candidateDiagnostics,
-    });
   }
 
   return assignments;
@@ -97,16 +116,10 @@ function generateCandidate(
   violations,
   evaluation,
   isBetterCandidate,
-  maximumAttempts,
   hardCompatibilityIndex,
   candidateDiagnostics = [],
 ) {
-  const prioritizedViolations = prioritizeViolations(
-    violations,
-    evaluation.softRulePenalties,
-  );
-
-  for (const violation of prioritizedViolations) {
+  for (const violation of violations) {
     const rule = model.rules.find(
       (candidate) => candidate.id === violation.ruleId,
     );
@@ -120,12 +133,7 @@ function generateCandidate(
       accepted: 0,
       scoringMs: 0,
     };
-    let attempts = 0;
     const limitedCandidateEvaluator = (candidate, swap) => {
-      if (attempts >= maximumAttempts) {
-        return false;
-      }
-      attempts++;
       diagnostic.attempts++;
       diagnostic.scored++;
       const scoringStartedAt = globalThis.performance.now();
@@ -153,21 +161,20 @@ function generateCandidate(
   return null;
 }
 
-function prioritizeViolations(violations, softRulePenalties = []) {
-  if (softRulePenalties.length === 0) {
-    return violations;
-  }
+function getPriorityRules(rules, softRulePenalties) {
   const weightedPenaltyByRuleId = new Map(
     softRulePenalties.map((rulePenalty) => [
       rulePenalty.ruleId,
       rulePenalty.weightedPenalty,
     ]),
   );
-  return [...violations].sort(
+  return rules
+    .filter((rule) => rule.enforcement === "soft")
+    .sort(
     (first, second) =>
       (weightedPenaltyByRuleId.get(second.ruleId) ?? 0) -
       (weightedPenaltyByRuleId.get(first.ruleId) ?? 0),
-  );
+    );
 }
 
 function isBetterSoftCandidate(

@@ -11,8 +11,8 @@ export function generateRoster({
   slots,
   rules = [],
   assignments,
-  maxHardIterations = 100,
-  maxSoftIterations = 100,
+  maxHardRounds = 100,
+  maxSoftRounds = 100,
   onProgress,
 } = {}) {
   const baseModel = createModel(items, slots, rules);
@@ -26,12 +26,12 @@ export function generateRoster({
   );
   const hardAssignments = improveHardAssignments(
     startingModel,
-    maxHardIterations,
+    maxHardRounds,
   );
   const hardImprovedModel = createModel(items, slots, rules, hardAssignments);
   const softAssignments = improveSoftAssignments(
     hardImprovedModel,
-    maxSoftIterations,
+    maxSoftRounds,
     onProgress,
   );
   const softImprovedModel = createModel(items, slots, rules, softAssignments);

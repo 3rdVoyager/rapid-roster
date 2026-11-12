@@ -4,50 +4,79 @@ import { getKeywordConfig } from "./keywords/config.js";
 import { cloneAssignments } from "./assignment.js";
 import { isItemCompatibleWithSlot } from "./keywords/helpers.js";
 
-export function improveHardAssignments(model, maxIterations = 100) {
-  if (!Number.isInteger(maxIterations) || maxIterations < 1) {
-    throw new Error("Max iterations must be a positive integer");
+export function improveHardAssignments(model, maxRounds = 100) {
+  if (!Number.isInteger(maxRounds) || maxRounds < 1) {
+    throw new Error("Max rounds must be a positive integer");
   }
 
   let assignments = cloneAssignments(model.assignments.slotAssignments);
   let lastEvaluation;
   const hardCompatibilityIndex = createHardCompatibilityIndex(model);
 
-  for (let iteration = 0; iteration < maxIterations; iteration++) {
-    const currentModel = createModel(
+  for (let round = 0; round < maxRounds; round++) {
+    let currentModel = createModel(
       model.items,
       model.slots,
       model.rules,
       assignments,
     );
-    const currentEvaluation = evaluateModel(currentModel, true);
+    let currentEvaluation = evaluateModel(currentModel, true);
     lastEvaluation = currentEvaluation;
     if (currentEvaluation.hardPenalty === 0) {
       return assignments;
     }
 
-    const candidate = generateCandidate(
-      currentModel,
-      currentEvaluation.hardViolations,
-      currentEvaluation,
-      (candidateAssignments) =>
-        isBetterHardCandidate(
-          currentModel,
-          candidateAssignments,
-          currentEvaluation,
-        ),
-      Number.POSITIVE_INFINITY,
-      hardCompatibilityIndex,
+    let roundImproved = false;
+    const hardRules = model.rules.filter(
+      (rule) => rule.enforcement === "hard",
     );
-    if (!candidate) {
+
+    for (const rule of hardRules) {
+      const ruleViolations = currentEvaluation.hardViolations.filter(
+        (violation) => violation.ruleId === rule.id,
+      );
+      if (ruleViolations.length === 0) {
+        continue;
+      }
+
+      const candidate = generateCandidate(
+        currentModel,
+        ruleViolations,
+        (candidateAssignments) =>
+          isBetterHardCandidate(
+            currentModel,
+            candidateAssignments,
+            currentEvaluation,
+          ),
+        hardCompatibilityIndex,
+      );
+      if (!candidate) {
+        continue;
+      }
+
+      roundImproved = true;
+      assignments = candidate;
+      currentModel = createModel(
+        model.items,
+        model.slots,
+        model.rules,
+        assignments,
+      );
+      lastEvaluation = evaluateModel(currentModel, true);
+      currentEvaluation = lastEvaluation;
+      if (lastEvaluation.hardPenalty === 0) {
+        return assignments;
+      }
+    }
+
+    if (!roundImproved) {
       break;
     }
-    assignments = candidate;
   }
 
   const violationCounts = countViolationsByRule(lastEvaluation);
   const error = new Error(
-    `Could not create legal assignments after ${maxIterations} iterations. ` +
+    `Could not create legal assignments after ${maxRounds} rounds. ` +
       `Hard penalty: ${lastEvaluation.hardPenalty}. ` +
       `Remaining violations: ${violationCounts}`,
   );
@@ -90,9 +119,7 @@ function createHardCompatibilityIndex(model) {
 function generateCandidate(
   model,
   violations,
-  evaluation,
   isBetterCandidate,
-  maximumAttempts,
   hardCompatibilityIndex,
   candidateDiagnostics = [],
 ) {
@@ -110,12 +137,7 @@ function generateCandidate(
       accepted: 0,
       scoringMs: 0,
     };
-    let attempts = 0;
     const limitedCandidateEvaluator = (candidate, swap) => {
-      if (attempts >= maximumAttempts) {
-        return false;
-      }
-      attempts++;
       diagnostic.attempts++;
       diagnostic.scored++;
       const scoringStartedAt = globalThis.performance.now();
