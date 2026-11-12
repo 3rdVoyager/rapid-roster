@@ -523,6 +523,49 @@
   grid-template-columns: repeat(4, 1fr);
 }
 
+.evaluation-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 1.1rem;
+  padding: 0.8rem;
+  background: rgb(255 255 255 / 0.025);
+  border: 1px solid rgb(255 255 255 / 0.07);
+  border-radius: 8px;
+}
+
+.evaluation-filters label {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--text-color-muted);
+  font-size: 0.72rem;
+}
+
+.evaluation-filters select,
+.evaluation-filters input {
+  width: 100%;
+  min-height: 2rem;
+  padding: 0.35rem 0.45rem;
+  color: var(--text-color);
+  background: rgb(0 0 0 / 0.2);
+  border: 1px solid var(--line-color);
+  border-radius: 5px;
+  font: inherit;
+}
+
+.evaluation-filters select:focus,
+.evaluation-filters input:focus {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 1px;
+}
+
+.evaluation-conflict-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .conflict-list {
   display: grid;
   gap: 0.6rem;
@@ -881,6 +924,10 @@
   }
 
   .evaluation-card .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .evaluation-filters {
     grid-template-columns: 1fr;
   }
 

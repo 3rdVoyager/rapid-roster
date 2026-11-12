@@ -6,6 +6,7 @@ import { createModel } from "./model.js";
 const data = { items: [], slots: [], rules: [] };
 const STORAGE_KEY = "rapid-roster-project";
 let latestCsv = "";
+let evaluationState;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -342,18 +343,42 @@ function describeConflict(rule, conflict, model) {
 }
 
 function renderEvaluation(evaluation, model) {
-  const conflicts = [
-    ...evaluation.hardViolations.map((conflict) => ({ severity: "Hard", ...conflict })),
-    ...evaluation.softViolations.map((conflict) => ({ severity: "Soft", ...conflict })),
-  ];
-  const rulesById = new Map(data.rules.map((rule) => [rule.id, rule]));
+  evaluationState = { evaluation, model };
+  renderEvaluationConflicts();
   $("#evaluation-metrics").innerHTML = `
     <div><span>Hard conflicts</span><strong>${evaluation.hardViolations.length}</strong></div>
     <div><span>Soft conflicts</span><strong>${evaluation.softViolations.length}</strong></div>
     <div><span>Hard penalty</span><strong>${evaluation.hardPenalty.toFixed(2)}</strong></div>
     <div><span>Soft penalty</span><strong>${evaluation.softPenalty.toFixed(2)}</strong></div>`;
-  $("#evaluation-conflicts").innerHTML = conflicts.length
-    ? conflicts.map((conflict) => `
+  $("#evaluation-empty").hidden = true;
+  $("#evaluation-content").hidden = false;
+}
+
+function renderEvaluationConflicts() {
+  if (!evaluationState) return;
+  const { evaluation, model } = evaluationState;
+  const conflicts = [
+    ...evaluation.hardViolations.map((conflict) => ({ severity: "Hard", ...conflict })),
+    ...evaluation.softViolations.map((conflict) => ({ severity: "Soft", ...conflict })),
+  ];
+  const rulesById = new Map(data.rules.map((rule) => [rule.id, rule]));
+  const ruleFilter = $("#evaluation-rule-filter").value;
+  const severityFilter = $("#evaluation-severity-filter").value;
+  const minimumDifference = Number($("#evaluation-difference-filter").value) || 0;
+  const filteredConflicts = conflicts.filter((conflict) => {
+    const rule = rulesById.get(conflict.ruleId);
+    return (
+      (ruleFilter === "all" || rule?.keyword === ruleFilter) &&
+      (severityFilter === "all" || conflict.severity.toLowerCase() === severityFilter) &&
+      (minimumDifference === 0 ||
+        (conflict.difference !== undefined &&
+          Number(conflict.difference) >= minimumDifference))
+    );
+  });
+  $("#evaluation-conflict-count").textContent =
+    `${filteredConflicts.length} of ${conflicts.length} conflicts`;
+  $("#evaluation-conflicts").innerHTML = filteredConflicts.length
+    ? filteredConflicts.map((conflict) => `
       <li class="conflict-item">
         <div class="conflict-heading">
           <span class="conflict-severity ${conflict.severity.toLowerCase()}">${conflict.severity}</span>
@@ -362,9 +387,7 @@ function renderEvaluation(evaluation, model) {
         </div>
         <p>${escapeHtml(describeConflict(rulesById.get(conflict.ruleId) ?? { keyword: "" }, conflict, model))}</p>
       </li>`).join("")
-    : '<li class="empty-hint">No rule conflicts found.</li>';
-  $("#evaluation-empty").hidden = true;
-  $("#evaluation-content").hidden = false;
+    : '<li class="empty-hint">No conflicts match the current filters.</li>';
 }
 
 async function importAssignments(event) {
@@ -510,6 +533,9 @@ $("#items-file").addEventListener("change", (event) => importFile(event, "items"
 $("#slots-file").addEventListener("change", (event) => importFile(event, "slots", "csv"));
 $("#rules-file").addEventListener("change", (event) => importFile(event, "rules", "json"));
 $("#assignments-file").addEventListener("change", importAssignments);
+$("#evaluation-rule-filter").addEventListener("change", renderEvaluationConflicts);
+$("#evaluation-severity-filter").addEventListener("change", renderEvaluationConflicts);
+$("#evaluation-difference-filter").addEventListener("input", renderEvaluationConflicts);
 $("#rule-list").addEventListener("change", updateInlineRule);
 document.addEventListener("click", (event) => {
   const deleteButton = event.target.closest("[data-delete]");

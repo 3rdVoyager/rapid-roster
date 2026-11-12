@@ -112,7 +112,33 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         </div>
         <div class="evaluation-card" id="evaluation-content" hidden>
           <div class="metrics" id="evaluation-metrics"></div>
-          <h2 class="card-title">All conflicts</h2>
+          <div class="evaluation-filters">
+            <label>Rule type
+              <select id="evaluation-rule-filter">
+                <option value="all">All rules</option>
+                <option value="match">Match</option>
+                <option value="group">Group</option>
+                <option value="limit">Limit</option>
+                <option value="balance">Balance</option>
+                <option value="distribute">Distribute</option>
+                <option value="align">Align</option>
+              </select>
+            </label>
+            <label>Severity
+              <select id="evaluation-severity-filter">
+                <option value="all">Hard and soft</option>
+                <option value="hard">Hard only</option>
+                <option value="soft">Soft only</option>
+              </select>
+            </label>
+            <label>Minimum difference
+              <input id="evaluation-difference-filter" type="number" min="0" step="any" value="0" />
+            </label>
+          </div>
+          <div class="evaluation-conflict-heading">
+            <h2 class="card-title">Conflicts</h2>
+            <span class="record-count" id="evaluation-conflict-count"></span>
+          </div>
           <ul class="conflict-list" id="evaluation-conflicts"></ul>
         </div>
       </section>

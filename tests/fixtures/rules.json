@@ -327,5 +327,77 @@
     "priority": 12.5,
     "keyword": "balance",
     "inputs": ["evaluationScore", ["Storm", "Fever", "Lynx", "Mystics", "Liberty", "Valkyries", "Aces"]]
+  },
+  {
+    "id": "R36",
+    "name": "Distribute Evaluation: Male K/1",
+    "description": "Distribute evaluation scores across male K/1 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "distribute",
+    "inputs": ["evaluationScore", ["Coyotes", "Tomato Frogs", "Lizards", "Stallions"]]
+  },
+  {
+    "id": "R37",
+    "name": "Distribute Evaluation: Male 2/3",
+    "description": "Distribute evaluation scores across male 2/3 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "distribute",
+    "inputs": ["evaluationScore", ["Snapping Turtles", "Lions", "Jackals", "Dragons", "Hawks", "Bengals", "Cheetahs", "Tarantulas"]]
+  },
+  {
+    "id": "R38",
+    "name": "Distribute Evaluation: Male 4/5",
+    "description": "Distribute evaluation scores across male 4/5 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "distribute",
+    "inputs": ["evaluationScore", ["Nittany Lions", "Wonder Boys", "Buffaloes", "Banana Slugs", "Spartans", "Midshipmen", "Huskies", "Titans", "Knights", "Terrapins"]]
+  },
+  {
+    "id": "R39",
+    "name": "Distribute Evaluation: Male 6/7/8",
+    "description": "Distribute evaluation scores across older male slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "distribute",
+    "inputs": ["evaluationScore", ["Thunder", "Celtics", "Wizards", "Mavericks", "Timberwolves", "Raptors", "Nuggets", "Lakers", "Warriors", "Cavaliers", "Bucks", "Pistons", "Grizzlies", "Bulls"]]
+  },
+  {
+    "id": "R40",
+    "name": "Distribute Evaluation: Female K/1",
+    "description": "Distribute evaluation scores across female K/1 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "distribute",
+    "inputs": ["evaluationScore", ["Starfish", "Bobcats", "Unicorns", "Flamingos"]]
+  },
+  {
+    "id": "R41",
+    "name": "Distribute Evaluation: Female 2/3",
+    "description": "Distribute evaluation scores across female 2/3 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "distribute",
+    "inputs": ["evaluationScore", ["Ladybugs", "Leopards", "Bunnies", "Wildcats"]]
+  },
+  {
+    "id": "R42",
+    "name": "Distribute Evaluation: Female 4/5",
+    "description": "Distribute evaluation scores across female 4/5 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "distribute",
+    "inputs": ["evaluationScore", ["Hawkeyes", "Golden Gophers", "Fighting Camels", "Royals"]]
+  },
+  {
+    "id": "R43",
+    "name": "Distribute Evaluation: Female 6/7/8",
+    "description": "Distribute evaluation scores across older female slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "distribute",
+    "inputs": ["evaluationScore", ["Storm", "Fever", "Lynx", "Mystics", "Liberty", "Valkyries", "Aces"]]
   }
 ]
