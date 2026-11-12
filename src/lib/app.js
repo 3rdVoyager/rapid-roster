@@ -1,5 +1,7 @@
 import { exportCsv } from "./export.js";
 import { parseCsv } from "./import.js";
+import { evaluateModel } from "./evaluation.js";
+import { createModel } from "./model.js";
 
 const data = { items: [], slots: [], rules: [] };
 const STORAGE_KEY = "rapid-roster-project";
@@ -55,7 +57,7 @@ function restoreData() {
 }
 
 function setTab(tab) {
-  if (!["items", "slots", "rules", "generate"].includes(tab)) return;
+  if (!["items", "slots", "rules", "evaluation", "generate"].includes(tab)) return;
   document.querySelectorAll(".app-panel").forEach((panel) => {
     panel.classList.toggle("is-active", panel.id === tab);
   });
@@ -101,6 +103,38 @@ function parseTargets(value) {
   return !trimmed || trimmed.toLowerCase() === "all"
     ? "all"
     : trimmed.split(",").map((target) => target.trim()).filter(Boolean);
+}
+
+function humanize(value) {
+  return String(value)
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function normalizeNumericRuleAttributes(items, rules) {
+  const numericAttributes = new Set(
+    rules
+      .filter((rule) => ["balance", "distribute"].includes(rule.keyword))
+      .map((rule) => rule.inputs?.[0])
+      .filter(Boolean),
+  );
+  if (numericAttributes.size === 0) return items;
+
+  return items.map((item) => {
+    const normalized = { ...item };
+    for (const attribute of numericAttributes) {
+      const value = normalized[attribute];
+      if (
+        typeof value === "string" &&
+        value.trim() !== "" &&
+        Number.isFinite(Number(value))
+      ) {
+        normalized[attribute] = Number(value);
+      }
+    }
+    return normalized;
+  });
 }
 
 function ruleKeywordMarkup(rule, index) {
@@ -256,15 +290,147 @@ function renderResults(result) {
   $("#download-button").disabled = false;
 }
 
+function assignmentRecordsToMap(records) {
+  const assignments = {};
+  for (const record of records) {
+    const slotId = record.slot ?? record.slotId;
+    const itemId = record.itemId ?? record.item;
+    if (slotId === undefined || itemId === undefined || itemId === "") {
+      throw new Error("Assignment CSV must include slot and itemId columns.");
+    }
+    (assignments[slotId] ??= []).push(itemId);
+  }
+  return assignments;
+}
+
+function formatConflictDetails(conflict) {
+  return Object.entries(conflict)
+    .filter(([key]) => key !== "ruleId")
+    .map(([key, value]) => `${humanize(key)}: ${typeof value === "object" ? JSON.stringify(value) : value}`)
+    .join(" · ");
+}
+
+function describeConflict(rule, conflict, model) {
+  const itemById = new Map(model.items.map((item) => [String(item.id), item]));
+  const slotById = new Map(model.slots.map((slot) => [String(slot.id), slot]));
+  const itemLabel = (id) => itemById.get(String(id))?.name ?? id;
+  const slotLabel = (id) => slotById.get(String(id))?.name ?? id;
+  const [first, second] = rule.inputs;
+
+  switch (rule.keyword) {
+    case "match":
+      return `Item ${itemLabel(conflict.sourceId)} has ${humanize(first)} "${conflict.sourceValue}", but slot ${slotLabel(conflict.targetId)} has ${humanize(second)} "${conflict.targetValue}".`;
+    case "group": {
+      const sourceItem = itemById.get(String(conflict.sourceId));
+      const assignedSlots = model.assignments.itemAssignments[conflict.sourceId] ?? [];
+      const coAssignedIds = [...new Set(assignedSlots.flatMap((slotId) =>
+        model.assignments.slotAssignments[slotId] ?? []).filter((id) => String(id) !== String(conflict.sourceId)))];
+      const coAssignedValues = coAssignedIds.map((id) => itemById.get(String(id))?.[first]).filter(Boolean);
+      return `Item ${itemLabel(conflict.sourceId)} requested ${humanize(second)} "${formatValue(sourceItem?.[second])}", but their assigned slot contains ${coAssignedValues.length ? `${humanize(first)} values "${formatValue(coAssignedValues)}"` : "none of the requested teammates"}.`;
+    }
+    case "limit":
+      return `Slot ${slotLabel(conflict.sourceId)} has ${conflict.actual} assigned items; the rule requires ${conflict.type === "min" ? "at least" : "at most"} ${conflict.limit}.`;
+    case "balance":
+      return `Slot ${slotLabel(conflict.targetId)} has an average ${humanize(first)} of ${Number(conflict.actual).toFixed(2)}, compared with the overall target of ${Number(conflict.target).toFixed(2)}.`;
+    case "distribute":
+      return `Items with ${humanize(first)} values ${conflict.sourceValue} and ${conflict.targetValue} share slot(s): ${formatValue(conflict.sharedSlotIds)}.`;
+    case "align":
+      return `Sibling slots ${slotLabel(conflict.sourceId)} and ${slotLabel(conflict.targetId)} do not match on ${humanize(first)}: "${conflict.sourceValue}" versus "${conflict.targetValue}".`;
+    default:
+      return formatConflictDetails(conflict);
+  }
+}
+
+function renderEvaluation(evaluation, model) {
+  const conflicts = [
+    ...evaluation.hardViolations.map((conflict) => ({ severity: "Hard", ...conflict })),
+    ...evaluation.softViolations.map((conflict) => ({ severity: "Soft", ...conflict })),
+  ];
+  const rulesById = new Map(data.rules.map((rule) => [rule.id, rule]));
+  $("#evaluation-metrics").innerHTML = `
+    <div><span>Hard conflicts</span><strong>${evaluation.hardViolations.length}</strong></div>
+    <div><span>Soft conflicts</span><strong>${evaluation.softViolations.length}</strong></div>
+    <div><span>Hard penalty</span><strong>${evaluation.hardPenalty.toFixed(2)}</strong></div>
+    <div><span>Soft penalty</span><strong>${evaluation.softPenalty.toFixed(2)}</strong></div>`;
+  $("#evaluation-conflicts").innerHTML = conflicts.length
+    ? conflicts.map((conflict) => `
+      <li class="conflict-item">
+        <div class="conflict-heading">
+          <span class="conflict-severity ${conflict.severity.toLowerCase()}">${conflict.severity}</span>
+          <span class="conflict-rule">${escapeHtml(rulesById.get(conflict.ruleId)?.keyword ?? "rule")}</span>
+          <strong>${escapeHtml(rulesById.get(conflict.ruleId)?.name || conflict.ruleId)}</strong>
+        </div>
+        <p>${escapeHtml(describeConflict(rulesById.get(conflict.ruleId) ?? { keyword: "" }, conflict, model))}</p>
+      </li>`).join("")
+    : '<li class="empty-hint">No rule conflicts found.</li>';
+  $("#evaluation-empty").hidden = true;
+  $("#evaluation-content").hidden = false;
+}
+
+async function importAssignments(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  try {
+    const records = parseCsv(await file.text());
+    const assignments = assignmentRecordsToMap(records);
+    const model = createModel(data.items, data.slots, data.rules, assignments);
+    renderEvaluation(evaluateModel(model), model);
+    setMessage(`${file.name} evaluated.`);
+  } catch (error) {
+    setMessage(error.message, true);
+  } finally {
+    event.target.value = "";
+  }
+}
+
 async function generate() {
   let worker;
+  let progressTimer;
   try {
     if (!data.items.length || !data.slots.length) {
       throw new Error("Add items and slots before generating.");
     }
+    const limitMode = $("#generation-limit-mode").value;
+    const limitValue = Number($("#generation-limit-value").value);
+    const hardOnly = $("#generation-hard-only").checked;
+    const limitMilliseconds = limitValue * 1000;
+    if (
+      !hardOnly &&
+      (!Number.isFinite(limitValue) ||
+        limitValue < 1 ||
+        (limitMode === "time" && !Number.isSafeInteger(limitMilliseconds)) ||
+        (limitMode === "rounds" && !Number.isInteger(limitValue))
+      )
+    ) {
+      throw new Error(
+        limitMode === "rounds"
+          ? "Maximum rounds must be a positive whole number."
+          : "Maximum time must be a positive number of seconds.",
+      );
+    }
     $("#generate-button").disabled = true;
     $("#generate-button").textContent = "Generating…";
     $("#generation-message").textContent = "Finding a compatible roster…";
+    const progress = $(".generation-progress");
+    const progressBar = $("#generation-progress-bar");
+    progress.classList.remove("is-indeterminate");
+    progress.setAttribute("aria-valuenow", "0");
+    progressBar.style.width = "0%";
+    $("#generation-progress-round").textContent = "Starting generation…";
+    $("#generation-progress-elapsed").textContent = "";
+    if (limitMode === "time") {
+      const startedAt = performance.now();
+      progressTimer = setInterval(() => {
+        const percent = Math.min(
+          95,
+          ((performance.now() - startedAt) / limitMilliseconds) * 100,
+        );
+        progress.setAttribute("aria-valuenow", String(Math.round(percent)));
+        progressBar.style.width = `${percent}%`;
+        $("#generation-progress-elapsed").textContent =
+          `Elapsed ${Math.round((performance.now() - startedAt) / 1000)} s`;
+      }, 100);
+    }
     worker = new Worker(new URL("./generation-worker.js", import.meta.url), {
       type: "module",
     });
@@ -272,6 +438,14 @@ async function generate() {
       worker.addEventListener("message", ({ data: message }) => {
         if (message.type === "progress") {
           const progress = message.progress;
+          const percent = limitMode === "rounds"
+            ? Math.min(100, (progress.round / limitValue) * 100)
+            : null;
+          if (percent !== null) {
+            $(".generation-progress").setAttribute("aria-valuenow", String(Math.round(percent)));
+            $("#generation-progress-bar").style.width = `${percent}%`;
+          }
+          $("#generation-progress-round").textContent = `Soft round ${progress.round}`;
           $("#generation-message").textContent =
             `Soft round ${progress.round}: rule ${progress.ruleId ?? "none"}; ` +
             `penalty ${progress.softPenalty}; improvement ${progress.improvement}`;
@@ -284,12 +458,31 @@ async function generate() {
       worker.addEventListener("error", (error) => {
         reject(new Error(error.message || "Roster generation worker failed."));
       });
-      worker.postMessage({ ...data, maxSoftRounds: 20 });
+      worker.postMessage({
+        ...data,
+        hardOnly,
+        items: normalizeNumericRuleAttributes(data.items, data.rules),
+        ...(limitMode === "rounds"
+          ? { maxSoftRounds: limitValue }
+          : { maxSoftTimeMs: limitMilliseconds }),
+      });
     });
     renderResults(result);
-    $("#generation-message").textContent = "Roster generated successfully.";
+    clearInterval(progressTimer);
+    $(".generation-progress").classList.remove("is-indeterminate");
+    $(".generation-progress").setAttribute("aria-valuenow", "100");
+    $("#generation-progress-bar").style.width = "100%";
+    $("#generation-progress-round").textContent = "Generation complete";
+    $("#generation-progress-elapsed").textContent = "";
+    $("#generation-message").textContent =
+      `Final soft penalty: ${result.evaluation.softPenalty.toFixed(6)}. ` +
+      `${hardOnly ? "Hard rules only." : limitMode === "rounds" ? `Limit: ${limitValue} rounds.` : `Limit: ${limitValue} seconds.`}`;
     setMessage("Roster generated successfully.");
   } catch (error) {
+    clearInterval(progressTimer);
+    $(".generation-progress").classList.remove("is-indeterminate");
+    $("#generation-progress-round").textContent = "Generation stopped";
+    $("#generation-progress-elapsed").textContent = "";
     $("#generation-message").textContent = error.message;
     setMessage(error.message, true);
   } finally {
@@ -311,6 +504,7 @@ document.querySelectorAll("[data-next]").forEach((button) => {
 $("#items-file").addEventListener("change", (event) => importFile(event, "items", "csv"));
 $("#slots-file").addEventListener("change", (event) => importFile(event, "slots", "csv"));
 $("#rules-file").addEventListener("change", (event) => importFile(event, "rules", "json"));
+$("#assignments-file").addEventListener("change", importAssignments);
 $("#rule-list").addEventListener("change", updateInlineRule);
 document.addEventListener("click", (event) => {
   const deleteButton = event.target.closest("[data-delete]");
@@ -340,6 +534,14 @@ $("#new-rule-button").addEventListener("click", () => {
   });
   saveData();
   renderAll();
+});
+$("#generation-limit-mode").addEventListener("change", (event) => {
+  const isRounds = event.target.value === "rounds";
+  $("#generation-limit-value-label").textContent = isRounds
+    ? "Maximum rounds"
+    : "Maximum time (seconds)";
+  $("#generation-limit-value").step = isRounds ? "1" : "any";
+  $("#generation-limit-value").value = isRounds ? "20" : "300";
 });
 $("#generate-button").addEventListener("click", generate);
 $("#copy-button").addEventListener("click", async () => {

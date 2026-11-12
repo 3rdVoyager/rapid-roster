@@ -16,6 +16,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <a class="app-nav-item is-active" href="#items"><span class="material-symbols-outlined">group</span>Items</a>
       <a class="app-nav-item" href="#slots"><span class="material-symbols-outlined">view_week</span>Slots</a>
       <a class="app-nav-item" href="#rules"><span class="material-symbols-outlined">tune</span>Rules</a>
+      <a class="app-nav-item" href="#evaluation"><span class="material-symbols-outlined">fact_check</span>Evaluation</a>
       <a class="app-nav-item" href="#generate"><span class="material-symbols-outlined">auto_awesome</span>Generation</a>
       <div class="sidebar-spacer"></div>
       <p class="sidebar-hint">Everything stays in this browser.</p>
@@ -75,7 +76,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <h1>Rules</h1>
             <p class="app-panel-lead">Build rules using plain-language sentence forms.</p>
           </div>
-          <button class="button button-primary button-small" data-next="generate" type="button">Continue to Generation</button>
+          <button class="button button-primary button-small" data-next="evaluation" type="button">Continue to Evaluation</button>
         </div>
         <div class="rules-toolbar">
           <label class="button button-primary button-small file-button" for="rules-file">Import rules JSON<input id="rules-file" type="file" accept=".json,application/json" /></label>
@@ -92,12 +93,44 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         </div>
       </section>
 
+      <section id="evaluation" class="app-panel">
+        <div class="app-panel-header">
+          <div>
+            <p class="panel-kicker">04 / Verify</p>
+            <h1>Evaluation</h1>
+            <p class="app-panel-lead">Upload an assignment CSV to inspect rule conflicts and penalties.</p>
+          </div>
+          <button class="button button-primary button-small" data-next="generate" type="button">Continue to Generation</button>
+        </div>
+        <div class="app-toolbar">
+          <label class="button button-primary button-small file-button" for="assignments-file">Import assignments CSV<input id="assignments-file" type="file" accept=".csv,text/csv" /></label>
+          <span class="toolbar-spacer"></span>
+          <span class="record-count">Expected columns: slot, itemId</span>
+        </div>
+        <div class="evaluation-card" id="evaluation-empty">
+          <div class="result-empty"><span class="empty-mark">✦</span><p>Import an assignment CSV to evaluate it.</p></div>
+        </div>
+        <div class="evaluation-card" id="evaluation-content" hidden>
+          <div class="metrics" id="evaluation-metrics"></div>
+          <h2 class="card-title">All conflicts</h2>
+          <ul class="conflict-list" id="evaluation-conflicts"></ul>
+        </div>
+      </section>
+
       <section id="generate" class="app-panel">
         <div class="app-panel-header">
           <div>
-            <p class="panel-kicker">04 / Finish</p>
+            <p class="panel-kicker">05 / Finish</p>
             <h1>Generation</h1>
             <p class="app-panel-lead">Review your setup, generate an assignment, and export the roster.</p>
+            <div class="generation-progress" role="progressbar" aria-label="Roster generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="generation-progress-track"><div class="generation-progress-bar" id="generation-progress-bar"></div></div>
+              <div class="generation-progress-info">
+                <span id="generation-progress-round">Ready to generate</span>
+                <span id="generation-progress-elapsed"></span>
+              </div>
+            </div>
+            <p class="generation-message" id="generation-message">Load data to begin.</p>
           </div>
           <button class="button button-primary button-large" id="generate-button" type="button">Generate roster</button>
         </div>
@@ -109,7 +142,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
               <div><dt>Slots</dt><dd id="generate-slots-count">0</dd></div>
               <div><dt>Rules</dt><dd id="generate-rules-count">0</dd></div>
             </dl>
-            <p class="generation-message" id="generation-message">Load data to begin.</p>
+            <div class="generation-options">
+              <h3>Optimization limit</h3>
+              <label>Limit type
+                <select id="generation-limit-mode">
+                  <option value="rounds">Rounds</option>
+                  <option value="time">Time (seconds)</option>
+                </select>
+              </label>
+              <label><span id="generation-limit-value-label">Maximum rounds</span>
+                <input id="generation-limit-value" type="number" min="1" step="1" value="20" />
+              </label>
+              <label class="generation-checkbox"><input id="generation-hard-only" type="checkbox" /> Hard rules only</label>
+            </div>
           </div>
           <div class="results-card">
             <div class="card-header">

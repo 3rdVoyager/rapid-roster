@@ -14,6 +14,7 @@ export function generateRoster({
   maxHardRounds = 100,
   maxSoftRounds,
   maxSoftTimeMs,
+  hardOnly = false,
   onProgress,
 } = {}) {
   const baseModel = createModel(items, slots, rules);
@@ -30,6 +31,13 @@ export function generateRoster({
     maxHardRounds,
   );
   const hardImprovedModel = createModel(items, slots, rules, hardAssignments);
+  if (hardOnly) {
+    return {
+      assignments: hardAssignments,
+      model: hardImprovedModel,
+      evaluation: evaluateModel(hardImprovedModel),
+    };
+  }
   if (maxSoftRounds !== undefined && maxSoftTimeMs !== undefined) {
     throw new Error(
       "Provide either maxSoftRounds or maxSoftTimeMs, not both",

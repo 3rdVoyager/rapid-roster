@@ -4,8 +4,6 @@ import { getKeywordConfig } from "./keywords/config.js";
 import { applySwapToModel, cloneAssignments } from "./assignment.js";
 import { isItemCompatibleWithSlot } from "./keywords/helpers.js";
 
-const MIN_SOFT_IMPROVEMENT = 0.01;
-
 export function improveSoftAssignments(
   model,
   limit = { maxRounds: 100 },
@@ -251,8 +249,7 @@ function isBetterSoftCandidate(
   );
   const improved =
     candidateEvaluation.hardPenalty === 0 &&
-    currentEvaluation.softPenalty - candidateEvaluation.softPenalty >=
-      MIN_SOFT_IMPROVEMENT;
+    candidateEvaluation.softPenalty < currentEvaluation.softPenalty;
 
   if (!improved) {
     undoSwap();
