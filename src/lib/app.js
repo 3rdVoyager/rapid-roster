@@ -7,6 +7,8 @@ const data = { items: [], slots: [], rules: [] };
 const STORAGE_KEY = "rapid-roster-project";
 let latestCsv = "";
 let evaluationState;
+let generatedResults = [];
+let selectedResultIndex = 0;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -269,7 +271,9 @@ function downloadCsv() {
   URL.revokeObjectURL(link.href);
 }
 
-function renderResults(result) {
+function renderSelectedResult() {
+  const result = generatedResults[selectedResultIndex];
+  if (!result) return;
   const names = new Map(data.items.map((item) => [item.id, item.name ?? item.id]));
   $("#results-body").innerHTML = Object.entries(result.assignments).map(([slot, itemIds]) => `
     <tr>
@@ -281,6 +285,7 @@ function renderResults(result) {
   $("#metrics").innerHTML = `
     <div><span>Hard violations</span><strong>${evaluation.hardViolations.length}</strong></div>
     <div><span>Soft violations</span><strong>${evaluation.softViolations.length}</strong></div>
+    <div><span>Hard penalty</span><strong>${evaluation.hardPenalty.toFixed(2)}</strong></div>
     <div><span>Soft penalty</span><strong>${evaluation.softPenalty.toFixed(2)}</strong></div>`;
   latestCsv = exportCsv(Object.entries(result.assignments).flatMap(([slot, itemIds]) =>
     itemIds.map((itemId) => ({ slot, itemId, participant: names.get(itemId) ?? itemId }))));
@@ -289,6 +294,34 @@ function renderResults(result) {
   $("#result-content").hidden = false;
   $("#copy-button").disabled = false;
   $("#download-button").disabled = false;
+}
+
+function renderResults(results) {
+  generatedResults = results;
+  selectedResultIndex = results.reduce(
+    (bestIndex, result, index, all) =>
+      result.evaluation.softPenalty < all[bestIndex].evaluation.softPenalty
+        ? index
+        : bestIndex,
+    0,
+  );
+  $("#result-tabs").innerHTML = results.map((result, index) => `
+    <button class="result-tab ${index === selectedResultIndex ? "is-active" : ""}" data-result-index="${index}" type="button">
+      <span>Solution ${index + 1}</span>
+      <strong>H ${result.evaluation.hardPenalty.toFixed(2)}</strong>
+      <strong>S ${result.evaluation.softPenalty.toFixed(2)}</strong>
+      ${index === selectedResultIndex ? '<small>Best</small>' : ""}
+    </button>`).join("");
+  renderSelectedResult();
+}
+
+function updateResultTab(index) {
+  if (!generatedResults[index]) return;
+  selectedResultIndex = index;
+  document.querySelectorAll(".result-tab").forEach((tab, tabIndex) => {
+    tab.classList.toggle("is-active", tabIndex === selectedResultIndex);
+  });
+  renderSelectedResult();
 }
 
 function assignmentRecordsToMap(records) {
@@ -412,7 +445,7 @@ async function importAssignments(event) {
 }
 
 async function generate() {
-  let worker;
+  let workers = [];
   let progressTimer;
   try {
     if (!data.items.length || !data.slots.length) {
@@ -421,6 +454,9 @@ async function generate() {
     const limitMode = $("#generation-limit-mode").value;
     const limitValue = Number($("#generation-limit-value").value);
     const hardOnly = $("#generation-hard-only").checked;
+    const maxWorkers = Math.max(1, (navigator.hardwareConcurrency || 2) - 1);
+    const workerCount = Number($("#generation-worker-count").value);
+    const executionMode = $("#generation-execution-mode").value;
     const limitMilliseconds = limitValue * 1000;
     if (
       !hardOnly &&
@@ -436,6 +472,9 @@ async function generate() {
           : "Maximum time must be a positive number of seconds.",
       );
     }
+    if (!Number.isInteger(workerCount) || workerCount < 1 || workerCount > maxWorkers) {
+      throw new Error(`Parallel solutions must be a whole number from 1 to ${maxWorkers}.`);
+    }
     $("#generate-button").disabled = true;
     $("#generate-button").textContent = "Generating…";
     $("#generation-message").textContent = "Finding a compatible roster…";
@@ -446,7 +485,7 @@ async function generate() {
     progressBar.style.width = "0%";
     $("#generation-progress-round").textContent = "Starting generation…";
     $("#generation-progress-elapsed").textContent = "";
-    if (limitMode === "time") {
+    if (limitMode === "time" && !hardOnly) {
       const startedAt = performance.now();
       progressTimer = setInterval(() => {
         const percent = Math.min(
@@ -459,52 +498,78 @@ async function generate() {
           `Elapsed ${Math.round((performance.now() - startedAt) / 1000)} s`;
       }, 100);
     }
-    worker = new Worker(new URL("./generation-worker.js", import.meta.url), {
-      type: "module",
-    });
-    const result = await new Promise((resolve, reject) => {
-      worker.addEventListener("message", ({ data: message }) => {
-        if (message.type === "progress") {
-          const progress = message.progress;
-          const percent = limitMode === "rounds"
-            ? Math.min(100, (progress.round / limitValue) * 100)
-            : null;
-          if (percent !== null) {
-            $(".generation-progress").setAttribute("aria-valuenow", String(Math.round(percent)));
-            $("#generation-progress-bar").style.width = `${percent}%`;
+    const progressByWorker = new Map();
+    const workerPayload = {
+      ...data,
+      hardOnly,
+      items: normalizeNumericRuleAttributes(data.items, data.rules),
+      ...(limitMode === "rounds"
+        ? { maxSoftRounds: limitValue }
+        : { maxSoftTimeMs: limitMilliseconds }),
+    };
+    let completedWorkers = 0;
+    const runWorker = (index) => new Promise((resolve, reject) => {
+        const worker = new Worker(new URL("./generation-worker.js", import.meta.url), {
+          type: "module",
+        });
+        workers.push(worker);
+        worker.addEventListener("message", ({ data: message }) => {
+          if (message.type === "progress") {
+            progressByWorker.set(index, message.progress);
+            const progressValues = [...progressByWorker.values()];
+            const currentRound = message.progress.round / limitValue;
+            const progressFraction = executionMode === "concurrent"
+              ? progressValues.reduce((sum, value) => sum + value.round, 0) / (limitValue * workerCount)
+              : (completedWorkers + currentRound) / workerCount;
+            const percent = limitMode === "rounds"
+              ? Math.min(100, progressFraction * 100)
+              : null;
+            if (percent !== null) {
+              progress.setAttribute("aria-valuenow", String(Math.round(percent)));
+              progressBar.style.width = `${percent}%`;
+            }
+            $("#generation-progress-round").textContent =
+              `${progressValues.length}/${workerCount} solutions · Soft round ${Math.max(...progressValues.map((value) => value.round))}`;
+            $("#generation-message").textContent =
+              `Solution ${index + 1}: penalty ${message.progress.softPenalty.toFixed(4)}; ` +
+              `improvement ${message.progress.improvement.toFixed(4)}`;
+          } else if (message.type === "complete") {
+            completedWorkers += 1;
+            resolve(message.result);
+          } else if (message.type === "error") {
+            reject(new Error(message.message));
           }
-          $("#generation-progress-round").textContent = `Soft round ${progress.round}`;
-          $("#generation-message").textContent =
-            `Soft round ${progress.round}: rule ${progress.ruleId ?? "none"}; ` +
-            `penalty ${progress.softPenalty}; improvement ${progress.improvement}`;
-        } else if (message.type === "complete") {
-          resolve(message.result);
-        } else if (message.type === "error") {
-          reject(new Error(message.message));
-        }
+        });
+        worker.addEventListener("error", (error) => {
+          reject(new Error(error.message || "Roster generation worker failed."));
+        });
+        worker.postMessage(workerPayload);
       });
-      worker.addEventListener("error", (error) => {
-        reject(new Error(error.message || "Roster generation worker failed."));
-      });
-      worker.postMessage({
-        ...data,
-        hardOnly,
-        items: normalizeNumericRuleAttributes(data.items, data.rules),
-        ...(limitMode === "rounds"
-          ? { maxSoftRounds: limitValue }
-          : { maxSoftTimeMs: limitMilliseconds }),
-      });
-    });
-    renderResults(result);
+    const results = [];
+    if (executionMode === "concurrent") {
+      results.push(...await Promise.all(
+        Array.from({ length: workerCount }, (_, index) => runWorker(index)),
+      ));
+    } else {
+      for (let index = 0; index < workerCount; index += 1) {
+        results.push(await runWorker(index));
+      }
+    }
+    renderResults(results);
     clearInterval(progressTimer);
     $(".generation-progress").classList.remove("is-indeterminate");
     $(".generation-progress").setAttribute("aria-valuenow", "100");
     $("#generation-progress-bar").style.width = "100%";
     $("#generation-progress-round").textContent = "Generation complete";
     $("#generation-progress-elapsed").textContent = "";
+    const bestResult = results.reduce((best, result) =>
+      result.evaluation.softPenalty < best.evaluation.softPenalty ? result : best,
+    results[0]);
     $("#generation-message").textContent =
-      `Final soft penalty: ${result.evaluation.softPenalty.toFixed(6)}. ` +
-      `${hardOnly ? "Hard rules only." : limitMode === "rounds" ? `Limit: ${limitValue} rounds.` : `Limit: ${limitValue} seconds.`}`;
+      `${workerCount} solution${workerCount === 1 ? "" : "s"} generated. ` +
+      `Best soft penalty: ${bestResult.evaluation.softPenalty.toFixed(6)}. ` +
+      `${executionMode === "concurrent" ? "Concurrent." : "Sequential."} ` +
+      `${hardOnly ? "Hard rules only." : limitMode === "rounds" ? `Limit: ${limitValue} rounds per solution.` : `Limit: ${limitValue} seconds per solution.`}`;
     setMessage("Roster generated successfully.");
   } catch (error) {
     clearInterval(progressTimer);
@@ -514,7 +579,7 @@ async function generate() {
     $("#generation-message").textContent = error.message;
     setMessage(error.message, true);
   } finally {
-    worker?.terminate();
+    workers?.forEach((activeWorker) => activeWorker.terminate());
     $("#generate-button").disabled = false;
     $("#generate-button").textContent = "Generate roster";
   }
@@ -580,6 +645,10 @@ $("#copy-button").addEventListener("click", async () => {
   setMessage("CSV copied to your clipboard.");
 });
 $("#download-button").addEventListener("click", downloadCsv);
+$("#result-tabs").addEventListener("click", (event) => {
+  const tab = event.target.closest("[data-result-index]");
+  if (tab) updateResultTab(Number(tab.dataset.resultIndex));
+});
 
 for (const type of ["items", "slots"]) {
   $(`#export-${type}-button`).addEventListener("click", () => {
@@ -591,6 +660,11 @@ for (const type of ["items", "slots"]) {
     URL.revokeObjectURL(link.href);
   });
 }
+
+const maxWorkers = Math.max(1, (navigator.hardwareConcurrency || 2) - 1);
+$("#generation-worker-count").max = String(maxWorkers);
+$("#generation-worker-count").value = String(Math.min(2, maxWorkers));
+$("#generation-worker-count-label").textContent = `Parallel solutions (max ${maxWorkers})`;
 
 restoreData();
 renderAll();
