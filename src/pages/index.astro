@@ -1,6 +1,171 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const sampleData = {
+  items: [
+    { id: "P1", name: "Alex Morgan", group: "Blue" },
+    { id: "P2", name: "Jordan Lee", group: "Blue" },
+    { id: "P3", name: "Taylor Smith", group: "Gold" },
+    { id: "P4", name: "Casey Brown", group: "Gold" },
+    { id: "P5", name: "Riley Davis", group: "Blue" },
+    { id: "P6", name: "Morgan Wilson", group: "Gold" },
+  ],
+  slots: [
+    { id: "North", group: "Blue" },
+    { id: "South", group: "Gold" },
+  ],
+  rules: [
+    {
+      id: "R1",
+      name: "Match group",
+      enforcement: "hard",
+      keyword: "match",
+      inputs: ["group", "group"],
+    },
+  ],
+};
 ---
 
-<BaseLayout>
+<BaseLayout title="Workspace — Rapid Roster" showSiteChrome={false}>
+  <script is:inline define:vars={{ sampleData }}>
+    window.__RAPID_ROSTER_SAMPLE__ = sampleData;
+  </script>
+
+  <header class="project-header">
+    <a class="project-brand" href="/" aria-label="Rapid Roster home">
+      <img src="/favicon/rapid-roster-logo.png" alt="" width="34" height="34" />
+      <span>Rapid<span class="brand-accent">Roster</span></span>
+    </a>
+    <div class="project-title">
+      <label for="project-name">Project name</label>
+      <input id="project-name" type="text" value="Untitled roster" autocomplete="off" />
+    </div>
+    <div class="project-actions">
+      <button class="button button-ghost button-small" id="sample-button" type="button">Load sample</button>
+      <button class="button button-ghost button-small" id="reset-button" type="button">Reset</button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <nav class="app-sidebar" aria-label="Roster workflow">
+      <p class="app-sidebar-label">Workflow</p>
+      <a class="app-nav-item is-active" href="#items"><span class="material-symbols-outlined">group</span>Items</a>
+      <a class="app-nav-item" href="#slots"><span class="material-symbols-outlined">view_week</span>Slots</a>
+      <a class="app-nav-item" href="#rules"><span class="material-symbols-outlined">tune</span>Rules</a>
+      <a class="app-nav-item" href="#generate"><span class="material-symbols-outlined">auto_awesome</span>Generation</a>
+      <div class="sidebar-spacer"></div>
+      <p class="sidebar-hint">Everything stays in this browser.</p>
+    </nav>
+
+    <main class="app-main">
+      <section id="items" class="app-panel is-active">
+        <div class="app-panel-header">
+          <div>
+            <p class="panel-kicker">01 / Setup</p>
+            <h1>Items</h1>
+            <p class="app-panel-lead">People or items to be placed into slots.</p>
+          </div>
+          <button class="button button-primary button-small" data-next="slots" type="button">Continue to Slots</button>
+        </div>
+        <div class="app-toolbar">
+          <label class="button button-primary button-small file-button" for="items-file">Import CSV<input id="items-file" type="file" accept=".csv,text/csv" /></label>
+          <button class="button button-ghost button-small" id="export-items-button" type="button">Export CSV</button>
+          <span class="toolbar-spacer"></span><span class="record-count" id="items-count">0 items</span>
+        </div>
+        <div class="table-card">
+          <table class="data-table">
+            <thead id="items-head"></thead>
+            <tbody id="items-body"></tbody>
+          </table>
+          <p class="empty-hint" id="items-empty">No items yet. Import a CSV to get started.</p>
+        </div>
+      </section>
+
+      <section id="slots" class="app-panel">
+        <div class="app-panel-header">
+          <div>
+            <p class="panel-kicker">02 / Setup</p>
+            <h1>Slots</h1>
+            <p class="app-panel-lead">Teams, events, or shifts items can be assigned to.</p>
+          </div>
+          <button class="button button-primary button-small" data-next="rules" type="button">Continue to Rules</button>
+        </div>
+        <div class="app-toolbar">
+          <label class="button button-primary button-small file-button" for="slots-file">Import CSV<input id="slots-file" type="file" accept=".csv,text/csv" /></label>
+          <button class="button button-ghost button-small" id="export-slots-button" type="button">Export CSV</button>
+          <span class="toolbar-spacer"></span><span class="record-count" id="slots-count">0 slots</span>
+        </div>
+        <div class="table-card">
+          <table class="data-table">
+            <thead id="slots-head"></thead>
+            <tbody id="slots-body"></tbody>
+          </table>
+          <p class="empty-hint" id="slots-empty">No slots yet. Import a CSV to get started.</p>
+        </div>
+      </section>
+
+      <section id="rules" class="app-panel">
+        <div class="app-panel-header">
+          <div>
+            <p class="panel-kicker">03 / Configure</p>
+            <h1>Rules</h1>
+            <p class="app-panel-lead">Hard constraints must be satisfied. Soft rules guide the best result.</p>
+          </div>
+          <button class="button button-primary button-small" data-next="generate" type="button">Continue to Generation</button>
+        </div>
+        <div class="rules-card">
+          <div class="card-header">
+            <div><h2 class="card-title">Rule set</h2><p class="card-description">Use the current JSON schema to define match, limit, group, balance, and other rules.</p></div>
+            <label class="button button-ghost button-small file-button" for="rules-file">Import JSON<input id="rules-file" type="file" accept=".json,application/json" /></label>
+          </div>
+          <textarea id="rules-input" spellcheck="false" placeholder="Paste a JSON array of rules here"></textarea>
+          <div class="panel-actions">
+            <button class="button button-secondary button-small" id="clear-rules-button" type="button">Clear rules</button>
+            <span class="record-count" id="rules-count">0 rules</span>
+          </div>
+        </div>
+        <div class="rule-help">
+          <strong>Tip</strong>
+          <span>Start with hard match rules for requirements, then add soft rules with priorities for preferences.</span>
+        </div>
+      </section>
+
+      <section id="generate" class="app-panel">
+        <div class="app-panel-header">
+          <div>
+            <p class="panel-kicker">04 / Finish</p>
+            <h1>Generation</h1>
+            <p class="app-panel-lead">Review your setup, generate an assignment, and export the roster.</p>
+          </div>
+          <button class="button button-primary button-large" id="generate-button" type="button">Generate roster</button>
+        </div>
+        <div class="generation-layout">
+          <div class="summary-card">
+            <h2 class="card-title">Ready to generate?</h2>
+            <dl class="summary-list">
+              <div><dt>Items</dt><dd id="generate-items-count">0</dd></div>
+              <div><dt>Slots</dt><dd id="generate-slots-count">0</dd></div>
+              <div><dt>Rules</dt><dd id="generate-rules-count">0</dd></div>
+            </dl>
+            <p class="generation-message" id="generation-message">Load data to begin.</p>
+          </div>
+          <div class="results-card">
+            <div class="card-header">
+              <div><h2 class="card-title">Generated roster</h2><p class="card-description">Assignments appear here after generation.</p></div>
+              <div class="result-actions"><button class="button button-ghost button-small" id="copy-button" type="button" disabled>Copy CSV</button><button class="button button-secondary button-small" id="download-button" type="button" disabled>Download CSV</button></div>
+            </div>
+            <div class="result-empty" id="result-empty"><span class="empty-mark">✦</span><p>No roster yet.</p></div>
+            <div class="result-content" id="result-content" hidden>
+              <div class="metrics" id="metrics"></div>
+              <div class="table-wrap"><table class="data-table"><thead><tr><th>Slot</th><th>Assigned items</th><th>Count</th></tr></thead><tbody id="results-body"></tbody></table></div>
+              <details class="csv-details"><summary>View CSV output</summary><pre id="csv-output"></pre></details>
+            </div>
+          </div>
+        </div>
+      </section>
+      <p class="app-message" id="app-message" role="status" aria-live="polite"></p>
+    </main>
+  </div>
+
+  <script src="../lib/app.js"></script>
 </BaseLayout>

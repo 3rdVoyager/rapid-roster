@@ -8,15 +8,18 @@ import "../styles/site/header.css";
 import "../styles/site/footer.css";
 import "../styles/site/home.css";
 import "../styles/site/wip-banner.css";
+import "../styles/app/app.css";
 
 interface Props {
   title?: string;
   description?: string;
+  showSiteChrome?: boolean;
 }
 
 const {
   title,
   description,
+  showSiteChrome = true,
 } = Astro.props;
 ---
 
@@ -31,16 +34,26 @@ const {
     <link rel="icon" href="/favicon/favicon-16x16.png" type="image/png" sizes="16x16" />
     <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
     <link rel="manifest" href="/favicon/site.webmanifest" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+    />
     <title>{title}</title>
   </head>
-  <body>
-    <Header />
+  <body class:list={{ "page-project": !showSiteChrome }}>
+    {showSiteChrome && <Header />}
 
-    <main>
-      <slot />
-    </main>
+    {
+      showSiteChrome ? (
+        <main>
+          <slot />
+        </main>
+      ) : (
+        <slot />
+      )
+    }
 
-    <Footer />
+    {showSiteChrome && <Footer />}
   </body>
 </html>
 
@@ -49,11 +62,18 @@ const {
     box-sizing: border-box;
   }
 
-  :global(body) {
+  :global(body:not(.page-project)) {
     margin: 0;
     color: #172033;
     background: #fff;
     font-family: system-ui, sans-serif;
+  }
+
+  :global(body.page-project) {
+    margin: 0;
+    color: var(--text-color);
+    background: var(--bg-color);
+    font-family: var(--font);
   }
 
   .site-header,
