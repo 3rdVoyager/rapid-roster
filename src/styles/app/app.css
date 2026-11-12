@@ -1,8 +1,14 @@
 .page-project {
+  height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
   margin: calc(-1 * var(--page-inline));
   padding: 0;
   overflow: hidden;
+}
+
+.page-project [hidden] {
+  display: none !important;
 }
 
 .page-project main {
@@ -38,42 +44,6 @@
   color: var(--color-yellow);
 }
 
-.project-title {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  flex: 1;
-}
-
-.project-title label {
-  color: var(--text-color-muted);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.project-title input {
-  width: min(22rem, 100%);
-  padding: 0.35rem 0.6rem;
-  color: var(--text-color);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  font: 600 1.05rem var(--font);
-}
-
-.project-title input:focus {
-  outline: none;
-  background: rgb(0 0 0 / 0.22);
-  border-color: var(--color-blue);
-}
-
-.project-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
 .button-ghost {
   color: var(--text-color-muted);
   background: transparent;
@@ -88,7 +58,10 @@
 .app-shell {
   display: grid;
   grid-template-columns: 14rem minmax(0, 1fr);
-  min-height: calc(100vh - 4.25rem);
+  height: calc(100vh - 4.25rem);
+  height: calc(100dvh - 4.25rem);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .app-sidebar {
@@ -151,8 +124,9 @@
 
 .app-main {
   min-width: 0;
+  min-height: 0;
   padding: 1.75rem 2rem 3rem;
-  overflow: auto;
+  overflow-y: auto;
 }
 
 .app-panel {
@@ -504,7 +478,9 @@
 
 @media (max-width: 760px) {
   .page-project {
+    height: auto;
     margin: calc(-1 * var(--page-inline-mobile));
+    overflow: visible;
   }
 
   .project-header {
@@ -515,14 +491,15 @@
     min-width: 0;
   }
 
-  .project-title {
-    order: 3;
-    flex-basis: 100%;
-  }
-
   .app-shell,
   .generation-layout {
     grid-template-columns: 1fr;
+  }
+
+  .app-shell {
+    height: auto;
+    min-height: calc(100vh - 4.25rem);
+    overflow: visible;
   }
 
   .app-sidebar {
@@ -552,14 +529,11 @@
 
   .app-main {
     padding: 1.25rem 1rem 2rem;
+    overflow: visible;
   }
 }
 
 @media (max-width: 520px) {
-  .project-actions {
-    margin-left: auto;
-  }
-
   .app-panel-header {
     display: block;
   }

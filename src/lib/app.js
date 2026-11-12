@@ -1,9 +1,8 @@
-import { generateRoster } from "./generator.js";
 import { exportCsv } from "./export.js";
 import { parseCsv } from "./import.js";
 
-const initialData = window.__RAPID_ROSTER_SAMPLE__;
 const data = { items: [], slots: [], rules: [] };
+const STORAGE_KEY = "rapid-roster-project";
 let latestCsv = "";
 
 const $ = (selector) => document.querySelector(selector);
@@ -22,6 +21,40 @@ function setMessage(message, isError = false) {
   const element = $("#app-message");
   element.textContent = message;
   element.classList.toggle("is-error", isError);
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (error) {
+    setMessage(`Could not save project locally: ${error.message}`, true);
+  }
+}
+
+function restoreData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+
+    const restored = JSON.parse(saved);
+    if (
+      !restored ||
+      !Array.isArray(restored.items) ||
+      !Array.isArray(restored.slots) ||
+      !Array.isArray(restored.rules)
+    ) {
+      throw new Error("Saved project must contain items, slots, and rules arrays.");
+    }
+    data.items = restored.items;
+    data.slots = restored.slots;
+    data.rules = restored.rules;
+    $("#rules-input").value = data.rules.length
+      ? JSON.stringify(data.rules, null, 2)
+      : "";
+    setMessage("Saved project restored.");
+  } catch (error) {
+    setMessage(`Could not restore saved project: ${error.message}`, true);
+  }
 }
 
 function setTab(tab) {
@@ -79,6 +112,7 @@ function updateRecord(event) {
   record[input.dataset.key] = input.value.includes(";")
     ? input.value.split(";").map((value) => value.trim()).filter(Boolean)
     : input.value;
+  saveData();
 }
 
 async function importFile(event, type, format) {
@@ -90,6 +124,7 @@ async function importFile(event, type, format) {
     if (!Array.isArray(value)) throw new Error("Imported JSON must be an array.");
     data[type] = value;
     if (type === "rules") $("#rules-input").value = JSON.stringify(value, null, 2);
+    saveData();
     renderAll();
     setMessage(`${file.name} imported.`);
   } catch (error) {
@@ -103,6 +138,7 @@ function syncRules() {
   const text = $("#rules-input").value.trim();
   data.rules = text ? JSON.parse(text) : [];
   if (!Array.isArray(data.rules)) throw new Error("Rules JSON must be an array.");
+  saveData();
   renderCounts();
 }
 
@@ -136,7 +172,8 @@ function renderResults(result) {
   $("#download-button").disabled = false;
 }
 
-function generate() {
+async function generate() {
+  let worker;
   try {
     syncRules();
     if (!data.items.length || !data.slots.length) {
@@ -145,12 +182,26 @@ function generate() {
     $("#generate-button").disabled = true;
     $("#generate-button").textContent = "Generating…";
     $("#generation-message").textContent = "Finding a compatible roster…";
-    const result = generateRoster({
-      ...data,
-      maxSoftRounds: 20,
-      onProgress: (progress) => {
-        $("#generation-message").textContent = `Optimizing ${progress.ruleId ?? "rules"}…`;
-      },
+    worker = new Worker(new URL("./generation-worker.js", import.meta.url), {
+      type: "module",
+    });
+    const result = await new Promise((resolve, reject) => {
+      worker.addEventListener("message", ({ data: message }) => {
+        if (message.type === "progress") {
+          const progress = message.progress;
+          $("#generation-message").textContent =
+            `Soft round ${progress.round}: rule ${progress.ruleId ?? "none"}; ` +
+            `penalty ${progress.softPenalty}; improvement ${progress.improvement}`;
+        } else if (message.type === "complete") {
+          resolve(message.result);
+        } else if (message.type === "error") {
+          reject(new Error(message.message));
+        }
+      });
+      worker.addEventListener("error", (error) => {
+        reject(new Error(error.message || "Roster generation worker failed."));
+      });
+      worker.postMessage({ ...data, maxSoftRounds: 20 });
     });
     renderResults(result);
     $("#generation-message").textContent = "Roster generated successfully.";
@@ -159,6 +210,7 @@ function generate() {
     $("#generation-message").textContent = error.message;
     setMessage(error.message, true);
   } finally {
+    worker?.terminate();
     $("#generate-button").disabled = false;
     $("#generate-button").textContent = "Generate roster";
   }
@@ -182,6 +234,7 @@ document.addEventListener("click", (event) => {
   const deleteButton = event.target.closest("[data-delete]");
   if (!deleteButton) return;
   data[deleteButton.dataset.delete].splice(Number(deleteButton.dataset.row), 1);
+  saveData();
   renderAll();
 });
 $("#rules-input").addEventListener("change", () => {
@@ -190,25 +243,8 @@ $("#rules-input").addEventListener("change", () => {
 $("#clear-rules-button").addEventListener("click", () => {
   $("#rules-input").value = "";
   data.rules = [];
+  saveData();
   renderCounts();
-});
-$("#sample-button").addEventListener("click", () => {
-  data.items = structuredClone(initialData.items);
-  data.slots = structuredClone(initialData.slots);
-  data.rules = structuredClone(initialData.rules);
-  $("#rules-input").value = JSON.stringify(data.rules, null, 2);
-  renderAll();
-  setMessage("Sample project loaded.");
-});
-$("#reset-button").addEventListener("click", () => {
-  data.items = [];
-  data.slots = [];
-  data.rules = [];
-  $("#rules-input").value = "";
-  $("#result-empty").hidden = false;
-  $("#result-content").hidden = true;
-  renderAll();
-  setMessage("Project reset.");
 });
 $("#generate-button").addEventListener("click", generate);
 $("#copy-button").addEventListener("click", async () => {
@@ -228,5 +264,6 @@ for (const type of ["items", "slots"]) {
   });
 }
 
+restoreData();
 renderAll();
 setTab(window.location.hash.slice(1) || "items");
