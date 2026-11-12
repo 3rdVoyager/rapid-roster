@@ -311,27 +311,176 @@
   outline-offset: 1px;
 }
 
+.rules-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.rules-toolbar .button {
+  min-height: 2.25rem;
+  padding-inline: 0.8rem;
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.rules-toolbar .button-primary {
+  box-shadow: 0 4px 12px rgb(37 99 235 / 0.18);
+}
+
+.rules-toolbar .button-secondary {
+  color: #dbeafe;
+  background: color-mix(in srgb, var(--color-blue) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-blue) 35%, var(--line-color));
+}
+
+.rules-toolbar .button-secondary:hover {
+  background: color-mix(in srgb, var(--color-blue) 22%, transparent);
+  border-color: color-mix(in srgb, var(--color-blue) 55%, var(--line-color));
+}
+
+.rule-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rule-list-item {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0.9rem;
+  background: rgb(0 0 0 / 0.18);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 8px;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rule-list-item:hover {
+  background: rgb(255 255 255 / 0.035);
+  border-color: color-mix(in srgb, var(--color-blue) 32%, var(--line-color));
+  box-shadow: 0 8px 20px rgb(0 0 0 / 0.14);
+}
+
+.rule-list-copy {
+  min-width: 0;
+}
+
+.rule-list-sentence {
+  color: var(--text-color);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.sentence-control {
+  width: auto;
+  max-width: 13rem;
+  margin: 0 0.2rem;
+  padding: 0.2rem 0.35rem;
+  color: var(--text-color);
+  background: rgb(0 0 0 / 0.2);
+  border: 1px solid color-mix(in srgb, var(--color-blue) 28%, var(--line-color));
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.2);
+  font: inherit;
+  vertical-align: baseline;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sentence-control:hover {
+  background: rgb(255 255 255 / 0.07);
+  border-color: color-mix(in srgb, var(--color-blue) 55%, var(--line-color));
+}
+
+.sentence-action {
+  color: var(--color-blue-bright);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.sentence-control:focus {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 1px;
+}
+
+.rule-list-meta label {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--text-color-muted);
+  font-size: 0.7rem;
+}
+
+.rule-list-meta input,
+.rule-list-meta select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.35rem 0.45rem;
+  color: var(--text-color);
+  background: rgb(0 0 0 / 0.2);
+  border: 1px solid var(--line-color);
+  border-radius: 5px;
+  font: inherit;
+}
+
+.rule-list-meta input:focus,
+.rule-list-meta select:focus {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 1px;
+}
+
+.rule-list-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.8rem;
+  padding-top: 0.7rem;
+  color: var(--text-color-muted);
+  font-size: 0.72rem;
+  border-top: 1px solid rgb(255 255 255 / 0.07);
+}
+
+.rule-list-meta label {
+  min-width: 8rem;
+}
+
+.rule-list-meta input,
+.rule-list-meta select {
+  min-height: 2rem;
+}
+
+.rule-list-meta .is-hidden {
+  display: none;
+}
+
+.danger-text {
+  align-self: flex-start;
+  padding: 0.35rem 0.55rem;
+  color: #fca5a5;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.danger-text:hover {
+  background: rgb(248 113 113 / 0.1);
+  border-color: rgb(248 113 113 / 0.3);
+}
+
 .panel-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin-top: 1rem;
-}
-
-.rule-help {
-  display: flex;
-  gap: 0.6rem;
-  margin-top: 1rem;
-  padding: 0.9rem 1rem;
-  color: var(--text-color-muted);
-  background: color-mix(in srgb, var(--color-blue) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-blue) 20%, transparent);
-  border-radius: 8px;
-  font-size: 0.85rem;
-}
-
-.rule-help strong {
-  color: var(--color-yellow);
 }
 
 .generation-layout {
@@ -552,5 +701,17 @@
 
   .metrics {
     grid-template-columns: 1fr;
+  }
+
+  .rule-list-item {
+    display: block;
+  }
+
+  .rule-list-item > .danger-text {
+    margin-top: 0.65rem;
+  }
+
+  .sentence-control {
+    max-width: 100%;
   }
 }

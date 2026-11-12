@@ -48,9 +48,6 @@ function restoreData() {
     data.items = restored.items;
     data.slots = restored.slots;
     data.rules = restored.rules;
-    $("#rules-input").value = data.rules.length
-      ? JSON.stringify(data.rules, null, 2)
-      : "";
     setMessage("Saved project restored.");
   } catch (error) {
     setMessage(`Could not restore saved project: ${error.message}`, true);
@@ -83,7 +80,7 @@ function renderTable(type) {
     : "";
   $(`#${prefix}-body`).innerHTML = records.map((record, rowIndex) => `
     <tr>
-      ${headers.map((header) => `<td><input data-type="${type}" data-row="${rowIndex}" data-key="${escapeHtml(header)}" value="${escapeHtml(formatValue(record[header]))}" /></td>`).join("")}
+      ${headers.map((header) => `<td>${escapeHtml(formatValue(record[header]))}</td>`).join("")}
       <td><button class="icon-button" data-delete="${type}" data-row="${rowIndex}" type="button" aria-label="Delete ${type.slice(0, -1)}">×</button></td>
     </tr>`).join("");
 }
@@ -99,20 +96,116 @@ function renderCounts() {
   $("#rules-count").textContent = `${data.rules.length} rules`;
 }
 
+function parseTargets(value) {
+  const trimmed = value.trim();
+  return !trimmed || trimmed.toLowerCase() === "all"
+    ? "all"
+    : trimmed.split(",").map((target) => target.trim()).filter(Boolean);
+}
+
+function ruleKeywordMarkup(rule, index) {
+  const options = ["match", "group", "limit", "balance", "distribute", "align"];
+  return `<select class="sentence-control sentence-action" data-rule-index="${index}" data-rule-setting="keyword" aria-label="Rule action">${options.map((keyword) =>
+    `<option value="${keyword}" ${rule.keyword === keyword ? "selected" : ""}>${keyword}</option>`).join("")}</select>`;
+}
+
+function ruleInputMarkup(index, inputIndex, value, label, type = "text") {
+  return `<input class="sentence-control" data-rule-index="${index}" data-rule-input="${inputIndex}" type="${type}" value="${escapeHtml(value)}" aria-label="${label}" placeholder="${label}" />`;
+}
+
+function ruleTargetMarkup(index, inputIndex, value) {
+  const text = value === "all" ? "all" : Array.isArray(value) ? value.join(", ") : value;
+  return ruleInputMarkup(index, inputIndex, text, "all or slot IDs");
+}
+
+function ruleSentenceMarkup(rule, index) {
+  const [first = "", second = "", third = ""] = rule.inputs;
+  const action = ruleKeywordMarkup(rule, index);
+  switch (rule.keyword) {
+    case "match":
+      return `${action} each item's ${ruleInputMarkup(index, 0, first, "item attribute")} to its assigned slot's ${ruleInputMarkup(index, 1, second, "slot attribute")}.`;
+    case "group":
+      return `${action} each item by matching its ${ruleInputMarkup(index, 0, first, "item attribute")} with related items' ${ruleInputMarkup(index, 1, second, "related item attribute")}.`;
+    case "limit":
+      return `${action} ${ruleTargetMarkup(index, 2, third)} to <select class="sentence-control" data-rule-index="${index}" data-rule-input="0" aria-label="Limit type"><option value="min" ${first === "min" ? "selected" : ""}>at least</option><option value="max" ${first === "max" ? "selected" : ""}>at most</option></select> ${ruleInputMarkup(index, 1, second, "item count", "number")} assigned items.`;
+    case "balance":
+      return `${action} the average item ${ruleInputMarkup(index, 0, first, "numeric item attribute")} across ${ruleTargetMarkup(index, 1, second)}.`;
+    case "distribute":
+      return `${action} item ${ruleInputMarkup(index, 0, first, "numeric item attribute")} values evenly across ${ruleTargetMarkup(index, 1, second)}.`;
+    case "align":
+      return `${action} each item's assigned slot's ${ruleInputMarkup(index, 0, first, "assigned slot attribute")} with its ${ruleInputMarkup(index, 1, second, "sibling attribute")}.`;
+    default:
+      return "Unsupported rule form.";
+  }
+}
+
+function renderRules() {
+  $("#rules-count").textContent = `${data.rules.length} rules`;
+  $("#rule-list").innerHTML = data.rules.length
+    ? data.rules.map((rule, index) => `
+      <li class="rule-list-item">
+        <div class="rule-list-copy">
+          <div class="rule-list-sentence">${ruleSentenceMarkup(rule, index)}</div>
+          <div class="rule-list-meta">
+            <label>Enforcement <select data-rule-index="${index}" data-rule-setting="enforcement"><option value="hard" ${rule.enforcement === "hard" ? "selected" : ""}>Hard</option><option value="soft" ${rule.enforcement === "soft" ? "selected" : ""}>Soft</option></select></label>
+            <label class="${rule.enforcement === "soft" ? "" : "is-hidden"}">Priority <input data-rule-index="${index}" data-rule-setting="priority" type="number" min="1" max="100" value="${rule.priority ?? 10}" /></label>
+            <label>Name <input data-rule-index="${index}" data-rule-setting="name" value="${escapeHtml(rule.name ?? "")}" placeholder="optional" /></label>
+          </div>
+        </div>
+        <button class="text-button danger-text" data-delete-rule="${index}" type="button">Delete</button>
+      </li>`).join("")
+    : '<li class="empty-hint">No rules yet. Import a JSON rule set or add a rule.</li>';
+}
+
+function updateInlineRule(event) {
+  const control = event.target.closest("[data-rule-index]");
+  if (!control) return;
+  const index = Number(control.dataset.ruleIndex);
+  const rule = data.rules[index];
+  if (!rule) return;
+
+  if (control.dataset.ruleSetting === "keyword") {
+    rule.keyword = control.value;
+    rule.inputs = {
+      match: ["", ""],
+      group: ["", ""],
+      limit: ["min", 1, "all"],
+      balance: ["", "all"],
+      distribute: ["", "all"],
+      align: ["", ""],
+    }[rule.keyword];
+  } else if (control.dataset.ruleSetting === "enforcement") {
+    rule.enforcement = control.value;
+    if (rule.enforcement === "soft") rule.priority ??= 10;
+    else delete rule.priority;
+  } else if (control.dataset.ruleSetting === "priority") {
+    rule.priority = Number(control.value);
+  } else if (control.dataset.ruleSetting === "name") {
+    rule.name = control.value;
+  } else {
+    const inputIndex = Number(control.dataset.ruleInput);
+    const isTarget =
+      (rule.keyword === "limit" && inputIndex === 2) ||
+      ((rule.keyword === "balance" || rule.keyword === "distribute") &&
+        inputIndex === 1);
+    rule.inputs[inputIndex] = isTarget
+      ? parseTargets(control.value)
+      : rule.keyword === "limit" && inputIndex === 0
+        ? control.value
+      : rule.keyword === "limit" && inputIndex === 1
+        ? Number(control.value)
+        : control.value;
+  }
+
+  saveData();
+  renderAll();
+}
+
 function renderAll() {
   renderTable("items");
   renderTable("slots");
   renderCounts();
-}
-
-function updateRecord(event) {
-  const input = event.target.closest("input[data-type]");
-  if (!input) return;
-  const record = data[input.dataset.type][Number(input.dataset.row)];
-  record[input.dataset.key] = input.value.includes(";")
-    ? input.value.split(";").map((value) => value.trim()).filter(Boolean)
-    : input.value;
-  saveData();
+  renderRules();
 }
 
 async function importFile(event, type, format) {
@@ -123,7 +216,6 @@ async function importFile(event, type, format) {
     const value = format === "csv" ? parseCsv(text) : JSON.parse(text);
     if (!Array.isArray(value)) throw new Error("Imported JSON must be an array.");
     data[type] = value;
-    if (type === "rules") $("#rules-input").value = JSON.stringify(value, null, 2);
     saveData();
     renderAll();
     setMessage(`${file.name} imported.`);
@@ -132,14 +224,6 @@ async function importFile(event, type, format) {
   } finally {
     event.target.value = "";
   }
-}
-
-function syncRules() {
-  const text = $("#rules-input").value.trim();
-  data.rules = text ? JSON.parse(text) : [];
-  if (!Array.isArray(data.rules)) throw new Error("Rules JSON must be an array.");
-  saveData();
-  renderCounts();
 }
 
 function downloadCsv() {
@@ -175,7 +259,6 @@ function renderResults(result) {
 async function generate() {
   let worker;
   try {
-    syncRules();
     if (!data.items.length || !data.slots.length) {
       throw new Error("Add items and slots before generating.");
     }
@@ -228,23 +311,35 @@ document.querySelectorAll("[data-next]").forEach((button) => {
 $("#items-file").addEventListener("change", (event) => importFile(event, "items", "csv"));
 $("#slots-file").addEventListener("change", (event) => importFile(event, "slots", "csv"));
 $("#rules-file").addEventListener("change", (event) => importFile(event, "rules", "json"));
-$("#items-body").addEventListener("change", updateRecord);
-$("#slots-body").addEventListener("change", updateRecord);
+$("#rule-list").addEventListener("change", updateInlineRule);
 document.addEventListener("click", (event) => {
   const deleteButton = event.target.closest("[data-delete]");
-  if (!deleteButton) return;
-  data[deleteButton.dataset.delete].splice(Number(deleteButton.dataset.row), 1);
+  if (deleteButton) {
+    data[deleteButton.dataset.delete].splice(Number(deleteButton.dataset.row), 1);
+    saveData();
+    renderAll();
+    return;
+  }
+  const deleteRuleButton = event.target.closest("[data-delete-rule]");
+  if (deleteRuleButton) {
+    data.rules.splice(Number(deleteRuleButton.dataset.deleteRule), 1);
+    saveData();
+    renderAll();
+  }
+});
+$("#new-rule-button").addEventListener("click", () => {
+  const nextId = data.rules.length
+    ? Math.max(...data.rules.map((rule) => Number(String(rule.id).replace(/\D/g, "")) || 0)) + 1
+    : 1;
+  data.rules.push({
+    id: `R${nextId}`,
+    name: "",
+    enforcement: "hard",
+    keyword: "match",
+    inputs: ["", ""],
+  });
   saveData();
   renderAll();
-});
-$("#rules-input").addEventListener("change", () => {
-  try { syncRules(); setMessage("Rules updated."); } catch (error) { setMessage(error.message, true); }
-});
-$("#clear-rules-button").addEventListener("click", () => {
-  $("#rules-input").value = "";
-  data.rules = [];
-  saveData();
-  renderCounts();
 });
 $("#generate-button").addEventListener("click", generate);
 $("#copy-button").addEventListener("click", async () => {

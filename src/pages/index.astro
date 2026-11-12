@@ -73,24 +73,22 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <div>
             <p class="panel-kicker">03 / Configure</p>
             <h1>Rules</h1>
-            <p class="app-panel-lead">Hard constraints must be satisfied. Soft rules guide the best result.</p>
+            <p class="app-panel-lead">Build rules using plain-language sentence forms.</p>
           </div>
           <button class="button button-primary button-small" data-next="generate" type="button">Continue to Generation</button>
         </div>
+        <div class="rules-toolbar">
+          <label class="button button-primary button-small file-button" for="rules-file">Import rules JSON<input id="rules-file" type="file" accept=".json,application/json" /></label>
+          <button class="button button-secondary button-small" id="new-rule-button" type="button">+ Add rule</button>
+          <span class="toolbar-spacer"></span><span class="record-count" id="rules-count">0 rules</span>
+        </div>
         <div class="rules-card">
           <div class="card-header">
-            <div><h2 class="card-title">Rule set</h2><p class="card-description">Use the current JSON schema to define match, limit, group, balance, and other rules.</p></div>
-            <label class="button button-ghost button-small file-button" for="rules-file">Import JSON<input id="rules-file" type="file" accept=".json,application/json" /></label>
+            <div><h2 class="card-title">Rule list</h2><p class="card-description">Edit each rule inline using the documented sentence forms.</p></div>
           </div>
-          <textarea id="rules-input" spellcheck="false" placeholder="Paste a JSON array of rules here"></textarea>
-          <div class="panel-actions">
-            <button class="button button-secondary button-small" id="clear-rules-button" type="button">Clear rules</button>
-            <span class="record-count" id="rules-count">0 rules</span>
-          </div>
-        </div>
-        <div class="rule-help">
-          <strong>Tip</strong>
-          <span>Start with hard match rules for requirements, then add soft rules with priorities for preferences.</span>
+          <ul class="rule-list" id="rule-list">
+            <li class="empty-hint">No rules yet. Import a JSON rule set or add a rule.</li>
+          </ul>
         </div>
       </section>
 
