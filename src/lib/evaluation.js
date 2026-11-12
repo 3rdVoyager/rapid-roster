@@ -65,7 +65,13 @@ export function evaluateModel(model, hardOnly = false) {
   return evaluation;
 }
 
-export function evaluateSwap(model, currentEvaluation, candidateModel, swap) {
+export function evaluateSwap(
+  model,
+  currentEvaluation,
+  candidateModel,
+  swap,
+  includeViolations = false,
+) {
   const evaluation = {
     hardPenalty: 0,
     hardViolations: [],
@@ -89,6 +95,9 @@ export function evaluateSwap(model, currentEvaluation, candidateModel, swap) {
     const currentRulePenalty = currentRulePenalties.get(rule.id);
     const isAffected =
       keywordConfig?.isAffected?.(rule, model, swap) ?? true;
+    const nextRuleEvaluation = includeViolations && isAffected
+      ? evaluateRule(rule, candidateModel)
+      : null;
     const nextRulePenalty =
       !isAffected && currentRulePenalty
         ? currentRulePenalty
@@ -104,6 +113,19 @@ export function evaluateSwap(model, currentEvaluation, candidateModel, swap) {
 
     evaluation.softPenalty += nextRulePenalty.weightedPenalty;
     evaluation.softRulePenalties.push(nextRulePenalty);
+    if (includeViolations) {
+      const nextViolations = isAffected
+        ? nextRuleEvaluation.violations
+        : currentEvaluation.softViolations
+          .filter((violation) => violation.ruleId === rule.id)
+          .map(({ ruleId, ...violation }) => violation);
+      evaluation.softViolations.push(
+        ...nextViolations.map((violation) => ({
+          ruleId: rule.id,
+          ...violation,
+        })),
+      );
+    }
   }
 
   return evaluation;

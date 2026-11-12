@@ -9,9 +9,17 @@ export function createModel(items, slots, rules = [], assignments = {}) {
   validateRules(rules);
   validateAssignments(assignments, items, slots);
 
+  const itemIdsByKey = new Map(items.map((item) => [String(item.id), item.id]));
+  const slotIdsByKey = new Map(slots.map((slot) => [String(slot.id), slot.id]));
+  const canonicalAssignments = Object.fromEntries(
+    Object.entries(assignments).map(([slotId, itemIds]) => [
+      slotIdsByKey.get(String(slotId)),
+      itemIds.map((itemId) => itemIdsByKey.get(String(itemId))),
+    ]),
+  );
   const itemAssignments = {};
 
-  for (const [slotId, itemIds] of Object.entries(assignments)) {
+  for (const [slotId, itemIds] of Object.entries(canonicalAssignments)) {
     for (const itemId of itemIds) {
       if (!itemAssignments[itemId]) {
         itemAssignments[itemId] = [];
@@ -26,7 +34,7 @@ export function createModel(items, slots, rules = [], assignments = {}) {
     slots,
     rules,
     assignments: {
-      slotAssignments: assignments,
+      slotAssignments: canonicalAssignments,
       itemAssignments: itemAssignments,
     },
   };

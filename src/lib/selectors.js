@@ -1,9 +1,9 @@
 export function getItemById(model, id) {
-  return model.items.find((item) => item.id === id);
+  return model.items.find((item) => String(item.id) === String(id));
 }
 
 export function getSlotById(model, id) {
-  return model.slots.find((slot) => slot.id === id);
+  return model.slots.find((slot) => String(slot.id) === String(id));
 }
 
 export function getItemsWithAttribute(model, attribute, value) {

@@ -87,18 +87,24 @@ export function improveSoftAssignments(
         cloneAssignments(assignments),
       );
       const previousSoftPenalty = currentEvaluation.softPenalty;
+      let acceptedSwap;
       const candidate = generateCandidate(
         currentModel,
         ruleViolations,
         currentEvaluation,
-        (candidateAssignments, swap) =>
-          isBetterSoftCandidate(
+        (candidateAssignments, swap) => {
+          const candidateResult = evaluateSoftCandidate(
             currentModel,
             candidateAssignments,
             currentEvaluation,
             swap,
             candidateModel,
-          ),
+          );
+          if (candidateResult.improved) {
+            acceptedSwap = swap;
+          }
+          return candidateResult.improved;
+        },
         hardCompatibilityIndex,
         candidateDiagnostics,
       );
@@ -108,6 +114,7 @@ export function improveSoftAssignments(
       }
 
       passImproved = true;
+      const previousModel = currentModel;
       assignments = candidate;
       currentModel = createModel(
         model.items,
@@ -115,7 +122,13 @@ export function improveSoftAssignments(
         model.rules,
         assignments,
       );
-      currentEvaluation = evaluateModel(currentModel);
+      currentEvaluation = evaluateSwap(
+        previousModel,
+        currentEvaluation,
+        candidateModel,
+        acceptedSwap,
+        true,
+      );
       onProgress?.({
         round: pass + 1,
         ruleId: rule.id,
@@ -233,7 +246,7 @@ function getPriorityRules(rules, softRulePenalties) {
     );
 }
 
-function isBetterSoftCandidate(
+function evaluateSoftCandidate(
   model,
   assignments,
   currentEvaluation,
@@ -254,7 +267,7 @@ function isBetterSoftCandidate(
   if (!improved) {
     undoSwap();
   }
-  return improved;
+  return { improved, evaluation: candidateEvaluation };
 }
 
 function createHardCompatibilityIndex(model) {

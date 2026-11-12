@@ -54,6 +54,16 @@ test("finds an item by ID", () => {
   assert.deepEqual(getItemById(model, firstItemId), items[0]);
 });
 
+test("finds numeric IDs after CSV string conversion", () => {
+  const model = createModel(
+    [{ id: 1, name: "Item 1" }],
+    [{ id: 10, name: "Slot 10" }],
+  );
+
+  assert.deepEqual(getItemById(model, "1"), model.items[0]);
+  assert.deepEqual(getSlotById(model, "10"), model.slots[0]);
+});
+
 test("returns undefined for an unknown item ID", () => {
   const model = createTestModel();
 

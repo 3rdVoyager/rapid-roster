@@ -135,20 +135,23 @@ export function generateCandidate({
         ? first[itemAttribute] - second[itemAttribute]
         : second[itemAttribute] - first[itemAttribute],
     );
+  const numericItemsBySlot = new Map();
+  const slotAverageById = new Map();
   const targetSlots = model.slots
     .filter((slot) => isTargetSlot(slot, slotTargets))
-    .filter((slot) => slot.id !== slotId)
-    .sort((first, second) => {
-      const firstAverage = getNumericSlotAverage(
-        model,
-        first.id,
-        itemAttribute,
-      );
-      const secondAverage = getNumericSlotAverage(
-        model,
-        second.id,
-        itemAttribute,
-      );
+    .filter((slot) => slot.id !== slotId);
+  for (const targetSlot of targetSlots) {
+    const numericItems = getItemsInSlot(model, targetSlot.id)
+      .filter((item) => isNumericValue(item[itemAttribute]));
+    numericItemsBySlot.set(targetSlot.id, numericItems);
+    slotAverageById.set(
+      targetSlot.id,
+      getNumericSlotAverage(model, targetSlot.id, itemAttribute),
+    );
+  }
+  targetSlots.sort((first, second) => {
+      const firstAverage = slotAverageById.get(first.id);
+      const secondAverage = slotAverageById.get(second.id);
       return violation.actual < violation.target
         ? secondAverage - firstAverage
         : firstAverage - secondAverage;
@@ -156,8 +159,7 @@ export function generateCandidate({
 
   for (const sourceItem of sourceItems) {
     for (const targetSlot of targetSlots) {
-      const targetItems = getItemsInSlot(model, targetSlot.id)
-        .filter((item) => isNumericValue(item[itemAttribute]))
+      const targetItems = numericItemsBySlot.get(targetSlot.id)
         .sort((first, second) =>
           violation.actual < violation.target
             ? second[itemAttribute] - first[itemAttribute]

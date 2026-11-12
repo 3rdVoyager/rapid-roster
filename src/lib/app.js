@@ -297,15 +297,23 @@ function renderSelectedResult() {
 }
 
 function renderResults(results) {
-  generatedResults = results;
-  selectedResultIndex = results.reduce(
+  generatedResults = results.map((result) => ({
+    ...result,
+    evaluation: evaluateModel(createModel(
+      normalizeNumericRuleAttributes(data.items, data.rules),
+      data.slots,
+      data.rules,
+      result.assignments,
+    )),
+  }));
+  selectedResultIndex = generatedResults.reduce(
     (bestIndex, result, index, all) =>
       result.evaluation.softPenalty < all[bestIndex].evaluation.softPenalty
         ? index
         : bestIndex,
     0,
   );
-  $("#result-tabs").innerHTML = results.map((result, index) => `
+  $("#result-tabs").innerHTML = generatedResults.map((result, index) => `
     <button class="result-tab ${index === selectedResultIndex ? "is-active" : ""}" data-result-index="${index}" type="button">
       <span>Solution ${index + 1}</span>
       <strong>H ${result.evaluation.hardPenalty.toFixed(2)}</strong>
@@ -456,7 +464,6 @@ async function generate() {
     const hardOnly = $("#generation-hard-only").checked;
     const maxWorkers = Math.max(1, (navigator.hardwareConcurrency || 2) - 1);
     const workerCount = Number($("#generation-worker-count").value);
-    const executionMode = $("#generation-execution-mode").value;
     const limitMilliseconds = limitValue * 1000;
     if (
       !hardOnly &&
@@ -518,9 +525,8 @@ async function generate() {
             progressByWorker.set(index, message.progress);
             const progressValues = [...progressByWorker.values()];
             const currentRound = message.progress.round / limitValue;
-            const progressFraction = executionMode === "concurrent"
-              ? progressValues.reduce((sum, value) => sum + value.round, 0) / (limitValue * workerCount)
-              : (completedWorkers + currentRound) / workerCount;
+            const progressFraction =
+              (completedWorkers + currentRound) / workerCount;
             const percent = limitMode === "rounds"
               ? Math.min(100, progressFraction * 100)
               : null;
@@ -546,14 +552,8 @@ async function generate() {
         worker.postMessage(workerPayload);
       });
     const results = [];
-    if (executionMode === "concurrent") {
-      results.push(...await Promise.all(
-        Array.from({ length: workerCount }, (_, index) => runWorker(index)),
-      ));
-    } else {
-      for (let index = 0; index < workerCount; index += 1) {
-        results.push(await runWorker(index));
-      }
+    for (let index = 0; index < workerCount; index += 1) {
+      results.push(await runWorker(index));
     }
     renderResults(results);
     clearInterval(progressTimer);
@@ -562,13 +562,13 @@ async function generate() {
     $("#generation-progress-bar").style.width = "100%";
     $("#generation-progress-round").textContent = "Generation complete";
     $("#generation-progress-elapsed").textContent = "";
-    const bestResult = results.reduce((best, result) =>
+    const bestResult = generatedResults.reduce((best, result) =>
       result.evaluation.softPenalty < best.evaluation.softPenalty ? result : best,
-    results[0]);
+    generatedResults[0]);
     $("#generation-message").textContent =
       `${workerCount} solution${workerCount === 1 ? "" : "s"} generated. ` +
       `Best soft penalty: ${bestResult.evaluation.softPenalty.toFixed(6)}. ` +
-      `${executionMode === "concurrent" ? "Concurrent." : "Sequential."} ` +
+      "Generated sequentially. " +
       `${hardOnly ? "Hard rules only." : limitMode === "rounds" ? `Limit: ${limitValue} rounds per solution.` : `Limit: ${limitValue} seconds per solution.`}`;
     setMessage("Roster generated successfully.");
   } catch (error) {
@@ -663,8 +663,8 @@ for (const type of ["items", "slots"]) {
 
 const maxWorkers = Math.max(1, (navigator.hardwareConcurrency || 2) - 1);
 $("#generation-worker-count").max = String(maxWorkers);
-$("#generation-worker-count").value = String(Math.min(2, maxWorkers));
-$("#generation-worker-count-label").textContent = `Parallel solutions (max ${maxWorkers})`;
+$("#generation-worker-count").value = "1";
+$("#generation-worker-count-label").textContent = `Solutions to generate (max ${maxWorkers})`;
 
 restoreData();
 renderAll();

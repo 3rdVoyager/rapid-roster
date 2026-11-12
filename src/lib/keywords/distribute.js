@@ -12,6 +12,8 @@ export const config = {
   inputValidators: ["itemAttribute", "targetSlots"],
 };
 
+const rankedItemOrderCache = new WeakMap();
+
 export function evaluate(inputs, model) {
   const itemAttribute = inputs[0];
   const targetSlots = inputs[1] ?? "all";
@@ -96,8 +98,20 @@ export function evaluateSwap(rule, model, currentPenalty, candidateModel, swap) 
 
 function getRankedItems(model, itemAttribute, targetSlots = "all") {
   const targetSlotIds = getTargetSlotIds(model, targetSlots);
-  return model.items
-    .filter((item) => isNumericValue(item[itemAttribute]))
+  const cacheKey = `${itemAttribute}|${[...targetSlotIds].sort().join(",")}`;
+  let orderedItems = rankedItemOrderCache.get(model.items)?.get(cacheKey);
+  if (!orderedItems) {
+    orderedItems = model.items
+      .filter((item) => isNumericValue(item[itemAttribute]))
+      .sort((first, second) => second[itemAttribute] - first[itemAttribute]);
+    let itemsByKey = rankedItemOrderCache.get(model.items);
+    if (!itemsByKey) {
+      itemsByKey = new Map();
+      rankedItemOrderCache.set(model.items, itemsByKey);
+    }
+    itemsByKey.set(cacheKey, orderedItems);
+  }
+  return orderedItems
     .map((item) => ({
       item,
       itemValue: item[itemAttribute],
@@ -105,8 +119,7 @@ function getRankedItems(model, itemAttribute, targetSlots = "all") {
         targetSlotIds.has(String(slotId)),
       ),
     }))
-    .filter((entry) => entry.assignedSlotIds.length > 0)
-    .sort((first, second) => second.itemValue - first.itemValue);
+    .filter((entry) => entry.assignedSlotIds.length > 0);
 }
 
 function getAffectedPairIndexes(firstRankedItems, secondRankedItems, swap) {
