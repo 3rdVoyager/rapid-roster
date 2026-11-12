@@ -10,12 +10,15 @@ import { swapAssignments } from "../assignment.js";
 
 export const config = {
   keyword: "balance",
-  inputValidators: ["itemAttribute"],
+  inputValidators: ["itemAttribute", "targetSlots"],
 };
 
 export function evaluate(inputs, model) {
   const itemAttribute = inputs[0];
-  const itemValues = model.items
+  const slotTargets = inputs[1] ?? "all";
+  const targetSlots = getTargetSlots(model, slotTargets);
+  const itemValues = targetSlots
+    .flatMap((slot) => getItemsInSlot(model, slot.id))
     .map((item) => item[itemAttribute])
     .filter(isNumericValue);
 
@@ -29,7 +32,7 @@ export function evaluate(inputs, model) {
   let repetitions = 0;
   const violations = [];
 
-  for (const slot of model.slots) {
+  for (const slot of targetSlots) {
     const assignedItems = getItemsInSlot(model, slot.id);
     const numericValues = assignedItems
       .map((item) => item[itemAttribute])
@@ -62,13 +65,36 @@ export function isAffected() {
 }
 
 export function evaluateSwap(rule, model, currentPenalty, candidateModel, swap) {
-  const itemAttribute = rule.inputs[0];
+  const [itemAttribute, slotTargets = "all"] = rule.inputs;
+  const targetSlotIds = getTargetSlots(model, slotTargets).map(
+    (slot) => slot.id,
+  );
   const oldScore =
-    getBalanceSlotScore(model, swap.firstSlotId, itemAttribute) +
-    getBalanceSlotScore(model, swap.secondSlotId, itemAttribute);
+    getAffectedSlotScore(
+      model,
+      swap.firstSlotId,
+      itemAttribute,
+      targetSlotIds,
+    ) +
+    getAffectedSlotScore(
+      model,
+      swap.secondSlotId,
+      itemAttribute,
+      targetSlotIds,
+    );
   const newScore =
-    getBalanceSlotScore(candidateModel, swap.firstSlotId, itemAttribute) +
-    getBalanceSlotScore(candidateModel, swap.secondSlotId, itemAttribute);
+    getAffectedSlotScore(
+      candidateModel,
+      swap.firstSlotId,
+      itemAttribute,
+      targetSlotIds,
+    ) +
+    getAffectedSlotScore(
+      candidateModel,
+      swap.secondSlotId,
+      itemAttribute,
+      targetSlotIds,
+    );
   const score = currentPenalty.score - oldScore + newScore;
   const percentage =
     currentPenalty.repetitions === 0
@@ -91,7 +117,7 @@ export function generateCandidate({
   hardCompatibilityIndex,
   diagnostic,
 }) {
-  const itemAttribute = rule.inputs[0];
+  const [itemAttribute, slotTargets = "all"] = rule.inputs;
   const slotId = violation.targetId;
   const assignments = model.assignments.slotAssignments;
   const sourceItems = getItemsInSlot(model, slotId)
@@ -102,6 +128,7 @@ export function generateCandidate({
         : second[itemAttribute] - first[itemAttribute],
     );
   const targetSlots = model.slots
+    .filter((slot) => isTargetSlot(slot, slotTargets))
     .filter((slot) => slot.id !== slotId)
     .sort((first, second) => {
       const firstAverage = getNumericSlotAverage(
@@ -165,4 +192,30 @@ export function generateCandidate({
   }
 
   return null;
+}
+
+function getTargetSlots(model, slotTargets) {
+  if (slotTargets === "all") {
+    return model.slots;
+  }
+
+  const targetSlotIds = new Set(
+    slotTargets.map((slotId) => String(slotId)),
+  );
+  return model.slots.filter((slot) => targetSlotIds.has(String(slot.id)));
+}
+
+function isTargetSlot(slot, slotTargets) {
+  return (
+    slotTargets === "all" ||
+    slotTargets.some((slotId) => String(slotId) === String(slot.id))
+  );
+}
+
+function getAffectedSlotScore(model, slotId, itemAttribute, targetSlotIds) {
+  return targetSlotIds.some(
+    (targetSlotId) => String(targetSlotId) === String(slotId),
+  )
+    ? getBalanceSlotScore(model, slotId, itemAttribute, targetSlotIds)
+    : 0;
 }

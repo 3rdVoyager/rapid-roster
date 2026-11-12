@@ -5,7 +5,7 @@ const inputValidators = {
   slotAttribute: isSlotAttributeInput,
   limitType: isLimitType,
   nonNegativeInteger: isNonNegativeInteger,
-  slotTargets: isSlotTargetsInput,
+  targetSlots: isSlotTargetsInput,
 };
 
 export function validateData(items, slots) {

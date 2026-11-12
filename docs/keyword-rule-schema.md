@@ -78,11 +78,13 @@ Balances a numeric attribute across groups, using each group's average for that 
 ```json
 {
   "keyword": "balance",
-  "inputs": ["height"]
+  "inputs": ["height", "all"]
 }
 ```
 
-The input is `[numericAttribute]`.
+The inputs are `[numericAttribute, slotTargets]`. `slotTargets` is either
+`"all"` or an array of slot IDs. Balance is calculated only across the
+selected slots, including the average used as the comparison target.
 
 ### `distribute`
 

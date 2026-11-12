@@ -350,3 +350,34 @@ test("balance scores deviations from the overall average", () => {
   });
 });
 
+test("balance can be scoped to selected slots", () => {
+  const model = createModel(
+    [
+      { id: "I1", height: 10 },
+      { id: "I2", height: 20 },
+      { id: "I3", height: 30 },
+      { id: "I4", height: 40 },
+      { id: "I5", height: 100 },
+      { id: "I6", height: 110 },
+      { id: "I7", height: 120 },
+      { id: "I8", height: 130 },
+    ],
+    [{ id: "S1" }, { id: "S2" }, { id: "S3" }, { id: "S4" }],
+    [],
+    {
+      S1: ["I1", "I2"],
+      S2: ["I3", "I4"],
+      S3: ["I5", "I6"],
+      S4: ["I7", "I8"],
+    },
+  );
+
+  const result = evaluateBalance(["height", ["S1", "S2"]], model);
+
+  assert.deepEqual({ ...result, violations: result.violations.length }, {
+    score: 1.8,
+    repetitions: 2,
+    violations: 2,
+  });
+});
+

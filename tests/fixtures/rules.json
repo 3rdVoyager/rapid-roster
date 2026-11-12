@@ -78,15 +78,78 @@
   },
   {
     "id": "R8",
-    "name": "Balance Average Heights",
-    "description": "Balance the average item's Height across all slots.",
+    "name": "Balance Height: Male K/1",
+    "description": "Balance average height across male K/1 slots.",
     "enforcement": "soft",
-    "priority": 80,
+    "priority": 10,
     "keyword": "balance",
-    "inputs": ["height"]
+    "inputs": ["height", ["Coyotes", "Tomato Frogs", "Lizards", "Stallions"]]
   },
   {
     "id": "R9",
+    "name": "Balance Height: Male 2/3",
+    "description": "Balance average height across male 2/3 slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "balance",
+    "inputs": ["height", ["Snapping Turtles", "Lions", "Jackals", "Dragons", "Hawks", "Bengals", "Cheetahs", "Tarantulas"]]
+  },
+  {
+    "id": "R10",
+    "name": "Balance Height: Male 4/5",
+    "description": "Balance average height across male 4/5 slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "balance",
+    "inputs": ["height", ["Nittany Lions", "Wonder Boys", "Buffaloes", "Banana Slugs", "Spartans", "Midshipmen", "Huskies", "Titans", "Knights", "Terrapins"]]
+  },
+  {
+    "id": "R11",
+    "name": "Balance Height: Male 6/7/8",
+    "description": "Balance average height across older male slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "balance",
+    "inputs": ["height", ["Thunder", "Celtics", "Wizards", "Mavericks", "Timberwolves", "Raptors", "Nuggets", "Lakers", "Warriors", "Cavaliers", "Bucks", "Pistons", "Grizzlies", "Bulls"]]
+  },
+  {
+    "id": "R12",
+    "name": "Balance Height: Female K/1",
+    "description": "Balance average height across female K/1 slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "balance",
+    "inputs": ["height", ["Starfish", "Bobcats", "Unicorns", "Flamingos"]]
+  },
+  {
+    "id": "R13",
+    "name": "Balance Height: Female 2/3",
+    "description": "Balance average height across female 2/3 slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "balance",
+    "inputs": ["height", ["Ladybugs", "Leopards", "Bunnies", "Wildcats"]]
+  },
+  {
+    "id": "R14",
+    "name": "Balance Height: Female 4/5",
+    "description": "Balance average height across female 4/5 slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "balance",
+    "inputs": ["height", ["Hawkeyes", "Golden Gophers", "Fighting Camels", "Royals"]]
+  },
+  {
+    "id": "R15",
+    "name": "Balance Height: Female 6/7/8",
+    "description": "Balance average height across older female slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "balance",
+    "inputs": ["height", ["Storm", "Fever", "Lynx", "Mystics", "Liberty", "Valkyries", "Aces"]]
+  },
+  {
+    "id": "R16",
     "name": "Distribute Tallest Players",
     "description": "Distribute the values of each item's Height evenly across all slots.",
     "enforcement": "soft",
@@ -95,7 +158,7 @@
     "inputs": ["height"]
   },
   {
-    "id": "R10",
+    "id": "R17",
     "name": "Group Teammate Requests",
     "description": "Group each item with items whose IDs are in its Teammate Requests.",
     "enforcement": "soft",
@@ -104,7 +167,7 @@
     "inputs": ["id", "teammateRequest"]
   },
   {
-    "id": "R11",
+    "id": "R18",
     "name": "Honor Coach Requests",
     "description": "Match each item's Coach Request to its assigned slot's ID.",
     "enforcement": "soft",
@@ -113,7 +176,7 @@
     "inputs": ["coachRequest", "id"]
   },
   {
-    "id": "R12",
+    "id": "R19",
     "name": "Match Sibling Practice Nights",
     "description": "Align each item's assigned slot's Practice Night with its Sibling's assigned slot's Practice Night.",
     "enforcement": "soft",
@@ -122,7 +185,7 @@
     "inputs": ["practiceNight", "sibling"]
   },
   {
-    "id": "R13",
+    "id": "R20",
     "name": "Match Sibling Gym",
     "description": "Align each item's assigned slot's Gym Location with its Sibling's assigned slot's Gym Location.",
     "enforcement": "soft",
@@ -131,12 +194,75 @@
     "inputs": ["gymLocation", "sibling"]
   },
   {
-    "id": "R14",
-    "name": "Balance Evaluation Scores",
-    "description": "Balance the average item's Evaluation Score across all slots.",
+    "id": "R21",
+    "name": "Balance Evaluation: Male K/1",
+    "description": "Balance average evaluation score across male K/1 slots.",
     "enforcement": "soft",
-    "priority": 100,
+    "priority": 12.5,
     "keyword": "balance",
-    "inputs": ["evaluationScore"]
+    "inputs": ["evaluationScore", ["Coyotes", "Tomato Frogs", "Lizards", "Stallions"]]
+  },
+  {
+    "id": "R22",
+    "name": "Balance Evaluation: Male 2/3",
+    "description": "Balance average evaluation score across male 2/3 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "balance",
+    "inputs": ["evaluationScore", ["Snapping Turtles", "Lions", "Jackals", "Dragons", "Hawks", "Bengals", "Cheetahs", "Tarantulas"]]
+  },
+  {
+    "id": "R23",
+    "name": "Balance Evaluation: Male 4/5",
+    "description": "Balance average evaluation score across male 4/5 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "balance",
+    "inputs": ["evaluationScore", ["Nittany Lions", "Wonder Boys", "Buffaloes", "Banana Slugs", "Spartans", "Midshipmen", "Huskies", "Titans", "Knights", "Terrapins"]]
+  },
+  {
+    "id": "R24",
+    "name": "Balance Evaluation: Male 6/7/8",
+    "description": "Balance average evaluation score across older male slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "balance",
+    "inputs": ["evaluationScore", ["Thunder", "Celtics", "Wizards", "Mavericks", "Timberwolves", "Raptors", "Nuggets", "Lakers", "Warriors", "Cavaliers", "Bucks", "Pistons", "Grizzlies", "Bulls"]]
+  },
+  {
+    "id": "R25",
+    "name": "Balance Evaluation: Female K/1",
+    "description": "Balance average evaluation score across female K/1 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "balance",
+    "inputs": ["evaluationScore", ["Starfish", "Bobcats", "Unicorns", "Flamingos"]]
+  },
+  {
+    "id": "R26",
+    "name": "Balance Evaluation: Female 2/3",
+    "description": "Balance average evaluation score across female 2/3 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "balance",
+    "inputs": ["evaluationScore", ["Ladybugs", "Leopards", "Bunnies", "Wildcats"]]
+  },
+  {
+    "id": "R27",
+    "name": "Balance Evaluation: Female 4/5",
+    "description": "Balance average evaluation score across female 4/5 slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "balance",
+    "inputs": ["evaluationScore", ["Hawkeyes", "Golden Gophers", "Fighting Camels", "Royals"]]
+  },
+  {
+    "id": "R28",
+    "name": "Balance Evaluation: Female 6/7/8",
+    "description": "Balance average evaluation score across older female slots.",
+    "enforcement": "soft",
+    "priority": 12.5,
+    "keyword": "balance",
+    "inputs": ["evaluationScore", ["Storm", "Fever", "Lynx", "Mystics", "Liberty", "Valkyries", "Aces"]]
   }
 ]

@@ -119,7 +119,7 @@ test("improves soft scores without breaking hard rules", () => {
         enforcement: "soft",
         priority: 1,
         keyword: "balance",
-        inputs: ["height"],
+        inputs: ["height", "all"],
       },
     ],
     { S1: ["I1", "I2", "I3"], S2: ["I4", "I5"] },

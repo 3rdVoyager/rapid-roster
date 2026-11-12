@@ -160,7 +160,7 @@ test("evaluateSwap matches full scoring for match and balance rules", () => {
       enforcement: "soft",
       priority: 20,
       keyword: "balance",
-      inputs: ["rating"],
+      inputs: ["rating", "all"],
     },
     {
       id: "R3",

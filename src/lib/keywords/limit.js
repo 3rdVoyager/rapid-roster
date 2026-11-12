@@ -2,7 +2,7 @@ import { getAssignedItemIds } from "../selectors.js";
 
 export const config = {
   keyword: "limit",
-  inputValidators: ["limitType", "nonNegativeInteger", "slotTargets"],
+  inputValidators: ["limitType", "nonNegativeInteger", "targetSlots"],
 };
 
 export function evaluate(inputs, model) {

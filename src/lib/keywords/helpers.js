@@ -62,11 +62,17 @@ export function getNumericSlotAverage(model, slotId, itemAttribute) {
   );
 }
 
-export function getBalanceSlotScore(model, slotId, itemAttribute) {
+export function getBalanceSlotScore(
+  model,
+  slotId,
+  itemAttribute,
+  targetSlotIds = model.slots.map((slot) => slot.id),
+) {
   const numericValues = getItemsInSlot(model, slotId)
     .map((item) => item[itemAttribute])
     .filter(isNumericValue);
-  const allValues = model.items
+  const allValues = targetSlotIds
+    .flatMap((targetSlotId) => getItemsInSlot(model, targetSlotId))
     .map((item) => item[itemAttribute])
     .filter(isNumericValue);
 
