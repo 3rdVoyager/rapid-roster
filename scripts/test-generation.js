@@ -15,7 +15,7 @@ import { evaluateModel } from "../src/lib/scoring.js";
 const maxIterations = Number(process.argv[2] ?? 100);
 
 if (!Number.isInteger(maxIterations) || maxIterations < 1) {
-  console.error("Usage: node scripts/generate-fixture.js [maxIterations]");
+  console.error("Usage: node scripts/test-generation.js [maxIterations]");
   process.exitCode = 1;
 } else {
   const generationStartedAt = performance.now();

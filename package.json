@@ -10,9 +10,10 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "node --test",
-    "stress:assignments": "node scripts/stress-assignment-creation.js",
-    "format": "prettier --write ."
+    "test": "node --test tests",
+    "format": "prettier --write .",
+    "test-import": "node scripts/test-import.js",
+    "test-generation": "node scripts/test-generation.js"
   },
   "dependencies": {
     "astro": "^7.4.4"

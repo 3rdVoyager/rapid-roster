@@ -8,7 +8,7 @@ export function parseCsv(csvText) {
     return [];
   }
 
-  const headers = rows[0].map((header) => header.trim());
+  const headers = rows[0].map(toCamelCase);
   validateHeaders(headers);
 
   return rows.slice(1).map((row) =>
@@ -30,6 +30,32 @@ function parseCellValue(value) {
     .split(";")
     .map((entry) => entry.trim())
     .filter((entry) => entry !== "");
+}
+
+function toCamelCase(header) {
+  const trimmedHeader = header.trim();
+  if (!trimmedHeader) {
+    return "";
+  }
+
+  if (!/[\s_-]/.test(trimmedHeader)) {
+    return /^[A-Z0-9]+$/.test(trimmedHeader)
+      ? trimmedHeader.toLowerCase()
+      : trimmedHeader[0].toLowerCase() + trimmedHeader.slice(1);
+  }
+
+  const words = trimmedHeader
+    .replace(/['’]/g, "")
+    .split(/[\s_-]+/)
+    .filter(Boolean);
+  return words
+    .map((word, index) => {
+      const normalizedWord = word.toLowerCase();
+      return index === 0
+        ? normalizedWord
+        : normalizedWord[0].toUpperCase() + normalizedWord.slice(1);
+    })
+    .join("");
 }
 
 function parseCsvRows(csvText) {

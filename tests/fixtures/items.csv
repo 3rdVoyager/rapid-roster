@@ -1,0 +1,550 @@
+id,gender,grade,division,height,practiceNights,teammateRequest,coachRequest,coachChildRequest,sibling,evaluationScore
+P101,M,7,M 6/7/8,66,Monday; Tuesday,,,,,80.32833333333333
+P103,F,6,F 6/7/8,58,Monday; Tuesday; Thursday,P156; P157; P510; P459,,,,70.49666666666667
+P104,F,1,F K/1,50,Monday; Tuesday; Thursday,P208; P209,,,P105,21.09
+P105,F,0,F K/1,47,Monday; Tuesday; Thursday,P209; P208,,,P104,3
+P106,M,4,M 4/5,61,Monday; Thursday,P632; P313,,,,36.38500000000001
+P107,M,2,M 2/3,48,Monday; Tuesday,,,,,36.82666666666667
+P108,M,7,M 6/7/8,73,Monday; Tuesday; Thursday,P442,,,,78.81
+P109,M,3,M 2/3,55,Monday; Tuesday,P422,,,P110,58.99
+P110,M,6,M 6/7/8,61,Monday; Tuesday,P143,,,P109,91.43166666666667
+P111,F,1,F K/1,46,Tuesday; Thursday,P705,,,,1
+P112,M,8,M 6/7/8,62,Monday; Tuesday; Thursday,,,,P113,77.68166666666667
+P113,M,6,M 6/7/8,56,Monday; Tuesday; Thursday,,,,P112,66.13
+P114,M,7,M 6/7/8,66,Monday; Tuesday; Thursday,P583,,,,95.93833333333333
+P115,M,3,M 2/3,56,Monday; Tuesday; Thursday,,,,P116; P117,42.24333333333333
+P116,F,8,F 6/7/8,66,Thursday,,,,P115; P117,72.9
+P117,F,6,F 6/7/8,61,Monday; Tuesday; Thursday,,,,P115; P116,
+P118,M,6,M 6/7/8,64,Monday; Tuesday; Thursday,,,,,96.82333333333335
+P119,M,2,M 2/3,54,Monday; Tuesday; Thursday,,,,P120,35.43666666666667
+P120,F,0,F K/1,50,Monday; Tuesday; Thursday,P122,,,P119,3.839999999999996
+P121,M,7,M 6/7/8,67,Monday; Tuesday; Thursday,P378; P101,,Bulls,P122; P123,81.225
+P122,F,1,F K/1,49,Monday; Tuesday; Thursday,P120; P610,,,P121; P123,20.16
+P123,F,5,F 4/5,61,Monday; Tuesday; Thursday,P641; P261; P170; P410,Fighting Camels,,P121; P122,71.37333333333333
+P124,M,4,M 4/5,57,Monday; Tuesday; Thursday,P338,,,P125; P126,85.73166666666667
+P125,F,2,F 2/3,50,Monday; Tuesday; Thursday,P309,,,P124; P126,42.4
+P126,F,0,F K/1,44,Monday; Tuesday; Thursday,P105,,,P124; P125,3
+P127,M,4,M 4/5,56,Monday; Tuesday; Thursday,P196,,,,81.66666666666667
+P128,M,8,M 6/7/8,69,Tuesday; Thursday,P573; P636,,,,97.52666666666667
+P129,M,4,M 4/5,61,Monday; Tuesday; Thursday,P246; P387,,,P130,67.26666666666667
+P130,M,7,M 6/7/8,64,Monday; Tuesday; Thursday,P247,,,P129,82.72166666666666
+P131,M,7,M 6/7/8,67,Tuesday; Thursday,P292,,,,83.09166666666667
+P132,M,5,M 4/5,56,Monday; Thursday,,,,,72.935
+P133,M,6,M 6/7/8,58,Monday; Tuesday; Thursday,P213; P214,,,,74.25999999999999
+P134,M,2,M 2/3,52,Monday; Tuesday; Thursday,P243; P145,,,,38.26666666666667
+P135,M,4,M 4/5,54,Thursday,P585,,,,65.1
+P136,F,8,F 6/7/8,63,Monday; Tuesday; Thursday,P556,,,,82.64333333333335
+P137,M,6,M 6/7/8,63,Tuesday; Thursday,P219,,Warriors,,88.43
+P138,M,0,M K/1,46,Monday; Tuesday; Thursday,P307,,,,30.43
+P139,F,0,F K/1,,Monday; Tuesday; Thursday,,,,,10
+P140,M,8,M 6/7/8,71,Monday; Tuesday,P637; P573,,Bulls,,88.33833333333334
+P141,F,3,F 2/3,59,Monday; Tuesday; Thursday,,,,,21.34
+P142,F,8,F 6/7/8,68,Monday; Tuesday; Thursday,,,,,94.69833333333334
+P143,M,6,M 6/7/8,58,Monday; Tuesday; Thursday,P110; P339,,,,72.2
+P144,M,3,M 2/3,57,Monday; Tuesday; Thursday,P645,,,,68.03333333333333
+P145,M,2,M 2/3,52,Monday; Tuesday; Thursday,P499; P274; P299,,,,54.29666666666667
+P146,M,6,M 6/7/8,66,Monday; Tuesday; Thursday,,,Wizards,,89.635
+P147,F,8,F 6/7/8,64,Tuesday; Thursday,P171,,,P148,69.45
+P148,F,0,F K/1,46,Tuesday; Thursday,P412; P139,,,P147,4.5
+P149,F,0,F K/1,,Monday; Tuesday; Thursday,P105; P104,,,,6
+P150,M,4,M 4/5,57,Monday; Tuesday; Thursday,,,Buffaloes,P151,21.5
+P151,F,6,F 6/7/8,60,Monday; Thursday,,,,P150,57.95333333333333
+P152,M,6,M 6/7/8,64,Monday; Tuesday; Thursday,,,,,78.33
+P153,M,1,M K/1,48,Monday; Tuesday; Thursday,P508,,,P154; P155; P156; P157,25.79
+P154,M,7,M 6/7/8,67,Monday; Tuesday; Thursday,,,,P153; P155; P156; P157,72.92166666666667
+P155,F,3,F 2/3,53,Monday; Tuesday; Thursday,,,,P153; P154; P156; P157,31.08666666666667
+P156,F,6,F 6/7/8,61,Monday; Tuesday; Thursday,P157,,,P153; P154; P155; P157,39.6
+P157,F,6,F 6/7/8,58,Monday; Tuesday; Thursday,P510; P103,,,P153; P154; P155; P156,63.77
+P158,M,0,M K/1,48,Monday; Tuesday; Thursday,P400,,,,13.2
+P160,M,5,M 4/5,58,Monday; Tuesday,,,,P161,70.98166666666667
+P161,M,8,M 6/7/8,69,Monday; Tuesday; Thursday,,,,P160,82.92833333333333
+P162,M,0,M K/1,48,Monday; Tuesday; Thursday,P472; P612,,,P163,4
+P163,F,2,F 2/3,50,Tuesday; Thursday,P534; P259; P613,,,P162,41.90333333333334
+P164,M,4,M 4/5,60,Monday; Tuesday; Thursday,,,Buffaloes,,58.15666666666667
+P165,M,8,M 6/7/8,70,Monday,P622,,,,96.05000000000001
+P166,M,2,M 2/3,54,Monday; Tuesday; Thursday,,,,P167; P168,26.9
+P167,F,4,F 4/5,56,Monday,,,Hawkeyes,P166; P168,72.83666666666667
+P168,F,5,F 4/5,61,Monday,,,Hawkeyes,P166; P167,49.08
+P169,M,8,M 6/7/8,64,Monday; Tuesday; Thursday,P518,,,,97.76166666666666
+P170,F,5,F 4/5,60,Monday; Tuesday,P123; P261; P397,,,P171,71.53333333333333
+P171,F,8,F 6/7/8,60,Monday; Thursday,P147; P337; P142,,,P170,75.30166666666668
+P172,F,5,F 4/5,64,Tuesday; Thursday,,Fighting Camels,,P173,80.45333333333333
+P173,F,7,F 6/7/8,66,Tuesday; Thursday,,,,P172,75
+P174,F,6,F 6/7/8,65,Monday; Tuesday; Thursday,,Storm,,,76.2
+P175,M,0,M K/1,46,Monday; Tuesday; Thursday,,,,P176; P177,28.5
+P176,F,1,F K/1,49,Monday; Tuesday; Thursday,,,,P175; P177,12.41
+P177,F,3,F 2/3,52,Monday; Tuesday; Thursday,,,,P175; P176,5.179999999999998
+P178,M,0,M K/1,48,Monday; Thursday,,,,P179,39.5
+P179,M,4,M 4/5,54,Monday; Thursday,P670,,,P178,62.54333333333334
+P180,M,7,M 6/7/8,64,Monday; Tuesday; Thursday,P581; P593,,Timberwolves,,97.505
+P181,M,2,M 2/3,54,Monday; Tuesday; Thursday,,,,,54.05333333333333
+P182,M,3,M 2/3,48,Monday; Thursday,P295; P424; P546,,,,48
+P183,M,3,M 2/3,54,Monday; Tuesday; Thursday,,,Hawks,P184; P185; P186,45.08333333333333
+P184,M,5,M 4/5,63,Monday; Tuesday; Thursday,,,,P183; P185; P186,64.38833333333334
+P185,M,7,M 6/7/8,66,Monday; Tuesday; Thursday,P594,,,P183; P184; P186,76.33166666666666
+P186,F,0,F K/1,48,Monday; Tuesday; Thursday,P597,,,P183; P184; P185,1
+P187,M,4,M 4/5,60,Monday; Tuesday; Thursday,,,,P188,77.01166666666667
+P188,M,6,M 6/7/8,66,Monday; Tuesday; Thursday,,,,P187,96.33666666666667
+P189,M,3,M 2/3,58,Monday; Tuesday; Thursday,P402; P658,,Dragons,P190,46.15666666666667
+P190,F,0,F K/1,49,Monday; Tuesday; Thursday,P403,,Unicorns,P189,1.5
+P191,M,4,M 4/5,56,Monday; Tuesday; Thursday,P374,,,,79.63833333333334
+P192,M,6,M 6/7/8,59,Monday; Tuesday,P559,,,,72.63
+P193,M,3,M 2/3,55,Tuesday; Thursday,,,,,65.28333333333333
+P194,F,0,F K/1,46,Monday; Tuesday; Thursday,P231; P447,,,,2.5
+P195,M,2,M 2/3,53,Monday; Tuesday; Thursday,P571,,Cheetahs,P196,41.83333333333333
+P196,M,4,M 4/5,58,Monday; Tuesday; Thursday,,,Nittany Lions,P195,89.77166666666666
+P197,M,4,M 4/5,52,Monday; Thursday,,,,,68.30666666666667
+P198,M,2,M 2/3,52,Monday; Thursday,,,,,28.33
+P199,M,1,M K/1,48,Monday; Tuesday; Thursday,,,Coyotes,P200,33.11
+P200,M,4,M 4/5,54,Monday; Tuesday; Thursday,,,Huskies,P199,67.725
+P201,M,5,M 4/5,59,Monday; Tuesday; Thursday,,,Buffaloes,,87.83166666666666
+P202,M,1,M K/1,50,Tuesday,,,,,35
+P205,M,7,M 6/7/8,69,Monday; Thursday,P292,,,,96.94999999999999
+P206,M,3,M 2/3,52,Monday; Tuesday; Thursday,,,Bengals,P207; P208; P209,59.22666666666667
+P207,M,4,M 4/5,56,Monday; Tuesday; Thursday,,,Huskies,P206; P208; P209,70.03166666666667
+P208,F,1,F K/1,48,Monday; Tuesday; Thursday,P618,,Bobcats,P206; P207; P209,31.27
+P209,F,0,F K/1,45,Monday; Tuesday; Thursday,,,Bobcats,P206; P207; P208,2.200000000000003
+P210,M,4,M 4/5,53,Monday; Tuesday; Thursday,P549; P275; P305,,,,53.08666666666667
+P211,F,1,F K/1,54,Tuesday; Thursday,P225,,,,29.2
+P212,M,4,M 4/5,57,Monday; Tuesday; Thursday,P196; P124,,,,77.53333333333333
+P213,M,6,M 6/7/8,61,Monday; Tuesday; Thursday,P118; P133,,Bucks,P214,92.53833333333333
+P214,M,6,M 6/7/8,58,Monday; Tuesday; Thursday,P118; P133,,Bucks,P213,70.58333333333333
+P215,M,3,M 2/3,55,Monday; Tuesday; Thursday,P312; P195,,,,45.06999999999999
+P216,F,1,F K/1,59,Monday; Tuesday; Thursday,,,,,32.02
+P217,M,4,M 4/5,54,Monday; Thursday,,,,,52.665
+P218,M,7,M 6/7/8,60,Monday; Tuesday,,,,,84.045
+P219,M,6,M 6/7/8,62,Monday; Tuesday; Thursday,P137,,Warriors,,72.78833333333333
+P220,M,7,M 6/7/8,60,Monday; Thursday,P263; P108,,,P221; P222,97.28666666666666
+P221,F,2,F 2/3,51,Monday; Tuesday; Thursday,P438,,,P220; P222,16.08333333333333
+P222,F,4,F 4/5,61,Monday; Thursday,P555,,,P220; P221,60.60666666666667
+P223,M,8,M 6/7/8,70,Monday; Tuesday; Thursday,,,,P224,83.89166666666667
+P224,M,7,M 6/7/8,63,Monday; Tuesday; Thursday,,,,P223,76.765
+P225,F,1,F K/1,50,Monday; Tuesday; Thursday,P211,,,,29.25
+P226,F,5,F 4/5,56,Tuesday; Thursday,P523,,,,78.96833333333333
+P227,F,5,F 4/5,59,Monday; Tuesday; Thursday,,,,,62.89833333333333
+P228,M,4,M 4/5,62,Monday; Thursday,,,,P229,79.31666666666666
+P229,F,0,F K/1,51,Monday; Tuesday; Thursday,P126,,,P228,12.1
+P230,M,0,M K/1,48,Monday; Tuesday; Thursday,P544,,,P231,21.35
+P231,F,1,F K/1,53,Monday; Tuesday; Thursday,P493; P208,,Bobcats,P230,27.23
+P232,F,6,F 6/7/8,57,Monday; Tuesday; Thursday,P599,,,,87.31333333333333
+P234,M,2,M 2/3,52,Tuesday; Thursday,,,,P235; P236,43.87333333333333
+P235,M,6,M 6/7/8,58,Monday; Tuesday; Thursday,,,,P234; P236,75.90166666666667
+P236,M,8,M 6/7/8,65,Monday; Tuesday; Thursday,P319,,,P234; P235,99.20666666666668
+P237,M,5,M 4/5,64,Monday; Tuesday; Thursday,,,Banana Slugs,,78.39833333333334
+P238,M,6,M 6/7/8,66,Monday; Tuesday; Thursday,P529,,,,75.77666666666667
+P240,F,8,F 6/7/8,64,Monday; Tuesday; Thursday,P251,,,,72.64500000000001
+P241,M,2,M 2/3,52,Monday; Tuesday; Thursday,,,,P242,56.15
+P242,M,4,M 4/5,60,Monday; Tuesday; Thursday,,,,P241,78.27
+P243,M,2,M 2/3,53,Tuesday; Thursday,P195,,,P244,29.14666666666666
+P244,M,4,M 4/5,54,Tuesday; Thursday,P279,,,P243,82.64833333333334
+P245,M,2,M 2/3,52,Monday; Tuesday,,,,P246; P247; P248,60
+P246,M,5,M 4/5,62,Monday; Tuesday,P387; P129,,Terrapins,P245; P247; P248,80.22333333333333
+P247,M,8,M 6/7/8,66,Monday; Tuesday,P130; P582,,,P245; P246; P248,98.69666666666666
+P248,F,0,F K/1,50,Monday; Tuesday,,,,P245; P246; P247,26.37
+P249,M,4,M 4/5,56,Monday; Thursday,P385; P349,,Midshipmen,P250; P251,75.24933333333333
+P250,F,1,F K/1,52,Monday; Thursday,P231; P610,,Flamingos,P249; P251,26.9
+P251,F,7,F 6/7/8,66,Monday; Thursday,P240,,Valkyries,P249; P250,85
+P252,M,8,M 6/7/8,66,Monday; Thursday,,,,P253,93.64166666666667
+P253,M,6,M 6/7/8,58,Monday; Thursday,P192,,,P252,80.73666666666666
+P254,M,2,M 2/3,54,Monday; Tuesday; Thursday,P195,,,P255,58.2
+P255,M,4,M 4/5,54,Monday; Tuesday; Thursday,P338,,,P254,79.045
+P256,M,1,M K/1,50,Monday; Tuesday; Thursday,P630,,Stallions,P257; P258,46.25
+P257,M,0,M K/1,44,Monday; Tuesday; Thursday,,,Stallions,P256; P258,16.5
+P258,M,4,M 4/5,59,Monday; Tuesday; Thursday,P207; P237,,,P256; P257,72.21833333333333
+P259,F,2,F 2/3,54,Tuesday; Thursday,P163,,,,24.87
+P260,F,3,F 2/3,60,Monday; Thursday,,,,,51.48666666666666
+P261,F,5,F 4/5,62,Monday; Tuesday; Thursday,P123; P410; P170,,,P262,59.65333333333334
+P262,F,6,F 6/7/8,64,Monday; Tuesday; Thursday,P171,,,P261,58.65166666666667
+P263,M,6,M 6/7/8,67,Monday; Tuesday; Thursday,P284,,,P264; P265; P266,94.79499999999999
+P264,F,5,F 4/5,55,Monday; Tuesday; Thursday,P285,,Fighting Camels,P263; P265; P266,88.91
+P265,F,5,F 4/5,56,Monday; Tuesday; Thursday,P285,,Fighting Camels,P263; P264; P266,80.46166666666667
+P266,F,8,F 6/7/8,69,Monday; Tuesday; Thursday,,,Liberty,P263; P264; P265,94.42666666666666
+P267,M,1,M K/1,48,Monday; Tuesday; Thursday,,,,P268; P269,38.05
+P268,F,3,F 2/3,50,Monday; Tuesday; Thursday,,,,P267; P269,41.29666666666667
+P269,F,6,F 6/7/8,61,Monday; Tuesday; Thursday,,Lynx,,P267; P268,62.70833333333333
+P270,M,6,M 6/7/8,62,Monday; Tuesday; Thursday,P333; P484,,,,89.22666666666666
+P271,M,6,M 6/7/8,58,Monday; Tuesday,P292,,,,81.575
+P274,M,2,M 2/3,51,Monday; Tuesday; Thursday,P145,,,,32.05666666666667
+P275,M,4,M 4/5,57,Monday; Thursday,,,Spartans,,52.96166666666667
+P276,M,8,M 6/7/8,62,Monday; Tuesday,P169,,,,83.51166666666666
+P277,M,3,M 2/3,58,Monday; Thursday,,,Jackals,P278,53.42666666666667
+P278,F,7,F 6/7/8,66,Monday; Tuesday; Thursday,,,Aces,P277,78.21000000000001
+P279,M,4,M 4/5,58,Monday; Tuesday; Thursday,P344 & P542,,,,75.38333333333333
+P280,M,8,M 6/7/8,67,Monday; Tuesday; Thursday,,,,,91.62
+P281,M,3,M 2/3,56,Monday; Tuesday; Thursday,,,,,34.71666666666667
+P284,M,6,M 6/7/8,65,Monday; Tuesday; Thursday,P263,,,P285,99.86833333333334
+P285,F,4,F 4/5,59,Monday; Tuesday; Thursday,P264; P265,Fighting Camels,,P284,76.56333333333333
+P286,M,0,M K/1,50,Monday; Tuesday; Thursday,P630,,,P287,28
+P287,M,0,M K/1,45,Monday; Tuesday,,,,P286,5
+P288,M,4,M 4/5,61,Monday; Thursday,P255; P124.,,,P289,59.305
+P289,F,2,F 2/3,59,Monday; Thursday,P125; P309,,,P288,58.46666666666667
+P290,M,7,M 6/7/8,64,Monday; Tuesday; Thursday,P573; P636; P128,,,,91.63833333333334
+P291,M,2,M 2/3,52,Tuesday; Thursday,,,,,43.85
+P292,M,7,M 6/7/8,62,Monday; Thursday,,,Thunder,,90.115
+P293,M,8,M 6/7/8,68,Tuesday; Thursday,P497; P623,,,P294,99.315
+P294,M,6,M 6/7/8,60,Tuesday; Thursday,P497; P623,,,P293,87.30833333333334
+P295,M,2,M 2/3,52,Monday; Tuesday,P182; P424,,,P296; P297,35
+P296,F,4,F 4/5,54,Monday; Tuesday,P395; P401; P436,Golden Gophers,,P295; P298,57.81333333333333
+P297,F,7,F 6/7/8,64,Monday; Tuesday,P396,,,P295; P296,66.94666666666666
+P298,M,1,M K/1,50,Monday; Tuesday; Thursday,,,,,49.26
+P299,M,2,M 2/3,55,Monday; Tuesday; Thursday,P145,,,P298; P300,42.89
+P300,M,6,M 6/7/8,59,Monday; Tuesday; Thursday,,,,P298; P299,72.065
+P301,M,8,M 6/7/8,68,Monday; Tuesday,,,,,90.12333333333333
+P302,M,8,M 6/7/8,69,Monday; Tuesday; Thursday,,,Pistons,,100.8866666666667
+P303,M,3,M 2/3,56,Monday; Tuesday; Thursday,P566,,,,66.88333333333334
+P304,M,8,M 6/7/8,67,Monday; Tuesday; Thursday,,,,,82.53333333333333
+P305,M,4,M 4/5,56,Monday; Tuesday; Thursday,P275; P210,,,,66.67500000000001
+P307,M,0,M K/1,46,Monday; Tuesday,P286; P287,,,P308; P309,36.34
+P308,M,4,M 4/5,58,Monday; Thursday,P124; P242; P310; P187,,,P307; P309,71.25666666666666
+P309,F,2,F 2/3,48,Monday; Thursday,P125,,,P307; P308,32.17
+P310,M,4,M 4/5,52,Monday; Tuesday; Thursday,P124; P308,,,,68.24333333333334
+P311,M,8,M 6/7/8,67,Monday; Tuesday; Thursday,,,,,90.68166666666667
+P312,M,2,M 2/3,56,Monday; Tuesday; Thursday,,,,P313,65.71666666666667
+P313,M,4,M 4/5,60,Monday; Tuesday; Thursday,,,,P312,72.51
+P314,M,2,M 2/3,55,Monday; Tuesday; Thursday,,,,,59.77333333333334
+P315,M,1,M K/1,50,Monday; Tuesday; Thursday,,,,,35.59999999999999
+P317,M,0,M K/1,50,Monday; Thursday,P138,,,P318,1
+P318,M,3,M 2/3,56,Tuesday; Thursday,,,Hawks,P317,25.91999999999999
+P319,M,8,M 6/7/8,60,Monday,,,Grizzlies,,105.98
+P321,F,3,F 2/3,58,Monday; Tuesday; Thursday,,,Wildcats,,49.26
+P322,M,3,M 2/3,56,Monday; Tuesday,,,Tarantulas,,77.80666666666667
+P323,M,5,M 4/5,63,Monday; Tuesday,,,Knights,P336,86.97833333333334
+P324,M,7,M 6/7/8,71,Monday; Tuesday; Thursday,,,Cavaliers,P322; P323,76.625
+P325,M,8,M 6/7/8,64,Tuesday; Thursday,,,,P326,95.31
+P326,F,7,F 6/7/8,59,Monday; Tuesday; Thursday,,,,P325,78.24000000000001
+P327,M,3,M 2/3,56,Monday; Tuesday; Thursday,,,,,26.82
+P329,M,3,M 2/3,,Monday; Tuesday; Thursday,P206; P215,,,,51.60666666666667
+P330,F,8,F 6/7/8,64,Monday; Tuesday,P382; P596,,,,77.80666666666667
+P331,M,8,M 6/7/8,70,Monday; Thursday,P417,,,,93.52166666666666
+P332,M,2,M 2/3,53,Monday; Thursday,,,,,59.69666666666667
+P333,M,6,M 6/7/8,59,Monday; Tuesday; Thursday,,,,,88.25
+P334,M,4,M 4/5,58,Monday; Tuesday,P646,,,,63.81166666666667
+P335,M,5,M 4/5,62,Tuesday; Thursday,P517,,,,72.5
+P336,M,5,M 4/5,61,Monday; Tuesday,,,,P337,70.65299999999999
+P337,F,7,F 6/7/8,65,Monday; Tuesday,,,,P336,86.97833333333334
+P338,M,4,M 4/5,58,Monday; Tuesday; Thursday,P242; P255,,Nittany Lions,P339,76.23666666666666
+P339,M,6,M 6/7/8,61,Monday; Tuesday; Thursday,P146,,Wizards,P338,86.60833333333333
+P340,F,8,F 6/7/8,64,Monday; Tuesday,P617; P621,,,,62.24
+P341,M,2,M 2/3,51,Monday; Tuesday; Thursday,,,,,36.04
+P342,F,8,F 6/7/8,66,Monday,P414; P652; P562,,,,62.40833333333333
+P343,M,8,M 6/7/8,67,Tuesday; Thursday,P535,,,,75.67666666666666
+P344,M,4,M 4/5,57,Monday; Tuesday; Thursday,P279; P542,,,,62.03833333333333
+P345,F,3,F 2/3,51,Monday; Tuesday; Thursday,P502; P483; P355,,Ladybugs,,60.19
+P346,M,1,M K/1,48,Thursday,,,,P347,25
+P347,M,3,M 2/3,54,Thursday,,,,P346,35.46666666666667
+P348,M,3,M 2/3,53,Monday; Tuesday; Thursday,,,,,68.72
+P349,M,5,M 4/5,57,Tuesday; Thursday,P598; P249; P385,,,P350; P351; P352,84.30166666666668
+P350,F,2,F 2/3,51,Tuesday; Thursday,P221,,,P349; P351; P352,36.18666666666667
+P351,F,7,F 6/7/8,60,Tuesday; Thursday,P136; P352; P599; P556; P266; P468,,,P349; P350; P352,71.925
+P352,F,8,F 6/7/8,68,Tuesday; Thursday,P136; P351; P599; P556; P266; P468,,,P349; P350; P351,88.69
+P353,M,2,M 2/3,53,Monday; Tuesday; Thursday,,,,,49.48333333333333
+P354,M,5,M 4/5,61,Monday; Tuesday; Thursday,P517,,,,71
+P355,F,3,F 2/3,52,Monday; Tuesday; Thursday,,Leopards,,,33.35
+P356,M,6,M 6/7/8,66,Monday; Tuesday; Thursday,P143,,,,80.905
+P357,F,0,F K/1,48,Monday; Tuesday; Thursday,P211,,,P358,16.2
+P358,F,2,F 2/3,53,Monday; Tuesday; Thursday,P613,,,P357,38.26666666666667
+P359,M,8,M 6/7/8,67,Thursday,,,,,82.70500000000001
+P360,M,6,M 6/7/8,59,Thursday,,,,,76.445
+P361,M,0,M K/1,47,Tuesday; Thursday,,,,P362,13.34
+P362,F,2,F 2/3,54,Monday; Tuesday; Thursday,,,Ladybugs,P361,30.66666666666667
+P363,M,3,M 2/3,50,Monday; Tuesday; Thursday,P584,,,P364,39.47
+P364,M,5,M 4/5,55,Monday; Tuesday; Thursday,P585,,,P363,67.36
+P365,F,7,F 6/7/8,63,Tuesday; Thursday,,,,,85.59
+P366,F,6,F 6/7/8,58,Monday; Tuesday; Thursday,,Storm,,,70.33333333333333
+P367,M,2,M 2/3,50,Monday,,,,P368; P369,55.50666666666667
+P368,M,6,M 6/7/8,58,Monday,,,,P367; P369,86.69999999999999
+P369,M,8,M 6/7/8,66,Monday; Tuesday,,,,P367; P368,76.71333333333334
+P370,M,8,M 6/7/8,67,Monday; Thursday,,,,P371,85.58166666666666
+P371,M,1,M K/1,50,Monday; Thursday,,,,P370,25
+P372,M,8,M 6/7/8,70,Tuesday; Thursday,,,,P373,58.53
+P373,M,7,M 6/7/8,68,Tuesday; Thursday,,,,P372,55.38
+P374,M,5,M 4/5,57,Monday; Tuesday; Thursday,,,Knights,P375,91.795
+P375,M,6,M 6/7/8,68,Monday; Tuesday,P553,,Cavaliers,P374,59.86166666666666
+P376,M,5,M 4/5,57,Monday; Tuesday; Thursday,P551; P323,,,,74.65166666666667
+P377,M,7,M 6/7/8,61,Monday; Tuesday; Thursday,P368; P369,,,,82.22
+P378,M,7,M 6/7/8,65,Tuesday,P581,,,P379,77.69833333333334
+P379,F,2,F 2/3,48,Monday; Tuesday; Thursday,,,,P378,22
+P380,F,1,F K/1,47,Monday; Thursday,,,,,30
+P381,M,8,M 6/7/8,67,Monday; Tuesday; Thursday,,,,,95.73333333333332
+P382,F,8,F 6/7/8,69,Monday; Thursday,P596; P599,,,,87.89500000000001
+P383,F,5,F 4/5,60,Monday; Tuesday; Thursday,P457,,,P384,81.82333333333332
+P384,F,8,F 6/7/8,63,Monday; Tuesday; Thursday,P459,,,P383,78.18666666666667
+P385,M,5,M 4/5,55,Monday; Tuesday; Thursday,P349; P249,,,,87.16333333333333
+P387,M,5,M 4/5,57,Monday; Tuesday; Thursday,P246,,,P388,73.725
+P388,F,5,F 4/5,,Monday; Tuesday; Thursday,,,,P387,65
+P389,M,5,M 4/5,,Monday; Tuesday; Thursday,,,,,65
+P390,M,5,M 4/5,62,Monday; Thursday,,,Titans,,56.005
+P391,M,6,M 6/7/8,61,Monday; Tuesday; Thursday,P263; P284,,,,81.34333333333333
+P392,M,4,M 4/5,61,Monday; Thursday,P191,,,,65.23666666666666
+P393,M,7,M 6/7/8,71,Monday; Tuesday; Thursday,,,,,93.83333333333333
+P394,M,3,M 2/3,52,Monday; Tuesday,P615,,,,54.15
+P395,F,4,F 4/5,54,Monday; Tuesday; Thursday,P296,,,P396,45
+P396,F,7,F 6/7/8,61,Monday; Tuesday; Thursday,P297,,,P395,75.045
+P397,F,5,F 4/5,60,Monday; Tuesday; Thursday,P123; P170; P261,,,,59.18666666666667
+P398,M,7,M 6/7/8,70,Monday; Tuesday; Thursday,,,,P399,89.77833333333334
+P399,F,6,F 6/7/8,61,Monday; Tuesday; Thursday,P625,,,P398,77.03999999999999
+P400,M,1,M K/1,48,Monday; Tuesday,,,,P401,35.57
+P401,F,4,F 4/5,57,Monday; Tuesday,P436; P296,,,P400,53.95666666666666
+P402,M,3,M 2/3,53,Monday; Tuesday; Thursday,P189; P347,,Dragons,P403,36.9
+P403,F,0,F K/1,45,Monday; Tuesday; Thursday,P190,,Unicorns,P402,1.099999999999998
+P404,M,5,M 4/5,52,Tuesday; Thursday,,,,,64.8
+P405,M,1,M K/1,45,Monday; Tuesday; Thursday,,,,P406; P407,31
+P406,M,3,M 2/3,53,Monday; Tuesday; Thursday,,,,P405; P407,62
+P407,M,4,M 4/5,54,Monday; Tuesday; Thursday,,,,P405; P406,66.88499999999999
+P410,F,5,F 4/5,57,Monday; Tuesday; Thursday,P123,Fighting Camels,,,76.01666666666667
+P411,M,5,M 4/5,64,Monday; Tuesday; Thursday,,,,,71
+P412,F,0,F K/1,44,Tuesday; Thursday,P139. P148,,,,11.66
+P413,M,7,M 6/7/8,66,Tuesday; Thursday,,,,,84.01666666666667
+P414,F,8,F 6/7/8,64,Monday; Tuesday; Thursday,P562; P652,,,,73.73
+P415,M,1,M K/1,51,Monday; Tuesday; Thursday,,,,P426; P427,73.81
+P416,M,4,M 4/5,55,Monday; Tuesday; Thursday,P207,,,P415,41.155
+P417,M,8,M 6/7/8,68,Tuesday; Thursday,,,Mavericks,P418,91.49333333333334
+P418,F,3,F 2/3,56,Monday; Tuesday; Thursday,,,,P417,28.89
+P419,M,3,M 2/3,49,Monday; Thursday,P591; P432,,Jackals,,48.53333333333333
+P420,M,5,M 4/5,56,Monday; Tuesday,,,,P421,68.52666666666667
+P421,M,5,M 4/5,55,Monday; Tuesday,,,,P420,63.49166666666667
+P422,M,3,M 2/3,55,Monday; Tuesday; Thursday,P109; P215,,,,45
+P423,M,0,M K/1,45,Monday; Tuesday; Thursday,,,Lizards,P424; P425,27
+P424,M,3,M 2/3,51,Monday; Tuesday; Thursday,P182,,Lions,P423; P425,52.36666666666667
+P425,M,4,M 4/5,55,Monday; Tuesday; Thursday,,,Spartans,P423; P424,65.66
+P426,M,0,M K/1,46,Monday; Tuesday; Thursday,,,Tomato Frogs,P427; P428,14.95
+P427,M,5,M 4/5,60,Monday; Tuesday; Thursday,,,Wonder Boys,P426; P428,80.11
+P428,F,7,F 6/7/8,64,Monday; Tuesday; Thursday,P540,,,P426; P427,73.81
+P429,M,8,M 6/7/8,69,Thursday,P558; P559,,,,86.80833333333334
+P430,F,4,F 4/5,53,Monday; Tuesday,,,,,46.76333333333333
+P431,F,0,F K/1,47,Monday; Tuesday,P493,,,,14.6
+P432,M,2,M 2/3,55,Monday; Tuesday; Thursday,,,,P433,51.90666666666667
+P433,M,4,M 4/5,60,Monday; Tuesday; Thursday,,,,P432,56.89333333333333
+P434,M,7,M 6/7/8,64,Monday; Tuesday; Thursday,P663,,,,85.94833333333334
+P435,M,8,M 6/7/8,66,Tuesday; Thursday,P637; P293,,,P436; P437,80.07166666666666
+P436,F,4,F 4/5,57,Tuesday; Thursday,P401,,Golden Gophers,P435; P437,54.705
+P437,F,6,F 6/7/8,59,Monday; Tuesday; Thursday,,,,P435; P436,84.215
+P438,F,3,F 2/3,51,Monday; Thursday,P221; P350,,,,16.19
+P439,M,4,M 4/5,57,Monday; Tuesday; Thursday,,,,,74.365
+P440,M,7,M 6/7/8,62,Monday; Tuesday,P180,,Timberwolves,P441,89.10666666666667
+P441,F,6,F 6/7/8,68,Monday; Tuesday,P654; P619; P510,,Mystics,P440,74.59
+P442,M,8,M 6/7/8,66,Monday; Thursday,P557; P532,,,P443,86.08666666666667
+P443,M,6,M 6/7/8,63,Monday; Thursday,P108; P532,,,P442,74.17666666666666
+P444,M,4,M 4/5,55,Monday; Tuesday,,,,,13.31333333333333
+P445,M,7,M 6/7/8,69,Monday; Tuesday; Thursday,P220; P108,,,,56.655
+P446,F,6,F 6/7/8,65,Tuesday; Thursday,,,,,78.13666666666667
+P447,F,1,F K/1,49,Monday; Tuesday,P231,Bobcats,,,3
+P448,M,1,M K/1,50,Monday; Thursday,,,,,26.6
+P451,M,6,M 6/7/8,58,Monday; Thursday,,,,,81.5
+P452,M,7,M 6/7/8,64,Monday; Tuesday; Thursday,,,,P453,77.35166666666666
+P453,F,5,F 4/5,58,Monday; Tuesday; Thursday,,,,P452,81.71833333333333
+P454,M,8,M 6/7/8,64,Monday; Tuesday; Thursday,,,Lakers,,93.95166666666665
+P455,M,2,M 2/3,48,Tuesday; Thursday,P460,,,P456; P457; P458; P459,44
+P456,F,0,F K/1,42,Tuesday; Thursday,P490,,Starfish,P455; P457; P458; P459,14
+P457,F,5,F 4/5,56,Tuesday; Thursday,P614,,Golden Gophers,P455; P456; P458; P459,78.68166666666667
+P458,F,4,F 4/5,56,Tuesday; Thursday,P264; P265; P285; P457,,Golden Gophers,P455; P456; P457; P459,73
+P459,F,7,F 6/7/8,66,Tuesday; Thursday,P266,,,P455; P456; P457; P458,75.26833333333333
+P460,M,3,M 2/3,54,Tuesday; Thursday,P584,,,P461; P462,58.16666666666667
+P461,M,5,M 4/5,58,Tuesday; Thursday,P598,,,P460; P462,81.74833333333333
+P462,M,5,M 4/5,61,Tuesday; Thursday,P598,,,P460; P461,94.5
+P463,M,7,M 6/7/8,58,Monday; Thursday,,,,,79.83666666666667
+P464,M,6,M 6/7/8,58,Monday; Tuesday; Thursday,,,,,77.04666666666667
+P465,M,7,M 6/7/8,72,Monday; Tuesday; Thursday,,,,,88.39833333333334
+P466,F,5,F 4/5,59,Monday; Thursday,,,,,46.86833333333334
+P467,F,5,F 4/5,58,Monday; Tuesday; Thursday,,,,,57.28333333333333
+P468,F,8,F 6/7/8,64,Thursday,P599; P352; P136,Liberty,,,64.11
+P469,M,2,M 2/3,50,Monday; Tuesday; Thursday,P571; P195,,,,48
+P470,M,6,M 6/7/8,66,Monday; Thursday,,,,P471,94.43
+P471,M,5,M 4/5,62,Monday; Tuesday; Thursday,,,,P470,87.1
+P472,M,0,M K/1,42,Monday; Tuesday; Thursday,,,,P473,27.7
+P473,M,2,M 2/3,48,Monday; Tuesday; Thursday,P520; P195,,,P472,48
+P474,M,3,M 2/3,56,Monday; Tuesday; Thursday,,,,P475; P476,48
+P475,M,5,M 4/5,61,Monday; Tuesday; Thursday,,,,P474; P476,78.75666666666666
+P476,M,8,M 6/7/8,75,Monday; Tuesday; Thursday,,,,P474; P475,81.99
+P477,M,0,M K/1,47,Monday; Tuesday; Thursday,P162,,,,25.9
+P478,M,4,M 4/5,53,Monday; Tuesday; Thursday,,,,P479,82.71666666666667
+P479,M,7,M 6/7/8,65,Monday; Tuesday; Thursday,,,,P478,93.78
+P480,F,2,F 2/3,52,Monday; Tuesday; Thursday,P669; P526,,,,22.68
+P481,M,2,M 2/3,55,Monday; Thursday,,,,P482,43.3
+P482,M,5,M 4/5,70,Monday; Tuesday; Thursday,,,,P481,73.32
+P483,F,3,F 2/3,53,Monday; Thursday,,Leopards,,,59.54
+P484,M,6,M 6/7/8,62,Monday; Thursday,P333; P270,,,,85.29166666666666
+P485,M,2,M 2/3,50,Monday; Tuesday,,,,,52.25
+P486,M,4,M 4/5,58,Monday; Tuesday; Thursday,P217,,,,59.05833333333334
+P487,M,4,M 4/5,56,Monday; Tuesday; Thursday,,,,P488,66.62666666666667
+P488,M,8,M 6/7/8,68,Monday; Tuesday; Thursday,,,,,85.09
+P489,M,5,M 4/5,54,Monday; Tuesday; Thursday,P517,,,,81.81166666666667
+P490,F,0,F K/1,46,Monday; Thursday,,,,P491; P492,8.380000000000003
+P491,F,7,F 6/7/8,61,Monday; Thursday,P556,Liberty,,P490; P492,83
+P492,F,4,F 4/5,54,Monday; Thursday,P555,Fighting Camels,,P490; P491,57.1
+P493,F,1,F K/1,51,Monday; Thursday,,,Bobcats,,17.4
+P494,M,6,M 6/7/8,61,Monday,P639; P660,,,,76.10333333333334
+P495,M,4,M 4/5,56,Tuesday; Thursday,P310; P308; P124,,,,89.62666666666667
+P497,M,6,M 6/7/8,63,Monday; Tuesday; Thursday,P293; P294; P623,,,,76.43
+P498,M,4,M 4/5,52,Tuesday,,,,,68.815
+P499,M,2,M 2/3,50,Monday; Tuesday; Thursday,P145,,,P500,56.1
+P500,M,4,M 4/5,58,Monday; Tuesday; Thursday,P498,,,P499,75.93166666666667
+P501,M,8,M 6/7/8,70,Monday; Tuesday; Thursday,,,,,94.06333333333333
+P502,F,3,F 2/3,54,Monday; Tuesday,P355,Leopards,,P503,41.29
+P503,M,7,M 6/7/8,63,Monday; Tuesday; Thursday,P581,,Raptors,P502,90.33333333333333
+P504,M,8,M 6/7/8,70,Monday; Tuesday; Thursday,P223,,,,57.52666666666667
+P506,M,0,M K/1,48,Thursday,,,,P507,22.25
+P507,F,2,F 2/3,52,Monday; Tuesday; Thursday,,,,P506,34.15000000000001
+P508,M,1,M K/1,52,Monday; Tuesday; Thursday,,,Lizards,P509; P510,43
+P509,M,4,M 4/5,58,Monday; Tuesday; Thursday,P670; P643,,,P508; P510,72.69166666666666
+P510,F,6,F 6/7/8,65,Monday; Tuesday,,Mystics,,P508; P509,79.69666666666666
+P511,M,4,M 4/5,55,Monday; Tuesday; Thursday,P191,,,,67.72833333333334
+P512,M,4,M 4/5,58,Monday; Tuesday; Thursday,,,,,76.03
+P513,F,0,F K/1,48,Monday; Tuesday,P248,,,P514,1.900000000000002
+P514,F,6,F 6/7/8,64,Monday; Tuesday,P569; P577,,,P513,74.63
+P515,F,6,F 6/7/8,66,Monday; Tuesday; Thursday,P156; P157; P510; P459,,,,71.90333333333334
+P516,F,2,F 2/3,53,Monday; Thursday,P358; P613,,,,36.16666666666666
+P517,M,5,M 4/5,60,Tuesday; Thursday,P201,,Buffaloes,P519,85.60833333333333
+P518,M,8,M 6/7/8,61,Tuesday; Thursday,P169,,,,92.43966666666667
+P519,M,7,M 6/7/8,65,Tuesday; Thursday,P311,,Raptors,P517,68.50333333333333
+P520,M,2,M 2/3,50,Monday; Tuesday; Thursday,P195,,,P521,31.68666666666667
+P521,M,4,M 4/5,56,Monday; Tuesday; Thursday,P196,,,P520,81.84
+P522,M,7,M 6/7/8,64,Monday; Thursday,,,,,88.67500000000001
+P523,F,5,F 4/5,62,Monday,P226,,,,81.44333333333333
+P524,M,5,M 4/5,61,Tuesday; Thursday,,,Knights,P525,64.55333333333333
+P525,F,2,F 2/3,52,Tuesday; Thursday,,,,P524,38.43
+P526,F,2,F 2/3,48,Monday; Tuesday; Thursday,P669; P480,,,,24.39333333333333
+P527,M,4,M 4/5,55,Monday; Tuesday; Thursday,P135,,,,66.72666666666666
+P528,M,3,M 2/3,55,Monday; Tuesday; Thursday,,,,P529,41.98666666666666
+P529,M,8,M 6/7/8,70,Monday; Tuesday; Thursday,P292; P238,,Thunder,P528,65.58333333333334
+P531,F,8,F 6/7/8,69,Monday; Thursday,,,,,89.695
+P532,M,7,M 6/7/8,63,Monday; Tuesday; Thursday,P442,,,P533,75.43333333333334
+P533,M,2,M 2/3,54,Monday; Tuesday; Thursday,,,,P532,38.7
+P534,F,2,F 2/3,53,Monday; Tuesday,P163,,,,41.64666666666667
+P535,M,8,M 6/7/8,70,Tuesday; Thursday,P343,,,,77.405
+P536,M,1,M K/1,49,Monday; Tuesday; Thursday,,,,P537; P538,35.61
+P537,M,4,M 4/5,58,Monday; Tuesday; Thursday,,,,P536; P538,59.47333333333333
+P538,F,6,F 6/7/8,65,Monday; Tuesday; Thursday,,,,P536; P537,58.94333333333334
+P539,F,1,F K/1,50,Tuesday; Thursday,P248,,,,16
+P540,F,7,F 6/7/8,62,Monday; Tuesday; Thursday,P428,,,,74.68
+P541,M,7,M 6/7/8,64,Monday; Tuesday; Thursday,,,,,88.24000000000001
+P542,M,4,M 4/5,59,Monday; Tuesday; Thursday,P279; P344,,,,84.895
+P543,F,0,F K/1,49,Tuesday; Thursday,P627,,,,8.5
+P544,M,0,M K/1,47,Monday; Tuesday; Thursday,,,,,23
+P545,M,0,M K/1,44,Monday; Tuesday; Thursday,P178,,,P546; P547,4
+P546,M,2,M 2/3,48,Monday; Thursday,,,,P545; P547,29.11666666666667
+P547,M,5,M 4/5,53,Monday; Thursday,,,,P545; P546,80.25666666666666
+P548,M,2,M 2/3,55,Monday; Thursday,P473; P195,,,,45.82333333333334
+P549,M,4,M 4/5,60,Monday; Tuesday; Thursday,P305; P275,,,,50.24166666666666
+P550,M,2,M 2/3,53,Tuesday; Thursday,,,Tarantulas,P551; P552; P553; P554,48.83333333333334
+P551,M,4,M 4/5,58,Tuesday; Thursday,,,Knights,P550; P552; P553; P554,78.40666666666667
+P552,M,7,M 6/7/8,65,Tuesday; Thursday,,,Cavaliers,P550; P551; P553; P554,90.09333333333333
+P553,M,6,M 6/7/8,63,Tuesday; Thursday,,,Cavaliers,P550; P551; P552; P554,94.01666666666667
+P554,F,0,F K/1,48,Monday; Tuesday; Thursday,P607,,,P550; P551; P552; P553,24.39
+P555,F,4,F 4/5,59,Monday; Thursday,,,Fighting Camels,P556,62.78333333333333
+P556,F,7,F 6/7/8,66,Monday; Thursday,P136,,Liberty,P555,76.74833333333333
+P557,M,7,M 6/7/8,63,Monday; Thursday,P130; P582,,,,84.78833333333333
+P558,M,8,M 6/7/8,68,Monday; Tuesday; Thursday,P429; P559,,,P559,77.26333333333334
+P559,M,7,M 6/7/8,63,Monday; Tuesday; Thursday,P429; P558,,,P558,85.39333333333333
+P560,F,2,F 2/3,50,Monday; Thursday,,,,P561,23.27333333333333
+P561,F,4,F 4/5,54,Monday; Thursday,,,,P560,56.18333333333334
+P562,F,8,F 6/7/8,64,Monday; Thursday,P414,,,P563,84.59333333333333
+P563,F,5,F 4/5,59,Monday; Thursday,,,,P562,55
+P564,F,6,F 6/7/8,,Monday; Tuesday; Thursday,,,,,60
+P565,M,8,M 6/7/8,62,Monday; Tuesday; Thursday,,,,,63.61833333333333
+P566,M,2,M 2/3,,Monday,P303,,,,45
+P567,F,4,F 4/5,60,Monday; Tuesday; Thursday,P616,,,,50.79833333333333
+P568,M,2,M 2/3,54,Monday,,,,,35.43666666666667
+P569,F,6,F 6/7/8,65,Monday; Tuesday; Thursday,P514,,,,77.14166666666667
+P570,F,2,F 2/3,49,Monday; Tuesday; Thursday,,,,,38
+P571,M,2,M 2/3,54,Monday; Tuesday; Thursday,,,Cheetahs,P572,55.52333333333333
+P572,M,7,M 6/7/8,64,Monday; Tuesday; Thursday,,,,P571,64.8
+P573,M,8,M 6/7/8,67,Monday; Tuesday; Thursday,P128; P636; P290,,,,101.3233333333333
+P574,F,4,F 4/5,57,Monday; Tuesday; Thursday,,Golden Gophers,,,57.84
+P575,M,8,M 6/7/8,72,Tuesday; Thursday,,,,P576,95.04666666666665
+P576,F,5,F 4/5,63,Monday; Tuesday; Thursday,,,,P575,68.54833333333333
+P577,F,6,F 6/7/8,58,Monday; Tuesday; Thursday,,,Storm,,85.06833333333333
+P578,M,4,M 4/5,56,Monday; Tuesday; Thursday,,,,,57.15
+P579,M,4,M 4/5,58,Monday; Tuesday; Thursday,,,,P580,46.17666666666666
+P580,F,2,F 2/3,50,Monday; Tuesday; Thursday,,,Bunnies,P579,24.6
+P581,M,7,M 6/7/8,64,Monday; Tuesday; Thursday,,,,,101.6483333333333
+P582,M,8,M 6/7/8,69,Monday; Tuesday,P247,,,,80.55666666666667
+P583,M,7,M 6/7/8,70,Monday,P440,,,,88.19333333333333
+P584,M,3,M 2/3,53,Monday; Thursday,P206,,Bengals,P585; P586,57.8
+P585,M,4,M 4/5,60,Monday; Thursday,P207; P364,,Huskies,P584; P586,86.22666666666666
+P586,F,7,F 6/7/8,64,Monday; Thursday,P326,,Fever,P584; P585,88.83
+P587,F,8,F 6/7/8,64,Tuesday; Thursday,P399,,,P588,59.81333333333333
+P588,F,6,F 6/7/8,64,Tuesday; Thursday,P399,,,P587,64.07166666666666
+P590,M,5,M 4/5,64,Tuesday; Thursday,P237,,Banana Slugs,,68.11500000000001
+P591,M,3,M 2/3,54,Monday; Tuesday; Thursday,,,Jackals,,35.51333333333334
+P592,M,4,M 4/5,58,Monday; Thursday,P200; P646,,,P593,80.71
+P593,M,7,M 6/7/8,72,Monday; Thursday,,,,P592,94.52166666666668
+P594,M,6,M 6/7/8,61,Monday; Tuesday; Thursday,P185,,,P595; P596; P597,69.75166666666667
+P595,F,4,F 4/5,52,Monday; Tuesday; Thursday,,Golden Gophers,,P594; P596; P597,43.4
+P596,F,8,F 6/7/8,65,Monday; Tuesday; Thursday,P382,,,P594; P595; P597,83.37333333333333
+P597,F,0,F K/1,44,Monday; Tuesday; Thursday,,,,P594; P595; P596,2.25
+P598,M,5,M 4/5,60,Monday; Tuesday; Thursday,P461,,Wonder Boys,P599,80.10166666666666
+P599,F,8,F 6/7/8,65,Monday; Tuesday; Thursday,,Liberty,,P560,98.21000000000001
+P600,F,3,F 2/3,54,Tuesday; Thursday,,,,,39.66666666666667
+P601,F,4,F 4/5,54,Monday,.,,,,69.64333333333333
+P602,M,7,M 6/7/8,56,Monday; Tuesday,,,,,83.515
+P603,M,1,M K/1,48,Monday; Tuesday; Thursday,,,,P604,35.85
+P604,M,2,M 2/3,52,Monday; Tuesday; Thursday,P182,,,P603,52.23333333333333
+P605,M,4,M 4/5,58,Monday; Tuesday; Thursday,P461,,,P606; P607,73.62666666666667
+P606,M,7,M 6/7/8,62,Monday; Tuesday; Thursday,P263; P284,,,P605; P607,78.06166666666667
+P607,F,1,F K/1,49,Monday; Tuesday; Thursday,P490; P554,,Starfish,P605; P606,25
+P608,M,6,M 6/7/8,56,Monday; Tuesday; Thursday,,,,,79.30666666666667
+P609,M,6,M 6/7/8,62,Monday; Tuesday; Thursday,P300,,,,88.70166666666667
+P610,F,1,F K/1,48,Thursday,P122,,,,31.41
+P611,M,7,M 6/7/8,69,Monday; Tuesday; Thursday,,,,,89.13833333333334
+P612,M,0,M K/1,47,Monday; Thursday,,,,P613,26.2
+P613,F,2,F 2/3,49,Monday; Tuesday; Thursday,P358,,,P612,34.8
+P614,F,5,F 4/5,58,Tuesday; Thursday,P457; P467,,,,75.66666666666667
+P615,M,3,M 2/3,50,Monday; Tuesday,,,Lions,,42.16
+P616,F,4,F 4/5,57,Monday; Tuesday,P620,,,P617,50.38
+P617,F,7,F 6/7/8,64,Monday; Tuesday,P621,,,P616,91.68666666666667
+P618,F,1,F K/1,50,Monday; Tuesday,P208; P209,Bobcats,,,28.57
+P619,F,6,F 6/7/8,66,Monday; Tuesday; Thursday,P441; P510,Mystics,,,71.87333333333333
+P620,F,5,F 4/5,63,Monday; Tuesday,,,Royals,P621,76.06
+P621,F,7,F 6/7/8,62,Monday; Tuesday,P617,,,P620,86.43666666666667
+P622,M,8,M 6/7/8,72,Monday; Tuesday; Thursday,P165,,,,99.49833333333333
+P623,M,7,M 6/7/8,63,Tuesday; Thursday,P293; P294; P497,,,,61.04666666666667
+P624,M,4,M 4/5,56,Monday; Tuesday; Thursday,P578,,,P625,59.66533333333334
+P625,F,6,F 6/7/8,64,Monday; Tuesday; Thursday,,,,P624,69.37333333333333
+P626,M,8,M 6/7/8,62,Monday; Tuesday; Thursday,,,,,84.165
+P627,F,1,F K/1,45,Tuesday; Thursday,P250,,Flamingos,,21.2
+P628,M,6,M 6/7/8,67,Monday; Thursday,,,,,75.14
+P630,M,1,M K/1,50,Monday; Tuesday; Thursday,P415,,,P631,54.5
+P631,F,6,F 6/7/8,62,Monday; Tuesday; Thursday,,,,P630,83.19500000000001
+P632,M,4,M 4/5,54,Monday; Tuesday; Thursday,,,,P633,53.97833333333333
+P633,F,1,F K/1,48,Monday; Tuesday; Thursday,,,,P632,34.1
+P634,M,2,M 2/3,55,Monday; Tuesday; Thursday,P604,,,P635,41.48999999999999
+P635,F,6,F 6/7/8,65,Tuesday; Thursday,,Liberty,,P634,67.87166666666667
+P636,M,8,M 6/7/8,73,Tuesday; Thursday,P573; P128,,,,92.18
+P637,M,8,M 6/7/8,73,Tuesday; Thursday,,,Bulls,,99.15666666666667
+P638,M,4,M 4/5,56,Tuesday,,,,P639,75.66666666666666
+P639,M,6,M 6/7/8,64,Monday,P660; P494,,,P638,93.375
+P640,M,2,M 2/3,56,Monday; Tuesday; Thursday,,,,,33.43666666666667
+P641,F,5,F 4/5,61,Monday,P264; P265,Fighting Camels,,,74.225
+P642,M,1,M K/1,52,Monday; Tuesday; Thursday,,,,,34.3
+P643,M,4,M 4/5,59,Monday; Tuesday; Thursday,P670,,,,65.95333333333333
+P644,M,8,M 6/7/8,61,Monday; Tuesday; Thursday,P319,,,,88.79166666666666
+P645,M,3,M 2/3,53,Monday; Tuesday; Thursday,P144,,,,50.01333333333334
+P646,M,4,M 4/5,49,Monday; Tuesday; Thursday,P200; P334,,,,64.94
+P647,M,2,M 2/3,49,Tuesday; Thursday,P299; P499; P145,,,,33.3
+P648,F,3,F 2/3,53,Monday; Tuesday; Thursday,,,,,34
+P649,M,2,M 2/3,56,Monday; Tuesday,P291,,Snapping Turtles,,36.27
+P650,F,1,F K/1,50,Monday; Tuesday; Thursday,P208,,,,5
+P651,F,4,F 4/5,55,Monday; Tuesday; Thursday,,,,,51.19166666666667
+P652,F,8,F 6/7/8,68,Monday; Thursday,P562,,,,91.64166666666667
+P653,M,3,M 2/3,50,Monday; Tuesday; Thursday,,,,,62.5
+P654,F,6,F 6/7/8,63,Monday; Tuesday; Thursday,,Mystics,,,68.43666666666667
+P655,M,1,M K/1,54,Tuesday; Thursday,,,,P656,40.45
+P656,M,0,M K/1,,Monday; Tuesday; Thursday,P472; P162,,,P655,25.45
+P657,M,5,M 4/5,54,Monday; Thursday,,,,,82.20833333333334
+P658,M,3,M 2/3,60,Tuesday,,,,,34.78
+P660,M,6,M 6/7/8,60,Monday,P639; P494,,,,74.71000000000001
+P662,M,2,M 2/3,50,Monday; Tuesday; Thursday,P473,,,,36.54333333333334
+P663,M,7,M 6/7/8,68,Monday; Tuesday; Thursday,P434,,Celtics,,95.44833333333334
+P664,M,0,M K/1,44,Monday; Tuesday; Thursday,,,,P665,5.549999999999997
+P665,F,2,F 2/3,54,Monday; Thursday,P362,,,P664,24.33333333333334
+P666,M,5,M 4/5,56,Tuesday,,,,P667,65.77333333333334
+P667,M,8,M 6/7/8,69,Tuesday,,,,P666,82.69666666666667
+P668,M,2,M 2/3,46,Monday; Tuesday,,,,,29
+P669,F,2,F 2/3,52,Monday; Tuesday; Thursday,P526; P379; P480,,,,26.61
+P670,M,4,M 4/5,58,Monday; Tuesday; Thursday,P207; P509; P643,,,,73.56
+P701,F,7,F 6/7/8,64,Monday; Tuesday; Thursday,P702,,,,75
+P702,F,7,F 6/7/8,63,Monday; Tuesday; Thursday,P701,,,,78
+P703,F,8,F 6/7/8,65,Monday; Tuesday; Thursday,P704,,,,80
+P704,F,8,F 6/7/8,62,Monday; Tuesday; Thursday,,,,,80
+P705,F,1,F K/1,50,Monday; Tuesday; Thursday,,,,,7.3

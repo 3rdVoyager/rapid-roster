@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { parseCsv } from "../src/lib/csv.js";
+import { parseCsv } from "../src/lib/import.js";
 
 test("parses CSV headers and records", () => {
   const records = parseCsv("id,name,division\nI1,Alice,North\nI2,Bob,South");
@@ -9,6 +9,21 @@ test("parses CSV headers and records", () => {
   assert.deepEqual(records, [
     { id: "I1", name: "Alice", division: "North" },
     { id: "I2", name: "Bob", division: "South" },
+  ]);
+});
+
+test("converts headers to camelCase", () => {
+  const records = parseCsv(
+    "ID,Practice Nights,Gym_Location,alreadyCamel\nI1,Monday; Tuesday,ROC,value",
+  );
+
+  assert.deepEqual(records, [
+    {
+      id: "I1",
+      practiceNights: ["Monday", "Tuesday"],
+      gymLocation: "ROC",
+      alreadyCamel: "value",
+    },
   ]);
 });
 
