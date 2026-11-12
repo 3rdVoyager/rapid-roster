@@ -5,7 +5,7 @@ import { parseCsv } from "../src/lib/import.js";
 import { createModel } from "../src/lib/model.js";
 import { evaluateModel } from "../src/lib/evaluation.js";
 
-const [itemsPath, slotsPath, rulesPath, assignmentsPath] = process.argv.slice(2);
+const [itemsPath = "./tests/fixtures/items.csv", slotsPath = "./tests/fixtures/slots.csv", rulesPath = "./tests/fixtures/rules.json", assignmentsPath = "./tests/fixtures/assignments.json"] = process.argv.slice(2);
 
 if (!itemsPath || !slotsPath) {
   console.error(

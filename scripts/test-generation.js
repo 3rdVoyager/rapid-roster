@@ -5,7 +5,7 @@ import slots from "../tests/fixtures/slots.json" with { type: "json" };
 import rules from "../tests/fixtures/rules.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
-import { createCompatibleAssignments } from "../src/lib/assignment.js";
+import { createInitialAssignments } from "../src/lib/assignment.js";
 import { improveHardAssignments } from "../src/lib/hard.js";
 import { improveSoftAssignments } from "../src/lib/soft.js";
 import { evaluateModel } from "../src/lib/evaluation.js";
@@ -20,7 +20,7 @@ if (!Number.isInteger(maxIterations) || maxIterations < 1) {
   console.log("Creating hard-rule-compatible assignments...");
   const baseModel = createModel(items, slots, rules);
   const compatibleStartedAt = performance.now();
-  const startingAssignments = createCompatibleAssignments(baseModel);
+  const startingAssignments = createInitialAssignments(baseModel);
   const compatibleElapsed = Math.round(
     performance.now() - compatibleStartedAt,
   );

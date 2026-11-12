@@ -153,7 +153,7 @@ function replaceAssignedSlot(model, itemId, previousSlotId, nextSlotId) {
   };
 }
 
-export function createCompatibleAssignments(model) {
+export function createInitialAssignments(model) {
   const assignments = Object.fromEntries(
     model.slots.map((slot) => [slot.id, []]),
   );

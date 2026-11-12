@@ -1,7 +1,7 @@
 import { createModel } from "./model.js";
 import { evaluateModel } from "./evaluation.js";
 import {
-  createCompatibleAssignments,
+  createInitialAssignments,
 } from "./assignment.js";
 import { improveHardAssignments } from "./hard.js";
 import { improveSoftAssignments } from "./soft.js";
@@ -17,7 +17,7 @@ export function generateRoster({
 } = {}) {
   const baseModel = createModel(items, slots, rules);
   const startingAssignments =
-    assignments ?? createCompatibleAssignments(baseModel);
+    assignments ?? createInitialAssignments(baseModel);
   const startingModel = createModel(
     items,
     slots,
@@ -28,18 +28,18 @@ export function generateRoster({
     startingModel,
     maxHardIterations,
   );
-  const hardModel = createModel(items, slots, rules, hardAssignments);
+  const hardImprovedModel = createModel(items, slots, rules, hardAssignments);
   const softAssignments = improveSoftAssignments(
-    hardModel,
+    hardImprovedModel,
     maxSoftIterations,
     onProgress,
   );
-  const finalModel = createModel(items, slots, rules, softAssignments);
+  const softImprovedModel = createModel(items, slots, rules, softAssignments);
 
   return {
     assignments: softAssignments,
-    model: finalModel,
-    evaluation: evaluateModel(finalModel),
+    model: softImprovedModel,
+    evaluation: evaluateModel(softImprovedModel),
   };
 }
 

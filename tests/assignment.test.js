@@ -7,7 +7,7 @@ import rules from "./fixtures/rules.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
 import { evaluateModel } from "../src/lib/evaluation.js";
-import { createCompatibleAssignments } from "../src/lib/assignment.js";
+import { createInitialAssignments } from "../src/lib/assignment.js";
 import { improveHardAssignments } from "../src/lib/hard.js";
 import { improveSoftAssignments } from "../src/lib/soft.js";
 import { swapAssignments } from "../src/lib/assignment.js";
@@ -37,7 +37,7 @@ test("creates assignments compatible with hard match rules", () => {
     ],
   );
 
-  assert.deepEqual(createCompatibleAssignments(model), {
+  assert.deepEqual(createInitialAssignments(model), {
     S1: ["I1"],
     S2: ["I2"],
   });
@@ -65,7 +65,7 @@ test("creates assignments within hard minimum and maximum slot limits", () => {
     ],
   );
 
-  const assignments = createCompatibleAssignments(model);
+  const assignments = createInitialAssignments(model);
   const slotSizes = Object.values(assignments).map((itemIds) => itemIds.length);
 
   assert.deepEqual(slotSizes, [3, 2]);
@@ -86,7 +86,7 @@ test("applies targeted hard slot limits", () => {
     ],
   );
 
-  const assignments = createCompatibleAssignments(model);
+  const assignments = createInitialAssignments(model);
 
   assert.equal(assignments.S1.length, 1);
   assert.equal(assignments.S2.length, 2);
@@ -143,7 +143,7 @@ test("improves the complete fixture without creating hard violations", () => {
     structuredClone(items),
     structuredClone(slots),
     structuredClone(rules),
-    createCompatibleAssignments(createModel(items, slots, rules)),
+    createInitialAssignments(createModel(items, slots, rules)),
   );
   const startingEvaluation = evaluateModel(model);
   const assignments = improveSoftAssignments(model, 1);
