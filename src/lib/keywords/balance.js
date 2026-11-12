@@ -60,8 +60,16 @@ export function evaluate(inputs, model) {
   return { score, repetitions, violations };
 }
 
-export function isAffected() {
-  return true;
+export function isAffected(rule, _model, swap) {
+  const targetSlots = rule.inputs[1] ?? "all";
+  return (
+    targetSlots === "all" ||
+    [swap.firstSlotId, swap.secondSlotId].some((slotId) =>
+      targetSlots.some(
+        (targetSlotId) => String(targetSlotId) === String(slotId),
+      ),
+    )
+  );
 }
 
 export function evaluateSwap(rule, model, currentPenalty, candidateModel, swap) {

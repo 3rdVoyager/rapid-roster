@@ -4,7 +4,7 @@ import { getKeywordConfig } from "./keywords/config.js";
 import { applySwapToModel, cloneAssignments } from "./assignment.js";
 import { isItemCompatibleWithSlot } from "./keywords/helpers.js";
 
-const MIN_SOFT_IMPROVEMENT = 0.1;
+const MIN_SOFT_IMPROVEMENT = 0.01;
 
 export function improveSoftAssignments(
   model,

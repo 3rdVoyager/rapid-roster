@@ -1,4 +1,6 @@
 import { performance } from "node:perf_hooks";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
 import items from "../tests/fixtures/items.json" with { type: "json" };
 import slots from "../tests/fixtures/slots.json" with { type: "json" };
@@ -10,6 +12,7 @@ import { improveHardAssignments } from "../src/lib/hard.js";
 import { improveSoftAssignments } from "../src/lib/soft.js";
 import { evaluateModel } from "../src/lib/evaluation.js";
 
+const logLines = [];
 const limitMode = process.argv[2] ?? "rounds";
 const limitValue = Number(process.argv[3] ?? (limitMode === "rounds" ? 20 : 300000));
 const softLimit =
@@ -31,7 +34,7 @@ if (
   process.exitCode = 1;
 } else {
   const generationStartedAt = performance.now();
-  console.log("Creating hard-rule-compatible assignments...");
+  writeLog("Creating hard-rule-compatible assignments...");
   const baseModel = createModel(items, slots, rules);
   const compatibleStartedAt = performance.now();
   const startingAssignments = createInitialAssignments(baseModel);
@@ -49,14 +52,14 @@ if (
   const initialScoringElapsed = Math.round(
     performance.now() - compatibleStartedAt - compatibleElapsed,
   );
-  console.log(
+  writeLog(
     `Compatible assignment creation complete in ${compatibleElapsed} ms.`,
   );
-  console.log(`Initial scoring complete in ${initialScoringElapsed} ms.`);
-  console.log(
+  writeLog(`Initial scoring complete in ${initialScoringElapsed} ms.`);
+  writeLog(
     `Hard-rule creation complete. Hard penalty: ${startingEvaluation.hardPenalty}`,
   );
-  console.log(
+  writeLog(
     `Starting soft penalty: ${startingFullEvaluation.softPenalty}`,
   );
 
@@ -71,20 +74,20 @@ if (
       hardAssignments,
     );
     const hardEvaluation = evaluateModel(hardModel, true);
-    console.log(
+    writeLog(
       `Hard-rule optimization complete in ${Math.round(
         performance.now() - hardStartedAt,
       )} ms. Hard penalty: ${hardEvaluation.hardPenalty}`,
     );
 
-    console.log("Optimizing soft rules...");
+    writeLog("Optimizing soft rules...");
     const softStartedAt = performance.now();
     const softAssignments = improveSoftAssignments(
       hardModel,
       softLimit,
       (progress) => {
         const status = progress.improved ? "improved" : "stopped";
-        console.log(
+        writeLog(
           `Soft round ${progress.round}: ` +
             `rule ${progress.ruleId ?? "none"}; ` +
             `penalty ${progress.softPenalty}; ` +
@@ -95,27 +98,44 @@ if (
     const finalModel = createModel(items, slots, rules, softAssignments);
     const finalEvaluation = evaluateModel(finalModel);
 
-    console.log(
+    writeLog(
       `Soft-rule optimization complete in ${Math.round(
         performance.now() - softStartedAt,
       )} ms.`,
     );
-    console.log(
+    writeLog(
       `Total generation time: ${Math.round(
         performance.now() - generationStartedAt,
       )} ms.`,
     );
-    console.log(`Final hard penalty: ${finalEvaluation.hardPenalty}`);
-    console.log(
+    writeLog(`Final hard penalty: ${finalEvaluation.hardPenalty}`);
+    writeLog(
       `Soft penalty: ${finalEvaluation.softPenalty}`,
     );
-    console.log(
+    writeLog(
       `Soft violations: ${finalEvaluation.softViolations.length}`,
     );
   } catch (error) {
-    console.log("Assignment generation failed");
-    console.log(`Message: ${error.message}`);
-    console.log(`Starting hard penalty: ${startingEvaluation.hardPenalty}`);
-    console.log(`Final hard penalty: ${error.hardPenalty ?? "unavailable"}`);
+    writeLog("Assignment generation failed");
+    writeLog(`Message: ${error.message}`);
+    writeLog(`Starting hard penalty: ${startingEvaluation.hardPenalty}`);
+    writeLog(`Final hard penalty: ${error.hardPenalty ?? "unavailable"}`);
   }
+}
+
+if (logLines.length > 0) {
+  const timestamp = new Date()
+    .toISOString()
+    .replace("T", "_")
+    .replace(/\.\d{3}Z$/, "")
+    .replaceAll(":", "-");
+  const logDirectory = join(process.cwd(), "logs");
+  const logPath = join(logDirectory, `generation-${timestamp}.txt`);
+  mkdirSync(logDirectory, { recursive: true });
+  writeFileSync(logPath, `${logLines.join("\n")}\n`, "utf8");
+  console.log(`Generation results written to ${logPath}`);
+}
+
+function writeLog(message) {
+  logLines.push(String(message));
 }

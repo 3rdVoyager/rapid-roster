@@ -234,7 +234,7 @@ test("evaluateSwap matches full scoring for group, distribute, and align rules",
       enforcement: "soft",
       priority: 20,
       keyword: "distribute",
-      inputs: ["rating"],
+      inputs: ["rating", "all"],
     },
     {
       id: "R3",

@@ -9,12 +9,13 @@ import {
 
 export const config = {
   keyword: "distribute",
-  inputValidators: ["itemAttribute"],
+  inputValidators: ["itemAttribute", "targetSlots"],
 };
 
 export function evaluate(inputs, model) {
   const itemAttribute = inputs[0];
-  const rankedItems = getRankedItems(model, itemAttribute);
+  const targetSlots = inputs[1] ?? "all";
+  const rankedItems = getRankedItems(model, itemAttribute, targetSlots);
 
   if (rankedItems.length < 2) {
     return { score: 1, repetitions: 1, violations: [] };
@@ -49,18 +50,25 @@ export function evaluate(inputs, model) {
   };
 }
 
-export function isAffected(rule, model, swap) {
-  const itemAttribute = rule.inputs[0];
-  return [swap.firstItemId, swap.secondItemId].some((itemId) =>
-    isNumericValue(getItemById(model, itemId)?.[itemAttribute]),
+export function isAffected(rule, _model, swap) {
+  const targetSlots = rule.inputs[1] ?? "all";
+  return (
+    targetSlots === "all" ||
+    [swap.firstSlotId, swap.secondSlotId].some((slotId) =>
+      targetSlots.some(
+        (targetSlotId) => String(targetSlotId) === String(slotId),
+      ),
+    )
   );
 }
 
 export function evaluateSwap(rule, model, currentPenalty, candidateModel, swap) {
-  const rankedItems = getRankedItems(model, rule.inputs[0]);
+  const targetSlots = rule.inputs[1] ?? "all";
+  const rankedItems = getRankedItems(model, rule.inputs[0], targetSlots);
   const candidateRankedItems = getRankedItems(
     candidateModel,
     rule.inputs[0],
+    targetSlots,
   );
   const affectedIndexes = getAffectedPairIndexes(
     rankedItems,
@@ -86,13 +94,16 @@ export function evaluateSwap(rule, model, currentPenalty, candidateModel, swap) 
   );
 }
 
-function getRankedItems(model, itemAttribute) {
+function getRankedItems(model, itemAttribute, targetSlots = "all") {
+  const targetSlotIds = getTargetSlotIds(model, targetSlots);
   return model.items
     .filter((item) => isNumericValue(item[itemAttribute]))
     .map((item) => ({
       item,
       itemValue: item[itemAttribute],
-      assignedSlotIds: getAssignedSlotIds(model, item.id),
+      assignedSlotIds: getAssignedSlotIds(model, item.id).filter((slotId) =>
+        targetSlotIds.has(String(slotId)),
+      ),
     }))
     .filter((entry) => entry.assignedSlotIds.length > 0)
     .sort((first, second) => second.itemValue - first.itemValue);
@@ -138,17 +149,22 @@ export function generateCandidate({
   hardCompatibilityIndex,
   diagnostic,
 }) {
-  const itemAttribute = rule.inputs[0];
+  const [itemAttribute, targetSlots = "all"] = rule.inputs;
+  const targetSlotIds = getTargetSlotIds(model, targetSlots);
   const sourceItemId = violation.sourceId;
   const targetItemId = violation.targetId;
-  const sourceSlotIds = getAssignedSlotIds(model, sourceItemId);
-  const targetSlotIds = getAssignedSlotIds(model, targetItemId);
+  const sourceSlotIds = getAssignedSlotIds(model, sourceItemId).filter(
+    (slotId) => targetSlotIds.has(String(slotId)),
+  );
+  const targetItemSlotIds = getAssignedSlotIds(model, targetItemId).filter(
+    (slotId) => targetSlotIds.has(String(slotId)),
+  );
   const assignments = model.assignments.slotAssignments;
   const sourceValue = getItemById(model, sourceItemId)[itemAttribute];
   const targetValue = getItemById(model, targetItemId)[itemAttribute];
 
   for (const sourceSlotId of sourceSlotIds) {
-    for (const targetSlotId of targetSlotIds) {
+    for (const targetSlotId of targetItemSlotIds) {
       if (sourceSlotId === targetSlotId) {
         continue;
       }
@@ -170,6 +186,9 @@ export function generateCandidate({
 
   for (const sharedSlotId of violation.sharedSlotIds ?? []) {
     for (const targetSlot of model.slots) {
+      if (!targetSlotIds.has(String(targetSlot.id))) {
+        continue;
+      }
       if (targetSlot.id === sharedSlotId) {
         continue;
       }
@@ -199,6 +218,14 @@ export function generateCandidate({
   }
 
   return null;
+}
+
+function getTargetSlotIds(model, targetSlots) {
+  if (targetSlots === "all") {
+    return new Set(model.slots.map((slot) => String(slot.id)));
+  }
+
+  return new Set(targetSlots.map((slotId) => String(slotId)));
 }
 
 function trySwap({

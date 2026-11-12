@@ -150,15 +150,78 @@
   },
   {
     "id": "R16",
-    "name": "Distribute Tallest Players",
-    "description": "Distribute the values of each item's Height evenly across all slots.",
+    "name": "Distribute Height: Male K/1",
+    "description": "Distribute height values across male K/1 slots.",
     "enforcement": "soft",
-    "priority": 80,
+    "priority": 10,
     "keyword": "distribute",
-    "inputs": ["height"]
+    "inputs": ["height", ["Coyotes", "Tomato Frogs", "Lizards", "Stallions"]]
   },
   {
     "id": "R17",
+    "name": "Distribute Height: Male 2/3",
+    "description": "Distribute height values across male 2/3 slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "distribute",
+    "inputs": ["height", ["Snapping Turtles", "Lions", "Jackals", "Dragons", "Hawks", "Bengals", "Cheetahs", "Tarantulas"]]
+  },
+  {
+    "id": "R18",
+    "name": "Distribute Height: Male 4/5",
+    "description": "Distribute height values across male 4/5 slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "distribute",
+    "inputs": ["height", ["Nittany Lions", "Wonder Boys", "Buffaloes", "Banana Slugs", "Spartans", "Midshipmen", "Huskies", "Titans", "Knights", "Terrapins"]]
+  },
+  {
+    "id": "R19",
+    "name": "Distribute Height: Male 6/7/8",
+    "description": "Distribute height values across older male slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "distribute",
+    "inputs": ["height", ["Thunder", "Celtics", "Wizards", "Mavericks", "Timberwolves", "Raptors", "Nuggets", "Lakers", "Warriors", "Cavaliers", "Bucks", "Pistons", "Grizzlies", "Bulls"]]
+  },
+  {
+    "id": "R20",
+    "name": "Distribute Height: Female K/1",
+    "description": "Distribute height values across female K/1 slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "distribute",
+    "inputs": ["height", ["Starfish", "Bobcats", "Unicorns", "Flamingos"]]
+  },
+  {
+    "id": "R21",
+    "name": "Distribute Height: Female 2/3",
+    "description": "Distribute height values across female 2/3 slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "distribute",
+    "inputs": ["height", ["Ladybugs", "Leopards", "Bunnies", "Wildcats"]]
+  },
+  {
+    "id": "R22",
+    "name": "Distribute Height: Female 4/5",
+    "description": "Distribute height values across female 4/5 slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "distribute",
+    "inputs": ["height", ["Hawkeyes", "Golden Gophers", "Fighting Camels", "Royals"]]
+  },
+  {
+    "id": "R23",
+    "name": "Distribute Height: Female 6/7/8",
+    "description": "Distribute height values across older female slots.",
+    "enforcement": "soft",
+    "priority": 10,
+    "keyword": "distribute",
+    "inputs": ["height", ["Storm", "Fever", "Lynx", "Mystics", "Liberty", "Valkyries", "Aces"]]
+  },
+  {
+    "id": "R24",
     "name": "Group Teammate Requests",
     "description": "Group each item with items whose IDs are in its Teammate Requests.",
     "enforcement": "soft",
@@ -167,7 +230,7 @@
     "inputs": ["id", "teammateRequest"]
   },
   {
-    "id": "R18",
+    "id": "R25",
     "name": "Honor Coach Requests",
     "description": "Match each item's Coach Request to its assigned slot's ID.",
     "enforcement": "soft",
@@ -176,7 +239,7 @@
     "inputs": ["coachRequest", "id"]
   },
   {
-    "id": "R19",
+    "id": "R26",
     "name": "Match Sibling Practice Nights",
     "description": "Align each item's assigned slot's Practice Night with its Sibling's assigned slot's Practice Night.",
     "enforcement": "soft",
@@ -185,7 +248,7 @@
     "inputs": ["practiceNight", "sibling"]
   },
   {
-    "id": "R20",
+    "id": "R27",
     "name": "Match Sibling Gym",
     "description": "Align each item's assigned slot's Gym Location with its Sibling's assigned slot's Gym Location.",
     "enforcement": "soft",
@@ -194,7 +257,7 @@
     "inputs": ["gymLocation", "sibling"]
   },
   {
-    "id": "R21",
+    "id": "R28",
     "name": "Balance Evaluation: Male K/1",
     "description": "Balance average evaluation score across male K/1 slots.",
     "enforcement": "soft",
@@ -203,7 +266,7 @@
     "inputs": ["evaluationScore", ["Coyotes", "Tomato Frogs", "Lizards", "Stallions"]]
   },
   {
-    "id": "R22",
+    "id": "R29",
     "name": "Balance Evaluation: Male 2/3",
     "description": "Balance average evaluation score across male 2/3 slots.",
     "enforcement": "soft",
@@ -212,7 +275,7 @@
     "inputs": ["evaluationScore", ["Snapping Turtles", "Lions", "Jackals", "Dragons", "Hawks", "Bengals", "Cheetahs", "Tarantulas"]]
   },
   {
-    "id": "R23",
+    "id": "R30",
     "name": "Balance Evaluation: Male 4/5",
     "description": "Balance average evaluation score across male 4/5 slots.",
     "enforcement": "soft",
@@ -221,7 +284,7 @@
     "inputs": ["evaluationScore", ["Nittany Lions", "Wonder Boys", "Buffaloes", "Banana Slugs", "Spartans", "Midshipmen", "Huskies", "Titans", "Knights", "Terrapins"]]
   },
   {
-    "id": "R24",
+    "id": "R31",
     "name": "Balance Evaluation: Male 6/7/8",
     "description": "Balance average evaluation score across older male slots.",
     "enforcement": "soft",
@@ -230,7 +293,7 @@
     "inputs": ["evaluationScore", ["Thunder", "Celtics", "Wizards", "Mavericks", "Timberwolves", "Raptors", "Nuggets", "Lakers", "Warriors", "Cavaliers", "Bucks", "Pistons", "Grizzlies", "Bulls"]]
   },
   {
-    "id": "R25",
+    "id": "R32",
     "name": "Balance Evaluation: Female K/1",
     "description": "Balance average evaluation score across female K/1 slots.",
     "enforcement": "soft",
@@ -239,7 +302,7 @@
     "inputs": ["evaluationScore", ["Starfish", "Bobcats", "Unicorns", "Flamingos"]]
   },
   {
-    "id": "R26",
+    "id": "R33",
     "name": "Balance Evaluation: Female 2/3",
     "description": "Balance average evaluation score across female 2/3 slots.",
     "enforcement": "soft",
@@ -248,7 +311,7 @@
     "inputs": ["evaluationScore", ["Ladybugs", "Leopards", "Bunnies", "Wildcats"]]
   },
   {
-    "id": "R27",
+    "id": "R34",
     "name": "Balance Evaluation: Female 4/5",
     "description": "Balance average evaluation score across female 4/5 slots.",
     "enforcement": "soft",
@@ -257,7 +320,7 @@
     "inputs": ["evaluationScore", ["Hawkeyes", "Golden Gophers", "Fighting Camels", "Royals"]]
   },
   {
-    "id": "R28",
+    "id": "R35",
     "name": "Balance Evaluation: Female 6/7/8",
     "description": "Balance average evaluation score across older female slots.",
     "enforcement": "soft",

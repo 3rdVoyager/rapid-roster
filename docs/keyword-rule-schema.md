@@ -94,11 +94,13 @@ than concentrated together.
 ```json
 {
   "keyword": "distribute",
-  "inputs": ["height"]
+  "inputs": ["height", "all"]
 }
 ```
 
-The input is `[numericAttribute]`.
+The inputs are `[numericAttribute, targetSlots]`. `targetSlots` is either
+`"all"` or an array of slot IDs. Values are ranked and distributed only
+within the selected slots.
 
 ### `align`
 
