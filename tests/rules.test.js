@@ -7,14 +7,14 @@ import rules from "./fixtures/rules.json" with { type: "json" };
 import assignments from "./fixtures/assignments.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
+import { evaluate as evaluateAlign } from "../src/lib/keywords/align.js";
+import { evaluate as evaluateBalance } from "../src/lib/keywords/balance.js";
 import {
-  evaluateAlign,
-  evaluateBalance,
-  evaluateDistribute,
-  evaluateGroup,
-  evaluateLimit,
-  evaluateMatch,
-} from "../src/lib/rules.js";
+  evaluate as evaluateDistribute,
+} from "../src/lib/keywords/distribute.js";
+import { evaluate as evaluateGroup } from "../src/lib/keywords/group.js";
+import { evaluate as evaluateLimit } from "../src/lib/keywords/limit.js";
+import { evaluate as evaluateMatch } from "../src/lib/keywords/match.js";
 
 function createTestModel() {
   return createModel(

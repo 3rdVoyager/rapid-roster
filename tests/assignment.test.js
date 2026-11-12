@@ -6,13 +6,13 @@ import slots from "./fixtures/slots.json" with { type: "json" };
 import rules from "./fixtures/rules.json" with { type: "json" };
 
 import { createModel } from "../src/lib/model.js";
-import { evaluateModel } from "../src/lib/scoring.js";
+import { evaluateModel } from "../src/lib/evaluation.js";
 import {
   createCompatibleAssignments,
   improveHardAssignments,
   improveSoftAssignments,
-  swapAssignments,
-} from "../src/lib/assignment.js";
+} from "../src/lib/generator.js";
+import { swapAssignments } from "../src/lib/assignment.js";
 
 function createTestModel(itemData = items, slotData = slots) {
   return createModel(structuredClone(itemData), structuredClone(slotData));

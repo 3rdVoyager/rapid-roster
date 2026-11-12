@@ -9,8 +9,8 @@ import {
   createCompatibleAssignments,
   improveHardAssignments,
   improveSoftAssignments,
-} from "../src/lib/assignment.js";
-import { evaluateModel } from "../src/lib/scoring.js";
+} from "../src/lib/generator.js";
+import { evaluateModel } from "../src/lib/evaluation.js";
 
 const maxIterations = Number(process.argv[2] ?? 100);
 

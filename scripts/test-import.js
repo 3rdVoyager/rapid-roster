@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { parseCsv } from "../src/lib/import.js";
 import { createModel } from "../src/lib/model.js";
-import { evaluateModel } from "../src/lib/scoring.js";
+import { evaluateModel } from "../src/lib/evaluation.js";
 
 const [itemsPath, slotsPath, rulesPath, assignmentsPath] = process.argv.slice(2);
 

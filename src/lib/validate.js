@@ -1,4 +1,4 @@
-import keywordConfigs from "./config.js";
+import keywordConfigs from "./keywords/config.js";
 
 const inputValidators = {
   itemAttribute: isItemAttributeInput,

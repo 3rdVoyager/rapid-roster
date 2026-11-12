@@ -9,7 +9,10 @@ import fullAssignments from "./fixtures/assignments.json" with {
 };
 
 import { createModel } from "../src/lib/model.js";
-import { evaluateModel, evaluateSwap } from "../src/lib/scoring.js";
+import {
+  evaluateModel,
+  evaluateSwap,
+} from "../src/lib/evaluation.js";
 
 const items = [
   { id: "I1", gender: "M", division: "M A" },
