@@ -373,7 +373,12 @@ async function importAssignments(event) {
   try {
     const records = parseCsv(await file.text());
     const assignments = assignmentRecordsToMap(records);
-    const model = createModel(data.items, data.slots, data.rules, assignments);
+    const model = createModel(
+      normalizeNumericRuleAttributes(data.items, data.rules),
+      data.slots,
+      data.rules,
+      assignments,
+    );
     renderEvaluation(evaluateModel(model), model);
     setMessage(`${file.name} evaluated.`);
   } catch (error) {
