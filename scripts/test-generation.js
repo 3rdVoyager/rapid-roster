@@ -10,10 +10,24 @@ import { improveHardAssignments } from "../src/lib/hard.js";
 import { improveSoftAssignments } from "../src/lib/soft.js";
 import { evaluateModel } from "../src/lib/evaluation.js";
 
-const maxRounds = Number(process.argv[2] ?? 20);
+const limitMode = process.argv[2] ?? "rounds";
+const limitValue = Number(process.argv[3] ?? (limitMode === "rounds" ? 20 : 300000));
+const softLimit =
+  limitMode === "time"
+    ? { maxTimeMs: limitValue }
+    : limitMode === "rounds"
+      ? { maxRounds: limitValue }
+      : null;
 
-if (!Number.isInteger(maxRounds) || maxRounds < 1) {
-  console.error("Usage: node scripts/test-generation.js [maxRounds]");
+if (
+  !softLimit ||
+  !Number.isFinite(limitValue) ||
+  limitValue < 1 ||
+  (limitMode === "rounds" && !Number.isInteger(limitValue))
+) {
+  console.error(
+    "Usage: node scripts/test-generation.js rounds <count> | time <milliseconds>",
+  );
   process.exitCode = 1;
 } else {
   const generationStartedAt = performance.now();
@@ -67,7 +81,7 @@ if (!Number.isInteger(maxRounds) || maxRounds < 1) {
     const softStartedAt = performance.now();
     const softAssignments = improveSoftAssignments(
       hardModel,
-      maxRounds,
+      softLimit,
       (progress) => {
         const status = progress.improved ? "improved" : "stopped";
         console.log(

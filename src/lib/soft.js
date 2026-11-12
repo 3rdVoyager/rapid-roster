@@ -6,9 +6,29 @@ import { isItemCompatibleWithSlot } from "./keywords/helpers.js";
 
 const MIN_SOFT_IMPROVEMENT = 0.1;
 
-export function improveSoftAssignments(model, maxRounds = 100, onProgress) {
-  if (!Number.isInteger(maxRounds) || maxRounds < 1) {
+export function improveSoftAssignments(
+  model,
+  limit = { maxRounds: 100 },
+  onProgress,
+) {
+  const { maxRounds, maxTimeMs } = limit;
+  if (
+    (maxRounds === undefined && maxTimeMs === undefined) ||
+    (maxRounds !== undefined && maxTimeMs !== undefined)
+  ) {
+    throw new Error("Provide exactly one soft optimization limit");
+  }
+  if (
+    maxRounds !== undefined &&
+    (!Number.isInteger(maxRounds) || maxRounds < 1)
+  ) {
     throw new Error("Max rounds must be a positive integer");
+  }
+  if (
+    maxTimeMs !== undefined &&
+    (!Number.isFinite(maxTimeMs) || maxTimeMs < 1)
+  ) {
+    throw new Error("Max time must be a positive number of milliseconds");
   }
 
   let assignments = cloneAssignments(model.assignments.slotAssignments);
@@ -30,7 +50,19 @@ export function improveSoftAssignments(model, maxRounds = 100, onProgress) {
     throw error;
   }
 
-  for (let pass = 0; pass < maxRounds; pass++) {
+  const optimizationStartedAt = globalThis.performance.now();
+  let stopReason;
+  let currentRound = 0;
+  for (
+    let pass = 0;
+    maxRounds === undefined || pass < maxRounds;
+    pass++
+  ) {
+    currentRound = pass + 1;
+    if (maxTimeMs !== undefined && passStartedAt(maxTimeMs)) {
+      stopReason = "time";
+      break;
+    }
     const priorityRules = getPriorityRules(
       model.rules,
       currentEvaluation.softRulePenalties,
@@ -38,6 +70,10 @@ export function improveSoftAssignments(model, maxRounds = 100, onProgress) {
     let passImproved = false;
 
     for (const rule of priorityRules) {
+      if (maxTimeMs !== undefined && passStartedAt(maxTimeMs)) {
+        stopReason = "time";
+        break;
+      }
       const ruleViolations = currentEvaluation.softViolations.filter(
         (violation) => violation.ruleId === rule.id,
       );
@@ -94,7 +130,12 @@ export function improveSoftAssignments(model, maxRounds = 100, onProgress) {
       });
     }
 
+    if (stopReason === "time") {
+      break;
+    }
+
     if (!passImproved) {
+      stopReason = "no-improvement";
       onProgress?.({
         round: pass + 1,
         softPenalty: currentEvaluation.softPenalty,
@@ -108,7 +149,24 @@ export function improveSoftAssignments(model, maxRounds = 100, onProgress) {
     }
   }
 
+  if (stopReason === "time") {
+    onProgress?.({
+      round: currentRound,
+      softPenalty: currentEvaluation.softPenalty,
+      improvement: 0,
+      improved: false,
+      complete: true,
+      stopReason,
+      softRulePenalties: currentEvaluation.softRulePenalties,
+      candidateDiagnostics: [],
+    });
+  }
+
   return assignments;
+
+  function passStartedAt(timeLimit) {
+    return globalThis.performance.now() - optimizationStartedAt >= timeLimit;
+  }
 }
 
 function generateCandidate(

@@ -125,7 +125,7 @@ test("improves soft scores without breaking hard rules", () => {
     { S1: ["I1", "I2", "I3"], S2: ["I4", "I5"] },
   );
   const startingEvaluation = evaluateModel(model);
-  const assignments = improveSoftAssignments(model, 1);
+  const assignments = improveSoftAssignments(model, { maxRounds: 1 });
   const finalModel = createModel(
     model.items,
     model.slots,
@@ -146,7 +146,7 @@ test("improves the complete fixture without creating hard violations", () => {
     createInitialAssignments(createModel(items, slots, rules)),
   );
   const startingEvaluation = evaluateModel(model);
-  const assignments = improveSoftAssignments(model, 1);
+  const assignments = improveSoftAssignments(model, { maxRounds: 1 });
   const finalModel = createModel(
     model.items,
     model.slots,
