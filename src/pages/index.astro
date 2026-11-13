@@ -18,8 +18,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <a class="app-nav-item" href="#rules"><span class="material-symbols-outlined">tune</span>Rules</a>
       <a class="app-nav-item" href="#evaluation"><span class="material-symbols-outlined">fact_check</span>Evaluation</a>
       <a class="app-nav-item" href="#generate"><span class="material-symbols-outlined">auto_awesome</span>Generation</a>
-      <div class="sidebar-spacer"></div>
-      <p class="sidebar-hint">Everything stays in this browser.</p>
     </nav>
 
     <main class="app-main">
@@ -179,20 +177,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
               <label><span id="generation-limit-value-label">Maximum rounds</span>
                 <input id="generation-limit-value" type="number" min="1" step="1" value="20" />
               </label>
-              <label><span id="generation-worker-count-label">Parallel solutions</span>
-                <input id="generation-worker-count" type="number" min="1" step="1" value="1" />
-              </label>
               <label class="generation-checkbox"><input id="generation-hard-only" type="checkbox" /> Hard rules only</label>
             </div>
           </div>
           <div class="results-card">
             <div class="card-header">
-              <div><h2 class="card-title">Generated solutions</h2><p class="card-description">Select a solution to review or export it.</p></div>
+              <div><h2 class="card-title">Generated roster</h2><p class="card-description">Review or export the generated roster.</p></div>
               <div class="result-actions"><button class="button button-ghost button-small" id="copy-button" type="button" disabled>Copy CSV</button><button class="button button-secondary button-small" id="download-button" type="button" disabled>Download CSV</button></div>
             </div>
             <div class="result-empty" id="result-empty"><span class="empty-mark">✦</span><p>No roster yet.</p></div>
             <div class="result-content" id="result-content" hidden>
-              <div class="result-tabs" id="result-tabs"></div>
               <div class="metrics" id="metrics"></div>
               <div class="table-wrap"><table class="data-table"><thead><tr><th>Slot</th><th>Assigned items</th><th>Count</th></tr></thead><tbody id="results-body"></tbody></table></div>
               <details class="csv-details"><summary>View CSV output</summary><pre id="csv-output"></pre></details>

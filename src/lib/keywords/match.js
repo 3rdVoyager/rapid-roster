@@ -86,7 +86,6 @@ export function generateCandidate({
   violation,
   isBetterCandidate,
   hardCompatibilityIndex,
-  diagnostic,
 }) {
   const [itemAttribute, slotAttribute] = model.rules.find(
     (rule) => rule.id === violation.ruleId,
@@ -112,7 +111,6 @@ export function generateCandidate({
           targetSlot.id,
         )
       ) {
-        diagnostic.hardRejected++;
         continue;
       }
 

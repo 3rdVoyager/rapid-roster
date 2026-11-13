@@ -15,8 +15,12 @@ export const keywordConfigs = keywordModules.map((module) => ({
   generateCandidate: module.generateCandidate,
 }));
 
+const keywordConfigByKeyword = new Map(
+  keywordConfigs.map((config) => [config.keyword, config]),
+);
+
 export function getKeywordConfig(keyword) {
-  return keywordConfigs.find((config) => config.keyword === keyword);
+  return keywordConfigByKeyword.get(keyword);
 }
 
 export default keywordConfigs;

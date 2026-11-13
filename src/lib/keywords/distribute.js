@@ -103,7 +103,11 @@ function getRankedItems(model, itemAttribute, targetSlots = "all") {
   if (!orderedItems) {
     orderedItems = model.items
       .filter((item) => isNumericValue(item[itemAttribute]))
-      .sort((first, second) => second[itemAttribute] - first[itemAttribute]);
+      .sort(
+        (first, second) =>
+          second[itemAttribute] - first[itemAttribute] ||
+          String(first.id).localeCompare(String(second.id)),
+      );
     let itemsByKey = rankedItemOrderCache.get(model.items);
     if (!itemsByKey) {
       itemsByKey = new Map();
@@ -160,7 +164,6 @@ export function generateCandidate({
   violation,
   isBetterCandidate,
   hardCompatibilityIndex,
-  diagnostic,
 }) {
   const [itemAttribute, targetSlots = "all"] = rule.inputs;
   const targetSlotIds = getTargetSlotIds(model, targetSlots);
@@ -189,7 +192,6 @@ export function generateCandidate({
         targetSlotId,
         isBetterCandidate,
         hardCompatibilityIndex,
-        diagnostic,
       });
       if (candidate) {
         return candidate;
@@ -221,7 +223,6 @@ export function generateCandidate({
           targetSlotId: targetSlot.id,
           isBetterCandidate,
           hardCompatibilityIndex,
-          diagnostic,
         });
         if (candidate) {
           return candidate;
@@ -249,7 +250,6 @@ function trySwap({
   targetSlotId,
   isBetterCandidate,
   hardCompatibilityIndex,
-  diagnostic,
 }) {
   if (
     !canSwapWithoutBreakingHardMatches(
@@ -260,7 +260,6 @@ function trySwap({
       targetSlotId,
     )
   ) {
-    diagnostic.hardRejected++;
     return null;
   }
   const candidate = swapAssignments(

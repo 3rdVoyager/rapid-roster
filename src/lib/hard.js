@@ -12,6 +12,7 @@ export function improveHardAssignments(model, maxRounds = 100) {
   let assignments = cloneAssignments(model.assignments.slotAssignments);
   let lastEvaluation;
   const hardCompatibilityIndex = createHardCompatibilityIndex(model);
+  const rulesById = new Map(model.rules.map((rule) => [rule.id, rule]));
 
   for (let round = 0; round < maxRounds; round++) {
     let currentModel = createModel(
@@ -49,6 +50,7 @@ export function improveHardAssignments(model, maxRounds = 100) {
             currentEvaluation,
           ),
         hardCompatibilityIndex,
+        rulesById,
       );
       if (!candidate) {
         continue;
@@ -121,32 +123,13 @@ function generateCandidate(
   violations,
   isBetterCandidate,
   hardCompatibilityIndex,
-  candidateDiagnostics = [],
+  rulesById,
 ) {
   for (const violation of violations) {
-    const rule = model.rules.find(
-      (candidate) => candidate.id === violation.ruleId,
-    );
+    const rule = rulesById.get(violation.ruleId);
     const keywordConfig = getKeywordConfig(rule?.keyword);
-    const diagnostic = {
-      ruleId: violation.ruleId,
-      keyword: rule?.keyword,
-      attempts: 0,
-      hardRejected: 0,
-      scored: 0,
-      accepted: 0,
-      scoringMs: 0,
-    };
     const limitedCandidateEvaluator = (candidate, swap) => {
-      diagnostic.attempts++;
-      diagnostic.scored++;
-      const scoringStartedAt = globalThis.performance.now();
-      const improved = isBetterCandidate(candidate, swap);
-      diagnostic.scoringMs += globalThis.performance.now() - scoringStartedAt;
-      if (improved) {
-        diagnostic.accepted++;
-      }
-      return improved;
+      return isBetterCandidate(candidate, swap);
     };
 
     const candidate = keywordConfig?.generateCandidate?.({
@@ -155,9 +138,7 @@ function generateCandidate(
       violation,
       isBetterCandidate: limitedCandidateEvaluator,
       hardCompatibilityIndex,
-      diagnostic,
     });
-    candidateDiagnostics.push(diagnostic);
     if (candidate) {
       return candidate;
     }

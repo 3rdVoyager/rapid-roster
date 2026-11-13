@@ -49,6 +49,7 @@ export function improveSoftAssignments(
   }
 
   const optimizationStartedAt = globalThis.performance.now();
+  const rulesById = new Map(model.rules.map((rule) => [rule.id, rule]));
   let stopReason;
   let currentRound = 0;
   for (
@@ -79,7 +80,6 @@ export function improveSoftAssignments(
         continue;
       }
 
-      const candidateDiagnostics = [];
       const candidateModel = createModel(
         model.items,
         model.slots,
@@ -91,22 +91,20 @@ export function improveSoftAssignments(
       const candidate = generateCandidate(
         currentModel,
         ruleViolations,
-        currentEvaluation,
-        (candidateAssignments, swap) => {
-          const candidateResult = evaluateSoftCandidate(
+        (_candidateAssignments, swap) => {
+          const candidateImprovesScore = evaluateSoftCandidate(
             currentModel,
-            candidateAssignments,
             currentEvaluation,
             swap,
             candidateModel,
           );
-          if (candidateResult.improved) {
+          if (candidateImprovesScore) {
             acceptedSwap = swap;
           }
-          return candidateResult.improved;
+          return candidateImprovesScore;
         },
         hardCompatibilityIndex,
-        candidateDiagnostics,
+        rulesById,
       );
 
       if (!candidate) {
@@ -137,7 +135,6 @@ export function improveSoftAssignments(
         improved: true,
         complete: false,
         softRulePenalties: currentEvaluation.softRulePenalties,
-        candidateDiagnostics,
       });
     }
 
@@ -154,7 +151,6 @@ export function improveSoftAssignments(
         improved: false,
         complete: true,
         softRulePenalties: currentEvaluation.softRulePenalties,
-        candidateDiagnostics: [],
       });
       break;
     }
@@ -169,7 +165,6 @@ export function improveSoftAssignments(
       complete: true,
       stopReason,
       softRulePenalties: currentEvaluation.softRulePenalties,
-      candidateDiagnostics: [],
     });
   }
 
@@ -183,35 +178,15 @@ export function improveSoftAssignments(
 function generateCandidate(
   model,
   violations,
-  evaluation,
   isBetterCandidate,
   hardCompatibilityIndex,
-  candidateDiagnostics = [],
+  rulesById,
 ) {
   for (const violation of violations) {
-    const rule = model.rules.find(
-      (candidate) => candidate.id === violation.ruleId,
-    );
+    const rule = rulesById.get(violation.ruleId);
     const keywordConfig = getKeywordConfig(rule?.keyword);
-    const diagnostic = {
-      ruleId: violation.ruleId,
-      keyword: rule?.keyword,
-      attempts: 0,
-      hardRejected: 0,
-      scored: 0,
-      accepted: 0,
-      scoringMs: 0,
-    };
     const limitedCandidateEvaluator = (candidate, swap) => {
-      diagnostic.attempts++;
-      diagnostic.scored++;
-      const scoringStartedAt = globalThis.performance.now();
-      const improved = isBetterCandidate(candidate, swap);
-      diagnostic.scoringMs += globalThis.performance.now() - scoringStartedAt;
-      if (improved) {
-        diagnostic.accepted++;
-      }
-      return improved;
+      return isBetterCandidate(candidate, swap);
     };
 
     const candidate = keywordConfig?.generateCandidate?.({
@@ -220,9 +195,7 @@ function generateCandidate(
       violation,
       isBetterCandidate: limitedCandidateEvaluator,
       hardCompatibilityIndex,
-      diagnostic,
     });
-    candidateDiagnostics.push(diagnostic);
     if (candidate) {
       return candidate;
     }
@@ -248,7 +221,6 @@ function getPriorityRules(rules, softRulePenalties) {
 
 function evaluateSoftCandidate(
   model,
-  assignments,
   currentEvaluation,
   swap,
   candidateModel,
@@ -267,7 +239,7 @@ function evaluateSoftCandidate(
   if (!improved) {
     undoSwap();
   }
-  return { improved, evaluation: candidateEvaluation };
+  return improved;
 }
 
 function createHardCompatibilityIndex(model) {

@@ -7,8 +7,7 @@ const data = { items: [], slots: [], rules: [] };
 const STORAGE_KEY = "rapid-roster-project";
 let latestCsv = "";
 let evaluationState;
-let generatedResults = [];
-let selectedResultIndex = 0;
+let generatedResult;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -53,7 +52,6 @@ function restoreData() {
     data.items = restored.items;
     data.slots = restored.slots;
     data.rules = restored.rules;
-    setMessage("Saved project restored.");
   } catch (error) {
     setMessage(`Could not restore saved project: ${error.message}`, true);
   }
@@ -272,7 +270,7 @@ function downloadCsv() {
 }
 
 function renderSelectedResult() {
-  const result = generatedResults[selectedResultIndex];
+  const result = generatedResult;
   if (!result) return;
   const names = new Map(data.items.map((item) => [item.id, item.name ?? item.id]));
   $("#results-body").innerHTML = Object.entries(result.assignments).map(([slot, itemIds]) => `
@@ -296,8 +294,8 @@ function renderSelectedResult() {
   $("#download-button").disabled = false;
 }
 
-function renderResults(results) {
-  generatedResults = results.map((result) => ({
+function renderResult(result) {
+  generatedResult = {
     ...result,
     evaluation: evaluateModel(createModel(
       normalizeNumericRuleAttributes(data.items, data.rules),
@@ -305,30 +303,7 @@ function renderResults(results) {
       data.rules,
       result.assignments,
     )),
-  }));
-  selectedResultIndex = generatedResults.reduce(
-    (bestIndex, result, index, all) =>
-      result.evaluation.softPenalty < all[bestIndex].evaluation.softPenalty
-        ? index
-        : bestIndex,
-    0,
-  );
-  $("#result-tabs").innerHTML = generatedResults.map((result, index) => `
-    <button class="result-tab ${index === selectedResultIndex ? "is-active" : ""}" data-result-index="${index}" type="button">
-      <span>Solution ${index + 1}</span>
-      <strong>H ${result.evaluation.hardPenalty.toFixed(2)}</strong>
-      <strong>S ${result.evaluation.softPenalty.toFixed(2)}</strong>
-      ${index === selectedResultIndex ? '<small>Best</small>' : ""}
-    </button>`).join("");
-  renderSelectedResult();
-}
-
-function updateResultTab(index) {
-  if (!generatedResults[index]) return;
-  selectedResultIndex = index;
-  document.querySelectorAll(".result-tab").forEach((tab, tabIndex) => {
-    tab.classList.toggle("is-active", tabIndex === selectedResultIndex);
-  });
+  };
   renderSelectedResult();
 }
 
@@ -462,8 +437,6 @@ async function generate() {
     const limitMode = $("#generation-limit-mode").value;
     const limitValue = Number($("#generation-limit-value").value);
     const hardOnly = $("#generation-hard-only").checked;
-    const maxWorkers = Math.max(1, (navigator.hardwareConcurrency || 2) - 1);
-    const workerCount = Number($("#generation-worker-count").value);
     const limitMilliseconds = limitValue * 1000;
     if (
       !hardOnly &&
@@ -478,9 +451,6 @@ async function generate() {
           ? "Maximum rounds must be a positive whole number."
           : "Maximum time must be a positive number of seconds.",
       );
-    }
-    if (!Number.isInteger(workerCount) || workerCount < 1 || workerCount > maxWorkers) {
-      throw new Error(`Parallel solutions must be a whole number from 1 to ${maxWorkers}.`);
     }
     $("#generate-button").disabled = true;
     $("#generate-button").textContent = "Generating…";
@@ -505,7 +475,6 @@ async function generate() {
           `Elapsed ${Math.round((performance.now() - startedAt) / 1000)} s`;
       }, 100);
     }
-    const progressByWorker = new Map();
     const workerPayload = {
       ...data,
       hardOnly,
@@ -514,33 +483,26 @@ async function generate() {
         ? { maxSoftRounds: limitValue }
         : { maxSoftTimeMs: limitMilliseconds }),
     };
-    let completedWorkers = 0;
-    const runWorker = (index) => new Promise((resolve, reject) => {
+    const runWorker = () => new Promise((resolve, reject) => {
         const worker = new Worker(new URL("./generation-worker.js", import.meta.url), {
           type: "module",
         });
         workers.push(worker);
         worker.addEventListener("message", ({ data: message }) => {
           if (message.type === "progress") {
-            progressByWorker.set(index, message.progress);
-            const progressValues = [...progressByWorker.values()];
-            const currentRound = message.progress.round / limitValue;
-            const progressFraction =
-              (completedWorkers + currentRound) / workerCount;
             const percent = limitMode === "rounds"
-              ? Math.min(100, progressFraction * 100)
+              ? Math.min(100, (message.progress.round / limitValue) * 100)
               : null;
             if (percent !== null) {
               progress.setAttribute("aria-valuenow", String(Math.round(percent)));
               progressBar.style.width = `${percent}%`;
             }
             $("#generation-progress-round").textContent =
-              `${progressValues.length}/${workerCount} solutions · Soft round ${Math.max(...progressValues.map((value) => value.round))}`;
+              `Soft round ${message.progress.round}`;
             $("#generation-message").textContent =
-              `Solution ${index + 1}: penalty ${message.progress.softPenalty.toFixed(4)}; ` +
+              `Penalty ${message.progress.softPenalty.toFixed(4)}; ` +
               `improvement ${message.progress.improvement.toFixed(4)}`;
           } else if (message.type === "complete") {
-            completedWorkers += 1;
             resolve(message.result);
           } else if (message.type === "error") {
             reject(new Error(message.message));
@@ -551,24 +513,16 @@ async function generate() {
         });
         worker.postMessage(workerPayload);
       });
-    const results = [];
-    for (let index = 0; index < workerCount; index += 1) {
-      results.push(await runWorker(index));
-    }
-    renderResults(results);
+    const result = await runWorker();
+    renderResult(result);
     clearInterval(progressTimer);
     $(".generation-progress").classList.remove("is-indeterminate");
     $(".generation-progress").setAttribute("aria-valuenow", "100");
     $("#generation-progress-bar").style.width = "100%";
     $("#generation-progress-round").textContent = "Generation complete";
     $("#generation-progress-elapsed").textContent = "";
-    const bestResult = generatedResults.reduce((best, result) =>
-      result.evaluation.softPenalty < best.evaluation.softPenalty ? result : best,
-    generatedResults[0]);
     $("#generation-message").textContent =
-      `${workerCount} solution${workerCount === 1 ? "" : "s"} generated. ` +
-      `Best soft penalty: ${bestResult.evaluation.softPenalty.toFixed(6)}. ` +
-      "Generated sequentially. " +
+      `Roster generated. Soft penalty: ${generatedResult.evaluation.softPenalty.toFixed(6)}. ` +
       `${hardOnly ? "Hard rules only." : limitMode === "rounds" ? `Limit: ${limitValue} rounds per solution.` : `Limit: ${limitValue} seconds per solution.`}`;
     setMessage("Roster generated successfully.");
   } catch (error) {
@@ -645,10 +599,6 @@ $("#copy-button").addEventListener("click", async () => {
   setMessage("CSV copied to your clipboard.");
 });
 $("#download-button").addEventListener("click", downloadCsv);
-$("#result-tabs").addEventListener("click", (event) => {
-  const tab = event.target.closest("[data-result-index]");
-  if (tab) updateResultTab(Number(tab.dataset.resultIndex));
-});
 
 for (const type of ["items", "slots"]) {
   $(`#export-${type}-button`).addEventListener("click", () => {
@@ -660,11 +610,6 @@ for (const type of ["items", "slots"]) {
     URL.revokeObjectURL(link.href);
   });
 }
-
-const maxWorkers = Math.max(1, (navigator.hardwareConcurrency || 2) - 1);
-$("#generation-worker-count").max = String(maxWorkers);
-$("#generation-worker-count").value = "1";
-$("#generation-worker-count-label").textContent = `Solutions to generate (max ${maxWorkers})`;
 
 restoreData();
 renderAll();

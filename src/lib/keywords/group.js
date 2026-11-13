@@ -131,7 +131,6 @@ export function generateCandidate({
   violation,
   isBetterCandidate,
   hardCompatibilityIndex,
-  diagnostic,
 }) {
   const [itemAttribute] = rule.inputs;
   const sourceItemId = violation.sourceId;
@@ -159,7 +158,6 @@ export function generateCandidate({
             targetSlotId,
           )
         ) {
-          diagnostic.hardRejected++;
           continue;
         }
 

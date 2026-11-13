@@ -133,7 +133,6 @@ export function generateCandidate({
   violation,
   isBetterCandidate,
   hardCompatibilityIndex,
-  diagnostic,
 }) {
   const firstSlotId = violation.sourceId;
   const secondSlotId = violation.targetId;
@@ -168,7 +167,6 @@ export function generateCandidate({
         secondSlotId,
       )
     ) {
-      diagnostic.hardRejected++;
       continue;
     }
     const candidate = swapAssignments(

@@ -123,7 +123,6 @@ export function generateCandidate({
   violation,
   isBetterCandidate,
   hardCompatibilityIndex,
-  diagnostic,
 }) {
   const [itemAttribute, slotTargets = "all"] = rule.inputs;
   const slotId = violation.targetId;
@@ -176,7 +175,6 @@ export function generateCandidate({
             targetSlot.id,
           )
         ) {
-          diagnostic.hardRejected++;
           continue;
         }
 
