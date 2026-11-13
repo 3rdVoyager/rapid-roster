@@ -77,7 +77,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <button class="button button-primary button-small" data-next="evaluation" type="button">Continue to Evaluation</button>
         </div>
         <div class="rules-toolbar">
-          <label class="button button-primary button-small file-button" for="rules-file">Import rules JSON<input id="rules-file" type="file" accept=".json,application/json" /></label>
+          <label class="button button-primary button-small file-button" for="rules-file">Import rules CSV<input id="rules-file" type="file" accept=".csv,text/csv" /></label>
           <button class="button button-secondary button-small" id="new-rule-button" type="button">+ Add rule</button>
           <span class="toolbar-spacer"></span><span class="record-count" id="rules-count">0 rules</span>
         </div>
@@ -86,7 +86,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <div><h2 class="card-title">Rule list</h2><p class="card-description">Edit each rule inline using the documented sentence forms.</p></div>
           </div>
           <ul class="rule-list" id="rule-list">
-            <li class="empty-hint">No rules yet. Import a JSON rule set or add a rule.</li>
+            <li class="empty-hint">No rules yet. Import a CSV rule set or add a rule.</li>
           </ul>
         </div>
       </section>

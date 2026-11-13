@@ -1,23 +1,23 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { parseCsv } from "../src/lib/import.js";
+import { parseCsv, parseRulesCsv } from "../src/lib/import.js";
 import { createModel } from "../src/lib/model.js";
 import { evaluateModel } from "../src/lib/evaluation.js";
 
-const [itemsPath = "./tests/fixtures/items.csv", slotsPath = "./tests/fixtures/slots.csv", rulesPath = "./tests/fixtures/rules.json", assignmentsPath = "./tests/fixtures/assignments.json"] = process.argv.slice(2);
+const [itemsPath = "./tests/fixtures/items.csv", slotsPath = "./tests/fixtures/slots.csv", rulesPath = "./tests/fixtures/rules.csv", assignmentsPath = "./tests/fixtures/assignments.json"] = process.argv.slice(2);
 
 if (!itemsPath || !slotsPath) {
   console.error(
     "Usage: node scripts/test-import.js " +
-      "<items.csv> <slots.csv> [rules.json] [assignments.json]",
+      "<items.csv> <slots.csv> [rules.csv] [assignments.json]",
   );
   process.exitCode = 1;
 } else {
   try {
     const items = parseCsvFile(itemsPath);
     const slots = parseCsvFile(slotsPath);
-    const rules = rulesPath ? readJsonFile(rulesPath) : [];
+    const rules = rulesPath ? parseRulesCsvFile(rulesPath) : [];
     const assignments = assignmentsPath ? readJsonFile(assignmentsPath) : {};
 
     console.log(`Parsed items: ${items.length}`);
@@ -45,6 +45,11 @@ if (!itemsPath || !slotsPath) {
 function parseCsvFile(filePath) {
   const absolutePath = path.resolve(filePath);
   return parseCsv(fs.readFileSync(absolutePath, "utf8"));
+}
+
+function parseRulesCsvFile(filePath) {
+  const absolutePath = path.resolve(filePath);
+  return parseRulesCsv(fs.readFileSync(absolutePath, "utf8"));
 }
 
 function readJsonFile(filePath) {

@@ -21,6 +21,39 @@ export function parseCsv(csvText) {
   );
 }
 
+export function parseRulesCsv(csvText) {
+  return parseCsv(csvText).map((record) => {
+    const rule = { ...record };
+    const inputEntries = Object.entries(record)
+      .filter(([key]) => /^input\d+$/.test(key))
+      .sort(([firstKey], [secondKey]) =>
+        Number(firstKey.slice(5)) - Number(secondKey.slice(5)),
+      );
+
+    rule.inputs = inputEntries
+      .map(([, value], index) =>
+        rule.keyword === "limit" && index === 1 && value !== ""
+          ? Number(value)
+          : value,
+      );
+    while (rule.inputs.at(-1) === "") {
+      rule.inputs.pop();
+    }
+
+    for (const [key] of inputEntries) {
+      delete rule[key];
+    }
+
+    if (rule.priority === "") {
+      delete rule.priority;
+    } else if (rule.priority !== undefined) {
+      rule.priority = Number(rule.priority);
+    }
+
+    return rule;
+  });
+}
+
 function parseCellValue(value) {
   if (!value.includes(";")) {
     return value;

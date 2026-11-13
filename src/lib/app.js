@@ -1,5 +1,5 @@
 import { exportCsv } from "./export.js";
-import { parseCsv } from "./import.js";
+import { parseCsv, parseRulesCsv } from "./import.js";
 import { evaluateModel } from "./evaluation.js";
 import { createModel } from "./model.js";
 
@@ -248,7 +248,12 @@ async function importFile(event, type, format) {
   if (!file) return;
   try {
     const text = await file.text();
-    const value = format === "csv" ? parseCsv(text) : JSON.parse(text);
+    const value =
+      type === "rules"
+        ? parseRulesCsv(text)
+        : format === "csv"
+          ? parseCsv(text)
+          : JSON.parse(text);
     if (!Array.isArray(value)) throw new Error("Imported JSON must be an array.");
     data[type] = value;
     saveData();
@@ -550,7 +555,7 @@ document.querySelectorAll("[data-next]").forEach((button) => {
 });
 $("#items-file").addEventListener("change", (event) => importFile(event, "items", "csv"));
 $("#slots-file").addEventListener("change", (event) => importFile(event, "slots", "csv"));
-$("#rules-file").addEventListener("change", (event) => importFile(event, "rules", "json"));
+$("#rules-file").addEventListener("change", (event) => importFile(event, "rules", "csv"));
 $("#assignments-file").addEventListener("change", importAssignments);
 $("#evaluation-rule-filter").addEventListener("change", renderEvaluationConflicts);
 $("#evaluation-severity-filter").addEventListener("change", renderEvaluationConflicts);

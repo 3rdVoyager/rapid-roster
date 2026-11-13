@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { parseCsv } from "../src/lib/import.js";
+import { parseCsv, parseRulesCsv } from "../src/lib/import.js";
 
 test("parses CSV headers and records", () => {
   const records = parseCsv("id,name,division\nI1,Alice,North\nI2,Bob,South");
@@ -60,6 +60,31 @@ test("splits semicolon-delimited cell values into arrays", () => {
 
   assert.deepEqual(records, [
     { id: "I1", requests: ["I2", "I3"], name: "Alice" },
+  ]);
+});
+
+test("parses rule inputs from ordered CSV columns", () => {
+  const rules = parseRulesCsv(
+    "id,name,enforcement,priority,keyword,input1,input2,input3\n" +
+      "R1,Match division,hard,,match,division,division,\n" +
+      'R2,Team size,hard,,limit,max,10,"Team A; Team B"',
+  );
+
+  assert.deepEqual(rules, [
+    {
+      id: "R1",
+      name: "Match division",
+      enforcement: "hard",
+      keyword: "match",
+      inputs: ["division", "division"],
+    },
+    {
+      id: "R2",
+      name: "Team size",
+      enforcement: "hard",
+      keyword: "limit",
+      inputs: ["max", 10, ["Team A", "Team B"]],
+    },
   ]);
 });
 
