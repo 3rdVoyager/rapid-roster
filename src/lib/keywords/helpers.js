@@ -1,8 +1,4 @@
-import {
-  getAssignedItems,
-  getAssignedSlotIds,
-  getItemById,
-} from "../selectors.js";
+import { getItemById } from "../selectors.js";
 
 export function isEmptyValue(value) {
   return (
@@ -68,9 +64,6 @@ export function getBalanceSlotScore(
   itemAttribute,
   targetSlotIds = model.slots.map((slot) => slot.id),
 ) {
-  const numericValues = getItemsInSlot(model, slotId)
-    .map((item) => item[itemAttribute])
-    .filter(isNumericValue);
   const allValues = targetSlotIds
     .flatMap((targetSlotId) => getItemsInSlot(model, targetSlotId))
     .map((item) => item[itemAttribute])
@@ -125,10 +118,3 @@ export function isItemCompatibleWithSlot(item, slot, rule) {
   return valuesMatch(itemValue, slot[rule.inputs[1]]);
 }
 
-export function getAssignedSlotIdsForItem(model, itemId) {
-  return getAssignedSlotIds(model, itemId);
-}
-
-export function getAssignedItemsForSlot(model, slotId) {
-  return getAssignedItems(model, slotId);
-}

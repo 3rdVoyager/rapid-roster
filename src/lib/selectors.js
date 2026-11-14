@@ -1,9 +1,20 @@
+const idIndexCache = new WeakMap();
+
+function getIdIndex(records) {
+  let index = idIndexCache.get(records);
+  if (!index) {
+    index = new Map(records.map((record) => [String(record.id), record]));
+    idIndexCache.set(records, index);
+  }
+  return index;
+}
+
 export function getItemById(model, id) {
-  return model.items.find((item) => String(item.id) === String(id));
+  return getIdIndex(model.items).get(String(id));
 }
 
 export function getSlotById(model, id) {
-  return model.slots.find((slot) => String(slot.id) === String(id));
+  return getIdIndex(model.slots).get(String(id));
 }
 
 export function getItemsWithAttribute(model, attribute, value) {

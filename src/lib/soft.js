@@ -1,8 +1,10 @@
 import { createModel } from "./model.js";
 import { evaluateModel, evaluateSwap } from "./evaluation.js";
-import { getKeywordConfig } from "./keywords/config.js";
 import { applySwapToModel, cloneAssignments } from "./assignment.js";
-import { isItemCompatibleWithSlot } from "./keywords/helpers.js";
+import {
+  createHardCompatibilityIndex,
+  generateCandidate,
+} from "./optimizer-helpers.js";
 
 export function improveSoftAssignments(
   model,
@@ -175,34 +177,6 @@ export function improveSoftAssignments(
   }
 }
 
-function generateCandidate(
-  model,
-  violations,
-  isBetterCandidate,
-  hardCompatibilityIndex,
-  rulesById,
-) {
-  for (const violation of violations) {
-    const rule = rulesById.get(violation.ruleId);
-    const keywordConfig = getKeywordConfig(rule?.keyword);
-    const limitedCandidateEvaluator = (candidate, swap) => {
-      return isBetterCandidate(candidate, swap);
-    };
-
-    const candidate = keywordConfig?.generateCandidate?.({
-      model,
-      rule,
-      violation,
-      isBetterCandidate: limitedCandidateEvaluator,
-      hardCompatibilityIndex,
-    });
-    if (candidate) {
-      return candidate;
-    }
-  }
-  return null;
-}
-
 function getPriorityRules(rules, softRulePenalties) {
   const weightedPenaltyByRuleId = new Map(
     softRulePenalties.map((rulePenalty) => [
@@ -214,8 +188,8 @@ function getPriorityRules(rules, softRulePenalties) {
     .filter((rule) => rule.enforcement === "soft")
     .sort(
     (first, second) =>
-      (weightedPenaltyByRuleId.get(second.ruleId) ?? 0) -
-      (weightedPenaltyByRuleId.get(first.ruleId) ?? 0),
+      (weightedPenaltyByRuleId.get(second.id) ?? 0) -
+      (weightedPenaltyByRuleId.get(first.id) ?? 0),
     );
 }
 
@@ -242,22 +216,3 @@ function evaluateSoftCandidate(
   return improved;
 }
 
-function createHardCompatibilityIndex(model) {
-  const hardMatchRules = model.rules.filter(
-    (rule) => rule.enforcement === "hard" && rule.keyword === "match",
-  );
-  return new Map(
-    model.items.map((item) => [
-      item.id,
-      new Set(
-        model.slots
-          .filter((slot) =>
-            hardMatchRules.every((rule) =>
-              isItemCompatibleWithSlot(item, slot, rule),
-            ),
-          )
-          .map((slot) => slot.id),
-      ),
-    ]),
-  );
-}
