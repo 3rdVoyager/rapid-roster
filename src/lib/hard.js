@@ -27,7 +27,7 @@ export function improveHardAssignments(model, maxRounds = 100) {
       model.rules,
       assignments,
     );
-    currentEvaluation = evaluateModel(currentModel, true);
+    currentEvaluation = evaluateModel(currentModel, false);
     if (currentEvaluation.hardPenalty === 0) {
       return assignments;
     }
@@ -66,7 +66,7 @@ export function improveHardAssignments(model, maxRounds = 100) {
         model.rules,
         assignments,
       );
-      currentEvaluation = evaluateModel(currentModel, true);
+      currentEvaluation = evaluateModel(currentModel, false);
       if (currentEvaluation.hardPenalty === 0) {
         return assignments;
       }
@@ -95,6 +95,6 @@ function isBetterHardCandidate(model, assignments, currentEvaluation) {
     model.rules,
     assignments,
   );
-  const candidateEvaluation = evaluateModel(candidateModel, true);
+  const candidateEvaluation = evaluateModel(candidateModel, false);
   return candidateEvaluation.hardPenalty < currentEvaluation.hardPenalty;
 }

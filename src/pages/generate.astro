@@ -39,7 +39,6 @@ import AppShell from "../components/AppShell.astro";
           <label><span id="generation-limit-value-label">Maximum rounds</span>
             <input id="generation-limit-value" type="number" min="1" step="1" value="20" />
           </label>
-          <label class="generation-checkbox"><input id="generation-hard-only" type="checkbox" /> Hard rules only</label>
         </div>
       </div>
       <div class="results-card">
@@ -118,10 +117,8 @@ import AppShell from "../components/AppShell.astro";
       }
       const limitMode = $("#generation-limit-mode").value;
       const limitValue = Number($("#generation-limit-value").value);
-      const hardOnly = $("#generation-hard-only").checked;
       const limitMilliseconds = limitValue * 1000;
       if (
-        !hardOnly &&
         (!Number.isFinite(limitValue) ||
           limitValue < 1 ||
           (limitMode === "time" && !Number.isSafeInteger(limitMilliseconds)) ||
@@ -142,7 +139,7 @@ import AppShell from "../components/AppShell.astro";
       progressBar.style.width = "0%";
       $("#generation-progress-round").textContent = "Starting generation…";
       $("#generation-progress-elapsed").textContent = "";
-      if (limitMode === "time" && !hardOnly) {
+      if (limitMode === "time") {
         const startedAt = performance.now();
         progressTimer = setInterval(() => {
           const percent = Math.min(95, ((performance.now() - startedAt) / limitMilliseconds) * 100);
@@ -180,7 +177,6 @@ import AppShell from "../components/AppShell.astro";
         });
         activeWorker.postMessage({
           ...data,
-          hardOnly,
           items: normalizeNumericRuleAttributes(data.items, data.rules),
           ...(limitMode === "rounds"
             ? { maxSoftRounds: limitValue }
@@ -196,7 +192,7 @@ import AppShell from "../components/AppShell.astro";
       $("#generation-progress-elapsed").textContent = "";
       $("#generation-message").textContent =
         `Roster generated. Soft penalty: ${evaluation.softPenalty.toFixed(6)}. ` +
-        `${hardOnly ? "Hard rules only." : limitMode === "rounds" ? `Limit: ${limitValue} rounds.` : `Limit: ${limitValue} seconds.`}`;
+        `${limitMode === "rounds" ? `Limit: ${limitValue} rounds.` : `Limit: ${limitValue} seconds.`}`;
       setMessage("Roster generated successfully.");
     } catch (error) {
       clearInterval(progressTimer);

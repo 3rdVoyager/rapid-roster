@@ -19,7 +19,7 @@ export function evaluateRule(rule, model) {
   };
 }
 
-export function evaluateModel(model, hardOnly = false) {
+export function evaluateModel(model, includeSoftRules = true) {
   const evaluation = {
     hardPenalty: 0,
     hardViolations: [],
@@ -29,7 +29,7 @@ export function evaluateModel(model, hardOnly = false) {
   };
 
   for (const rule of model.rules) {
-    if (hardOnly && rule.enforcement !== "hard") {
+    if (!includeSoftRules && rule.enforcement !== "hard") {
       continue;
     }
 

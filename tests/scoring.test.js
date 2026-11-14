@@ -128,7 +128,7 @@ test("evaluateModel can skip soft rules", () => {
     },
   ]);
 
-  const result = evaluateModel(model, true);
+  const result = evaluateModel(model, false);
 
   assert.equal(result.softPenalty, 0);
   assert.deepEqual(result.softViolations, []);
