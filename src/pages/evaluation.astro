@@ -1,0 +1,230 @@
+---
+import AppShell from "../components/AppShell.astro";
+---
+
+<AppShell>
+  <section class="app-panel is-active">
+    <div class="app-panel-header">
+      <div>
+        <p class="panel-kicker">05 / Verify</p>
+        <h1>Evaluation</h1>
+        <p class="app-panel-lead">Upload an assignment CSV to inspect rule conflicts and penalties.</p>
+      </div>
+    </div>
+    <div class="app-toolbar">
+      <label class="button button-primary button-small file-button" for="assignments-file">Import assignments CSV<input id="assignments-file" type="file" accept=".csv,text/csv" /></label>
+      <span class="toolbar-spacer"></span>
+      <span class="record-count">Expected columns: slot, itemId</span>
+    </div>
+    <div class="evaluation-card" id="evaluation-empty">
+      <div class="result-empty"><span class="empty-mark">✦</span><p>Import an assignment CSV to evaluate it.</p></div>
+    </div>
+    <div class="evaluation-card" id="evaluation-content" hidden>
+      <div class="metrics" id="evaluation-metrics"></div>
+      <div class="evaluation-filters">
+        <label>Rule type
+          <select id="evaluation-rule-filter">
+            <option value="all">All rules</option>
+            <option value="match">Match</option>
+            <option value="group">Group</option>
+            <option value="limit">Limit</option>
+            <option value="balance">Balance</option>
+            <option value="distribute">Distribute</option>
+            <option value="align">Align</option>
+          </select>
+        </label>
+        <label>Severity
+          <select id="evaluation-severity-filter">
+            <option value="all">Hard and soft</option>
+            <option value="hard">Hard only</option>
+            <option value="soft">Soft only</option>
+          </select>
+        </label>
+        <label>Minimum difference
+          <input id="evaluation-difference-filter" type="number" min="0" step="any" value="0" />
+        </label>
+      </div>
+      <div class="evaluation-conflict-heading">
+        <h2 class="card-title">Conflicts</h2>
+        <span class="record-count" id="evaluation-conflict-count"></span>
+      </div>
+      <ul class="conflict-list" id="evaluation-conflicts"></ul>
+    </div>
+  </section>
+</AppShell>
+
+<script>
+  import { parseCsv } from "../lib/import.js";
+  import { evaluateModel } from "../lib/evaluation.js";
+  import { createModel } from "../lib/model.js";
+  import {
+    $,
+    data,
+    escapeHtml,
+    formatValue,
+    humanize,
+    normalizeNumericRuleAttributes,
+    setMessage,
+  } from "../lib/state.js";
+  import type {
+    Assignments,
+    Evaluation,
+    Model,
+    RecordId,
+    Rule,
+    RuleViolation,
+  } from "../lib/types";
+
+  const LAST_EVALUATION_STORAGE_KEY = "rapid-roster-last-evaluation";
+  let evaluationState:
+    | { evaluation: Evaluation; model: Model }
+    | undefined;
+
+  function saveLastEvaluation(assignments: Assignments) {
+    try {
+      localStorage.setItem(LAST_EVALUATION_STORAGE_KEY, JSON.stringify(assignments));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setMessage(`Could not save the last evaluation: ${message}`, true);
+    }
+  }
+
+  function describeConflict(
+    rule: Rule,
+    conflict: RuleViolation,
+    model: Model,
+  ) {
+    const itemById = new Map(model.items.map((item) => [String(item.id), item]));
+    const slotById = new Map(model.slots.map((slot) => [String(slot.id), slot]));
+    const itemLabel = (id: RecordId | undefined) => itemById.get(String(id))?.name ?? id;
+    const slotLabel = (id: RecordId | undefined) => slotById.get(String(id))?.name ?? id;
+    const [first, second] = rule.inputs;
+
+    switch (rule.keyword) {
+      case "match":
+        return `Item ${itemLabel(conflict.sourceId)} has ${humanize(first)} "${conflict.sourceValue}", but slot ${slotLabel(conflict.targetId)} has ${humanize(second)} "${conflict.targetValue}".`;
+      case "group": {
+        const sourceItem = itemById.get(String(conflict.sourceId));
+        const assignedSlots = conflict.sourceId === undefined
+          ? []
+          : model.assignments.itemAssignments[String(conflict.sourceId)] ?? [];
+        const coAssignedIds = [...new Set(assignedSlots.flatMap((slotId) =>
+          model.assignments.slotAssignments[slotId] ?? []).filter((id) => String(id) !== String(conflict.sourceId)))];
+        const coAssignedValues = coAssignedIds.map((id) => itemById.get(String(id))?.[first]).filter(Boolean);
+        return `Item ${itemLabel(conflict.sourceId)} requested ${humanize(second)} "${formatValue(sourceItem?.[second])}", but their assigned slot contains ${coAssignedValues.length ? `${humanize(first)} values "${formatValue(coAssignedValues)}"` : "none of the requested teammates"}.`;
+      }
+      case "limit":
+        return `Slot ${slotLabel(conflict.sourceId)} has ${conflict.actual} assigned items; the rule requires ${conflict.type === "min" ? "at least" : "at most"} ${conflict.limit}.`;
+      case "balance":
+        return `Slot ${slotLabel(conflict.targetId)} has an average ${humanize(first)} of ${Number(conflict.actual).toFixed(2)}, compared with the overall target of ${Number(conflict.target).toFixed(2)}.`;
+      case "distribute":
+        return `Items with ${humanize(first)} values ${conflict.sourceValue} and ${conflict.targetValue} share slot(s): ${formatValue(conflict.sharedSlotIds)}.`;
+      case "align":
+        return `Sibling slots ${slotLabel(conflict.sourceId)} and ${slotLabel(conflict.targetId)} do not match on ${humanize(first)}: "${conflict.sourceValue}" versus "${conflict.targetValue}".`;
+      default:
+        return Object.entries(conflict)
+          .filter(([key]) => key !== "ruleId")
+          .map(([key, value]) => `${humanize(key)}: ${typeof value === "object" ? JSON.stringify(value) : value}`)
+          .join(" · ");
+    }
+  }
+
+  function renderEvaluationConflicts() {
+    if (!evaluationState) return;
+    const { evaluation, model } = evaluationState;
+    type DisplayConflict = RuleViolation & { severity: string };
+    const conflicts: DisplayConflict[] = [
+      ...evaluation.hardViolations.map((conflict) => ({ severity: "Hard", ...conflict })),
+      ...evaluation.softViolations.map((conflict) => ({ severity: "Soft", ...conflict })),
+    ];
+    const rulesById = new Map<RecordId, Rule>(data.rules.map((rule) => [rule.id, rule]));
+    const ruleFilter = $("#evaluation-rule-filter").value;
+    const severityFilter = $("#evaluation-severity-filter").value;
+    const minimumDifference = Number($("#evaluation-difference-filter").value) || 0;
+    const filteredConflicts = conflicts.filter((conflict) => {
+      const rule = rulesById.get(conflict.ruleId as RecordId);
+      return (
+        (ruleFilter === "all" || rule?.keyword === ruleFilter) &&
+        (severityFilter === "all" || conflict.severity.toLowerCase() === severityFilter) &&
+        (minimumDifference === 0 ||
+          (conflict.difference !== undefined &&
+            Number(conflict.difference) >= minimumDifference))
+      );
+    });
+    $("#evaluation-conflict-count").textContent =
+      `${filteredConflicts.length} of ${conflicts.length} conflicts`;
+    $("#evaluation-conflicts").innerHTML = filteredConflicts.length
+      ? filteredConflicts.map((conflict) => `
+        <li class="conflict-item">
+          <div class="conflict-heading">
+            <span class="conflict-severity ${conflict.severity.toLowerCase()}">${conflict.severity}</span>
+            <span class="conflict-rule">${escapeHtml(rulesById.get(conflict.ruleId as RecordId)?.keyword ?? "rule")}</span>
+            <strong>${escapeHtml(rulesById.get(conflict.ruleId as RecordId)?.name || conflict.ruleId)}</strong>
+          </div>
+          <p>${escapeHtml(describeConflict(rulesById.get(conflict.ruleId as RecordId) ?? { keyword: "", inputs: [], enforcement: "hard", id: "" }, conflict, model))}</p>
+        </li>`).join("")
+      : '<li class="empty-hint">No conflicts match the current filters.</li>';
+  }
+
+  function renderEvaluation(evaluation: Evaluation, model: Model) {
+    evaluationState = { evaluation, model };
+    saveLastEvaluation(model.assignments.slotAssignments);
+    renderEvaluationConflicts();
+    $("#evaluation-metrics").innerHTML = `
+      <div><span>Hard conflicts</span><strong>${evaluation.hardViolations.length}</strong></div>
+      <div><span>Soft conflicts</span><strong>${evaluation.softViolations.length}</strong></div>
+      <div><span>Hard penalty</span><strong>${evaluation.hardPenalty.toFixed(2)}</strong></div>
+      <div><span>Soft penalty</span><strong>${evaluation.softPenalty.toFixed(2)}</strong></div>`;
+    $("#evaluation-empty").hidden = true;
+    $("#evaluation-content").hidden = false;
+  }
+
+  function createEvaluation(assignments: Assignments) {
+    const model = createModel(
+      normalizeNumericRuleAttributes(data.items, data.rules),
+      data.slots,
+      data.rules,
+      assignments,
+    ) as Model;
+    renderEvaluation(evaluateModel(model), model);
+  }
+
+  function restoreLastEvaluation() {
+    if (!data.items.length || !data.slots.length) return;
+    try {
+      const saved = localStorage.getItem(LAST_EVALUATION_STORAGE_KEY);
+      if (saved) createEvaluation(JSON.parse(saved));
+    } catch {
+      localStorage.removeItem(LAST_EVALUATION_STORAGE_KEY);
+    }
+  }
+
+  async function importAssignments(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    try {
+      const assignments: Assignments = {};
+      for (const record of parseCsv(await file.text())) {
+        const slotId = record.slot ?? record.slotId;
+        const itemId = record.itemId ?? record.item;
+        if (slotId === undefined || itemId === undefined || itemId === "") {
+          throw new Error("Assignment CSV must include slot and itemId columns.");
+        }
+        (assignments[slotId] ??= []).push(itemId);
+      }
+      createEvaluation(assignments);
+      setMessage(`${file.name} evaluated.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error), true);
+    } finally {
+      input.value = "";
+    }
+  }
+
+  $("#assignments-file").addEventListener("change", importAssignments);
+  $("#evaluation-rule-filter").addEventListener("change", renderEvaluationConflicts);
+  $("#evaluation-severity-filter").addEventListener("change", renderEvaluationConflicts);
+  $("#evaluation-difference-filter").addEventListener("input", renderEvaluationConflicts);
+  restoreLastEvaluation();
+</script>

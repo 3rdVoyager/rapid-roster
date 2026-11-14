@@ -1,0 +1,212 @@
+---
+import AppShell from "../components/AppShell.astro";
+---
+
+<AppShell>
+  <section class="app-panel is-active">
+    <div class="app-panel-header">
+      <div>
+        <p class="panel-kicker">03 / Configure</p>
+        <h1>Rules</h1>
+        <p class="app-panel-lead">Build rules using plain-language sentence forms.</p>
+      </div>
+      <a class="button button-primary button-small" href="/generate">Continue to Generation</a>
+    </div>
+    <div class="rules-toolbar">
+      <label class="button button-primary button-small file-button" for="rules-file">Import rules CSV<input id="rules-file" type="file" accept=".csv,text/csv" /></label>
+      <button class="button button-ghost button-small" id="export-rules-button" type="button">Export CSV</button>
+      <button class="button button-secondary button-small" id="new-rule-button" type="button">+ Add rule</button>
+      <span class="toolbar-spacer"></span><span class="record-count" id="rules-count">0 rules</span>
+    </div>
+    <div class="rules-card">
+      <div class="card-header">
+        <div><h2 class="card-title">Rule list</h2><p class="card-description">Edit each rule inline using the documented sentence forms.</p></div>
+      </div>
+      <ul class="rule-list" id="rule-list">
+        <li class="empty-hint">No rules yet. Import a CSV rule set or add a rule.</li>
+      </ul>
+    </div>
+  </section>
+</AppShell>
+
+<script>
+  import { exportCsv } from "../lib/export.js";
+  import { parseRulesCsv } from "../lib/import.js";
+  import {
+    $,
+    data,
+    escapeHtml,
+    saveData,
+    setMessage,
+  } from "../lib/state.js";
+  import type { Rule } from "../lib/types";
+
+  function parseTargets(value: string) {
+    const trimmed = value.trim();
+    return !trimmed || trimmed.toLowerCase() === "all"
+      ? "all"
+      : trimmed.split(",").map((target: string) => target.trim()).filter(Boolean);
+  }
+
+  function ruleKeywordMarkup(rule: Rule, index: number) {
+    const options = ["match", "group", "limit", "balance", "distribute", "align"];
+    return `<select class="sentence-control sentence-action" data-rule-index="${index}" data-rule-setting="keyword" aria-label="Rule action">${options.map((keyword) =>
+      `<option value="${keyword}" ${rule.keyword === keyword ? "selected" : ""}>${keyword}</option>`).join("")}</select>`;
+  }
+
+  function ruleInputMarkup(index: number, inputIndex: number, value: unknown, label: string, type = "text") {
+    return `<input class="sentence-control" data-rule-index="${index}" data-rule-input="${inputIndex}" type="${type}" value="${escapeHtml(value)}" aria-label="${label}" placeholder="${label}" />`;
+  }
+
+  function ruleTargetMarkup(index: number, inputIndex: number, value: unknown) {
+    const text = value === "all" ? "all" : Array.isArray(value) ? value.join(", ") : value;
+    return ruleInputMarkup(index, inputIndex, text, "all or slot IDs");
+  }
+
+  function ruleSentenceMarkup(rule: Rule, index: number) {
+    const [first = "", second = "", third = ""] = rule.inputs;
+    const action = ruleKeywordMarkup(rule, index);
+    switch (rule.keyword) {
+      case "match":
+        return `${action} each item's ${ruleInputMarkup(index, 0, first, "item attribute")} to its assigned slot's ${ruleInputMarkup(index, 1, second, "slot attribute")}.`;
+      case "group":
+        return `${action} each item by matching its ${ruleInputMarkup(index, 0, first, "item attribute")} with related items' ${ruleInputMarkup(index, 1, second, "related item attribute")}.`;
+      case "limit":
+        return `${action} ${ruleTargetMarkup(index, 2, third)} to <select class="sentence-control" data-rule-index="${index}" data-rule-input="0" aria-label="Limit type"><option value="min" ${first === "min" ? "selected" : ""}>at least</option><option value="max" ${first === "max" ? "selected" : ""}>at most</option></select> ${ruleInputMarkup(index, 1, second, "item count", "number")} assigned items.`;
+      case "balance":
+        return `${action} the average item ${ruleInputMarkup(index, 0, first, "numeric item attribute")} across ${ruleTargetMarkup(index, 1, second)}.`;
+      case "distribute":
+        return `${action} item ${ruleInputMarkup(index, 0, first, "numeric item attribute")} values evenly across ${ruleTargetMarkup(index, 1, second)}.`;
+      case "align":
+        return `${action} each item's assigned slot's ${ruleInputMarkup(index, 0, first, "assigned slot attribute")} with its ${ruleInputMarkup(index, 1, second, "sibling attribute")}.`;
+      default:
+        return "Unsupported rule form.";
+    }
+  }
+
+  function renderRules() {
+    $("#rules-count").textContent = `${data.rules.length} rules`;
+    $("#rule-list").innerHTML = data.rules.length
+      ? data.rules.map((rule, index) => `
+        <li class="rule-list-item">
+          <div class="rule-list-copy">
+            <div class="rule-list-sentence">${ruleSentenceMarkup(rule, index)}</div>
+            <div class="rule-list-meta">
+              <label>Enforcement <select data-rule-index="${index}" data-rule-setting="enforcement"><option value="hard" ${rule.enforcement === "hard" ? "selected" : ""}>Hard</option><option value="soft" ${rule.enforcement === "soft" ? "selected" : ""}>Soft</option></select></label>
+              <label class="${rule.enforcement === "soft" ? "" : "is-hidden"}">Priority <input data-rule-index="${index}" data-rule-setting="priority" type="number" min="1" max="100" value="${rule.priority ?? 10}" /></label>
+              <label>Name <input data-rule-index="${index}" data-rule-setting="name" value="${escapeHtml(rule.name ?? "")}" placeholder="optional" /></label>
+            </div>
+          </div>
+          <button class="text-button danger-text" data-delete-rule="${index}" type="button">Delete</button>
+        </li>`).join("")
+      : '<li class="empty-hint">No rules yet. Import a CSV rule set or add a rule.</li>';
+  }
+
+  function updateInlineRule(event: Event) {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const control = target.closest<HTMLElement>("[data-rule-index]");
+    if (!control) return;
+    const inputControl = control as HTMLInputElement | HTMLSelectElement;
+    const index = Number(control.dataset.ruleIndex);
+    const rule = data.rules[index];
+    if (!rule) return;
+
+    if (control.dataset.ruleSetting === "keyword") {
+      rule.keyword = inputControl.value;
+      const inputsByKeyword: Record<string, any[]> = {
+        match: ["", ""],
+        group: ["", ""],
+        limit: ["min", 1, "all"],
+        balance: ["", "all"],
+        distribute: ["", "all"],
+        align: ["", ""],
+      };
+      rule.inputs = inputsByKeyword[rule.keyword] ?? ["", ""];
+    } else if (control.dataset.ruleSetting === "enforcement") {
+    rule.enforcement = inputControl.value as "hard" | "soft";
+      if (rule.enforcement === "soft") rule.priority ??= 10;
+      else delete rule.priority;
+    } else if (control.dataset.ruleSetting === "priority") {
+    rule.priority = Number(inputControl.value);
+    } else if (control.dataset.ruleSetting === "name") {
+    rule.name = inputControl.value;
+    } else {
+      const inputIndex = Number(control.dataset.ruleInput);
+      const isTarget =
+        (rule.keyword === "limit" && inputIndex === 2) ||
+        ((rule.keyword === "balance" || rule.keyword === "distribute") &&
+          inputIndex === 1);
+      rule.inputs[inputIndex] = isTarget
+        ? parseTargets(inputControl.value)
+        : rule.keyword === "limit" && inputIndex === 0
+          ? inputControl.value
+          : rule.keyword === "limit" && inputIndex === 1
+            ? Number(inputControl.value)
+            : inputControl.value;
+    }
+
+    saveData();
+    renderRules();
+  }
+
+  async function importRules(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    try {
+      data.rules = parseRulesCsv(await file.text());
+      saveData();
+      renderRules();
+      setMessage(`${file.name} imported.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error), true);
+    } finally {
+      input.value = "";
+    }
+  }
+
+  function exportRules() {
+    const records = data.rules.map(({ inputs = [], ...rule }) => ({
+      ...rule,
+      input1: inputs[0] ?? "",
+      input2: inputs[1] ?? "",
+      input3: inputs[2] ?? "",
+    }));
+    const csv = exportCsv(records);
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    link.download = "rules.csv";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
+  $("#rules-file").addEventListener("change", importRules);
+  $("#export-rules-button").addEventListener("click", exportRules);
+  $("#rule-list").addEventListener("change", updateInlineRule);
+  $("#new-rule-button").addEventListener("click", () => {
+    const nextId = data.rules.length
+      ? Math.max(...data.rules.map((rule) => Number(String(rule.id).replace(/\D/g, "")) || 0)) + 1
+      : 1;
+    data.rules.push({
+      id: `R${nextId}`,
+      name: "",
+      enforcement: "hard",
+      keyword: "match",
+      inputs: ["", ""],
+    });
+    saveData();
+    renderRules();
+  });
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const deleteButton = target.closest<HTMLElement>("[data-delete-rule]");
+    if (!deleteButton) return;
+    data.rules.splice(Number(deleteButton.dataset.deleteRule), 1);
+    saveData();
+    renderRules();
+  });
+
+  renderRules();
+</script>

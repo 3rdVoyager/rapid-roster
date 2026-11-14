@@ -1,0 +1,234 @@
+---
+import AppShell from "../components/AppShell.astro";
+---
+
+<AppShell>
+  <section class="app-panel is-active">
+    <div class="app-panel-header">
+      <div>
+        <p class="panel-kicker">04 / Finish</p>
+        <h1>Generation</h1>
+        <p class="app-panel-lead">Review your setup, generate an assignment, and export the roster.</p>
+        <div class="generation-progress" role="progressbar" aria-label="Roster generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="generation-progress-track"><div class="generation-progress-bar" id="generation-progress-bar"></div></div>
+          <div class="generation-progress-info">
+            <span id="generation-progress-round">Ready to generate</span>
+            <span id="generation-progress-elapsed"></span>
+          </div>
+        </div>
+        <p class="generation-message" id="generation-message">Load data to begin.</p>
+      </div>
+      <button class="button button-primary button-large" id="generate-button" type="button">Generate roster</button>
+    </div>
+    <div class="generation-layout">
+      <div class="summary-card">
+        <h2 class="card-title">Ready to generate?</h2>
+        <dl class="summary-list">
+          <div><dt>Items</dt><dd id="generate-items-count">0</dd></div>
+          <div><dt>Slots</dt><dd id="generate-slots-count">0</dd></div>
+          <div><dt>Rules</dt><dd id="generate-rules-count">0</dd></div>
+        </dl>
+        <div class="generation-options">
+          <h3>Optimization limit</h3>
+          <label>Limit type
+            <select id="generation-limit-mode">
+              <option value="rounds">Rounds</option>
+              <option value="time">Time (seconds)</option>
+            </select>
+          </label>
+          <label><span id="generation-limit-value-label">Maximum rounds</span>
+            <input id="generation-limit-value" type="number" min="1" step="1" value="20" />
+          </label>
+          <label class="generation-checkbox"><input id="generation-hard-only" type="checkbox" /> Hard rules only</label>
+        </div>
+      </div>
+      <div class="results-card">
+        <div class="card-header">
+          <div><h2 class="card-title">Generated roster</h2><p class="card-description">Review or export the generated roster.</p></div>
+          <div class="result-actions"><button class="button button-secondary button-small" id="download-button" type="button" disabled>Download CSV</button></div>
+        </div>
+        <div class="result-empty" id="result-empty"><span class="empty-mark">✦</span><p>No roster yet.</p></div>
+        <div class="result-content" id="result-content" hidden>
+          <div class="metrics" id="metrics"></div>
+          <div class="table-wrap"><table class="data-table"><thead><tr><th>Slot</th><th>Assigned items</th><th>Count</th></tr></thead><tbody id="results-body"></tbody></table></div>
+          <details class="csv-details"><summary>View CSV output</summary><pre id="csv-output"></pre></details>
+        </div>
+      </div>
+    </div>
+  </section>
+</AppShell>
+
+<script>
+  import { exportCsv } from "../lib/export.js";
+  import { evaluateModel } from "../lib/evaluation.js";
+  import { createModel } from "../lib/model.js";
+  import {
+    $,
+    data,
+    escapeHtml,
+    normalizeNumericRuleAttributes,
+    setMessage,
+  } from "../lib/state.js";
+  import type { Evaluation, GenerationResult, RecordId } from "../lib/types";
+
+  let latestCsv = "";
+
+  function renderCounts() {
+    $("#generate-items-count").textContent = data.items.length;
+    $("#generate-slots-count").textContent = data.slots.length;
+    $("#generate-rules-count").textContent = data.rules.length;
+  }
+
+  function renderResult(result: GenerationResult): Evaluation {
+    const evaluation = evaluateModel(createModel(
+      normalizeNumericRuleAttributes(data.items, data.rules),
+      data.slots,
+      data.rules,
+      result.assignments,
+    ));
+    const names = new Map<RecordId, string | number>(
+      data.items.map((item) => [item.id, item.name ?? item.id]),
+    );
+    $("#results-body").innerHTML = Object.entries(result.assignments).map(([slot, itemIds]) => `
+      <tr>
+        <th scope="row">${escapeHtml(slot)}</th>
+        <td>${itemIds.map((id) => `<span class="person-chip">${escapeHtml(names.get(id) ?? id)}</span>`).join("") || '<span class="muted">No assignments</span>'}</td>
+        <td>${itemIds.length}</td>
+      </tr>`).join("");
+    $("#metrics").innerHTML = `
+      <div><span>Hard violations</span><strong>${evaluation.hardViolations.length}</strong></div>
+      <div><span>Soft violations</span><strong>${evaluation.softViolations.length}</strong></div>
+      <div><span>Hard penalty</span><strong>${evaluation.hardPenalty.toFixed(2)}</strong></div>
+      <div><span>Soft penalty</span><strong>${evaluation.softPenalty.toFixed(2)}</strong></div>`;
+    latestCsv = exportCsv(Object.entries(result.assignments).flatMap(([slot, itemIds]) =>
+      itemIds.map((itemId) => ({ slot, itemId, participant: names.get(itemId) ?? itemId }))));
+    $("#csv-output").textContent = latestCsv;
+    $("#result-empty").hidden = true;
+    $("#result-content").hidden = false;
+    $("#download-button").disabled = false;
+    return evaluation;
+  }
+
+  async function generate() {
+    let progressTimer;
+    let worker: Worker | undefined;
+    try {
+      if (!data.items.length || !data.slots.length) {
+        throw new Error("Add items and slots before generating.");
+      }
+      const limitMode = $("#generation-limit-mode").value;
+      const limitValue = Number($("#generation-limit-value").value);
+      const hardOnly = $("#generation-hard-only").checked;
+      const limitMilliseconds = limitValue * 1000;
+      if (
+        !hardOnly &&
+        (!Number.isFinite(limitValue) ||
+          limitValue < 1 ||
+          (limitMode === "time" && !Number.isSafeInteger(limitMilliseconds)) ||
+          (limitMode === "rounds" && !Number.isInteger(limitValue)))
+      ) {
+        throw new Error(
+          limitMode === "rounds"
+            ? "Maximum rounds must be a positive whole number."
+            : "Maximum time must be a positive number of seconds.",
+        );
+      }
+      $("#generate-button").disabled = true;
+      $("#generate-button").textContent = "Generating…";
+      $("#generation-message").textContent = "Finding a compatible roster…";
+      const progress = $(".generation-progress");
+      const progressBar = $("#generation-progress-bar");
+      progress.setAttribute("aria-valuenow", "0");
+      progressBar.style.width = "0%";
+      $("#generation-progress-round").textContent = "Starting generation…";
+      $("#generation-progress-elapsed").textContent = "";
+      if (limitMode === "time" && !hardOnly) {
+        const startedAt = performance.now();
+        progressTimer = setInterval(() => {
+          const percent = Math.min(95, ((performance.now() - startedAt) / limitMilliseconds) * 100);
+          progress.setAttribute("aria-valuenow", String(Math.round(percent)));
+          progressBar.style.width = `${percent}%`;
+          $("#generation-progress-elapsed").textContent =
+            `Elapsed ${Math.round((performance.now() - startedAt) / 1000)} s`;
+        }, 100);
+      }
+      const activeWorker = new Worker(new URL("../lib/generation-worker.js", import.meta.url), {
+        type: "module",
+      });
+      worker = activeWorker;
+      const result = await new Promise<GenerationResult>((resolve, reject) => {
+        activeWorker.addEventListener("message", ({ data: message }: MessageEvent<any>) => {
+          if (message.type === "progress") {
+            const percent = limitMode === "rounds"
+              ? Math.min(100, (message.progress.round / limitValue) * 100)
+              : null;
+            if (percent !== null) {
+              progress.setAttribute("aria-valuenow", String(Math.round(percent)));
+              progressBar.style.width = `${percent}%`;
+            }
+            $("#generation-progress-round").textContent = `Soft round ${message.progress.round}`;
+            $("#generation-message").textContent =
+              `Penalty ${message.progress.softPenalty.toFixed(4)}; improvement ${message.progress.improvement.toFixed(4)}`;
+          } else if (message.type === "complete") {
+            resolve(message.result);
+          } else if (message.type === "error") {
+            reject(new Error(message.message));
+          }
+        });
+        activeWorker.addEventListener("error", (error: ErrorEvent) => {
+          reject(new Error(error.message || "Roster generation worker failed."));
+        });
+        activeWorker.postMessage({
+          ...data,
+          hardOnly,
+          items: normalizeNumericRuleAttributes(data.items, data.rules),
+          ...(limitMode === "rounds"
+            ? { maxSoftRounds: limitValue }
+            : { maxSoftTimeMs: limitMilliseconds }),
+        });
+      });
+      const evaluation = renderResult(result);
+      clearInterval(progressTimer);
+      worker.terminate();
+      progress.setAttribute("aria-valuenow", "100");
+      progressBar.style.width = "100%";
+      $("#generation-progress-round").textContent = "Generation complete";
+      $("#generation-progress-elapsed").textContent = "";
+      $("#generation-message").textContent =
+        `Roster generated. Soft penalty: ${evaluation.softPenalty.toFixed(6)}. ` +
+        `${hardOnly ? "Hard rules only." : limitMode === "rounds" ? `Limit: ${limitValue} rounds.` : `Limit: ${limitValue} seconds.`}`;
+      setMessage("Roster generated successfully.");
+    } catch (error) {
+      clearInterval(progressTimer);
+      worker?.terminate();
+      $("#generation-progress-round").textContent = "Generation stopped";
+      $("#generation-progress-elapsed").textContent = "";
+      const message = error instanceof Error ? error.message : String(error);
+      $("#generation-message").textContent = message;
+      setMessage(message, true);
+    } finally {
+      $("#generate-button").disabled = false;
+      $("#generate-button").textContent = "Generate roster";
+    }
+  }
+
+  $("#generation-limit-mode").addEventListener("change", (event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    const isRounds = target.value === "rounds";
+    $("#generation-limit-value-label").textContent = isRounds
+      ? "Maximum rounds"
+      : "Maximum time (seconds)";
+    $("#generation-limit-value").step = isRounds ? "1" : "any";
+    $("#generation-limit-value").value = isRounds ? "20" : "300";
+  });
+  $("#generate-button").addEventListener("click", generate);
+  $("#download-button").addEventListener("click", () => {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([latestCsv], { type: "text/csv" }));
+    link.download = "rapid-roster.csv";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+
+  renderCounts();
+</script>

@@ -1,0 +1,98 @@
+---
+import AppShell from "../components/AppShell.astro";
+---
+
+<AppShell>
+  <section class="app-panel is-active">
+    <div class="app-panel-header">
+      <div>
+        <p class="panel-kicker">01 / Setup</p>
+        <h1>Items</h1>
+        <p class="app-panel-lead">People or items to be placed into slots.</p>
+      </div>
+      <a class="button button-primary button-small" href="/slots">Continue to Slots</a>
+    </div>
+    <div class="app-toolbar">
+      <label class="button button-primary button-small file-button" for="items-file">Import CSV<input id="items-file" type="file" accept=".csv,text/csv" /></label>
+      <button class="button button-ghost button-small" id="export-items-button" type="button">Export CSV</button>
+      <span class="toolbar-spacer"></span><span class="record-count" id="items-count">0 items</span>
+    </div>
+    <div class="table-card">
+      <table class="data-table">
+        <thead id="items-head"></thead>
+        <tbody id="items-body"></tbody>
+      </table>
+      <p class="empty-hint" id="items-empty">No items yet. Import a CSV to get started.</p>
+    </div>
+  </section>
+</AppShell>
+
+<script>
+  import { exportCsv } from "../lib/export.js";
+  import { parseCsv } from "../lib/import.js";
+  import {
+    $,
+    data,
+    escapeHtml,
+    formatValue,
+    getHeaders,
+    saveData,
+    setMessage,
+  } from "../lib/state.js";
+
+  const type = "items";
+
+  function renderTable() {
+    const records = data[type];
+    const headers = getHeaders(records);
+    $(`#${type}-count`).textContent = `${records.length} ${type}`;
+    $(`#${type}-empty`).hidden = records.length > 0;
+    $(`#${type}-head`).innerHTML = headers.length
+      ? `<tr>${headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("")}<th></th></tr>`
+      : "";
+    $(`#${type}-body`).innerHTML = records.map((record, rowIndex) => `
+      <tr>
+        ${headers.map((header) => `<td>${escapeHtml(formatValue(record[header]))}</td>`).join("")}
+        <td><button class="icon-button" data-delete="${type}" data-row="${rowIndex}" type="button" aria-label="Delete item">×</button></td>
+      </tr>`).join("");
+  }
+
+  async function importFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    try {
+      data[type] = parseCsv(await file.text());
+      saveData();
+      renderTable();
+      setMessage(`${file.name} imported.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error), true);
+    } finally {
+      input.value = "";
+    }
+  }
+
+  function exportTable() {
+    const csv = exportCsv(data[type]);
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    link.download = `${type}.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
+  $("#items-file").addEventListener("change", importFile);
+  $("#export-items-button").addEventListener("click", exportTable);
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const deleteButton = target.closest<HTMLElement>(`[data-delete="${type}"]`);
+    if (!deleteButton) return;
+    data[type].splice(Number(deleteButton.dataset.row), 1);
+    saveData();
+    renderTable();
+  });
+
+  renderTable();
+</script>

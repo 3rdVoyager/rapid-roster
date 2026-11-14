@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const navigation = [
+  { href: "/", icon: "help", label: "Get Started" },
+  { href: "/items", icon: "group", label: "Items" },
+  { href: "/slots", icon: "view_week", label: "Slots" },
+  { href: "/rules", icon: "tune", label: "Rules" },
+  { href: "/generate", icon: "auto_awesome", label: "Generation" },
+  { href: "/evaluation", icon: "fact_check", label: "Evaluation" },
+];
+---
+
+<BaseLayout title="Workspace — Rapid Roster" showSiteChrome={false}>
+  <header class="project-header">
+    <a class="project-brand" href="/" aria-label="Rapid Roster home">
+      <img src="/favicon/rapid-roster-logo.png" alt="" width="34" height="34" />
+      <span>Rapid<span class="brand-accent">Roster</span></span>
+    </a>
+  </header>
+
+  <div class="app-shell">
+    <nav class="app-sidebar" aria-label="Roster workflow">
+      {navigation.map(({ href, icon, label }) => (
+        <a
+          class:list={{ "app-nav-item": true, "is-active": currentPath === href }}
+          href={href}
+        >
+          <span class="material-symbols-outlined">{icon}</span>{label}
+        </a>
+      ))}
+    </nav>
+
+    <main class="app-main">
+      <slot />
+      <p class="app-message" id="app-message" role="status" aria-live="polite"></p>
+    </main>
+  </div>
+</BaseLayout>

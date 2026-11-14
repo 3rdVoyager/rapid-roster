@@ -19,6 +19,8 @@
     "astro": "^7.4.4"
   },
   "devDependencies": {
-    "prettier": "^3.9.10"
+    "@astrojs/check": "^0.9.12",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3"
   }
 }
